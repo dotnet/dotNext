@@ -5,9 +5,9 @@ namespace DotNext.Threading;
 
 using InlinedTokenList = ValueTuple<CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration>;
 
-partial class CancellationTokenMultiplexer
+partial struct CancellationTokenMultiplexer
 {
-    private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
+    private sealed partial class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {
         private static readonly int InlinedListCapacity = GetCapacity<InlinedTokenList>();
         
@@ -15,11 +15,19 @@ partial class CancellationTokenMultiplexer
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
 
+        public void DetachLinkedTokens()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                this[i].Dispose();
+            }
+        }
+
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
             // register inlined tokens
             var inlinedRegistrations = inlinedList.AsSpan();
-            var inlinedCount = Math.Min(inlinedRegistrations.Length, tokens.Length);
+            var inlinedCount = int.Min(inlinedRegistrations.Length, tokens.Length);
 
             for (var i = 0; i < inlinedCount; i++)
             {
@@ -77,6 +85,9 @@ partial class CancellationTokenMultiplexer
 
             count = 0;
             CancellationOrigin = CancellationToken.None;
+            callbackOrSentinel = callbackState = schedulingContext = null;
+            context = null;
+            pool = null;
         }
 
         private static int GetCapacity<T>()

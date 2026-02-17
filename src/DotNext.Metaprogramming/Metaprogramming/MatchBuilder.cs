@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming;
 
+using Collections.Generic;
 using Linq.Expressions;
-using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents pattern matcher.
@@ -85,7 +85,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             var test = value.InstanceOf(expectedType);
             var typedValue = Expression.Variable(expectedType);
             var body = builder.Invoke(typedValue);
-            return endOfMatch => Expression.IfThen(test, Expression.Block(List.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
+            return endOfMatch => Expression.IfThen(test, Expression.Block(IReadOnlyList<ParameterExpression>.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
         }
     }
 
@@ -102,7 +102,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             var typedVarInit = typedVar.Assign(value.Convert(expectedType));
             var body = builder.Invoke(typedVar);
             var test2 = condition(typedVar);
-            return endOfMatch => Expression.IfThen(test, Expression.Block(List.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
+            return endOfMatch => Expression.IfThen(test, Expression.Block(IReadOnlyList<ParameterExpression>.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
         }
     }
 
@@ -410,7 +410,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
 
         // setup label as last instruction
         instructions.Add(Expression.Label(endOfMatch, Expression.Default(endOfMatch.Type)));
-        return assignment is null ? Expression.Block(instructions) : Expression.Block(List.Singleton(value), instructions);
+        return assignment is null ? Expression.Block(instructions) : Expression.Block(IReadOnlyList<ParameterExpression>.Singleton(value), instructions);
     }
 
     private protected override void CleanUp()

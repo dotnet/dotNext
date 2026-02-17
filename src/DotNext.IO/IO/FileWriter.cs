@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -12,7 +13,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple writers and use dedicated writer in each thread.
 /// </remarks>
-public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
+public partial class FileWriter : Disposable, IFlushable
 {
     private const int MinBufferSize = 16;
     private const int DefaultBufferSize = 4096;
@@ -47,16 +48,19 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     public FileWriter(FileStream destination)
         : this(destination.SafeFileHandle)
     {
-        if (!destination.CanWrite)
-            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentException.EnsureWritable(destination);
 
         FilePosition = destination.Position;
     }
     
-    /// <inheritdoc cref="IBufferedChannel.Allocator"/>
-    public MemoryAllocator<byte>? Allocator
+    /// <summary>
+    /// Gets buffer allocator.
+    /// </summary>
+    [AllowNull]
+    public MemoryAllocator<byte> Allocator
     {
-        get;
+        get => field ??= MemoryAllocator<byte>.Default;
         init;
     }
 
@@ -94,14 +98,21 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private Span<byte> BufferSpan => EnsureBufferAllocated().Span.Slice(bufferOffset);
 
-    /// <inheritdoc cref="IBufferedChannel.MaxBufferSize"/>
+    /// <summary>
+    /// Gets the maximum size of the internal buffer.
+    /// </summary>
     public int MaxBufferSize
     {
         get => maxBufferSize;
         init => maxBufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    /// <inheritdoc cref="IBufferedWriter.Produce(int)"/>
+    /// <summary>
+    /// Marks the specified number of bytes in the buffer as produced.
+    /// </summary>
+    /// <param name="count">The number of produced bytes.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the length of <see cref="Buffer"/>.</exception>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public void Produce(int count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
@@ -194,7 +205,13 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
         Reset();
     }
 
-    /// <inheritdoc cref="IBufferedWriter.WriteAsync(CancellationToken)"/>
+    /// <summary>
+    /// Flushes buffered data to the underlying storage.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteAsync(CancellationToken token = default)
     {
         if (IsDisposed)
@@ -255,7 +272,13 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
         }
     }
 
-    /// <inheritdoc cref="IBufferedWriter.WriteAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
+    /// <summary>
+    /// Writes the memory block to the file.
+    /// </summary>
+    /// <param name="input">The memory block to write.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous state of the operation.</returns>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         ValueTask task;

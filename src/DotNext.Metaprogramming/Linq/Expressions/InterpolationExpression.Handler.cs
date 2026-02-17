@@ -24,7 +24,6 @@ public partial class InterpolationExpression
     [EditorBrowsable(EditorBrowsableState.Never)]
     public struct InterpolatedStringExpressionHandler(int literalLength, int formattedCount)
     {
-        private readonly Expression[]? arguments = new Expression[formattedCount];
         private InterpolatedStringTemplateBuilder builder = new(literalLength, formattedCount);
         private int index;
 
@@ -32,7 +31,7 @@ public partial class InterpolationExpression
         /// Adds literal value to the template.
         /// </summary>
         /// <param name="literal">The literal part of the template.</param>
-        public readonly void AppendLiteral(string? literal) => builder.AppendLiteral(literal);
+        public void AppendLiteral(string? literal) => builder.AppendLiteral(literal);
 
         /// <summary>
         /// Adds a placeholder.
@@ -57,7 +56,10 @@ public partial class InterpolationExpression
         public void AppendFormatted(Expression arg, string? format = null)
             => AppendFormatted(arg, 0, format);
 
-        internal readonly Expression[] Arguments => arguments ?? [];
+        internal readonly Expression[] Arguments
+        {
+            get => field ?? [];
+        } = new Expression[formattedCount];
 
         internal readonly LambdaExpression BuildRenderer() => builder.Build();
 

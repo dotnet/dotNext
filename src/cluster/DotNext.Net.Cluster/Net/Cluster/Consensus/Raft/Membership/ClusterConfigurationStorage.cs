@@ -81,7 +81,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
 
     private protected void Decode(ICollection<TAddress> output, ReadOnlyMemory<byte> memory)
     {
-        var reader = IAsyncBinaryReader.Create(memory);
+        var reader = new SequenceReader(memory);
         Decode(output, ref reader);
     }
 
@@ -246,7 +246,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask OnActiveConfigurationChanged(TAddress address, bool isAdded, CancellationToken token)
     {
-        foreach (Func<TAddress, bool, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? [])
+        foreach (var handler in Delegate.EnumerateInvocationList(handlers))
             await handler.Invoke(address, isAdded, token).ConfigureAwait(false);
     }
 

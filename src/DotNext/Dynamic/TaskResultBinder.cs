@@ -24,7 +24,7 @@ internal sealed class TaskResultBinder : CallSiteBinder
 
     private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
     {
-        const string resultPropertyName = nameof(Task<Missing>.Result);
+        const string resultPropertyName = nameof(Task<>.Result);
         const BindingFlags resultPropertyFlags = BindingFlags.Public | BindingFlags.Instance;
         
         var property = targetValue.GetType().GetProperty(resultPropertyName, resultPropertyFlags);

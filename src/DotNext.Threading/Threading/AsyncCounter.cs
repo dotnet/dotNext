@@ -3,8 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
-
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non-zero.
 /// </summary>
@@ -17,37 +15,7 @@ using Tasks;
 [DebuggerDisplay($"Counter = {{{nameof(Value)}}}")]
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<WaitNode>
-    {
-        internal required long Value;
-
-        internal void Increment(long delta) => Value = checked(Value + delta);
-
-        internal bool TryIncrement(long maxValue)
-        {
-            bool result;
-            if (result = Value < maxValue)
-                Value += 1L;
-
-            return result;
-        }
-
-        internal bool TryReset()
-        {
-            var result = Value > 0L;
-            Value = 0L;
-            return result;
-        }
-
-        readonly bool ILockManager.IsLockAllowed => Value > 0L;
-
-        void ILockManager.AcquireLock() => Value--;
-
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-    }
-
-    private StateManager manager;
+    private long counter;
 
     /// <summary>
     /// Initializes a new asynchronous counter.
@@ -58,11 +26,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
 
-        manager = new() { Value = initialValue };
+        counter = initialValue;
     }
-
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;
@@ -75,18 +40,15 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => Atomic.Read(in manager.Value);
+    public long Value => Atomic.Read(in counter);
 
     /// <inheritdoc/>
     bool IAsyncEvent.Reset()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
-        var result = manager.TryReset();
-        Monitor.Exit(SyncRoot);
-
-        return result;
+        TryAcquire(new ResetTransition(ref counter), out var acquired).Dispose();
+        return acquired;
     }
 
     /// <summary>
@@ -140,30 +102,29 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
-        {
-            manager.Increment(delta);
-            suspendedCallers = DrainWaitQueue();
-        }
-
-        suspendedCallers?.Unwind();
+        using var queue = CaptureWaitQueue();
+        counter = checked(counter + delta);
+        queue.SignalAll(new StateManager(ref counter));
     }
 
     private bool TryIncrementCore(long maxValue)
     {
         Debug.Assert(maxValue > 0);
+        
+        using var queue = CaptureWaitQueue();
+        var result = TryIncrement(ref counter, maxValue);
+        queue.SignalAll(new StateManager(ref counter));
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        bool result;
-        lock (SyncRoot)
-        {
-            result = manager.TryIncrement(maxValue);
-            suspendedCallers = DrainWaitQueue();
-        }
-
-        suspendedCallers?.Unwind();
         return result;
+        
+        static bool TryIncrement(ref long counter, long maxValue)
+        {
+            bool result;
+            if (result = counter < maxValue)
+                counter += 1L;
+
+            return result;
+        }
     }
 
     /// <inheritdoc/>
@@ -183,7 +144,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, StateManager>(ref builder, new(ref counter));
+    }
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -194,7 +158,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, StateManager>(ref builder, new(ref counter));
+    }
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.
@@ -204,10 +171,29 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager);
-        Monitor.Exit(SyncRoot);
+        TryAcquire(new StateManager(ref counter), out var decremented).Dispose();
+        return decremented;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref long counter) : ILockManager<WaitNode>
+    {
+        private readonly ref long counter = ref counter;
 
-        return result;
+        bool ILockManager.IsLockAllowed => counter > 0L;
+
+        void ILockManager.AcquireLock() => counter--;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref long counter) : ILockManager
+    {
+        private readonly ref long counter = ref counter;
+
+        bool ILockManager.IsLockAllowed => counter > 0L;
+
+        void ILockManager.AcquireLock() => counter = 0L;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }

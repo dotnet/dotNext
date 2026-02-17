@@ -158,13 +158,13 @@ public sealed class MemoryWriterTests : Test
         using var writer = new PoolingArrayBufferWriter<byte>();
 
         // serialize dictionary to memory
-        await using (var output = writer.AsStream())
+        await using (var output = Stream.CreateWritable(writer, flush: null, flushAsync: null))
         {
             await DictionarySerializer.SerializeAsync(dict, output, buffer);
         }
 
         // deserialize from memory
-        await using (var input = writer.WrittenArray.AsStream())
+        await using (var input = Stream.Create(writer.WrittenArray))
         {
             Equal(dict, await DictionarySerializer.DeserializeAsync(input, buffer));
         }

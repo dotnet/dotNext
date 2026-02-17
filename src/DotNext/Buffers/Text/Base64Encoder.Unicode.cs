@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Buffers.Text;
-using System.Diagnostics;
 using System.Text.Unicode;
 
 namespace DotNext.Buffers.Text;
@@ -9,7 +8,8 @@ using Buffers;
 
 public partial struct Base64Encoder
 {
-    private void EncodeToUtf16Core(scoped ReadOnlySpan<byte> bytes, ref BufferWriterSlim<char> chars, bool flush)
+    private void EncodeToUtf16Core<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped TWriter writer, bool flush)
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         var size = bytes.Length % 3;
 
@@ -27,11 +27,12 @@ public partial struct Base64Encoder
             bytes = bytes.Slice(0, size);
         }
 
-        Convert.TryToBase64Chars(bytes, chars.InternalGetSpan(Base64.GetMaxEncodedToUtf8Length(bytes.Length)), out size);
-        chars.Advance(size);
+        Convert.TryToBase64Chars(bytes, writer.GetSpan(Base64.GetMaxEncodedToUtf8Length(bytes.Length)), out size);
+        writer.Advance(size);
     }
 
-    private void EncodeToUtf16Buffered(scoped ReadOnlySpan<byte> bytes, ref BufferWriterSlim<char> chars, bool flush)
+    private void EncodeToUtf16Buffered<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped TWriter writer, bool flush)
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         if (HasBufferedData)
         {
@@ -39,12 +40,12 @@ public partial struct Base64Encoder
             tempBuffer.Write(BufferedData);
             bytes = bytes.Slice(tempBuffer.Write(bytes));
 
-            EncodeToUtf16Core(tempBuffer.WrittenSpan, ref chars, bytes.IsEmpty && flush);
+            EncodeToUtf16Core(tempBuffer.WrittenSpan, writer, bytes.IsEmpty && flush);
         }
 
-        if (bytes.IsEmpty is false)
+        if (bytes.Length > 0)
         {
-            EncodeToUtf16Core(bytes, ref chars, flush);
+            EncodeToUtf16Core(bytes, writer, flush);
         }
     }
 
@@ -65,7 +66,7 @@ public partial struct Base64Encoder
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
         var writer = new BufferWriterSlim<char>(GetMaxEncodedLength(bytes.Length), allocator);
-        EncodeToUtf16Buffered(bytes, ref writer, flush);
+        EncodeToUtf16Buffered<BufferWriterSlim<char>.Ref>(bytes, new(ref writer), flush);
 
         return writer.DetachOrCopyBuffer();
     }
@@ -83,12 +84,12 @@ public partial struct Base64Encoder
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToUtf16(ReadOnlySpan<byte> bytes, ref BufferWriterSlim<char> chars, bool flush = false)
+    public void EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, scoped ref BufferWriterSlim<char> chars, bool flush = false)
     {
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
-        EncodeToUtf16Buffered(bytes, ref chars, flush);
+        EncodeToUtf16Buffered<BufferWriterSlim<char>.Ref>(bytes, new(ref chars), flush);
     }
 
     /// <summary>
@@ -102,17 +103,14 @@ public partial struct Base64Encoder
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="chars"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToUtf16(ReadOnlySpan<byte> bytes, IBufferWriter<char> chars, bool flush = false)
+    public void EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, IBufferWriter<char> chars, bool flush = false)
     {
+        ArgumentNullException.ThrowIfNull(chars);
+        
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
-        var maxChars = GetMaxEncodedLength(bytes.Length);
-        var writer = new BufferWriterSlim<char>(chars.GetSpan(maxChars));
-        EncodeToUtf16Buffered(bytes, ref writer, flush);
-
-        Debug.Assert(writer.WrittenCount <= maxChars);
-        chars.Advance(writer.WrittenCount);
+        EncodeToUtf16Buffered<BufferWriterReference<char>>(bytes, new(chars), flush);
     }
 
     /// <summary>
@@ -125,7 +123,7 @@ public partial struct Base64Encoder
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> EncodeToUtf16Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes,
         MemoryAllocator<char>? allocator = null, CancellationToken token = default)
-        => IBufferedEncoder<char>.EncodeAsync<Base64Encoder>(bytes, allocator, token);
+        => IBufferedEncoder<char>.EncodeAsync<Base64Encoder>(bytes, allocator.DefaultIfNull, token);
 
     /// <summary>
     /// Flushes the buffered data as base64-encoded characters to the output buffer.

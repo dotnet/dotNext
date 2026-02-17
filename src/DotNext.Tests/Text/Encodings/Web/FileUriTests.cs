@@ -4,7 +4,7 @@ namespace DotNext.Text.Encodings.Web;
 
 public sealed class FileUriTests : Test
 {
-    public static TheoryData<string, string> GetPaths() => new()
+    public static TheoryData<string, string> Paths => new()
     {
         // Windows path
         { @"C:\without\whitespace", @"C:\without\whitespace" },
@@ -29,7 +29,7 @@ public sealed class FileUriTests : Test
     };
 
     [Theory]
-    [MemberData(nameof(GetPaths))]
+    [MemberData(nameof(Paths))]
     public static void FromFileNameToUri(string fileName, string expected)
     {
         var uri = new Uri(FileUri.CreateFromFileName(fileName), UriKind.Absolute);
@@ -41,18 +41,26 @@ public sealed class FileUriTests : Test
     public static void GetUriExtensionMethod()
     {
         var fileName = OperatingSystem.IsWindows() ? "C:\\some\\path" : "/some/path";
-        var uri = new FileInfo(fileName).GetUri();
+        var uri = new FileInfo(fileName).Uri;
         Equal(fileName, uri.LocalPath);
     }
 
     [Theory]
-    [MemberData(nameof(GetPaths))]
+    [MemberData(nameof(Paths))]
     public static void TryCreateFromFileName(string fileName, string expected)
     {
         Span<char> buffer = stackalloc char[512];
         True(FileUri.TryCreateFromFileName(fileName, UrlEncoder.Default, buffer, out var charsWritten));
 
         var uri = new Uri(buffer.Slice(0, charsWritten).ToString(), UriKind.Absolute);
+        Equal(expected, uri.LocalPath);
+    }
+
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public static void TryConvertToUri(string fileName, string expected)
+    {
+        True(Uri.TryCreateFromFileName(fileName, settings: null, out var uri));
         Equal(expected, uri.LocalPath);
     }
     

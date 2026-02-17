@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -11,7 +10,6 @@ namespace DotNext.Threading.Tasks;
 /// <summary>
 /// Represents base class for producer of value task.
 /// </summary>
-[SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
 public abstract partial class ManualResetCompletionSource
 {
     /// <summary>
@@ -21,16 +19,13 @@ public abstract partial class ManualResetCompletionSource
 
     private readonly Action<object?, CancellationToken> cancellationCallback;
     private readonly bool runContinuationsAsynchronously;
-    private CancellationState state;
-
-    // task management
-    private Continuation continuation;
-    private protected VersionAndStatus versionAndStatus;
+    private CancellationState state; // protected by activation states
+    private Continuation continuation; // protected by subscription states
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
-        versionAndStatus = new();
+        syncState = unchecked((uint)(ushort)InitialCompletionToken << 16);
 
         // cached callback to avoid further allocations
         cancellationCallback = CancellationRequested;
@@ -41,47 +36,38 @@ public abstract partial class ManualResetCompletionSource
     {
         Debug.Assert(expectedVersion is short);
 
-        // due to concurrency, this method can be called after Reset or twice
-        // that's why we need to skip the call if token doesn't match (call after Reset)
-        // or completed flag is set (call twice with the same token)
-        if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated)
-            goto exit;
-
-        lock (SyncRoot)
+        if (BeginCompletion((short)expectedVersion))
         {
-            if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated
-                || versionAndStatus.Version != (short)expectedVersion
-                || !(state.IsTimeoutToken(token) ? CompleteAsTimedOut() : CompleteAsCanceled(token)))
-                goto exit;
-
-            // ensure that timeout or cancellation handler sets the status correctly
-            Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+            try
+            {
+                if (state.IsTimeoutToken(token))
+                {
+                    CompleteAsTimedOut();
+                }
+                else
+                {
+                    CompleteAsCanceled(token);
+                }
+            }
+            finally
+            {
+                if (EndCompletion())
+                {
+                    NotifyConsumer();
+                }
+            }
         }
-
-        NotifyConsumer();
-
-        exit:
-        return;
     }
 
-    private protected abstract bool CompleteAsTimedOut();
+    private protected abstract void CompleteAsTimedOut();
 
-    private protected abstract bool CompleteAsCanceled(CancellationToken token);
+    private protected abstract void CompleteAsCanceled(CancellationToken token);
 
     /// <summary>
     /// Resets internal state of this source.
     /// </summary>
     protected virtual void CleanUp()
     {
-    }
-
-    private CancellationState ResetCore(out short token)
-    {
-        AssertLocked();
-
-        token = versionAndStatus.Reset();
-        CompletionData = null;
-        return state.Detach();
     }
 
     /// <summary>
@@ -95,39 +81,11 @@ public abstract partial class ManualResetCompletionSource
     /// <returns>The version of the uncompleted task.</returns>
     public short Reset()
     {
-        Monitor.Enter(SyncRoot);
-        var stateCopy = ResetCore(out var token);
-        Monitor.Exit(SyncRoot);
-
-        stateCopy.Dispose();
+        var newVersion = ResetCore();
+        CompletionData = null;
+        state.Detach().Dispose();
         CleanUp();
-        return token;
-    }
-
-    /// <summary>
-    /// Attempts to reset the state of this source.
-    /// </summary>
-    /// <param name="token">The version of the uncompleted task.</param>
-    /// <returns><see langword="true"/> if the state was reset successfully; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="Reset"/>
-    public bool TryReset(out short token)
-    {
-        bool result;
-
-        if (result = Monitor.TryEnter(SyncRoot))
-        {
-            var stateCopy = ResetCore(out token);
-            Monitor.Exit(SyncRoot);
-
-            stateCopy.Dispose();
-            CleanUp();
-        }
-        else
-        {
-            token = default;
-        }
-
-        return result;
+        return newVersion;
     }
 
     /// <summary>
@@ -141,97 +99,55 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Gets a value passed to the manual completion method.
     /// </summary>
-    protected object? CompletionData
+    public object? CompletionData
     {
         get;
-        private set;
+        private set; // protected by completion states
     }
 
-    /// <summary>
-    /// Invokes continuation callback and cleanup state of this source.
-    /// </summary>
-    protected internal void NotifyConsumer()
+    internal void NotifyConsumer()
     {
         state.Detach().Dispose();
 
-        if (continuation is { IsValid: true } c)
-        {
-            continuation = default;
-            c.InvokeOnCapturedContext(runContinuationsAsynchronously);
-        }
+        var continuationCopy = continuation;
+        continuation = default;
+        continuationCopy.InvokeOnCapturedContext(runContinuationsAsynchronously);
     }
 
-    /// <summary>
-    /// Moves this source to the completed state.
-    /// </summary>
-    /// <param name="completionData">Custom data to be record to <see cref="CompletionData"/> property.</param>
-    /// <returns>
-    /// <see langword="true"/> if the immediate caller must call <see cref="NotifyConsumer"/> to execute the callback;
-    /// <see langword="false"/> to ignore invocation of <see cref="NotifyConsumer"/> method because the callback
-    /// is not provided.
-    /// </returns>
-    private protected bool SetResult(object? completionData)
+    private void OnCompleted(in Continuation continuation, short expectedToken)
     {
-        AssertLocked();
-
-        CompletionData = completionData;
-        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
-        return continuation.IsValid;
-    }
-
-    private void OnCompleted(in Continuation continuation, short token)
-    {
-        string errorMessage;
-
-        // code block doesn't have any calls leading to exceptions
-        // so replace try-finally with manually cloned code
-        Monitor.Enter(SyncRoot);
-        if (token != versionAndStatus.Version)
+        if (BeginSubscription(expectedToken))
         {
-            errorMessage = ExceptionMessages.InvalidSourceToken;
-            Monitor.Exit(SyncRoot);
-            goto invalid_state;
-        }
+            this.continuation = continuation;
 
-        switch (versionAndStatus.Status)
-        {
-            default:
-                errorMessage = ExceptionMessages.InvalidSourceState;
-                Monitor.Exit(SyncRoot);
-                goto invalid_state;
-            case ManualResetCompletionSourceStatus.WaitForConsumption:
-                Monitor.Exit(SyncRoot);
-                break;
-            case ManualResetCompletionSourceStatus.Activated:
-                this.continuation = continuation;
-                Monitor.Exit(SyncRoot);
-                goto exit;
+            if (!EndSubscription())
+                return;
         }
 
         // execute continuation in-place because the source is completed already
+        Debug.Assert(IsCompleted);
         continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
-
-    exit:
-        return;
-    invalid_state:
-        throw new InvalidOperationException(errorMessage);
     }
 
-    private protected ValueTaskSourceStatus GetStatus(short token, Exception? e)
+    private protected ValueTaskSourceStatus GetStatus<TExceptionProvider>(short expectedToken, TExceptionProvider provider)
+        where TExceptionProvider : ISupplier<Exception?>, allows ref struct
     {
-        var snapshot = versionAndStatus.VolatileRead(); // barrier to avoid reordering of result read
+        var stateCopy = Volatile.Read(in syncState);
 
-        if (token != snapshot.Version)
+        if (GetVersion(stateCopy) != expectedToken)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
-        return !snapshot.IsCompleted
-            ? ValueTaskSourceStatus.Pending
-            : e switch
-            {
-                null => ValueTaskSourceStatus.Succeeded,
-                OperationCanceledException => ValueTaskSourceStatus.Canceled,
-                _ => ValueTaskSourceStatus.Faulted,
-            };
+        // CompletedState acts as a barrier for written exception. Thus, we should not access the exception
+        // before this check.
+        if ((stateCopy & CompletedState) is not CompletedState)
+            return ValueTaskSourceStatus.Pending;
+
+        return provider.Invoke() switch
+        {
+            null => ValueTaskSourceStatus.Succeeded,
+            OperationCanceledException => ValueTaskSourceStatus.Canceled,
+            _ => ValueTaskSourceStatus.Faulted,
+        };
     }
 
     /// <inheritdoc cref="IValueTaskSource.OnCompleted"/>
@@ -245,15 +161,16 @@ public abstract partial class ManualResetCompletionSource
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetException(Exception e) => TrySetException(null, e);
+    public bool TrySetException(Exception e) => TrySetException(new DefaultOptions(), e);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
     /// <param name="e">The exception to be returned to the consumer.</param>
+    /// <param name="options">The completion options.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public abstract bool TrySetException(object? completionData, Exception e);
+    public abstract bool TrySetException<TOptions>(TOptions options, Exception e)
+        where TOptions : ICompletionOptions, allows ref struct;
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -267,16 +184,33 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
+    /// <param name="options">The completion options.</param>
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetCanceled(object? completionData, CancellationToken token)
-        => TrySetException(completionData, new OperationCanceledException(token));
+    public bool TrySetCanceled<TOptions>(TOptions options, CancellationToken token)
+        where TOptions : ICompletionOptions, allows ref struct
+        => TrySetException(options, new OperationCanceledException(token));
 
     /// <summary>
     /// Gets the status of this source.
     /// </summary>
-    public ManualResetCompletionSourceStatus Status => versionAndStatus.VolatileRead().Status;
+    public ManualResetCompletionSourceStatus Status
+    {
+        get
+        {
+            var stateCopy = Volatile.Read(in syncState) & ~VersionMask;
+
+            if (stateCopy is 0 or ActivatingState or (ActivatingState | CompletingState))
+                return ManualResetCompletionSourceStatus.WaitForActivation;
+
+            if ((stateCopy & ConsumedState) is not 0)
+                return ManualResetCompletionSourceStatus.Consumed;
+
+            return (stateCopy & CompletedState) is CompletedState
+                ? ManualResetCompletionSourceStatus.WaitForConsumption
+                : ManualResetCompletionSourceStatus.Activated;
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating that this source is in signaled (completed) state.
@@ -285,38 +219,25 @@ public abstract partial class ManualResetCompletionSource
     /// This property returns <see langword="true"/> if <see cref="Status"/> is <see cref="ManualResetCompletionSourceStatus.WaitForConsumption"/>
     /// or <see cref="ManualResetCompletionSourceStatus.Consumed"/>.
     /// </remarks>
-    public bool IsCompleted => versionAndStatus.VolatileRead().IsCompleted;
+    public bool IsCompleted => (Volatile.Read(in syncState) & CompletedState) is CompletedState;
 
-    private protected short? Activate(TimeSpan timeout, CancellationToken token)
+    private protected short Activate(TimeSpan timeout, CancellationToken token)
     {
         Timeout.Validate(timeout);
 
-        short? result;
-        lock (SyncRoot)
+        if (BeginActivation(out var version))
         {
-            switch (versionAndStatus.Status)
+            try
             {
-                case ManualResetCompletionSourceStatus.WaitForActivation:
-                    if (timeout == TimeSpan.Zero)
-                    {
-                        CompleteAsTimedOut();
-                    }
-                    else if (!state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token))
-                    {
-                        CompleteAsCanceled(token);
-                    }
-
-                    goto case ManualResetCompletionSourceStatus.WaitForConsumption;
-                case ManualResetCompletionSourceStatus.WaitForConsumption:
-                    result = versionAndStatus.Version;
-                    break;
-                default:
-                    result = null;
-                    break;
+                state.Initialize(version, cancellationCallback, timeout, token);
+            }
+            finally
+            {
+                EndActivation();
             }
         }
 
-        return result;
+        return version;
     }
 
     /// <summary>
@@ -337,34 +258,19 @@ public abstract partial class ManualResetCompletionSource
             this.state = state;
 
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? CaptureSchedulingContext()
+                ? ContinuationHelpers.CaptureSchedulingContext()
                 : null;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
                 : null;
-
-            static object? CaptureSchedulingContext()
-            {
-                object? schedulingContext = SynchronizationContext.Current;
-                if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
-                {
-                    schedulingContext = TaskScheduler.Current;
-                    if (ReferenceEquals(schedulingContext, TaskScheduler.Default))
-                        schedulingContext = null;
-                }
-
-                return schedulingContext;
-            }
         }
-
-        public bool IsValid => action is not null;
 
         public void InvokeOnCurrentContext(bool runAsynchronously)
         {
             if (schedulingContext is not null)
             {
-                Invoke();
+                action.InvokeInCurrentExecutionContext(state, schedulingContext);
             }
             else if (!runAsynchronously)
             {
@@ -386,7 +292,7 @@ public abstract partial class ManualResetCompletionSource
 
             if (schedulingContext is not null)
             {
-                InvokeOnSchedulingContext();
+                action.InvokeInExecutionContext(state, schedulingContext, context);
             }
             else
             {
@@ -412,147 +318,15 @@ public abstract partial class ManualResetCompletionSource
             }
         }
 
-        private void InvokeOnSchedulingContext()
-        {
-            if (context is { } ctx)
-            {
-                var currentContext = ExecutionContext.Capture();
-                ExecutionContext.Restore(ctx);
-
-                try
-                {
-                    Invoke();
-                }
-                finally
-                {
-                    if (currentContext is not null)
-                        ExecutionContext.Restore(currentContext);
-                }
-            }
-            else
-            {
-                Invoke();
-            }
-        }
-
-        private void Invoke()
-        {
-            Debug.Assert(schedulingContext is not null);
-
-            switch (schedulingContext)
-            {
-                case SynchronizationContext context:
-                    context.Post(action.Invoke, state);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-                default:
-                    Debug.Fail($"Unexpected scheduling context {schedulingContext}");
-                    break;
-            }
-        }
-
         void IThreadPoolWorkItem.Execute()
         {
             Debug.Assert(context is not null);
 
-            // ThreadPool restores original execution context automatically
+            // ThreadPool restores the original execution context automatically
             // See https://github.com/dotnet/runtime/blob/cb30e97f8397e5f87adee13f5b4ba914cc2c0064/src/libraries/System.Private.CoreLib/src/System/Threading/ThreadPoolWorkQueue.cs#L928
             ExecutionContext.Restore(context);
 
             action(state);
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private protected struct VersionAndStatus
-    {
-        private uint value;
-
-        public VersionAndStatus()
-            : this(InitialCompletionToken, ManualResetCompletionSourceStatus.WaitForActivation)
-        {
-        }
-
-        private VersionAndStatus(short version, ManualResetCompletionSourceStatus status)
-        {
-            Debug.Assert(Enum.GetUnderlyingType(typeof(ManualResetCompletionSourceStatus)) == typeof(short));
-
-            value = Combine(version, status);
-        }
-
-        public short Version => GetVersion(ref value);
-
-        public ManualResetCompletionSourceStatus Status
-        {
-            get => GetStatus(ref value);
-            set => GetStatus(ref this.value) = value;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public VersionAndStatus VolatileRead() => new() { value = Volatile.Read(ref value) };
-
-        public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
-
-        public bool CanBeCompleted(short? token)
-        {
-            var actualToken = Version;
-
-            return Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated
-                && token.GetValueOrDefault(actualToken) == actualToken;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Consume(short version)
-        {
-            // LOCK CMPXCHG (x86) or CASAL (ARM) provides full memory fence. This what we actually
-            // need because Consume method orders LOAD copy of the task result and OnConsumed that
-            // triggers Reset() and erasure of the task result in the right way
-            var actual = Interlocked.CompareExchange(ref value, Combine(version, ManualResetCompletionSourceStatus.Consumed), Combine(version, ManualResetCompletionSourceStatus.WaitForConsumption));
-
-            string errorMessage;
-            if (GetStatus(ref actual) is not ManualResetCompletionSourceStatus.WaitForConsumption)
-            {
-                errorMessage = ExceptionMessages.InvalidSourceState;
-            }
-            else if (GetVersion(ref actual) != version)
-            {
-                errorMessage = ExceptionMessages.InvalidSourceToken;
-            }
-            else
-            {
-                return;
-            }
-
-            throw new InvalidOperationException(errorMessage);
-        }
-
-        public short Reset()
-        {
-            var version = GetVersion(ref value);
-
-            // write atomically
-            value = Combine(++version, ManualResetCompletionSourceStatus.WaitForActivation);
-            return version;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref short GetVersion(ref uint value)
-            => ref Unsafe.As<uint, short>(ref value);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref ManualResetCompletionSourceStatus GetStatus(ref uint value)
-            => ref Unsafe.As<short, ManualResetCompletionSourceStatus>(ref Unsafe.Add(ref Unsafe.As<uint, short>(ref value), 1));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Combine(short version, ManualResetCompletionSourceStatus status)
-        {
-            Unsafe.SkipInit(out uint result);
-            GetVersion(ref result) = version;
-            GetStatus(ref result) = status;
-
-            return result;
         }
     }
 
@@ -562,36 +336,25 @@ public abstract partial class ManualResetCompletionSource
         private CancellationTokenRegistration tokenTracker;
         private CancellationTokenSource? timeoutSource;
 
-        internal bool Initialize(ref VersionAndStatus vs, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
+        internal void Initialize(short version, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
         {
             // box current token once and only if needed
             IBinaryInteger<short>? cachedVersion = null;
 
             if (token.CanBeCanceled)
             {
-                tokenTracker = token.UnsafeRegister(callback, cachedVersion = vs.Version);
+                tokenTracker = token.UnsafeRegister(callback, cachedVersion = version);
             }
 
-            // This method may cause deadlock if token becomes canceled within the lock.
-            // In this case, registration calls the callback synchronously.
-            // The callback tries to acquire the lock but stuck.
-            // To avoid that, change the status later and check the token after calling this method
-            vs.Status = ManualResetCompletionSourceStatus.Activated;
-
-            if (token.IsCancellationRequested)
-                return false;
-            
-            if (timeout > default(TimeSpan))
+            if (!token.IsCancellationRequested && timeout > TimeSpan.Zero)
             {
                 timeoutSource ??= new();
 
                 // TryReset() or Dispose() destroys active registration so it's not necessary
                 // to keep CancellationTokenRegistration to save memory
-                timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? vs.Version);
+                timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? version);
                 timeoutSource.CancelAfter(timeout);
             }
-
-            return true;
         }
 
         internal readonly bool IsTimeoutToken(CancellationToken token)

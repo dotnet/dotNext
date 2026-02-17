@@ -18,13 +18,13 @@ public sealed class RandomAccessCacheTests : Test
 
         for (long i = 0; i < 150; i++)
         {
-            using var handle = await cache.ChangeAsync(i);
+            await using var handle = await cache.ChangeAsync(i, TestToken);
             True(Unsafe.IsNullRef(in handle.ValueRefOrNullRef));
 
             handle.SetValue(i.ToString());
         }
 
-        Equal("0", await evictedItem.Task.WaitAsync(DefaultTimeout));
+        Equal("0", await evictedItem.Task.WaitAsync(TestToken));
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class RandomAccessCacheTests : Test
             }
             else
             {
-                using var writeSession = await cache.ChangeAsync(key);
+                await using var writeSession = await cache.ChangeAsync(key, TestToken);
                 if (writeSession.TryGetValue(out var value))
                 {
                     Equal(key.ToString(), value);
@@ -112,16 +112,16 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        await using (var session = await cache.ChangeAsync(10L))
+        await using (var session = await cache.ChangeAsync(10L, TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue("10");
         }
 
-        Null(await cache.TryRemoveAsync(11L));
+        Null(await cache.TryRemoveAsync(11L, TestToken));
         True(cache.Contains(10L));
 
-        using (var session = (await cache.TryRemoveAsync(10L)).Value)
+        using (var session = (await cache.TryRemoveAsync(10L, TestToken)).GetValueOrDefault())
         {
             Equal("10", session.Value);
         }
@@ -134,16 +134,16 @@ public sealed class RandomAccessCacheTests : Test
     {
         using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var writeSession = cache.Change(10L, DefaultTimeout))
+        using (var writeSession = cache.Change(10L, DefaultTimeout, TestToken))
         {
             False(writeSession.TryGetValue(out _));
             writeSession.SetValue("10");
         }
 
-        False(cache.TryRemove(11L, out _, DefaultTimeout));
+        False(cache.TryRemove(11L, out _, DefaultTimeout, TestToken));
         
         True(cache.Contains(10L));
-        True(cache.TryRemove(10L, out var session, DefaultTimeout));
+        True(cache.TryRemove(10L, out var session, DefaultTimeout, TestToken));
         False(cache.Contains(10L));
 
         using (session)
@@ -159,14 +159,14 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var session = await cache.ChangeAsync(10L))
+        using (var session = await cache.ChangeAsync(10L, TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue("10");
         }
 
-        False(await cache.InvalidateAsync(11L));
-        True(await cache.InvalidateAsync(10L));
+        False(await cache.InvalidateAsync(11L, TestToken));
+        True(await cache.InvalidateAsync(10L, TestToken));
     }
     
     [Fact]
@@ -174,14 +174,14 @@ public sealed class RandomAccessCacheTests : Test
     {
         using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var session = cache.Change(10L, DefaultTimeout))
+        using (var session = cache.Change(10L, DefaultTimeout, TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue("10");
         }
 
-        False(cache.Invalidate(11L, DefaultTimeout));
-        True(cache.Invalidate(10L, DefaultTimeout));
+        False(cache.Invalidate(11L, DefaultTimeout, TestToken));
+        True(cache.Invalidate(10L, DefaultTimeout, TestToken));
     }
 
     [Fact]
@@ -189,13 +189,11 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var session = await cache.ChangeAsync(10L))
-        {
-            False(session.TryGetValue(out _));
-            session.SetValue("10");
+        await using var session = await cache.ChangeAsync(10L, TestToken);
+        False(session.TryGetValue(out _));
+        session.SetValue("10");
 
-            Throws<InvalidOperationException>(() => session.SetValue("20"));
-        }
+        Throws<InvalidOperationException>(() => session.SetValue("20"));
     }
 
     [Fact]
@@ -204,10 +202,10 @@ public sealed class RandomAccessCacheTests : Test
         var cache = new RandomAccessCache<long, string>(18);
         await cache.DisposeAsync();
 
-        await ThrowsAsync<ObjectDisposedException>(cache.ChangeAsync(0L).AsTask);
-        await ThrowsAsync<ObjectDisposedException>(cache.TryRemoveAsync(0L).AsTask);
-        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync().AsTask);
-        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(10L).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.ChangeAsync(0L, TestToken).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.TryRemoveAsync(0L, TestToken).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(TestToken).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(10L, TestToken).AsTask);
     }
 
     [Fact]
@@ -230,13 +228,13 @@ public sealed class RandomAccessCacheTests : Test
 
         for (long i = 0; i < 20; i++)
         {
-            using var handle = await cache.ChangeAsync(i);
+            await using var handle = await cache.ChangeAsync(i, TestToken);
             False(handle.TryGetValue(out _));
 
             handle.SetValue(i.ToString());
         }
 
-        await cache.InvalidateAsync();
+        await cache.InvalidateAsync(TestToken);
     }
 
     [Fact]
@@ -244,7 +242,7 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var handle = await cache.ChangeAsync(42L))
+        await using (var handle = await cache.ChangeAsync(42L, TestToken))
         {
             handle.SetValue("42");
         }
@@ -253,7 +251,7 @@ public sealed class RandomAccessCacheTests : Test
 
         using (readSession)
         {
-            using (var handle = await cache.ReplaceAsync(42L))
+            await using (var handle = await cache.ReplaceAsync(42L, TestToken))
             {
                 False(handle.TryGetValue(out _));
                 handle.SetValue("43");
@@ -275,7 +273,7 @@ public sealed class RandomAccessCacheTests : Test
     {
         using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var handle = cache.Change(42L, DefaultTimeout))
+        using (var handle = cache.Change(42L, DefaultTimeout, TestToken))
         {
             handle.SetValue("42");
         }
@@ -284,7 +282,7 @@ public sealed class RandomAccessCacheTests : Test
 
         using (readSession)
         {
-            using (var handle = cache.Replace(42L, DefaultTimeout))
+            using (var handle = cache.Replace(42L, DefaultTimeout, TestToken))
             {
                 False(handle.TryGetValue(out _));
                 handle.SetValue("43");
@@ -306,12 +304,12 @@ public sealed class RandomAccessCacheTests : Test
     {
         using var cache = new RandomAccessCache<long, string>(15);
         
-        using (var handle = cache.Change(42L, DefaultTimeout))
+        using (var handle = cache.Change(42L, DefaultTimeout, TestToken))
         {
             handle.SetValue("42");
         }
         
-        using (var handle = cache.Change(43L, DefaultTimeout))
+        using (var handle = cache.Change(43L, DefaultTimeout, TestToken))
         {
             handle.SetValue("43");
         }
@@ -332,13 +330,13 @@ public sealed class RandomAccessCacheTests : Test
             Eviction = (_, v) => source.TrySetResult(v),
         };
         
-        await using (var session = await cache.ChangeAsync("101"))
+        await using (var session = await cache.ChangeAsync("101", TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue(101L); // 101 > 100, must be evicted immediately
         }
 
-        Equal(value, await source.Task.WaitAsync(DefaultTimeout));
+        Equal(value, await source.Task.WaitAsync(TestToken));
     }
 
     [Fact]
@@ -349,27 +347,27 @@ public sealed class RandomAccessCacheTests : Test
         {
             Eviction = (_, v) => True(channel.Writer.TryWrite(v)),
         };
-        
-        using (var session = await cache.ChangeAsync("60"))
+
+        await using (var session = await cache.ChangeAsync("60", TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue(60L);
         }
-        
-        using (var session = await cache.ChangeAsync("40"))
+
+        await using (var session = await cache.ChangeAsync("40", TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue(40L);
         }
-        
-        using (var session = await cache.ChangeAsync("100"))
+
+        await using (var session = await cache.ChangeAsync("100", TestToken))
         {
             False(session.TryGetValue(out _));
             session.SetValue(100L);
         }
 
-        var x = await channel.Reader.ReadAsync();
-        var y = await channel.Reader.ReadAsync();
+        var x = await channel.Reader.ReadAsync(TestToken);
+        var y = await channel.Reader.ReadAsync(TestToken);
         Equal(100L, x + y);
     }
 

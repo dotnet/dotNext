@@ -34,13 +34,13 @@ internal sealed class OutputMultiplexer<T>(
             FrameHeader header;
             for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
             {
-                StartOperation(Timeout); // resumed by heartbeat
+                var timeoutScope = TokenMultiplexer.Combine(Timeout, RootToken); // resumed by heartbeat
                 try
                 {
                     // read at least header
                     while (bufferedBytes < FrameHeader.Size)
                     {
-                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), timeoutScope.Token).ConfigureAwait(false);
                     }
 
                     header = FrameHeader.Parse(framingBuffer.Span);
@@ -48,20 +48,20 @@ internal sealed class OutputMultiplexer<T>(
                     // read the fragment
                     while (bufferedBytes < header.Length + FrameHeader.Size)
                     {
-                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), timeoutScope.Token).ConfigureAwait(false);
                     }
                 }
-                catch (OperationCanceledException e) when (IsOperationCanceled(e))
-                {
-                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
-                }
-                catch (OperationCanceledException e) when (IsOperationTimedOut(e))
+                catch (OperationCanceledException e) when (e.CausedByTimeout(timeoutScope))
                 {
                     throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
                 }
+                catch (OperationCanceledException e) when (e.CausedBy(timeoutScope, RootToken))
+                {
+                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
+                }
                 finally
                 {
-                    await ResetOperationTimeoutAsync().ConfigureAwait(false);
+                    await timeoutScope.DisposeAsync().ConfigureAwait(false);
                 }
 
                 await ReadFrameAsync(header).ConfigureAwait(false);

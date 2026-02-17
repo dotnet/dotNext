@@ -1,8 +1,3 @@
-using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 namespace DotNext.Collections.Generic;
 
 /// <summary>
@@ -11,21 +6,38 @@ namespace DotNext.Collections.Generic;
 public static partial class Enumerator
 {
     /// <summary>
-    /// Bypasses a specified number of elements in a sequence.
+    /// Extends <see cref="IEnumerator{T}"/> type.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
-    /// <param name="count">The number of elements to skip.</param>
-    /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-    public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
+    extension<T>(IEnumerator<T>)
+        where T : allows ref struct
     {
-        for (; count > 0; count--)
+        /// <summary>
+        /// Bypasses a specified number of elements in a sequence.
+        /// </summary>
+        /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
+        /// <param name="count">The number of elements to skip.</param>
+        /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+        public static bool operator << (IEnumerator<T> enumerator, int count)
         {
-            if (!enumerator.MoveNext())
-                return false;
+            for (; count > 0; count--)
+            {
+                if (!enumerator.MoveNext())
+                    return false;
+            }
+
+            return true;
         }
 
-        return true;
+        /// <summary>
+        /// Creates the classic enumerator.
+        /// </summary>
+        /// <param name="enumerator">The enumerator to convert.</param>
+        /// <typeparam name="TEnumerator">The type of the enumerator.</typeparam>
+        /// <returns>The classic enumerator.</returns>
+        public static IEnumerator<T> Create<TEnumerator>(in TEnumerator enumerator)
+            where TEnumerator : struct, IEnumerator<TEnumerator, T>
+            => TEnumerator.ToEnumerator(enumerator);
     }
 
     /// <summary>
@@ -37,7 +49,8 @@ public static partial class Enumerator
     /// <param name="count">The number of elements to skip.</param>
     /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
     public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
-        where TEnumerator : struct, IEnumerator<T>
+        where TEnumerator : struct, IEnumerator<T>, allows ref struct
+        where T : allows ref struct
     {
         for (; count > 0; count--)
         {
@@ -57,64 +70,46 @@ public static partial class Enumerator
     /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
     /// <returns>The enumerator which is limited by count.</returns>
     public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
+        where T : allows ref struct
         => new(enumerator, count, leaveOpen);
-
+    
     /// <summary>
-    /// Gets enumerator over all elements in the memory.
+    /// Extends <see cref="IAsyncEnumerator{T}"/> type.
     /// </summary>
-    /// <param name="memory">The memory block to be converted.</param>
-    /// <typeparam name="T">The type of elements in the memory.</typeparam>
-    /// <returns>The enumerator over all elements in the memory.</returns>
-    /// <seealso cref="MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
-    public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
+    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+    extension<T>(IAsyncEnumerator<T> e)
+        where T : allows ref struct
     {
-        return memory.IsEmpty
-            ? Enumerable.Empty<T>().GetEnumerator()
-            : MemoryMarshal.TryGetArray(memory, out var segment)
-            ? segment.GetEnumerator()
-            : ToEnumeratorSlow(memory);
+        /// <summary>
+        /// Bypasses a specified number of elements in a sequence.
+        /// </summary>
+        /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
+        /// <param name="count">The number of elements to skip.</param>
+        /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<bool> operator << (IAsyncEnumerator<T> enumerator, int count)
+            => enumerator.SkipAsync(count);
 
-        static IEnumerator<T> ToEnumeratorSlow(ReadOnlyMemory<T> memory)
+        private async ValueTask<bool> SkipAsync(int count)
         {
-            for (nint i = 0; i < memory.Length; i++)
-                yield return Unsafe.Add(ref MemoryMarshal.GetReference(memory.Span), i);
-        }
-    }
-
-    /// <summary>
-    /// Gets enumerator over all elements in the sequence.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the sequence.</typeparam>
-    /// <param name="sequence">A sequence of elements.</param>
-    /// <returns>The enumerator over all elements in the sequence.</returns>
-    public static IEnumerator<T> ToEnumerator<T>(in ReadOnlySequence<T> sequence)
-    {
-        return sequence.IsEmpty
-            ? Enumerable.Empty<T>().GetEnumerator()
-            : sequence.IsSingleSegment
-            ? ToEnumerator(sequence.First)
-            : ToEnumeratorSlow(sequence.GetEnumerator());
-
-        static IEnumerator<T> ToEnumeratorSlow(ReadOnlySequence<T>.Enumerator enumerator)
-        {
-            while (enumerator.MoveNext())
+            for (; count > 0; count--)
             {
-                var segment = enumerator.Current;
-
-                for (nint i = 0; i < segment.Length; i++)
-                    yield return Unsafe.Add(ref MemoryMarshal.GetReference(segment.Span), i);
+                if (!await e.MoveNextAsync().ConfigureAwait(false))
+                    return false;
             }
-        }
-    }
 
-    /// <summary>
-    /// Returns the asynchronous enumerator over the sequence of elements.
-    /// </summary>
-    /// <param name="enumerable">The collection of elements.</param>
-    /// <param name="token">The token that caller can use to cancel the enumeration.</param>
-    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
-    /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
-    public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
-        => new AsyncEnumerable.Enumerator<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates the async enumerator.
+        /// </summary>
+        /// <param name="enumerator">The enumerator to convert.</param>
+        /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <typeparam name="TEnumerator">The type of the enumerator.</typeparam>
+        /// <returns>The async enumerator.</returns>
+        public static IAsyncEnumerator<T> Create<TEnumerator>(in TEnumerator enumerator, CancellationToken token)
+            where TEnumerator : struct, IEnumerator<TEnumerator, T>
+            => TEnumerator.ToAsyncEnumerator(enumerator, token);
+    }
 }

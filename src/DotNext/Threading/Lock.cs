@@ -12,12 +12,14 @@ namespace DotNext.Threading;
 /// The lock acquisition may block the caller thread.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct Lock : IDisposable, IEquatable<Lock>
+[DebuggerDisplay($"LockType = {{{nameof(LockTypeName)}}}, IsOwner = {{{nameof(owner)}}}")]
+public partial struct Lock : IDisposable, IEquatable<Lock>
 {
-    internal enum Type : byte
+    private enum Type : byte
     {
         None = 0,
         Monitor,
+        ExclusiveLock,
         ReadLock,
         UpgradeableReadLock,
         WriteLock,
@@ -31,15 +33,15 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// The lock can be released by calling <see cref="Dispose()"/>.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public ref struct Holder
+    public ref struct Scope : IDisposable
     {
         private readonly object lockedObject;
         private readonly Type type;
 
-        internal Holder(object lockedObject, Type type)
+        internal Scope(scoped ref readonly Lock @lock)
         {
-            this.lockedObject = lockedObject;
-            this.type = type;
+            type = @lock.type;
+            lockedObject = @lock.lockedObject;
         }
 
         /// <summary>
@@ -59,6 +61,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
             {
                 case Type.Monitor:
                     System.Threading.Monitor.Exit(lockedObject);
+                    break;
+                case Type.ExclusiveLock:
+                    As<System.Threading.Lock>(lockedObject).Exit();
                     break;
                 case Type.ReadLock:
                     As<ReaderWriterLockSlim>(lockedObject).ExitReadLock();
@@ -80,9 +85,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
         /// <summary>
         /// Indicates that the object holds successfully acquired lock.
         /// </summary>
-        /// <param name="holder">The lock holder.</param>
+        /// <param name="scope">The lock holder.</param>
         /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
-        public static implicit operator bool(in Holder holder) => holder.lockedObject is not null;
+        public static implicit operator bool(in Scope scope) => scope.lockedObject is not null;
     }
 
     private readonly object lockedObject;
@@ -95,6 +100,10 @@ public struct Lock : IDisposable, IEquatable<Lock>
         this.type = type;
         this.owner = owner;
     }
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    private readonly string? LockTypeName => Enum.GetName(type);
 
     /// <summary>
     /// Wraps semaphore instance into the unified representation of the lock.
@@ -118,7 +127,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// Creates monitor-based lock control object but doesn't acquire the lock.
     /// </summary>
     /// <param name="obj">Monitor lock target.</param>
-    /// <returns>The lock representing monitor.</returns>
+    /// <returns>The lock representing the monitor.</returns>
     public static Lock Monitor(object obj) => new(obj ?? throw new ArgumentNullException(nameof(obj)), Type.Monitor, false);
 
     /// <summary>
@@ -129,6 +138,28 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// </remarks>
     /// <returns>The exclusive lock.</returns>
     public static Lock Monitor() => new(new object(), Type.Monitor, true);
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <param name="locker">The locker object.</param>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock(System.Threading.Lock locker)
+#pragma warning disable CS9216
+        => new(locker ?? throw new ArgumentNullException(nameof(locker)), Type.ExclusiveLock, false);
+#pragma warning restore CS9216
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <remarks>
+    /// Constructed lock owns the <see cref="System.Threading.Lock"/> instance.
+    /// </remarks>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock()
+#pragma warning disable CS9216
+        => new(new System.Threading.Lock(), Type.ExclusiveLock, true);
+#pragma warning restore CS9216
 
     /// <summary>
     /// Creates read lock but doesn't acquire it.
@@ -155,6 +186,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
             case Type.Monitor:
                 Debug.Assert(lockedObject is not null);
                 break;
+            case Type.ExclusiveLock:
+                Debug.Assert(lockedObject is System.Threading.Lock);
+                break;
             case Type.ReadLock or Type.WriteLock or Type.UpgradeableReadLock:
                 Debug.Assert(lockedObject is ReaderWriterLockSlim);
                 break;
@@ -171,7 +205,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// Acquires lock.
     /// </summary>
     /// <returns>The holder of the acquired lock.</returns>
-    public readonly Holder Acquire()
+    public readonly Scope Acquire()
     {
         AssertLockType();
 
@@ -179,6 +213,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
         {
             case Type.Monitor:
                 System.Threading.Monitor.Enter(lockedObject);
+                break;
+            case Type.ExclusiveLock:
+                As<System.Threading.Lock>(lockedObject).Enter();
                 break;
             case Type.ReadLock:
                 As<ReaderWriterLockSlim>(lockedObject).EnterReadLock();
@@ -194,7 +231,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
                 break;
         }
 
-        return new Holder(lockedObject, type);
+        return new Scope(in this);
     }
 
     private readonly bool TryAcquire()
@@ -204,6 +241,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
@@ -215,17 +253,17 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// <summary>
     /// Attempts to acquire lock.
     /// </summary>
-    /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
+    /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
-    public readonly bool TryAcquire(out Holder holder)
+    public readonly bool TryAcquire(out Scope scope)
     {
         if (TryAcquire())
         {
-            holder = new Holder(lockedObject, type);
+            scope = new Scope(in this);
             return true;
         }
 
-        holder = default;
+        scope = default;
         return false;
     }
 
@@ -236,6 +274,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(timeout),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
@@ -248,17 +287,17 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// Attempts to acquire lock.
     /// </summary>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
-    /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
+    /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
-    public readonly bool TryAcquire(TimeSpan timeout, out Holder holder)
+    public readonly bool TryAcquire(TimeSpan timeout, out Scope scope)
     {
         if (TryAcquire(timeout))
         {
-            holder = new Holder(lockedObject, type);
+            scope = new Scope(in this);
             return true;
         }
 
-        holder = default;
+        scope = default;
         return false;
     }
 
@@ -268,8 +307,8 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The holder of the acquired lock.</returns>
     /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
-    public readonly Holder Acquire(TimeSpan timeout)
-        => TryAcquire(timeout) ? new Holder(lockedObject, type) : throw new TimeoutException();
+    public readonly Scope Acquire(TimeSpan timeout)
+        => TryAcquire(timeout) ? new Scope(in this) : throw new TimeoutException();
 
     /// <summary>
     /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.
@@ -301,19 +340,19 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
+    public readonly override bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.
     /// </summary>
     /// <returns>The hash code of this lock.</returns>
-    public override readonly int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
+    public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
     /// <summary>
     /// Returns actual type of this lock in the form of the string.
     /// </summary>
     /// <returns>The actual type of this lock.</returns>
-    public override readonly string ToString() => type.ToString();
+    public readonly override string ToString() => type.ToString();
 
     /// <summary>
     /// Determines whether two locks are the same.
@@ -332,72 +371,4 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(in Lock first, in Lock second)
         => !first.Equals(in second);
-
-    /// <summary>
-    /// Tries to acquire an exclusive lock on the specified object with cancellation support.
-    /// </summary>
-    /// <param name="obj">The object on which to acquire the lock.</param>
-    /// <param name="timeout">Time to wait for the lock.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <param name="throwOnCancellation">
-    /// <see langword="true"/> to throw <see cref="OperationCanceledException"/> if <paramref name="token"/> is canceled during the lock acquisition;
-    /// <see langword="false"/> to return <see langword="false"/>.
-    /// </param>
-    /// <returns><see langword="true"/> if the monitor acquired successfully; <see langword="false"/> if timeout occurred or <paramref name="token"/> canceled.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is invalid.</exception>
-    /// <exception cref="OperationCanceledException"><paramref name="token"/> interrupts lock acquisition and <paramref name="throwOnCancellation"/> is <see langword="true"/>.</exception>
-    public static bool TryEnterMonitor(object obj, TimeSpan timeout, CancellationToken token, [ConstantExpected] bool throwOnCancellation = false)
-    {
-        ArgumentNullException.ThrowIfNull(obj);
-        Timeout.Validate(timeout);
-        
-        var result = false;
-        if (token.CanBeCanceled)
-        {
-            var registration = token.UnsafeRegister(Interrupt, Thread.CurrentThread);
-            try
-            {
-                result = System.Threading.Monitor.TryEnter(obj, timeout);
-            }
-            catch (ThreadInterruptedException e) when (token.IsCancellationRequested)
-            {
-                if (throwOnCancellation)
-                    throw new OperationCanceledException(e.Message, e, token);
-                
-                goto exit;
-            }
-            finally
-            {
-                registration.Dispose();
-            }
-
-            // make sure that the interruption was not called on this thread concurrently with registration.Dispose()
-            if (token.IsCancellationRequested)
-            {
-                try
-                {
-                    Thread.Sleep(0); // reset interrupted state
-                }
-                catch (ThreadInterruptedException)
-                {
-                    // suspend exception
-                }
-            }
-            
-            static void Interrupt(object? thread)
-            {
-                Debug.Assert(thread is Thread);
-            
-                As<Thread>(thread).Interrupt();
-            }
-        }
-        else
-        {
-            result = System.Threading.Monitor.TryEnter(obj, timeout);
-        }
-
-        exit:
-        return result;
-    }
 }

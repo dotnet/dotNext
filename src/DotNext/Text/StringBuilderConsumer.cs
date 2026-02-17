@@ -6,21 +6,15 @@ namespace DotNext.Text;
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<char>;
 
 /// <summary>
-/// Represents implementation of <see cref="IReadOnlySpanConsumer"/>
+/// Represents implementation of <see cref="IConsumer{T}"/>
 /// in the form of the writer to <see cref="StringBuilder"/>.
 /// </summary>
+/// <param name="builder">The builder.</param>
+/// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null"/>.</exception>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct StringBuilderConsumer : IReadOnlySpanConsumer, IEquatable<StringBuilderConsumer>
+public readonly record struct StringBuilderConsumer(StringBuilder builder) : IReadOnlySpanConsumer
 {
-    private readonly StringBuilder builder;
-
-    /// <summary>
-    /// Wraps the builder.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="builder"/> is <see langword="null"/>.</exception>
-    public StringBuilderConsumer(StringBuilder builder)
-        => this.builder = builder ?? throw new ArgumentNullException(nameof(builder));
+    private readonly StringBuilder builder = builder ?? throw new ArgumentNullException(nameof(builder));
 
     /// <summary>
     /// Gets a value indicating that the underlying builder is <see langword="null"/>.
@@ -28,7 +22,7 @@ public readonly record struct StringBuilderConsumer : IReadOnlySpanConsumer, IEq
     public bool IsEmpty => builder is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<char> chars)
+    void IConsumer<ReadOnlySpan<char>>.Invoke(ReadOnlySpan<char> chars)
         => builder.Append(chars);
 
     /// <inheritdoc />

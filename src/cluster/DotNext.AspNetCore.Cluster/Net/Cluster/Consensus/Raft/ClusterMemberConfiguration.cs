@@ -7,7 +7,6 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
 {
     private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
     private TimeSpan? rpcTimeout;
-    private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
     private int warmupRounds = 10;
 
     /// <summary>
@@ -42,9 +41,9 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     /// </summary>
     public double HeartbeatThreshold
     {
-        get => heartbeatThreshold;
-        set => heartbeatThreshold = double.IsFinite(value) && value > 0D ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = double.IsFinite(value) && value > 0D ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 0.5D;
 
     /// <summary>
     /// A bound on clock drift across servers.
@@ -54,9 +53,9 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     /// </remarks>
     public double ClockDriftBound
     {
-        get => clockDriftBound;
-        set => clockDriftBound = double.IsFinite(value) && value >= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = double.IsFinite(value) && value >= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 1D;
 
     /// <summary>
     /// Gets or sets a value indicating that the initial node in the cluster is starting.

@@ -3,7 +3,6 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
-using Buffers;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
 /// <summary>
@@ -12,9 +11,6 @@ using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
 {
     private const string DefaultClientHandlerName = "HyParViewClient";
-
-    private string? handlerName;
-    private Uri? contactNode, localNode;
 
     /// <summary>
     /// Gets or sets HTTP version supported by HyParView implementation.
@@ -36,27 +32,22 @@ public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
     /// </summary>
     public string ClientHandlerName
     {
-        get => handlerName is { Length: > 0 } ? handlerName : DefaultClientHandlerName;
-        set => handlerName = value;
+        get => field is { Length: > 0 } ? field : DefaultClientHandlerName;
+        set;
     }
-
-    /// <summary>
-    /// Gets or sets allocator for the internal buffer.
-    /// </summary>
-    public MemoryAllocator<byte>? Allocator { get; set; }
 
     /// <summary>
     /// Gets or sets the address of the contact node.
     /// </summary>
     public Uri? ContactNode
     {
-        get => contactNode;
+        get;
         set
         {
             if (value is { IsAbsoluteUri: false })
                 throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
 
-            contactNode = value;
+            field = value;
         }
     }
 
@@ -66,13 +57,13 @@ public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
     [DisallowNull]
     public Uri? LocalNode
     {
-        get => localNode;
+        get;
         set
         {
             if (value is { IsAbsoluteUri: false })
                 throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
 
-            localNode = value;
+            field = value;
         }
     }
 

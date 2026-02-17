@@ -1,5 +1,9 @@
-﻿namespace DotNext;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
+namespace DotNext;
+
+using Runtime;
 using Runtime.CompilerServices;
 
 public sealed class OptionalTest : Test
@@ -81,11 +85,11 @@ public sealed class OptionalTest : Test
     {
         True(new Optional<Optional<string>>("").HasValue);
         False(new Optional<Optional<string>>(null).HasValue);
-        False(new Optional<string>(default).HasValue);
-        True(new Optional<string>(default).IsNull);
+        False(new Optional<string>(null).HasValue);
+        True(new Optional<string>(null).IsNull);
         True(new Optional<string>("").HasValue);
-        False(new Optional<Delegate>(default).HasValue);
-        True(new Optional<EventHandler>((sender, args) => { }).HasValue);
+        False(new Optional<Delegate>(null).HasValue);
+        True(new Optional<EventHandler>((_, _) => { }).HasValue);
     }
 
     [Fact]
@@ -122,7 +126,7 @@ public sealed class OptionalTest : Test
         var opt = new Optional<int>(10);
         Equal(10, opt.ValueOrDefault);
         True(opt.Equals(10));
-        True(opt.Equals((object)10));
+        Equal(opt.Equals((object)10));
         True(opt.Equals(10, EqualityComparer<int>.Default));
         opt = default;
         Equal(0, opt.ValueOrDefault);
@@ -152,14 +156,14 @@ public sealed class OptionalTest : Test
         Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
         Equal(20, await Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
         Equal(20D, await Task.FromResult(opt).Convert(double.CreateChecked));
-        Equal(20D, await Task.FromResult(opt).Convert(FromInt));
-        Equal(20, await Task.FromResult(opt).Or(42));
+        Equal(20D, await Task.FromResult(opt).Convert(FromInt, TestToken));
+        Equal(20, await (Task.FromResult(opt) | 42));
         Equal(20, await Task.FromResult(opt).If(int.IsEvenInteger));
         
         opt = default;
-        Equal(42, await Task.FromResult(opt).Or(42));
+        Equal(42, await (Task.FromResult(opt) | 42));
         Equal(Optional<int>.None, await Task.FromResult(opt).If(int.IsEvenInteger));
-        Equal(Optional<double>.None, await Task.FromResult(opt).Convert(FromInt));
+        Equal(Optional<double>.None, await Task.FromResult(opt).Convert(FromInt, TestToken));
         await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
         await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(static () => new ArithmeticException()));
 
@@ -225,7 +229,7 @@ public sealed class OptionalTest : Test
     public static void NoneSomeNull()
     {
         Equal(Optional<int>.None, Optional.None<int>());
-        Equal(new Optional<int>(20), Optional.Some<int>(20));
+        Equal(new Optional<int>(20), Optional.Some(20));
         Equal(new Optional<string>(null), Optional.Null<string>());
     }
 
@@ -256,7 +260,7 @@ public sealed class OptionalTest : Test
         True(Optional<string>.IsValueDefined("Hello, world"));
         False(Optional<string>.IsValueDefined(null));
 
-        True(Optional<int>.IsValueDefined(default));
+        True(Optional<int>.IsValueDefined(0));
 
         True(Optional<int?>.IsValueDefined(42));
         False(Optional<int?>.IsValueDefined(null));
@@ -272,7 +276,7 @@ public sealed class OptionalTest : Test
         Optional<string> output = input.Flatten();
         True(output.IsUndefined);
 
-        input = new(default(string));
+        input = new(null);
         output = input.Flatten();
         True(output.IsNull);
 
@@ -308,7 +312,7 @@ public sealed class OptionalTest : Test
     [Fact]
     public static void ConvertNullToRefType()
     {
-        var value = new Optional<string>(null).Convert(Converter.Identity<string, string>());
+        var value = new Optional<string>(null).Convert(Func<string, string>.Identity);
         False(value.HasValue);
         True(value.IsNull);
     }
@@ -316,7 +320,7 @@ public sealed class OptionalTest : Test
     [Fact]
     public static void ConvertNoneToRefType()
     {
-        var value = Optional<string>.None.Convert(Converter.Identity<string, string>());
+        var value = Optional<string>.None.Convert(Func<string, string>.Identity);
         False(value.HasValue);
         False(value.IsNull);
     }
@@ -333,16 +337,21 @@ public sealed class OptionalTest : Test
     }
 
     [Fact]
-    public static void OptionalToDelegate()
+    public static void DynamicInvokeOptional()
     {
-        IFunctional<Func<object>> functional = Optional.None<object>();
-        Null(functional.ToDelegate().Invoke());
+        IFunctional functional = Optional.Null<object>();
+        object result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Null(result);
 
         functional = new Optional<int>(42);
-        Equal(42, functional.ToDelegate().Invoke());
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Equal(42, result);
 
         functional = Optional.None<int>();
-        Null(functional.ToDelegate().Invoke());
+        result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
     }
 
     [Fact]

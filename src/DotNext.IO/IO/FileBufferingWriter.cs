@@ -21,7 +21,7 @@ using Buffers;
 /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
 /// it references memory-mapped file.
 /// </remarks>
-public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<byte>, IGrowableBuffer<byte>
+public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<byte>
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct ReadSession : IDisposable
@@ -32,10 +32,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
             => refHolder = obj;
 
         public void Dispose()
-        {
-            if (refHolder is not null)
-                refHolder.Target = null;
-        }
+            => refHolder?.Target = null;
     }
 
     private sealed unsafe class NativeMemoryManager : MemoryManager<byte>
@@ -153,7 +150,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     private readonly TagList measurementTags;
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
     private int position;
     private string? fileName;
@@ -268,7 +265,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     }
 
     /// <inheritdoc/>
-    void IGrowableBuffer<byte>.Clear() => Clear(reuseBuffer: false);
+    void IResettable.Reset() => Clear(reuseBuffer: false);
 
     private void ClearCore(bool reuseBuffer)
     {
@@ -295,7 +292,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
             case < 0:
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
             case 0:
-                sizeHint = Math.Max(1, buffer.Length - position);
+                sizeHint = int.Max(1, int.Min(buffer.Length - position, memoryThreshold));
                 break;
         }
 
@@ -454,7 +451,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
-                input.CopyTo(this.buffer.Span);
+                input.CopyTo(buffer.Span);
                 position = input.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
@@ -586,7 +583,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
-        where TConsumer : IReadOnlySpanConsumer<byte>
+        where TConsumer : IConsumer<ReadOnlySpan<byte>>, allows ref struct
     {
         if (fileBackend is not null)
         {
@@ -631,7 +628,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyToAsync(new BufferConsumer<byte>(destination), bufferSize, token);
+        => CopyToAsync(new BufferWriterReference<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content to the buffer synchronously.
@@ -641,7 +638,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyTo(new BufferConsumer<byte>(destination), bufferSize, token);
+        => CopyTo(new BufferWriterReference<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content synchronously.
@@ -653,7 +650,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        => CopyTo(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
+        => CopyTo(new ReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content asynchronously.
@@ -666,7 +663,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <returns>The task representing asynchronous execution of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
+        => CopyToAsync(new ReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content to the memory block synchronously.
@@ -688,8 +685,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
 
         if (HasBufferedData)
         {
-            WrittenSpan.CopyTo(output, out var subCount);
-            totalBytes += subCount;
+            totalBytes += WrittenSpan >> output;
         }
 
     exit:
@@ -717,8 +713,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
 
         if (HasBufferedData)
         {
-            WrittenSpan.CopyTo(output.Span, out var subCount);
-            totalBytes += subCount;
+            totalBytes += WrittenSpan >> output.Span;
         }
 
     exit:

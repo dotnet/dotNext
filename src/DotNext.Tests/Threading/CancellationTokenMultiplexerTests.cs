@@ -28,13 +28,14 @@ public class CancellationTokenMultiplexerTests : Test
         using var cts = new CancellationTokenSource();
         CancellationToken token;
         var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = int.MaxValue };
-        using (var scope = multiplexer.Combine([cts.Token, cts.Token, cts.Token]))
+        Equal(int.MaxValue, multiplexer.MaximumRetained);
+        using (var scope = multiplexer.Combine(cts.Token, cts.Token, cts.Token))
         {
             token = scope.Token;
         }
         
         // rent again
-        using (var scope = multiplexer.Combine([cts.Token, cts.Token, cts.Token]))
+        using (var scope = multiplexer.Combine(cts.Token, cts.Token, cts.Token))
         {
             Equal(token, scope.Token);
         }
@@ -47,12 +48,12 @@ public class CancellationTokenMultiplexerTests : Test
 
         using var cts = new CancellationTokenSource();
 
-        await multiplexer.Combine([cts.Token, cts.Token, cts.Token]).DisposeAsync();
+        await multiplexer.Combine(cts.Token, cts.Token, cts.Token).DisposeAsync();
 
         // same source is reused from pool, but should now not be associated with cts.
-        await using var combined = multiplexer.Combine([new(), new(), new()]);
+        await using var combined = multiplexer.Combine(CancellationToken.None, CancellationToken.None, CancellationToken.None);
 
-        cts.Cancel();
+        await cts.CancelAsync();
 
         False(combined.Token.IsCancellationRequested);
     }
@@ -80,7 +81,7 @@ public class CancellationTokenMultiplexerTests : Test
         using var cts = new CancellationTokenSource();
         var multiplexer = new CancellationTokenMultiplexer();
 
-        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(timeout), [cts.Token]);
+        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(timeout), cts.Token);
         await scope.Token.WaitAsync();
 
         Equal(scope.Token, scope.CancellationOrigin);
@@ -93,7 +94,7 @@ public class CancellationTokenMultiplexerTests : Test
     {
         var multiplexer = new CancellationTokenMultiplexer();
 
-        await using var scope = multiplexer.CombineAndSetTimeoutLater([]);
+        await using var scope = multiplexer.CombineAndSetTimeoutLater();
         False(scope.Token.IsCancellationRequested);
 
         scope.Timeout = TimeSpan.FromMilliseconds(0);
@@ -143,7 +144,7 @@ public class CancellationTokenMultiplexerTests : Test
     {
         var multiplexer = new CancellationTokenMultiplexer();
 
-        var scope = multiplexer.CombineAndSetTimeoutLater([]);
+        var scope = multiplexer.CombineAndSetTimeoutLater();
         var source = new TaskCompletionSource<bool>();
         await using var registration = scope.Token.Register(() =>
         {
@@ -154,5 +155,61 @@ public class CancellationTokenMultiplexerTests : Test
         True(await source.Task);
 
         await scope.DisposeAsync();
+    }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    public static void BoundedPool(int maximumRetained)
+    {
+        var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = maximumRetained };
+        Equal(maximumRetained, multiplexer.MaximumRetained);
+        for (var i = 0; i < maximumRetained << 1; i++)
+        {
+            var scope = multiplexer.Combine(CancellationToken.None, CancellationToken.None, CancellationToken.None);
+            scope.Dispose();
+        }
+    }
+    
+    [Fact]
+    public static async Task WaitForCancellationSingleToken()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        var cts = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+        
+        await cts.CancelAsync();
+        Equal(cts.Token, await task);
+    }
+    
+    [Fact]
+    public static async Task WaitForCancellationTwoTokens()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts1.Token, cts2.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+        
+        await cts2.CancelAsync();
+        await cts1.CancelAsync();
+        Equal(cts2.Token, await task);
+    }
+
+    [Fact]
+    public static async Task WaitForCancellationMultipleTokens()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        using var cts3 = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts1.Token, cts2.Token, cts3.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+
+        await cts3.CancelAsync();
+        await cts2.CancelAsync();
+        await cts1.CancelAsync();
+        Equal(cts3.Token, await task);
     }
 }

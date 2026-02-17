@@ -52,23 +52,23 @@ public sealed class HttpPeerControllerTests : Test
 
         var listener1 = new MembershipChangeEventListener();
         using var peer1 = CreateHost<Startup>(3362, config1, listener1);
-        await peer1.StartAsync();
+        await peer1.StartAsync(TestToken);
 
         var listener2 = new MembershipChangeEventListener();
         using var peer2 = CreateHost<Startup>(3363, config2, listener2);
-        await peer2.StartAsync();
+        await peer2.StartAsync(TestToken);
 
-        await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(DefaultTimeout);
+        await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(TestToken);
 
         Equal(new UriEndPoint(new("http://localhost:3362/", UriKind.Absolute)), await listener2.DiscoveryTask, EndPointFormatter.UriEndPointComparer);
         Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), await listener1.DiscoveryTask, EndPointFormatter.UriEndPointComparer);
 
         // shutdown peer gracefully
-        await peer2.StopAsync();
+        await peer2.StopAsync(TestToken);
 
-        Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout), EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), await listener1.DisconnectionTask.WaitAsync(TestToken), EndPointFormatter.UriEndPointComparer);
 
-        await peer1.StopAsync();
+        await peer1.StopAsync(TestToken);
     }
 
     [Fact]
@@ -83,11 +83,11 @@ public sealed class HttpPeerControllerTests : Test
             };
 
         using var peer1 = CreateHost<Startup>(3362, config1);
-        await peer1.StartAsync();
+        await peer1.StartAsync(TestToken);
 
         NotNull(peer1.Services.GetService<PeerController>());
         NotNull(peer1.Services.GetService<IPeerMesh<HttpPeerClient>>());
 
-        await peer1.StopAsync();
+        await peer1.StopAsync(TestToken);
     }
 }

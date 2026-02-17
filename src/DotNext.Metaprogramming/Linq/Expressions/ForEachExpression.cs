@@ -5,9 +5,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using static Reflection.CollectionType;
-using static Reflection.DisposableType;
-using List = Collections.Generic.List;
+using Collections.Generic;
+using Reflection;
 
 /// <summary>
 /// Represents iteration over collection elements as expression.
@@ -32,8 +31,6 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
     private readonly BinaryExpression enumeratorAssignment;
     private readonly MethodCallExpression moveNextCall;
     private readonly bool? configureAwait;  // null for synchronous expression
-
-    private Expression? body;
 
     // for synchronous collection
     internal ForEachExpression(Expression collection, LabelTarget? continueLabel, LabelTarget? breakLabel)
@@ -76,15 +73,15 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
         this.configureAwait = configureAwait;
 
         // enumerator = enumerable.GetAsyncEnumerator(token);
-        const string GetAsyncEnumeratorMethod = nameof(IAsyncEnumerable<Missing>.GetAsyncEnumerator);
+        const string GetAsyncEnumeratorMethod = nameof(IAsyncEnumerable<>.GetAsyncEnumerator);
         MethodCallExpression getEnumerator = collection.Call(GetAsyncEnumeratorMethod, cancellationToken);
         enumeratorVar = Variable(getEnumerator.Type, EnumeratorVarName);
         enumeratorAssignment = Assign(enumeratorVar, getEnumerator);
 
         // discover async MoveNext
-        moveNextCall = enumeratorVar.Call(nameof(IAsyncEnumerator<Missing>.MoveNextAsync));
+        moveNextCall = enumeratorVar.Call(nameof(IAsyncEnumerator<>.MoveNextAsync));
 
-        Element = Property(enumeratorVar, nameof(IAsyncEnumerator<Missing>.Current));
+        Element = Property(enumeratorVar, nameof(IAsyncEnumerator<>.Current));
         BreakLabel = breakLabel ?? Label(typeof(void), BreakLabelName);
         ContinueLabel = continueLabel ?? Label(typeof(void), ContinueLabelName);
     }
@@ -171,8 +168,8 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>
@@ -193,7 +190,7 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
                 Assign(enumeratorVar, Default(enumeratorVar.Type)) :
                 Block(disposeCall, Assign(enumeratorVar, Default(enumeratorVar.Type)));
         loopBody = TryFinally(loopBody, @finally);
-        return Block(Type, List.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
+        return Block(Type, IReadOnlyList<ParameterExpression>.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
     }
 
     /// <summary>
@@ -210,13 +207,13 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
         if (this.configureAwait is { } configureAwait)
         {
             moveNextCall = moveNextCall.Await(configureAwait);
-            disposeMethod = enumeratorVar.Type.GetDisposeAsyncMethod();
+            disposeMethod = enumeratorVar.Type.DisposeAsyncMethod;
             Debug.Assert(disposeMethod is not null);
             disposeCall = Call(enumeratorVar, disposeMethod).Await(configureAwait);
         }
         else
         {
-            disposeMethod = enumeratorVar.Type.GetDisposeMethod();
+            disposeMethod = enumeratorVar.Type.DisposeMethod;
             disposeCall = disposeMethod is null ? null : Call(enumeratorVar, disposeMethod);
         }
 

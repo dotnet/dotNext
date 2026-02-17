@@ -13,8 +13,8 @@ public sealed class AsyncTriggerTests : Test
         False(trigger.Signal(true));
         False(trigger.Signal(false));
 
-        var task1 = trigger.WaitAsync();
-        var task2 = trigger.WaitAsync();
+        var task1 = trigger.WaitAsync(TestToken);
+        var task2 = trigger.WaitAsync(TestToken);
         False(task1.IsCompleted);
         False(task2.IsCompleted);
 
@@ -31,8 +31,8 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
 
-        var task1 = trigger.WaitAsync();
-        var task2 = trigger.WaitAsync();
+        var task1 = trigger.WaitAsync(TestToken);
+        var task2 = trigger.WaitAsync(TestToken);
         False(task1.IsCompleted);
         False(task2.IsCompleted);
 
@@ -47,8 +47,8 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
 
-        var task1 = trigger.WaitAsync();
-        var task2 = trigger.SignalAndWaitAsync(false, true);
+        var task1 = trigger.WaitAsync(TestToken);
+        var task2 = trigger.SignalAndWaitAsync(false, true, TestToken);
 
         await task1;
         False(task2.IsCompleted);
@@ -63,8 +63,8 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
 
-        var task1 = trigger.WaitAsync();
-        var task2 = trigger.SignalAndWaitAsync(false, true, DefaultTimeout);
+        var task1 = trigger.WaitAsync(TestToken);
+        var task2 = trigger.SignalAndWaitAsync(false, true, InfiniteTimeSpan, TestToken);
 
         await task1;
         False(task2.IsCompleted);
@@ -79,7 +79,7 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
 
-        await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true).AsTask);
+        await ThrowsAnyAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true, TestToken).AsTask);
     }
 
     private sealed class Condition : StrongBox<bool>, ISupplier<bool>
@@ -92,14 +92,14 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
         var cond = new Condition();
-        var task = trigger.SpinWaitAsync(cond).AsTask();
+        var task = trigger.SpinWaitAsync(cond, TestToken).AsTask();
         False(task.IsCompleted);
 
         trigger.Signal();
         False(task.IsCompleted);
 
         cond.Value = true;
-        Thread.MemoryBarrier();
+        Volatile.WriteBarrier();
         trigger.Signal();
         await task;
     }
@@ -109,14 +109,14 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
         var cond = new Condition();
-        var task = trigger.SpinWaitAsync(cond, InfiniteTimeSpan).AsTask();
+        var task = trigger.SpinWaitAsync(cond, InfiniteTimeSpan, TestToken).AsTask();
         False(task.IsCompleted);
 
         trigger.Signal();
         False(task.IsCompleted);
 
         cond.Value = true;
-        Thread.MemoryBarrier();
+        Volatile.WriteBarrier();
         trigger.Signal();
         True(await task);
     }

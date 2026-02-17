@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Runtime.InteropServices;
 
 /// <summary>
@@ -13,4 +16,8 @@ public sealed class NullPointerException(string message) : NullReferenceExceptio
         : this(ExceptionMessages.NullPtr)
     {
     }
+    
+    [DoesNotReturn]
+    [StackTraceHidden]
+    internal static void Throw() => throw new NullPointerException();
 }

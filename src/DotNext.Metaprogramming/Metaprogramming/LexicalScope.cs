@@ -89,6 +89,7 @@ internal class LexicalScope : ILexicalScope, IDisposable, IEnumerable<Expression
     {
         if (isStatement && current is null)
             throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+        
         Parent = current;
         current = this;
     }

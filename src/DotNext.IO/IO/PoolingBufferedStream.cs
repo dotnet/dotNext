@@ -14,7 +14,7 @@ using Buffers;
 /// </remarks>
 /// <param name="stream">The underlying stream to be buffered.</param>
 /// <param name="leaveOpen"><see langword="true"/> to leave <paramref name="stream"/> open after the object is disposed; otherwise, <see langword="false"/>.</param>
-public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false) : ModernStream, IBufferedWriter, IBufferedReader
+public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen = false) : ModernStream
 {
     private const int MinBufferSize = 16;
     private const int DefaultBufferSize = 4096;
@@ -27,9 +27,10 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <summary>
     /// Gets or sets buffer allocator.
     /// </summary>
-    public MemoryAllocator<byte>? Allocator
+    [AllowNull]
+    public MemoryAllocator<byte> Allocator
     {
-        get;
+        get => field ??= MemoryAllocator<byte>.Default;
         init;
     }
 
@@ -151,36 +152,8 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
     private void EnsureReadBufferIsEmpty()
     {
-        if (readPosition != readLength)
+        if (HasBufferedDataToRead)
             throw new InvalidOperationException(ExceptionMessages.ReadBufferNotEmpty);
-    }
-
-    /// <inheritdoc/>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    Memory<byte> IBufferedWriter.Buffer
-    {
-        get
-        {
-            ThrowIfDisposed();
-            EnsureReadBufferIsEmpty();
-
-            return EnsureBufferAllocated().Memory.Slice(writePosition);
-        }
-    }
-
-    /// <inheritdoc/>
-    void IBufferedWriter.Produce(int count)
-    {
-        ThrowIfDisposed();
-        EnsureReadBufferIsEmpty();
-
-        var freeCapacity = maxBufferSize - writePosition;
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)freeCapacity, nameof(count));
-
-        if (count > 0 && buffer.IsEmpty)
-            buffer = Allocator.AllocateExactly(maxBufferSize);
-
-        writePosition += count;
     }
 
     /// <summary>
@@ -230,7 +203,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         var writeBuf = WrittenMemory.Span;
         bool result;
-        if (result = !writeBuf.IsEmpty)
+        if (result = writeBuf.Length > 0)
         {
             stream.Write(writeBuf);
             writePosition = 0;
@@ -242,7 +215,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     private ValueTask WriteCoreAsync(out bool isWritten, CancellationToken token)
     {
         var writeBuf = WrittenMemory;
-        return (isWritten = !writeBuf.IsEmpty)
+        return (isWritten = writeBuf.Length > 0)
             ? WriteAndResetAsync(writeBuf, token)
             : ValueTask.CompletedTask;
     }
@@ -306,7 +279,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
         else if (data.Length < maxBufferSize)
         {
-            data.CopyTo(freeBuf, out var bytesWritten);
+            var bytesWritten = data >> freeBuf;
             stream.Write(freeBuf = buffer.Span);
             data = data.Slice(bytesWritten);
             data.CopyTo(freeBuf);
@@ -386,7 +359,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         Debug.Assert(data.Length < maxBufferSize);
 
         var writeBuffer = buffer.Memory;
-        data.Span.CopyTo(writeBuffer.Span.Slice(writePosition), out var bytesWritten);
+        var bytesWritten = data.Span >> writeBuffer.Span.Slice(writePosition);
         await stream.WriteAsync(writeBuffer, token).ConfigureAwait(false);
         data = data.Slice(bytesWritten);
         data.CopyTo(writeBuffer);
@@ -413,7 +386,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         int count;
         if (MemoryToRead.Span is { IsEmpty: false } readBuf)
         {
-            readBuf.CopyTo(destination, out count);
+            count = readBuf >> destination;
             readPosition += count;
         }
         else
@@ -563,7 +536,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             throw new NotSupportedException();
 
         await WriteCoreAsync(out _, token).ConfigureAwait(false);
+        return await ReadCoreAsync(token).ConfigureAwait(false);
+    }
 
+    private async ValueTask<bool> ReadCoreAsync(CancellationToken token)
+    {
+        Debug.Assert(stream is not null);
+        
         var count = PrepareReadBuffer(out var readBuf)
             ? await stream.ReadAsync(readBuf, token).ConfigureAwait(false)
             : throw new InternalBufferOverflowException();
@@ -691,6 +670,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         AssertState();
         ThrowIfDisposed();
 
+        return SeekCore(offset, origin);
+    }
+
+    private long SeekCore(long offset, SeekOrigin origin)
+    {
+        Debug.Assert(stream is not null);
+        
         if (WriteCore())
         {
             Reset();
@@ -727,42 +713,8 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
     private void EnsureWriteBufferIsEmpty()
     {
-        if (writePosition is not 0)
+        if (HasBufferedDataToWrite)
             throw new InvalidOperationException(ExceptionMessages.WriteBufferNotEmpty);
-    }
-
-    /// <inheritdoc/>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    ReadOnlyMemory<byte> IBufferedReader.Buffer
-    {
-        get
-        {
-            AssertState();
-            ThrowIfDisposed();
-            EnsureWriteBufferIsEmpty();
-
-            return buffer.Memory[readPosition..readLength];
-        }
-    }
-
-    /// <inheritdoc/>
-    void IBufferedReader.Consume(int count)
-    {
-        AssertState();
-        ThrowIfDisposed();
-        EnsureWriteBufferIsEmpty();
-        
-        var newPosition = count + readPosition;
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newPosition, (uint)readLength, nameof(count));
-        
-        if (newPosition == readLength)
-        {
-            Reset();
-        }
-        else
-        {
-            readPosition = newPosition;
-        }
     }
 
     [Conditional("DEBUG")]

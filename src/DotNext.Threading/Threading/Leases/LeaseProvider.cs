@@ -58,7 +58,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         where TCondition : ITransitionCondition
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = cancellationTokens.Combine([token, LifetimeToken]);
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
@@ -123,7 +123,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<AcquisitionResult> AcquireAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = cancellationTokens.Combine([token, LifetimeToken]);
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
             while (true)
@@ -226,7 +226,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         if (identity.Version is LeaseIdentity.InitialVersion)
             return null;
 
-        var cts = cancellationTokens.Combine([token, LifetimeToken]);
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
@@ -286,7 +286,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<LeaseIdentity?> UnsafeTryReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = cancellationTokens.Combine([token, LifetimeToken]);
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
@@ -349,7 +349,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<LeaseIdentity> UnsafeReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = cancellationTokens.Combine([token, LifetimeToken]);
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
             State state;

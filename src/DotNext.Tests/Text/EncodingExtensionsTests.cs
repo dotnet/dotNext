@@ -7,7 +7,7 @@ public sealed class EncodingExtensionsTests : Test
     [Fact]
     public static void ByteOrderMark()
     {
-        var withoutPreamble = Encoding.UTF8.WithoutPreamble();
+        var withoutPreamble = Encoding.UTF8.WithoutPreamble;
         Empty(withoutPreamble.GetPreamble());
         Equal(Encoding.UTF8.BodyName, withoutPreamble.BodyName);
         Equal(Encoding.UTF8.IsAlwaysNormalized(), withoutPreamble.IsAlwaysNormalized());

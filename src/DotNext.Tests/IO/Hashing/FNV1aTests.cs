@@ -1,9 +1,9 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Hashing;
 
-using System.Runtime.InteropServices;
-using Collections.Generic;
+using Reflection;
 
 public sealed class FNV1aTests : Test
 {
@@ -43,9 +43,9 @@ public sealed class FNV1aTests : Test
     public static void HashList()
     {
         List<int> list = [1, 2, 3, 4];
-        var hash1 = FNV1a32.Hash<List<int>, int>(List.Indexer<int>.Getter, list.Count, list);
-        var hash2 = FNV1a32.Hash<int>(CollectionsMarshal.AsSpan(list));
-        var hash3 = FNV1a32.Hash<uint>(MemoryMarshal.Cast<int, uint>(CollectionsMarshal.AsSpan(list)));
+        var hash1 = FNV1a32.Hash<List<int>, int>(IList<int>.IndexerGetter, list.Count, list);
+        var hash2 = FNV1a32.Hash(CollectionsMarshal.AsSpan(list));
+        var hash3 = FNV1a32.Hash(MemoryMarshal.Cast<int, uint>(CollectionsMarshal.AsSpan(list)));
 
         Equal(hash1, hash2);
         Equal(hash1, hash3);
@@ -55,12 +55,15 @@ public sealed class FNV1aTests : Test
     public static void HashGuid()
     {
         Span<Guid> elements = stackalloc Guid[3];
-        Random.Shared.GetItems(elements);
+        foreach (ref var g in elements)
+        {
+            g = Guid.NewGuid();
+        }
 
         var algorithm = new FNV1a32();
-        algorithm.Append<Guid>(elements);
-        var hash1 = algorithm.GetCurrentHash();
+        algorithm.Append(elements);
+        algorithm.GetCurrentHash();
 
-        Equal(FNV1a32.Hash<Guid>(elements), algorithm.GetCurrentHash());
+        Equal(FNV1a32.Hash(elements), algorithm.GetCurrentHash());
     }
 }

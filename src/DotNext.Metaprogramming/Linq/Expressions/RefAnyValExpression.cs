@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions;
 
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents expression that is equivalent to <c>__refvalue</c> C# undocumented keyword

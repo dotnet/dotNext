@@ -76,8 +76,8 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     {
         var output = new PoolingBufferWriter<char>(CharBufferAllocator) { Capacity = BufferSize };
         var error = new PoolingBufferWriter<char>(CharBufferAllocator) { Capacity = BufferSize };
-        var outputWriter = output.AsTextWriter();
-        var errorWriter = error.AsTextWriter();
+        var outputWriter = TextWriter.Create(output);
+        var errorWriter = TextWriter.Create(error);
         var context = new CommandContext(session) { Error = errorWriter, Output = outputWriter };
         try
         {

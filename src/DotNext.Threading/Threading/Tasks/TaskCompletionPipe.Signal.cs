@@ -11,18 +11,12 @@ public partial class TaskCompletionPipe<T>
         private TaskCompletionPipe<T>? owner;
 
         internal void Initialize(TaskCompletionPipe<T> owner)
-        {
-            this.owner = owner;
-        }
+            => this.owner = owner;
 
         protected override void CleanUp()
             => owner = null;
 
-        protected override void AfterConsumed()
-        {
-            if (owner is { } ownerCopy && TryReset(out _))
-                ownerCopy.OnCompleted(this);
-        }
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
@@ -34,7 +28,7 @@ public partial class TaskCompletionPipe<T>
     // detach all suspended callers to process out of the monitor lock
     private LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = waitQueue.First;
         waitQueue = default;
@@ -43,7 +37,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedValueTaskCompletionSource<bool> EnqueueNode()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = pool.Rent<Signal>();
         result.Initialize(this);

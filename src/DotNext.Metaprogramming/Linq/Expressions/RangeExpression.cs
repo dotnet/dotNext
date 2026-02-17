@@ -44,8 +44,8 @@ public sealed class RangeExpression : CustomExpression
     {
         var result = GetOffsetAndLength(range, length);
         offsetAndLength = Variable(result.Type);
-        offsetField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item1));
-        lengthField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item2));
+        offsetField = Field(offsetAndLength, nameof(ValueTuple<,>.Item1));
+        lengthField = Field(offsetAndLength, nameof(ValueTuple<,>.Item2));
         return result;
     }
 

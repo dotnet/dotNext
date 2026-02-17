@@ -1,22 +1,25 @@
 using System.Buffers;
+using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
 
 using Buffers;
+using Runtime.InteropServices;
 
 public sealed class EnumeratorTests : Test
 {
     [Fact]
     public static void EmptyMemoryEnumerator()
     {
-        using var enumerator = Enumerator.ToEnumerator(ReadOnlyMemory<int>.Empty);
+        using var enumerator = MemoryMarshal.ToEnumerator(ReadOnlyMemory<int>.Empty);
         False(enumerator.MoveNext());
     }
 
     [Fact]
     public static void ArrayMemoryEnumerator()
     {
-        using var enumerator = Enumerator.ToEnumerator(new ReadOnlyMemory<int>([1, 2, 3]));
+        using var enumerator = MemoryMarshal.ToEnumerator(new ReadOnlyMemory<int>([1, 2, 3]));
 
         True(enumerator.MoveNext());
         Equal(1, enumerator.Current);
@@ -33,12 +36,12 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static void NativeMemoryEnumerator()
     {
-        using var owner = UnmanagedMemory.Allocate<int>(3);
+        using var owner = IUnmanagedMemory<int>.Allocate(3);
         owner[0] = 10;
         owner[1] = 20;
         owner[2] = 30;
 
-        using var enumerator = Enumerator.ToEnumerator<int>(owner.Memory);
+        using var enumerator = MemoryMarshal.ToEnumerator<int>(owner.Memory);
 
         True(enumerator.MoveNext());
         Equal(10, enumerator.Current);
@@ -55,14 +58,14 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static void EmptySequenceEnumerator()
     {
-        using var enumerator = Enumerator.ToEnumerator(ReadOnlySequence<int>.Empty);
+        using var enumerator = SequenceMarshal.ToEnumerator(ReadOnlySequence<int>.Empty);
         False(enumerator.MoveNext());
     }
 
     [Fact]
     public static void ArraySequenceEnumerator()
     {
-        using var enumerator = Enumerator.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>([1, 2, 3])));
+        using var enumerator = SequenceMarshal.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>([1, 2, 3])));
         True(enumerator.MoveNext());
         Equal(1, enumerator.Current);
 
@@ -79,43 +82,12 @@ public sealed class EnumeratorTests : Test
     public static void SequenceEnumerator()
     {
         var bytes = RandomBytes(64);
-        using var enumerator = Enumerator.ToEnumerator(ToReadOnlySequence<byte>(bytes, 32));
+        using var enumerator = SequenceMarshal.ToEnumerator(ToReadOnlySequence<byte>(bytes, 32));
 
         var i = 0;
         while (enumerator.MoveNext())
         {
             Equal(bytes[i++], enumerator.Current);
-        }
-    }
-
-    [Fact]
-    public static async Task CanceledAsyncEnumerator()
-    {
-        await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator(new CancellationToken(true));
-        await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
-    }
-
-    [Fact]
-    public static async Task ConversionToAsyncEnumerator()
-    {
-        await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator();
-        for (int index = 0; await enumerator.MoveNextAsync(); index++)
-        {
-            switch (index)
-            {
-                case 0:
-                    Equal(10, enumerator.Current);
-                    break;
-                case 1:
-                    Equal(20, enumerator.Current);
-                    break;
-                case 2:
-                    Equal(30, enumerator.Current);
-                    break;
-                default:
-                    Fail("Unexpected enumerator state");
-                    break;
-            }
         }
     }
 
@@ -147,9 +119,8 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static async Task SkipAsync()
     {
-        var range = Enumerable.Range(0, 10);
-        await using var enumerator = range.GetAsyncEnumerator();
-        True(await enumerator.SkipAsync(8));
+        await using var enumerator = System.Linq.AsyncEnumerable.Range(0, 10).GetAsyncEnumerator(TestToken);
+        True(await (enumerator << 8));
         True(await enumerator.MoveNextAsync());
         Equal(8, enumerator.Current);
         True(await enumerator.MoveNextAsync());
@@ -158,15 +129,67 @@ public sealed class EnumeratorTests : Test
     }
 
     [Fact]
-    public static void Skip()
+    public static void SkipElements()
     {
         var range = Enumerable.Range(0, 10);
         using var enumerator = range.GetEnumerator();
-        True(enumerator.Skip(8));
+        True(enumerator << 8);
         True(enumerator.MoveNext());
         Equal(8, enumerator.Current);
         True(enumerator.MoveNext());
         Equal(9, enumerator.Current);
         False(enumerator.MoveNext());
+    }
+
+    [Fact]
+    public static void CustomEnumerators()
+    {
+        IEnumerator enumerator = IEnumerator<int>.Create(new ValueTypeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Equal(ValueTypeCustomEnumerator.Value, enumerator.Current);
+
+        enumerator = IEnumerator<string>.Create(new ReferenceTypeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Equal(ReferenceTypeCustomEnumerator.Value, enumerator.Current);
+
+        enumerator = IEnumerator<ReadOnlySpan<byte>>.Create(new ByRefLikeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Throws<NotSupportedException>(() => enumerator.Current);
+    }
+    
+    private struct ValueTypeCustomEnumerator : IEnumerator<ValueTypeCustomEnumerator, int>
+    {
+        public const int Value = 42;
+        
+        private bool requested;
+
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public int Current => Value;
+    }
+    
+    private struct ReferenceTypeCustomEnumerator : IEnumerator<ReferenceTypeCustomEnumerator, string>
+    {
+        public const string Value = "Hello, world!";
+        
+        private bool requested;
+
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public string Current => Value;
+    }
+
+    private struct ByRefLikeCustomEnumerator : IEnumerator<ByRefLikeCustomEnumerator, ReadOnlySpan<byte>>
+    {
+        public static ReadOnlySpan<byte> Value => [42, 43];
+        
+        private bool requested;
+        
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public ReadOnlySpan<byte> Current => Value;
     }
 }

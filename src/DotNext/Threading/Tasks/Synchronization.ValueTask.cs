@@ -21,7 +21,7 @@ public static partial class Synchronization
             }
             catch (Exception e)
             {
-                aggregator.Add(e);
+                aggregator += e;
             }
         }
 
@@ -328,7 +328,7 @@ public static partial class Synchronization
 
     private static void Wait<TAwaiter, TProvider>(ref TAwaiter awaiter)
         where TAwaiter : struct, ICriticalNotifyCompletion
-        where TProvider : struct, IAwaiterStateProvider<TAwaiter>
+        where TProvider : struct, IAwaiterStateProvider<TAwaiter>, allows ref struct
     {
         if (!SpinWait(ref awaiter))
             BlockingWait(ref awaiter);
@@ -347,7 +347,11 @@ public static partial class Synchronization
 
         static void BlockingWait(ref TAwaiter awaiter)
         {
-            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
+            var currentThread = Thread.CurrentThread;
+            if (currentThread.IsThreadPoolThread)
+                DrainThreadLocalQueue();
+            
+            awaiter.UnsafeOnCompleted(currentThread.Interrupt);
             try
             {
                 // park thread
@@ -360,6 +364,11 @@ public static partial class Synchronization
         }
     }
 
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "TransferAllLocalWorkItemsToHighPriorityGlobalQueue")]
+    private static extern void DrainThreadLocalQueue(
+        [UnsafeAccessorType("System.Threading.ThreadPoolWorkQueue, System.Private.CoreLib")]
+        object? obj = null);
+
     private interface IAwaiterStateProvider<TAwaiter>
         where TAwaiter : struct, ICriticalNotifyCompletion
     {
@@ -367,7 +376,7 @@ public static partial class Synchronization
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ValueTaskStateProvider : IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>
+    private readonly ref struct ValueTaskStateProvider : IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>
     {
         static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>.IsCompleted(
             ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
@@ -375,7 +384,7 @@ public static partial class Synchronization
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ValueTaskStateProvider<T> : IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>
+    private readonly ref struct ValueTaskStateProvider<T> : IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>
     {
         static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>.IsCompleted(
             ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)

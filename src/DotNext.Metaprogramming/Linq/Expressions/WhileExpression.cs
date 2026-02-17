@@ -18,7 +18,6 @@ public sealed class WhileExpression : CustomExpression, ILoopLabels
     public delegate Expression Statement(LabelTarget continueLabel, LabelTarget breakLabel);
 
     private readonly bool conditionFirst;
-    private Expression? body;
 
     internal WhileExpression(Expression test, LabelTarget? continueLabel, LabelTarget? breakLabel, bool checkConditionFirst)
     {
@@ -81,12 +80,12 @@ public sealed class WhileExpression : CustomExpression, ILoopLabels
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>
-    /// Always returns <see cref="void"/>.
+    /// Always returns <see cref="Void"/>.
     /// </summary>
     public override Type Type => typeof(void);
 

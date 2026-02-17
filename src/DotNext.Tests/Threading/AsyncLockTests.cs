@@ -1,4 +1,6 @@
-﻿namespace DotNext.Threading;
+﻿using static System.Threading.Timeout;
+
+namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncLockTests : Test
@@ -12,7 +14,7 @@ public sealed class AsyncLockTests : Test
         if (holder)
             Fail("Lock is in acquired state");
 
-        holder = await @lock.AcquireAsync(DefaultTimeout);
+        holder = await @lock.AcquireAsync(TestToken);
         if (holder)
             Fail("Lock is in acquired state");
 
@@ -24,14 +26,14 @@ public sealed class AsyncLockTests : Test
     {
         using var syncRoot = new AsyncExclusiveLock();
         using var @lock = AsyncLock.Exclusive(syncRoot);
-        var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
+        var holder = await @lock.TryAcquireAsync(InfiniteTimeSpan, TestToken);
         if (holder) { }
         else Fail("Lock was not acquired");
         True(syncRoot.IsLockHeld);
         holder.Dispose();
         False(syncRoot.IsLockHeld);
 
-        holder = await @lock.AcquireAsync(DefaultTimeout, CancellationToken.None);
+        holder = await @lock.AcquireAsync(InfiniteTimeSpan, TestToken);
         True(syncRoot.IsLockHeld);
         holder.Dispose();
         False(syncRoot.IsLockHeld);
@@ -42,7 +44,7 @@ public sealed class AsyncLockTests : Test
     {
         using var sem = new SemaphoreSlim(3);
         using var @lock = AsyncLock.Semaphore(sem);
-        var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
+        var holder = await @lock.TryAcquireAsync(InfiniteTimeSpan, TestToken);
         if (holder) { }
         else Fail("Lock was not acquired");
         Equal(2, sem.CurrentCount);

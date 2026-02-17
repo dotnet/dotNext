@@ -64,7 +64,7 @@ public sealed class SpanOwnerTests : Test
     public static unsafe void WrapArray()
     {
         int[] array = { 10, 20 };
-        using var rental = new SpanOwner<int>(array);
+        using var rental = new SpanOwner<int>(array, array.Length);
         False(rental.IsEmpty);
         fixed (int* ptr = rental)
         {
@@ -76,7 +76,7 @@ public sealed class SpanOwnerTests : Test
     [Fact]
     public static void Default()
     {
-        var rental = new SpanOwner<int>(Array.Empty<int>());
+        var rental = new SpanOwner<int>([]);
         True(rental.IsEmpty);
         Equal(0, rental.Length);
         True(rental.Span.IsEmpty);

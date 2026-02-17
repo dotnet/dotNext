@@ -15,14 +15,14 @@ internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, 
     internal CharBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
         : base(writer, provider, flush, flushAsync)
     {
-        writeImpl = writer is IReadOnlySpanConsumer<char> ?
+        writeImpl = writer is IConsumer<ReadOnlySpan<char>> ?
             &DirectWrite :
             &BuffersExtensions.Write<char>;
 
         static void DirectWrite(TWriter output, ReadOnlySpan<char> input)
         {
-            Debug.Assert(output is IReadOnlySpanConsumer<char>);
-            Unsafe.As<IReadOnlySpanConsumer<char>>(output).Invoke(input);
+            Debug.Assert(output is IConsumer<ReadOnlySpan<char>>);
+            Unsafe.As<IConsumer<ReadOnlySpan<char>>>(output).Invoke(input);
         }
     }
 

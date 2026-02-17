@@ -10,8 +10,6 @@ using Runtime.Serialization;
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public abstract class MessageAttribute : Attribute
 {
-    private readonly string? mimeType;
-
     /// <summary>
     /// Initializes a new instance of the attribute.
     /// </summary>
@@ -33,8 +31,8 @@ public abstract class MessageAttribute : Attribute
     /// </summary>
     public string MimeType
     {
-        get => mimeType is { Length: > 0 } ? mimeType : MediaTypeNames.Application.Octet;
-        init => mimeType = value;
+        get => field is { Length: > 0 } ? field : MediaTypeNames.Application.Octet;
+        init;
     }
 
     internal abstract Type MessageType { get; }

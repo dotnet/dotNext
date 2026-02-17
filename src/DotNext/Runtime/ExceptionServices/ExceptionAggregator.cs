@@ -44,6 +44,9 @@ public struct ExceptionAggregator : ISupplier<Exception?>
         }
     }
 
+    /// <inheritdoc cref="Add"/>
+    public void operator += (Exception e) => Add(e);
+
     /// <summary>
     /// Creates aggregated exception.
     /// </summary>

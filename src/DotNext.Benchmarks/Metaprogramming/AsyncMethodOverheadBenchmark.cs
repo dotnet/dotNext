@@ -25,10 +25,10 @@ public class AsyncMethodOverheadBenchmark
     {
         generatedAsyncFunc = AsyncLambda<Func<Task<int>>>(static fun =>
         {
-            var result = DeclareVariable("result", "42".Const());
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
-            Assign(result, result.Concat("3".Const()));
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 1.Const()));
+            var result = DeclareVariable("result", "42".Quoted);
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Quoted));
+            Assign(result, result.Concat("3".Quoted));
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 1.Quoted));
             Return(typeof(int).CallStatic(nameof(int.Parse), result));
         }).Compile();
     }

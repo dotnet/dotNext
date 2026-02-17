@@ -43,17 +43,17 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
             })
             .Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestToken);
 
         var buffer = new byte[512];
         using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
         {
-            await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
+            await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath), TestToken);
             Equal(response, await ExecuteCommandAsync(socket, request, buffer));
-            await socket.DisconnectAsync(true);
+            await socket.DisconnectAsync(true, TestToken);
         }
 
-        await host.StopAsync();
+        await host.StopAsync(TestToken);
     }
 
     [PlatformSpecificFact("linux")]
@@ -108,7 +108,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                     .UseApplicationMaintenanceInterface(unixDomainSocketPath)
                     .UseApplicationMaintenanceInterfaceAuthentication<TestPasswordAuthenticationHandler>()
                     .UseApplicationStatusProvider<TestStatusProvider>()
-                    .UseApplicationMaintenanceInterfaceGlobalAuthorization(static (user, cmd, ctx, token) =>
+                    .UseApplicationMaintenanceInterfaceGlobalAuthorization(static (user, _, _, _) =>
                     {
                         True(user.Identity?.IsAuthenticated);
                         return new(user.IsInRole("role1"));
@@ -138,17 +138,17 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
             })
             .Build();
 
-        await host.StartAsync();
+        await host.StartAsync(TestToken);
 
         var buffer = new byte[512];
         using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
         {
-            await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
+            await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath), TestToken);
             Equal(response, await ExecuteCommandAsync(socket, request, buffer));
-            await socket.DisconnectAsync(true);
+            await socket.DisconnectAsync(true, TestToken);
         }
 
-        await host.StopAsync();
+        await host.StopAsync(TestToken);
     }
 
     private static async Task<string> ExecuteCommandAsync(Socket socket, string command, byte[] buffer)
@@ -170,10 +170,10 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
         protected override ValueTask<IPrincipal> ChallengeAsync(string login, string secret, CancellationToken token)
         {
             if (string.Equals(login, "test", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
-                return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1" }));
+                return new(new GenericPrincipal(new GenericIdentity(login), roles: ["role1"]));
 
             if (string.Equals(login, "test2", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
-                return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1", "role2" }));
+                return new(new GenericPrincipal(new GenericIdentity(login), roles: ["role1", "role2"]));
 
             return new(default(IPrincipal));
         }

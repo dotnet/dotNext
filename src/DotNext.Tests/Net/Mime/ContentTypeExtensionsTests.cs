@@ -8,9 +8,9 @@ public sealed class ContentTypeExtensionsTests : Test
     [Fact]
     public static void ParseVariousEncodings()
     {
-        var encoding = new ContentType("plain/text; charset=utf-32").GetEncoding();
+        var encoding = new ContentType("plain/text; charset=utf-32").Encoding;
         Equal(Encoding.UTF32.WebName, encoding.WebName);
-        encoding = new ContentType("plain/text; charset=utf-8").GetEncoding();
+        encoding = new ContentType("plain/text; charset=utf-8").Encoding;
         Equal(Encoding.UTF8.WebName, encoding.WebName);
     }
 }

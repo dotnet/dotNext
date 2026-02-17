@@ -24,7 +24,7 @@ internal sealed class TryCatchFinallyStatement : GuardedStatement
         }
     }
 
-    internal new TryExpression Content => (TryExpression)base.Content;
+    private new TryExpression Content => (TryExpression)base.Content;
 
     internal Expression InlineFinally(ExpressionVisitor visitor, StatePlaceholderExpression leavingState)
     {

@@ -16,6 +16,7 @@ namespace DotNext.Threading.Tasks;
 public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     where T : Task
 {
+    private readonly System.Threading.Lock syncRoot;
     private readonly T?[] array;
     private int tail, head, count;
     private Signal? signal;
@@ -30,6 +31,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
 
         array = new T[capacity];
+        syncRoot = new();
     }
 
     private ref T? this[int index]
@@ -50,7 +52,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     {
         get
         {
-            lock (array)
+            lock (syncRoot)
             {
                 return count > 0 ? this[head] : null;
             }
@@ -58,9 +60,9 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ChangeCount([ConstantExpected] bool increment)
+    private void ChangeCount(bool increment)
     {
-        Debug.Assert(Monitor.IsEntered(array));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         count += increment ? +1 : -1;
         if (signal?.TrySetResult() ?? false)
@@ -69,7 +71,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
 
     private void MoveNext(ref int index)
     {
-        Debug.Assert(Monitor.IsEntered(array));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var value = index + 1;
         index = value == array.Length ? 0 : value;
@@ -82,7 +84,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     {
         get
         {
-            lock (array)
+            lock (syncRoot)
             {
                 return count < array.Length;
             }
@@ -98,7 +100,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     public ValueTask EnsureFreeSpaceAsync(CancellationToken token = default)
     {
         Task task;
-        lock (array)
+        lock (syncRoot)
         {
             if (count < array.Length)
             {
@@ -124,7 +126,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         ArgumentNullException.ThrowIfNull(task);
 
         bool result;
-        lock (array)
+        lock (syncRoot)
         {
             if (result = count < array.Length)
             {
@@ -140,7 +142,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     private bool TryEnqueue(T task, out Task waitTask)
     {
         bool result;
-        lock (array)
+        lock (syncRoot)
         {
             if (result = count < array.Length)
             {
@@ -181,7 +183,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     private T? TryPeekOrDequeue(out int head, out Task enqueueTask)
     {
         T? result;
-        lock (array)
+        lock (syncRoot)
         {
             if (count > 0)
             {
@@ -208,7 +210,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     private bool TryDequeue(int expectedHead, T task)
     {
         bool result;
-        lock (array)
+        lock (syncRoot)
         {
             ref var element = ref this[expectedHead];
             if (result = count > 0 && head == expectedHead && ReferenceEquals(element, task))
@@ -229,7 +231,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// <returns><see langword="true"/> if <paramref name="task"/> is completed; otherwise, <see langword="false"/>.</returns>
     public bool TryDequeue([NotNullWhen(true)] out T? task)
     {
-        lock (array)
+        lock (syncRoot)
         {
             ref var element = ref this[head];
             task = element;
@@ -331,7 +333,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// </summary>
     public void Clear()
     {
-        lock (array)
+        lock (syncRoot)
         {
             head = tail = count = 0;
             Array.Clear(array);

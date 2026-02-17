@@ -13,9 +13,9 @@ public sealed class TryCatchTests : Test
         var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
-            Assign(result, true.Const());
+            Assign(result, true.Quoted);
             Try((Expression)(arg1.AsDynamic() / arg2))
-                .Fault(new Action(() => Assign(result, false.Const())))
+                .Fault(new Action(() => Assign(result, false.Quoted)))
                 .End();
         })
         .Compile();
@@ -29,9 +29,9 @@ public sealed class TryCatchTests : Test
         var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
-            Assign(result, true.Const());
+            Assign(result, true.Quoted);
             Try((Expression)(arg1.AsDynamic() / arg2))
-                .Catch<DivideByZeroException>(new Action(() => Assign(result, false.Const())))
+                .Catch<DivideByZeroException>(new Action(() => Assign(result, false.Quoted)))
                 .End();
         })
         .Compile();
@@ -47,9 +47,9 @@ public sealed class TryCatchTests : Test
         {
             var (arg1, arg2) = fun;
             Try((Expression)(arg1.AsDynamic() / arg2))
-                .Catch<DivideByZeroException>(new Action(() => Return(false.Const())))
+                .Catch<DivideByZeroException>(new Action(() => Return(false.Quoted)))
                 .End();
-            Return(true.Const());
+            Return(true.Quoted);
         })
         .Compile();
 
@@ -63,7 +63,7 @@ public sealed class TryCatchTests : Test
         var lambda = Lambda<Func<long, long, bool>>(static fun =>
         {
             var (arg1, arg2) = fun;
-            Try(Expression.Block((Expression)(arg1.AsDynamic() / arg2), true.Const()))
+            Try(Expression.Block((Expression)(arg1.AsDynamic() / arg2), true.Quoted))
                 .Catch(typeof(Exception), static e => e.InstanceOf<DivideByZeroException>(), static e => InPlaceValue(false))
                 .OfType<bool>()
                 .End();

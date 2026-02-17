@@ -9,7 +9,8 @@ public partial struct Base64Decoder
 {
     private const char PaddingChar = '=';
 
-    private bool DecodeFromUtf16Core(scoped ReadOnlySpan<char> chars, ref BufferWriterSlim<byte> writer)
+    private bool DecodeFromUtf16Core<TWriter>(scoped ReadOnlySpan<char> chars, scoped TWriter writer)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         Debug.Assert(reservedBufferSize >= 0);
 
@@ -35,13 +36,14 @@ public partial struct Base64Decoder
         bool result;
 
         // 4 characters => 3 bytes
-        if (result = Convert.TryFromBase64Chars(chars, writer.InternalGetSpan(chars.Length), out size))
+        if (result = Convert.TryFromBase64Chars(chars, writer.GetSpan(chars.Length), out size))
             writer.Advance(size);
 
         return result;
     }
 
-    private bool DecodeFromUtf16Buffered(scoped ReadOnlySpan<char> chars, ref BufferWriterSlim<byte> bytes)
+    private bool DecodeFromUtf16Buffered<TWriter>(scoped ReadOnlySpan<char> chars, scoped TWriter writer)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         if (NeedMoreData)
         {
@@ -49,11 +51,11 @@ public partial struct Base64Decoder
             tempBuffer.Write(BufferedChars);
             chars = chars.Slice(tempBuffer.Write(chars));
 
-            if (!DecodeFromUtf16Core(tempBuffer.Span, ref bytes))
+            if (!DecodeFromUtf16Core(tempBuffer.Span, writer))
                 return false;
         }
 
-        return chars.IsEmpty || DecodeFromUtf16Core(chars, ref bytes);
+        return chars.IsEmpty || DecodeFromUtf16Core(chars, writer);
     }
 
     /// <summary>
@@ -67,20 +69,7 @@ public partial struct Base64Decoder
     {
         ArgumentNullException.ThrowIfNull(bytes);
 
-        if (reservedBufferSize is GotPaddingFlag)
-            goto bad_data;
-
-        var maxBytes = GetMaxDecodedLength(chars.Length + reservedBufferSize);
-        var writer = new BufferWriterSlim<byte>(bytes.GetSpan(maxBytes));
-        if (!DecodeFromUtf16Buffered(chars, ref writer))
-            goto bad_data;
-
-        Debug.Assert(writer.WrittenCount <= maxBytes);
-        bytes.Advance(writer.WrittenCount);
-        return;
-
-        bad_data:
-        throw CreateFormatException();
+        DecodeFromUtf16<BufferWriterReference<byte>>(chars, new(bytes));
     }
 
     /// <summary>
@@ -96,7 +85,7 @@ public partial struct Base64Decoder
             goto bad_data;
 
         var bytes = new BufferWriterSlim<byte>(GetMaxDecodedLength(chars.Length), allocator);
-        if (DecodeFromUtf16Buffered(chars, ref bytes))
+        if (DecodeFromUtf16Buffered<BufferWriterSlim<byte>.Ref>(chars, new(ref bytes)))
             return bytes.DetachOrCopyBuffer();
 
         bytes.Dispose();
@@ -115,9 +104,13 @@ public partial struct Base64Decoder
     /// <param name="bytes">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="bytes"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf16(ReadOnlySpan<char> chars, ref BufferWriterSlim<byte> bytes)
+    public void DecodeFromUtf16(scoped ReadOnlySpan<char> chars, scoped ref BufferWriterSlim<byte> bytes)
+        => DecodeFromUtf16<BufferWriterSlim<byte>.Ref>(chars, new(ref bytes));
+
+    private void DecodeFromUtf16<TWriter>(ReadOnlySpan<char> chars, TWriter writer)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf16Buffered(chars, ref bytes))
+        if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf16Buffered(chars, writer))
             throw CreateFormatException();
     }
 

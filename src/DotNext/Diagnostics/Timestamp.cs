@@ -15,8 +15,7 @@ public readonly record struct Timestamp :
     IComparable<Timestamp>,
     IComparisonOperators<Timestamp, Timestamp, bool>,
     IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
-    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>,
-    IInterlockedOperations<Timestamp>
+    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>
 {
     private static readonly double TickFrequency = GetTickFrequency(TimeProvider.System);
     private readonly long ticks;
@@ -46,7 +45,7 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="provider">The time provider.</param>
     public Timestamp(TimeProvider provider)
-        : this(Math.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
+        : this(long.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
     {
     }
 
@@ -54,27 +53,31 @@ public readonly record struct Timestamp :
     /// Gets a value indicating that the timestamp is zero.
     /// </summary>
     public bool IsEmpty => ticks is 0L;
-
+    
     /// <summary>
     /// Gets a value indicating that the current timestamp represents the future point in time.
     /// </summary>
-    public bool IsFuture => ticks > TimeProvider.System.GetTimestamp();
+    public bool IsFuture => IsFutureInternal(TimeProvider.System);
 
     /// <summary>
     /// Gets a value indicating that the current timestamp represents the past point in time.
     /// </summary>
-    public bool IsPast => ticks < TimeProvider.System.GetTimestamp();
+    public bool IsPast => IsPastInternal(TimeProvider.System);
+    
+    internal bool IsFutureInternal(TimeProvider provider) => ticks > provider.GetTimestamp();
+    
+    internal bool IsPastInternal(TimeProvider provider) => ticks < provider.GetTimestamp();
     
     private static double GetTickFrequency(TimeProvider provider) => (double)TimeSpan.TicksPerSecond / provider.TimestampFrequency;
 
     private static long ToTicks(double duration)
-        => unchecked((long)(TickFrequency * duration));
+        => long.CreateTruncating(TickFrequency * duration);
 
     private static long ToTicks(double duration, TimeProvider provider)
-        => unchecked((long)(GetTickFrequency(provider) * duration));
+        => long.CreateTruncating(GetTickFrequency(provider) * duration);
 
     private static long FromTimeSpan(TimeSpan value)
-        => unchecked((long)(value.Ticks / TickFrequency));
+        => long.CreateTruncating(value.Ticks / TickFrequency);
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing this timestamp.
@@ -83,7 +86,7 @@ public readonly record struct Timestamp :
     /// This property may return a value with lost precision.
     /// </remarks>
     public TimeSpan Value => new(ToTicks(ticks));
-
+        
     /// <summary>
     /// Gets precise difference between the current point in time and this timestamp.
     /// </summary>
@@ -98,7 +101,7 @@ public readonly record struct Timestamp :
     /// <param name="provider">Time provider.</param>
     /// <returns>The elapsed time between the starting timestamp and the time of this call.</returns>
     public TimeSpan GetElapsedTime(TimeProvider provider) => new(ToTicks(GetElapsedTicks(provider), provider));
-
+    
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in timer ticks.
     /// </summary>
@@ -276,7 +279,7 @@ public readonly record struct Timestamp :
     public static void Refresh(ref Timestamp location, TimeProvider provider)
         => Atomic.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
 
-    /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
+    /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
         => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.ticks), value.ticks, comparand.ticks));
 }

@@ -10,8 +10,8 @@ public interface IInputLogEntry : IRaftLogEntry
     /// </summary>
     /// <remarks>
     /// The value passes through <see cref="IO.Log.IAuditTrail{TEntry}.AppendAsync{TEntryImpl}(TEntryImpl, CancellationToken)"/>
-    /// to <see cref="MemoryBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/> or <see cref="DiskBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/>.
-    /// It can be retrieved by using <see cref="PersistentState.LogEntry.Context"/> property.
+    /// to <see cref="StateMachine.IStateMachine.ApplyAsync"/>.
+    /// It can be retrieved by using <see cref="StateMachine.LogEntry.Context"/> property.
     /// </remarks>
     object? Context { get; init; }
 }

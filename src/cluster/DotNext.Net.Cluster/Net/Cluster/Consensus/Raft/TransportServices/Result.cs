@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
 using Buffers.Binary;
-using static Runtime.Intrinsics;
+using static Runtime.CompilerServices.AdvancedHelpers;
 
 internal readonly struct Result : IBinaryFormattable<Result>
 {

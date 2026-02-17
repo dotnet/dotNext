@@ -2,32 +2,6 @@ namespace DotNext.Collections.Generic;
 
 public sealed class AsyncEnumerableTests : Test
 {
-    [Fact]
-    public static async Task EmptyAsyncEnumerable()
-    {
-        var count = 0;
-
-        await foreach (var item in AsyncEnumerable.Empty<int>())
-            count++;
-
-        Equal(0, count);
-    }
-
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static async Task ElementAtIndexAsync(bool yieldIteration)
-    {
-        var list = new LinkedList<long>();
-        list.AddLast(10);
-        list.AddLast(40);
-        list.AddLast(100);
-
-        var asyncList = list.ToAsyncEnumerable(yieldIteration);
-        Equal(100, await asyncList.ElementAtAsync(2));
-        Equal(10, await asyncList.ElementAtAsync(0));
-    }
-
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -35,12 +9,12 @@ public sealed class AsyncEnumerableTests : Test
     {
         var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable(yieldIteration);
         var counter = new CollectionTests.Counter<int>();
-        await list.ForEachAsync(counter.Accept);
+        await list.ForEachAsync(counter.Accept, TestToken);
         Equal(3, counter.value);
         counter.value = 0;
 
         list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-        await list.ForEachAsync(counter.Accept);
+        await list.ForEachAsync(counter.Accept, TestToken);
         Equal(5, counter.value);
     }
 
@@ -49,12 +23,12 @@ public sealed class AsyncEnumerableTests : Test
     {
         var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
         var counter = new CollectionTests.Counter<int>();
-        await list.ForEachAsync(counter.AcceptAsync);
+        await list.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(3, counter.value);
         counter.value = 0;
 
         list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-        await list.ForEachAsync(counter.AcceptAsync);
+        await list.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(5, counter.value);
     }
 
@@ -62,10 +36,10 @@ public sealed class AsyncEnumerableTests : Test
     public static async Task FirstOrNullTestAsync()
     {
         var array = Array.Empty<long>().ToAsyncEnumerable();
-        var element = await array.FirstOrNullAsync();
+        var element = await array.FirstOrNullAsync(TestToken);
         Null(element);
         array = new long[] { 10, 20 }.ToAsyncEnumerable();
-        element = await array.FirstOrNullAsync();
+        element = await array.FirstOrNullAsync(TestToken);
         Equal(10, element);
     }
 
@@ -74,7 +48,9 @@ public sealed class AsyncEnumerableTests : Test
     [InlineData(true)]
     public static async Task CopyListAsync(bool yieldIteration)
     {
-        using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable(yieldIteration).CopyAsync(sizeHint: 4);
+        using var copy = await new List<int> { 10, 20, 30 }
+            .ToAsyncEnumerable(yieldIteration)
+            .CopyAsync(sizeHint: 4, token: TestToken);
         Equal(3, copy.Length);
         Equal(10, copy[0]);
         Equal(20, copy[1]);
@@ -82,9 +58,9 @@ public sealed class AsyncEnumerableTests : Test
     }
 
     [Fact]
-    public static async Task CopyEmptCollectionAsync()
+    public static async Task CopyEmptyCollectionAsync()
     {
-        using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync();
+        using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync(token: TestToken);
         True(copy.IsEmpty);
     }
 
@@ -98,7 +74,7 @@ public sealed class AsyncEnumerableTests : Test
         list.AddLast(default(string));
         Equal(4, list.Count);
 
-        var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync();
+        var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync(TestToken);
         Equal(2, array.Length);
         True(Array.Exists(array, "a".Equals));
         True(Array.Exists(array, "b".Equals));
@@ -107,7 +83,7 @@ public sealed class AsyncEnumerableTests : Test
     [Fact]
     public static void Singleton()
     {
-        var enumerable = AsyncEnumerable.Singleton(42);
+        var enumerable = IAsyncEnumerable<int>.Singleton(42);
         Equal(42, Single(enumerable));
     }
 }

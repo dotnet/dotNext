@@ -1,9 +1,13 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
+
+using Runtime;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents the producer side of <see cref="ValueTask{T}"/>.
@@ -21,7 +25,7 @@ namespace DotNext.Threading.Tasks;
 /// </remarks>
 /// <typeparam name="T">>The type the task result.</typeparam>
 /// <seealso cref="ValueTaskCompletionSource"/>
-public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<T>>
+public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, IValueTaskFactory<T>
 {
     private Result<T> result;
 
@@ -40,60 +44,33 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(T value)
-        => TrySetResult(null, value);
+        => TrySetResult<DefaultOptions, Result<T>.Ok>(new DefaultOptions(), value);
 
     /// <summary>
     /// Attempts to complete the task successfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
+    /// <param name="options">The completion options.</param>
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetResult(object? completionData, T value)
-        => TrySetResult(completionData, completionToken: null, new Result<T>(value));
-
-    /// <summary>
-    /// Attempts to complete the task successfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="value">The value to be returned to the consumer.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetResult(object? completionData, short completionToken, T value)
-        => TrySetResult(completionData, completionToken, new Result<T>(value));
+    public bool TrySetResult<TOptions>(TOptions options, T value)
+        where TOptions : ICompletionOptions, allows ref struct
+        => TrySetResult<TOptions, Result<T>.Ok>(options, value);
 
     /// <inheritdoc />
-    public sealed override bool TrySetException(object? completionData, Exception e)
-        => TrySetResult(completionData, completionToken: null, new Result<T>(e));
+    public sealed override bool TrySetException<TOptions>(TOptions options, Exception e)
+        => TrySetResult<TOptions, Result<T>.Failure>(options, e);
 
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="e">The exception to be returned to the consumer.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetException(object? completionData, short completionToken, Exception e)
-        => TrySetResult(completionData, completionToken, new Result<T>(e));
+    private protected sealed override void CompleteAsTimedOut()
+        => result = GetTimeoutResult();
 
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="token">The canceled token.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
-        => TrySetException(completionData, completionToken, new OperationCanceledException(token));
+    private protected sealed override void CompleteAsCanceled(CancellationToken token)
+        => result = GetCancellationResult(token);
 
-    private protected sealed override bool CompleteAsTimedOut()
-        => SetResult(OnTimeout());
-
-    private protected sealed override bool CompleteAsCanceled(CancellationToken token)
-        => SetResult(OnCanceled(token));
-
-    private bool TrySetResult(object? completionData, short? completionToken, in Result<T> result)
+    internal bool TrySetResult<TOptions, TResult>(TOptions options, TResult value)
+        where TOptions : ICompletionOptions, allows ref struct
+        where TResult : struct, IResultMonad<T>
     {
-        var completed = TrySetResult(completionData, completionToken, in result, out var resumable);
+        var completed = TrySetResult(options, value, out var resumable);
         if (resumable)
         {
             NotifyConsumer();
@@ -102,34 +79,19 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return completed;
     }
 
-    private bool SetResult(in Result<T> result, object? completionData = null)
+    internal bool TrySetResult<TOptions, TResult>(TOptions options, TResult value, out bool resumable)
+        where TOptions : ICompletionOptions, allows ref struct
+        where TResult : struct, IResultMonad<T>
     {
-        AssertLocked();
-
-        this.result = result;
-        return SetResult(completionData);
-    }
-
-    /// <summary>
-    /// Tries to set the result of this source without resuming the <see cref="ValueTask{TResult}"/> consumer.
-    /// </summary>
-    /// <param name="completionData">The completion data to be assigned to <see cref="ManualResetCompletionSource.CompletionData"/> property.</param>
-    /// <param name="completionToken">The optional completion token.</param>
-    /// <param name="result">The result to be stored as the result of <see cref="ValueTask{TResult}"/>.</param>
-    /// <param name="resumable">
-    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.NotifyConsumer"/> needs to be called to resume
-    /// the consumer of <see cref="ValueTask{TResult}"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if this source is completed successfully;
-    /// <see langword="false"/> if this source was completed previously.
-    /// </returns>
-    protected internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
-    {
-        bool completed;
-        lock (SyncRoot)
+        var completed = options.BeginCompletion(this);
+        if (completed)
         {
-            resumable = (completed = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
+            result = Result<T>.Create(value);
+            resumable = options.EndCompletion(this);
+        }
+        else
+        {
+            resumable = false;
         }
 
         return completed;
@@ -145,7 +107,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// By default, this method assigns <see cref="TimeoutException"/> as the task result.
     /// </remarks>
     /// <returns>The result to be assigned to the task.</returns>
-    protected virtual Result<T> OnTimeout() => new(new TimeoutException());
+    protected virtual Result<T> GetTimeoutResult() => new(new TimeoutException());
 
     /// <summary>
     /// Called automatically when cancellation detected.
@@ -155,7 +117,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// </remarks>
     /// <param name="token">The token representing cancellation reason.</param>
     /// <returns>The result to be assigned to the task.</returns>
-    protected virtual Result<T> OnCanceled(CancellationToken token) => new(new OperationCanceledException(token));
+    protected virtual Result<T> GetCancellationResult(CancellationToken token) => new(new OperationCanceledException(token));
 
     /// <summary>
     /// Creates a fresh task linked with this source.
@@ -169,7 +131,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-        => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+        => new(this, Activate(timeout, token));
 
     /// <inheritdoc />
     ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -184,9 +146,8 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
-        versionAndStatus.Consume(token); // barrier to avoid reordering of result read
+        Consume(token); // barrier to avoid reordering of result read
 
-        AfterConsumed();
         return resultCopy.Value;
     }
 
@@ -199,7 +160,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <inheritdoc cref="IValueTaskSource.GetStatus"/>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public ValueTaskSourceStatus GetStatus(short token)
-        => GetStatus(token, result.Error);
+        => GetStatus<ExceptionProvider>(token, new(in result));
 
     /// <summary>
     /// Creates a linked <see cref="TaskCompletionSource{TResult}"/> that can be used cooperatively to
@@ -212,9 +173,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public TaskCompletionSource<T> CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        if (Activate(timeout, token) is not { } version)
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
-
+        var version = Activate(timeout, token);
         var source = new LinkedTaskCompletionSource(userData);
         source.LinkTo(this, version);
         return source;
@@ -266,5 +225,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
             source = null;
         }
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ExceptionProvider(ref readonly Result<T> sourceResult) : ISupplier<Exception?>
+    {
+        private readonly ref readonly Result<T> sourceResult = ref sourceResult;
+
+        Exception? ISupplier<Exception?>.Invoke() => sourceResult.Error;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 }

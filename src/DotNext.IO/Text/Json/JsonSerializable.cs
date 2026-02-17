@@ -6,6 +6,7 @@ using System.Text.Json;
 namespace DotNext.Text.Json;
 
 using IO;
+using IO.Pipelines;
 using Runtime.Serialization;
 
 /// <summary>
@@ -41,7 +42,21 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     {
         ValueTask result;
 
-        if (writer.TryGetBufferWriter() is { } bufferWriter)
+        if (typeof(TWriter) == typeof(PipeBinaryWriter))
+        {
+            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).Writer,
+                value,
+                T.TypeInfo!,
+                token));
+        }
+        else if (typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
+        {
+            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream,
+                value,
+                T.TypeInfo!,
+                token));
+        }
+        else if (writer.TryGetBufferWriter() is { } bufferWriter)
         {
             // fast path - synchronous serialization
             result = ValueTask.CompletedTask;
@@ -56,11 +71,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         }
         else
         {
-            var stream = IAsyncBinaryWriter.GetStream(writer, out var keepAlive);
-
-            result = keepAlive
-                ? new(JsonSerializer.SerializeAsync(stream, value, T.TypeInfo!, token))
-                : SerializeAsync(stream, value, token);
+            result = SerializeAsync(IAsyncBinaryWriter.CreateStream(writer), value, token);
         }
 
         return result;
@@ -101,7 +112,19 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     {
         ValueTask<T?> result;
 
-        if (reader.TryGetSequence(out var buffer))
+        if (typeof(TReader) == typeof(PipeBinaryReader))
+        {
+            result = JsonSerializer.DeserializeAsync(Unsafe.As<TReader, PipeBinaryReader>(ref reader).Reader,
+                T.TypeInfo,
+                token);
+        }
+        else if (typeof(TReader) == typeof(AsyncStreamBinaryAccessor))
+        {
+            result = JsonSerializer.DeserializeAsync(Unsafe.As<TReader, AsyncStreamBinaryAccessor>(ref reader).Stream,
+                T.TypeInfo,
+                token);
+        }
+        else if (reader.TryGetSequence(out var buffer))
         {
             // fast path - synchronous deserialization
             try
@@ -115,10 +138,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         }
         else
         {
-            var stream = IAsyncBinaryReader.GetStream(reader, out var keepAlive);
-            result = keepAlive
-                ? JsonSerializer.DeserializeAsync(stream, T.TypeInfo, token)
-                : DeserializeFromStreamAndCloseAsync(stream, token);
+            result = DeserializeFromStreamAndCloseAsync(IAsyncBinaryReader.CreateStream(reader), token);
         }
 
         return result;

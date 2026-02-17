@@ -12,10 +12,10 @@ public sealed class SpanTests : Test
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
         True(array1.SequenceEqual(array2));
-        True(Span.BitwiseEquals<Guid>(array1, array2));
+        True(Span.BitwiseEquals(array1, array2));
         array2[1] = Guid.Empty;
         False(array1.SequenceEqual(array2));
-        False(Span.BitwiseEquals<Guid>(array1, array2));
+        False(Span.BitwiseEquals(array1, array2));
     }
 
     [Fact]
@@ -23,9 +23,9 @@ public sealed class SpanTests : Test
     {
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
-        Equal(0, Span.BitwiseCompare<Guid>(array1, array2));
+        Equal(0, Span.BitwiseCompare(array1, array2));
         array2[1] = Guid.Empty;
-        True(Span.BitwiseCompare<Guid>(array1, array2) > 0);
+        True(Span.BitwiseCompare(array1, array2) > 0);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void IndexOf()
     {
-        ReadOnlySpan<ulong> span = stackalloc ulong[] { 3, 2, 6, 4 };
+        ReadOnlySpan<ulong> span = [3, 2, 6, 4];
         Equal(1, span.IndexOf(2UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3, span.IndexOf(4UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3UL, span[0]);
@@ -54,8 +54,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void ForEach()
     {
-        Span<long> span = stackalloc long[] { 3, 2, 6, 4 };
-        span.ForEach((ref long value, int index) => value += index);
+        Span<long> span = [3, 2, 6, 4];
+        span.ForEach(static (reference, index) => reference.Value += index);
         Equal(3, span[0]);
         Equal(3, span[1]);
         Equal(8, span[2]);
@@ -77,7 +77,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void TrimByLength2()
     {
-        ReadOnlySpan<int> span = stackalloc int[] { 1, 2, 3 };
+        ReadOnlySpan<int> span = [1, 2, 3];
         span = span.TrimLength(4);
         Equal(3, span.Length);
         span = span.TrimLength(2);
@@ -89,7 +89,8 @@ public sealed class SpanTests : Test
     public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
         null,
-        Memory.GetArrayAllocator<char>(),
+        MemoryAllocator<char>.Array,
+        MemoryAllocator<char>.Pinned,
         ArrayPool<char>.Shared.ToAllocator(),
     };
 
@@ -97,18 +98,18 @@ public sealed class SpanTests : Test
     [MemberData(nameof(TestAllocators))]
     public static void Concatenation(MemoryAllocator<char> allocator)
     {
-        MemoryOwner<char> owner = string.Empty.AsSpan().Concat(string.Empty, allocator);
+        MemoryOwner<char> owner = ReadOnlySpan<char>.Concat(string.Empty, string.Empty, allocator);
         True(owner.IsEmpty);
         True(owner.Memory.IsEmpty);
         owner.Dispose();
 
-        owner = "Hello, ".AsSpan().Concat("world!", allocator);
+        owner = ReadOnlySpan<char>.Concat("Hello, ", "world!", allocator);
         False(owner.IsEmpty);
         False(owner.Memory.IsEmpty);
         Equal("Hello, world!", new string(owner.Span));
         owner.Dispose();
 
-        owner = "Hello, ".AsSpan().Concat("world", "!", allocator);
+        owner = ReadOnlySpan<char>.Concat("Hello, ", "world", "!", allocator);
         False(owner.IsEmpty);
         False(owner.Memory.IsEmpty);
         Equal("Hello, world!", new string(owner.Span));
@@ -116,9 +117,9 @@ public sealed class SpanTests : Test
     }
 
     [Theory]
-    [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0, 0 })]
-    [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0 })]
-    [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0, 0, 0 })]
+    [InlineData(new[] { 10, 20, 30 }, new[] { 0, 0, 0 })]
+    [InlineData(new[] { 10, 20, 30 }, new[] { 0, 0 })]
+    [InlineData(new[] { 10, 20, 30 }, new[] { 0, 0, 0, 0 })]
     public static void Copy(int[] source, int[] destination)
     {
         ReadOnlySpan<int> src = source;
@@ -407,7 +408,7 @@ public sealed class SpanTests : Test
     public static unsafe void ForEachUsingPointer()
     {
         int[] array = { 1, 2, 3 };
-        array.AsSpan().ForEach(&Exists, array);
+        array.ForEach(&Exists, array);
 
         static void Exists(ref int item, int[] array) => Contains(item, array);
     }
@@ -415,30 +416,22 @@ public sealed class SpanTests : Test
     [Fact]
     public static void ConcatStrings()
     {
-        using (var buffer = Span.Concat(default(ValueTuple).AsReadOnlySpan<string>()))
+        using (var buffer = string.Concat([string.Empty], allocator: null))
         {
             Empty(buffer.Span.ToString());
         }
 
         var tuple1 = new ValueTuple<string>("Hello, world!");
-        using (var buffer = Span.Concat(tuple1.AsReadOnlySpan()))
+        using (var buffer = string.Concat(tuple1.AsReadOnlySpan(), allocator: null))
         {
             Equal("Hello, world!", buffer.Span.ToString());
         }
 
         var tuple2 = ("Hello, ", "world!");
-        using (var buffer = Span.Concat(tuple2.AsReadOnlySpan()))
+        using (var buffer = string.Concat(tuple2.AsReadOnlySpan(), allocator: null))
         {
             Equal("Hello, world!", buffer.Span.ToString());
         }
-    }
-
-    [Fact]
-    public static void SpanContravariance()
-    {
-        ReadOnlySpan<IEnumerable<char>> sequence = new ReadOnlySpan<string>(new string[] { "a", "b" }).Contravariance<string, IEnumerable<char>>();
-        Contains('a', sequence[0]);
-        Contains('b', sequence[1]);
     }
 
     [Fact]
@@ -589,7 +582,7 @@ public sealed class SpanTests : Test
 
         True(value.IsBitwiseAndNonZero<byte>([0, 1, 1]));
         True(value.IsBitwiseAndNonZero<byte>([1, 1, 1]));
-        False(value.IsBitwiseAndNonZero<byte>([0, 0, 1]));
+        False(value & (ReadOnlySpan<byte>)[0, 0, 1]);
     }
     
     [Fact]

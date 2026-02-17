@@ -12,7 +12,7 @@ using Text;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReader
 {
-    internal Stream AsStream() => reader.AsStream(leaveOpen: true);
+    internal PipeReader Reader => reader;
 
     ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
         => reader.ReadAsync<T>(token);
@@ -50,7 +50,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => reader.ParseAsync((style, provider), IAsyncBinaryReader.Parse<T>, context, lengthFormat, allocator, token);
 
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => reader.ParseAsync(arg, parser, context, lengthFormat, allocator, token);
 
     ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)
@@ -66,7 +66,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 
     ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
     {
-        var consumer = new BufferConsumer<byte>(writer);
+        var consumer = new BufferWriterReference<byte>(writer);
         return count.HasValue
             ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
             : reader.CopyToAsync(consumer, token);
@@ -85,7 +85,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : IAsyncBinaryWriter
 {
-    internal Stream AsStream() => writer.AsStream(leaveOpen: true);
+    internal PipeWriter Writer => writer;
 
     private ValueTask FlushIfNeededAsync(CancellationToken token)
     {
@@ -172,12 +172,12 @@ internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : 
     }
 
     ValueTask<long> IAsyncBinaryWriter.EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
-        => FlushIfNeededAsync(writer.Encode(chars.Span, in context, lengthFormat), token);
+        => FlushIfNeededAsync((long)writer.Encode(chars.Span, in context, lengthFormat), token);
 
     ValueTask<long> IAsyncBinaryWriter.FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => FlushIfNeededAsync(writer.Format(value, in context, lengthFormat, format, provider, allocator), token);
 
-    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         => FlushIfNeededAsync(writer.Format(value, lengthFormat, format, provider), token);
 
     ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)

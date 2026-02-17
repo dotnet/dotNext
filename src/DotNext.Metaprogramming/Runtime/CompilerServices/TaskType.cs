@@ -6,7 +6,7 @@ namespace DotNext.Runtime.CompilerServices;
 using Reflection;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct TaskType
+internal readonly record struct TaskType
 {
     private readonly Type? resultType;
     private readonly Type taskType;
@@ -14,7 +14,7 @@ internal readonly struct TaskType
     internal TaskType(Type? resultType, bool isValueTask)
     {
         this.resultType = resultType;
-        if (resultType is null || resultType == typeof(void))
+        if (resultType is null or { IsVoid: true })
             taskType = isValueTask ? typeof(ValueTask) : typeof(Task);
         else
             taskType = (isValueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(resultType);
@@ -23,7 +23,7 @@ internal readonly struct TaskType
     internal TaskType(Type taskType)
     {
         this.taskType = taskType;
-        if (taskType.IsOneOf([typeof(ValueTask), typeof(Task)]))
+        if (taskType.IsOneOf(typeof(ValueTask), typeof(Task)))
         {
             resultType = null;
         }
@@ -51,7 +51,7 @@ internal readonly struct TaskType
 
     internal bool HasResult => resultType is not null;
 
-    internal bool IsValueTask => taskType is { IsValueType: true };
+    private bool IsValueTask => taskType is { IsValueType: true };
 
     public static implicit operator Type(in TaskType type) => type.taskType ?? typeof(Task);
 }

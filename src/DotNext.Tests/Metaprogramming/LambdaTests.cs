@@ -51,13 +51,13 @@ public sealed class LambdaTests : Test
                 Await(Expression.Call(typeof(Task), nameof(Task.Yield), []));
                 Throw<InvalidOperationException>();
             })
-            .Catch(typeof(InvalidOperationException), e =>
+            .Catch(typeof(InvalidOperationException), _ =>
             {
                 Throw<ArithmeticException>();
             })
             .Finally(() =>
             {
-                Assign(Expression.Field(fun[0], "Value"), 45.Const());
+                Assign(Expression.Field(fun[0], "Value"), 45.Quoted);
             })
             .End();
         }).Compile();
@@ -86,6 +86,8 @@ public sealed class LambdaTests : Test
     public static void SimpleAsyncLambda(bool usePooling)
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long, long, Task<long>>>(usePooling, fun =>
         {
             var (arg1, arg2) = fun;
@@ -103,13 +105,15 @@ public sealed class LambdaTests : Test
     public static void SimpleUntypedAsyncLambda(AsyncLambdaFlags flags)
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+
         var lambda = AsyncLambda([typeof(long), typeof(long)], typeof(long), flags, fun =>
-       {
-           var (arg1, arg2) = fun;
-           var temp = DeclareVariable<long>("tmp");
-           Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-           Return(temp.AsDynamic() + 20L);
-       });
+        {
+            var (arg1, arg2) = fun;
+            var temp = DeclareVariable<long>("tmp");
+            Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
+            Return(temp.AsDynamic() + 20L);
+        });
         var fn = lambda.Compile() as Func<long, long, Task<long>>;
         NotNull(fn);
         Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
@@ -121,7 +125,7 @@ public sealed class LambdaTests : Test
         var lambda = AsyncLambda<Func<Task<long>, long, Task<long>>>(static fun =>
         {
             var (arg1, arg2) = fun;
-            Return(arg1.Await().Add(arg2));
+            Return(arg1.Await() + arg2);
         });
 
         var fn = lambda.Compile();
@@ -138,6 +142,8 @@ public sealed class LambdaTests : Test
     public static void SimpleAsyncLambdaImplicitResult()
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
@@ -153,6 +159,8 @@ public sealed class LambdaTests : Test
     public static void SimpleAsyncLambdaImplicitResult2()
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
@@ -169,6 +177,8 @@ public sealed class LambdaTests : Test
     public static void SimpleAsyncLambdaValueTask()
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long, long, ValueTask<long>>>(fun =>
         {
             var (arg1, arg2) = fun;
@@ -184,15 +194,17 @@ public sealed class LambdaTests : Test
     public static void AsyncLambdaWithConditional()
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
         {
             var arg = fun[0];
             If((Expression)(arg.AsDynamic() > 10L))
-                .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
+                .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Quoted).Await()))
                 .Else(() =>
                 {
                     var local = DeclareVariable<long>("myVar");
-                    Assign(local, Expression.Call(null, sumMethod, arg, 90L.Const()).Await());
+                    Assign(local, Expression.Call(null, sumMethod, arg, 90L.Quoted).Await());
                     Return(local);
                 })
                 .End();
@@ -206,6 +218,8 @@ public sealed class LambdaTests : Test
     public static void TryFinallyAsync()
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        NotNull(sumMethod);
+        
         var lambda = AsyncLambda<Func<long[], Task<long>>>(fun =>
         {
             var result = DeclareVariable<long>("accumulator");
@@ -217,8 +231,8 @@ public sealed class LambdaTests : Test
             Return(result);
         });
         var fn = lambda.Compile();
-        Equal(15L, fn(new[] { 3L, 2L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
-        Equal(5, fn(new[] { 3L, 2L, 0L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(15L, fn([3L, 2L, 10L]).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(5, fn([3L, 2L, 0L, 10L]).GetResult(TimeSpan.FromMinutes(1)));
     }
 
     private sealed class FinallyCallback : StrongBox<bool>
@@ -246,7 +260,6 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void TryCatchAsyncLambdaTest()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
         var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
         {
             var arg = fun[0];
@@ -255,7 +268,7 @@ public sealed class LambdaTests : Test
                 If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
                 If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
             })
-            .Catch<ArgumentException>(() => Return((-42L).Const()))
+            .Catch<ArgumentException>(() => Return((-42L).Quoted))
             .Catch<InvalidOperationException>(Rethrow)
             .End();
         });
@@ -271,7 +284,7 @@ public sealed class LambdaTests : Test
     {
         var lambda = AsyncLambda<Func<long[], Task<string>>>(static fun =>
         {
-            For(0.Const(), i => i.AsDynamic() < fun[0].ArrayLength(), PostIncrementAssign, static i =>
+            For(0.Quoted, i => i.AsDynamic() < fun[0].CollectionLength, PostIncrementAssign, static _ =>
             {
                 Using(typeof(MemoryStream).New(), Break);
             });
@@ -283,12 +296,12 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void AwaitStatements()
     {
-        var lambda = AsyncLambda<Func<Task<int>>>(static fun =>
+        var lambda = AsyncLambda<Func<Task<int>>>(static _ =>
         {
-            var result = DeclareVariable("result", "42".Const());
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
-            Assign(result, result.Concat("3".Const()));
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Const()));
+            var result = DeclareVariable("result", "42".Quoted);
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Quoted));
+            Assign(result, result.Concat("3".Quoted));
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Quoted));
             Return(typeof(int).CallStatic(nameof(int.Parse), result));
         }).Compile();
         Equal(423, lambda().GetResult(TimeSpan.FromMinutes(1)));
@@ -299,8 +312,8 @@ public sealed class LambdaTests : Test
     {
         var lambda = AsyncLambda<Func<StringBuilder, ValueTask>>(static fun =>
         {
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
-            Call(fun[0], "Append", "Hello, world!".Const());
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Quoted));
+            Call(fun[0], "Append", "Hello, world!".Quoted);
         }).Compile();
         var builder = new StringBuilder(40);
         await lambda(builder);
@@ -312,8 +325,8 @@ public sealed class LambdaTests : Test
     {
         var lambda = AsyncLambda<Func<StringBuilder, Task>>(static fun =>
         {
-            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
-            Call(fun[0], "Append", "Hello, world!".Const());
+            Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Quoted));
+            Call(fun[0], "Append", "Hello, world!".Quoted);
             Return();
         }).Compile();
         var builder = new StringBuilder(40);
@@ -414,7 +427,7 @@ public sealed class LambdaTests : Test
         var exprThrowException = new Func<Task<string>>(ThrowException).Method;
         var exprReprocess = new Func<Task<string>>(Reprocess).Method;
 
-        var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((lambdaContext, result) =>
+        var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((_, result) =>
         {
             Try(() =>
             {
@@ -431,8 +444,7 @@ public sealed class LambdaTests : Test
 
         var asyncTryCatchFunc = asyncTryCatchExpression.Compile();
 
-        using var cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
-        var task = await Task.WhenAny(asyncTryCatchFunc(), Task.Delay(-1, cancellationTokenSource.Token));
+        var task = await Task.WhenAny(asyncTryCatchFunc(), Task.Delay(-1, TestToken));
         True(task.IsCompletedSuccessfully);
         Equal("Hello, world!", (string)task.GetResult(DefaultTimeout).Value);
 
@@ -452,7 +464,7 @@ public sealed class LambdaTests : Test
         {
             var hello = DeclareVariable<string>("hello");
             var foo = DeclareVariable<Func<string>>("foo");
-            Assign(hello, "hello".Const());
+            Assign(hello, "hello".Quoted);
             Assign(foo, Expression.Lambda<Func<string>>(hello));
             Return(foo.Invoke());
         });
@@ -467,7 +479,7 @@ public sealed class LambdaTests : Test
         {
             var hello = DeclareVariable<string>("hello");
             var foo = DeclareVariable<Func<string>>("foo");
-            Assign(hello, "hello".Const());
+            Assign(hello, "hello".Quoted);
             Assign(foo, Expression.Lambda<Func<string>>(typeof(string).CallStatic(nameof(string.Concat), hello, ctx[0])));
             Return(foo.Invoke());
         });
@@ -479,10 +491,10 @@ public sealed class LambdaTests : Test
     public static async Task RegressionIssue234()
     {
         var asyncMethod = new Func<Task>(DoAsync).Method;
-        var lambda = AsyncLambda<Func<ValueTask<int>>>(usePooling: true, (ctx, result) =>
+        var lambda = AsyncLambda<Func<ValueTask<int>>>(usePooling: true, (_, result) =>
         {
             Await(Expression.Call(asyncMethod));
-            Assign(result, 42.Const());
+            Assign(result, 42.Quoted);
         }).Compile();
 
         Equal(42, await lambda.Invoke());

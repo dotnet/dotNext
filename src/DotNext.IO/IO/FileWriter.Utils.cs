@@ -7,7 +7,7 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.IO;
 
-using Intrinsics = Runtime.Intrinsics;
+using Runtime.CompilerServices;
 
 public partial class FileWriter : IDynamicInterfaceCastable
 {
@@ -140,7 +140,7 @@ public partial class FileWriter : IDynamicInterfaceCastable
     [ExcludeFromCodeCoverage]
     bool IDynamicInterfaceCastable.IsInterfaceImplemented(RuntimeTypeHandle interfaceType, bool throwIfNotImplemented)
     {
-        if (interfaceType.IsOneOf([Intrinsics.TypeOf<IReadOnlyList<ReadOnlyMemory<byte>>>(), Intrinsics.TypeOf<IValueTaskSource>()]))
+        if (interfaceType.IsOneOf(IReadOnlyList<ReadOnlyMemory<byte>>.TypeId, IValueTaskSource.TypeId))
             return true;
 
         return throwIfNotImplemented ? throw new InvalidCastException() : false;
@@ -149,11 +149,11 @@ public partial class FileWriter : IDynamicInterfaceCastable
     [ExcludeFromCodeCoverage]
     RuntimeTypeHandle IDynamicInterfaceCastable.GetInterfaceImplementation(RuntimeTypeHandle interfaceType)
     {
-        if (interfaceType.IsOneOf([Intrinsics.TypeOf<IReadOnlyList<ReadOnlyMemory<byte>>>(), Intrinsics.TypeOf<IReadOnlyCollection<ReadOnlyMemory<byte>>>()]))
-            return Intrinsics.TypeOf<IBufferList>();
+        if (interfaceType.IsOneOf(IReadOnlyList<ReadOnlyMemory<byte>>.TypeId, IReadOnlyCollection<ReadOnlyMemory<byte>>.TypeId))
+            return IBufferList.TypeId;
 
-        if (interfaceType.Equals(Intrinsics.TypeOf<IValueTaskSource>()))
-            return Intrinsics.TypeOf<IProxyValueTaskSource>();
+        if (interfaceType.Equals(IValueTaskSource.TypeId))
+            return IProxyValueTaskSource.TypeId;
 
         throw new InvalidCastException();
     }

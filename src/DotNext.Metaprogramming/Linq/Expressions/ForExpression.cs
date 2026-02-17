@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions;
 
-using List = Collections.Generic.List;
+using Collections.Generic;
 
 /// <summary>
 /// Represents <c>for</c> loop as expression.
@@ -122,8 +122,6 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
         ForExpression ISupplier<ForExpression>.Invoke() => Build();
     }
 
-    private Expression? body;
-
     internal ForExpression(Expression initialization, LabelTarget continueLabel, LabelTarget breakLabel, LoopBuilder.Condition condition)
     {
         Initialization = initialization;
@@ -138,7 +136,7 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     internal ForExpression(Expression initialization, IBuilder builder)
         : this(initialization, builder.ContinueLabel, builder.BreakLabel, builder.MakeCondition)
     {
-        body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
+        Body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
     }
 
     /// <summary>
@@ -178,12 +176,12 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>
-    /// Always returns <see cref="void"/>.
+    /// Always returns <see langword="void"/>.
     /// </summary>
     public override Type Type => typeof(void);
 
@@ -196,6 +194,6 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     {
         Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));
         body = Loop(body, BreakLabel);
-        return Block(typeof(void), List.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
+        return Block(typeof(void), IReadOnlyList<ParameterExpression>.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
     }
 }

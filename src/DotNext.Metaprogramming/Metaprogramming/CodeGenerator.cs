@@ -39,7 +39,7 @@ public static class CodeGenerator
     /// This method installs breakpoint in DEBUG configuration.
     /// </remarks>
     [Conditional("DEBUG")]
-    public static void Breakpoint() => Statement(ExpressionBuilder.Breakpoint());
+    public static void Breakpoint() => Statement(Expression.Breakpoint);
 
     /// <summary>
     /// Writes line of the text into <see cref="Console.Out"/>.
@@ -228,7 +228,7 @@ public static class CodeGenerator
     /// <typeparam name="T">The type of the constant.</typeparam>
     /// <param name="value">The value to be placed as statement.</param>
     public static void InPlaceValue<T>(T value)
-        => Statement(value.Const());
+        => Statement(value.Quoted);
 
     /// <summary>
     /// Adds local variable assignment operation this scope.

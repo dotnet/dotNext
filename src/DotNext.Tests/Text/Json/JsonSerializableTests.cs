@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 
 namespace DotNext.Text.Json;
 
+using Buffers;
 using IO;
 using Runtime.Serialization;
 
@@ -72,9 +73,9 @@ public sealed class JsonSerializableTests : Test
 
     private static void Equal(JsonSerializable<TestJsonObject> expected, JsonSerializable<TestJsonObject> actual)
     {
-        Equal(expected.Value.BoolField, actual.Value.BoolField);
-        Equal(expected.Value.IntegerValue, actual.Value.IntegerValue);
-        Equal(expected.Value.StringField, actual.Value.StringField);
+        Equal(expected.Value?.BoolField, actual.Value?.BoolField);
+        Equal(expected.Value?.IntegerValue, actual.Value?.IntegerValue);
+        Equal(expected.Value?.StringField, actual.Value?.StringField);
     }
 
     [Fact]
@@ -88,7 +89,7 @@ public sealed class JsonSerializableTests : Test
         JsonSerializable<TestJsonObject> actual;
         await using (var stream = await SerializeToStreamAsync(expected))
         {
-            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(stream);
+            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(stream, token: TestToken);
         }
 
         Equal(expected, actual);
@@ -103,7 +104,7 @@ public sealed class JsonSerializableTests : Test
         };
 
         var memory = await SerializeToMemoryAsync(expected);
-        Equal(expected, await JsonSerializable<TestJsonObject>.ReadFromAsync(IAsyncBinaryReader.Create(memory)));
+        Equal(expected, await JsonSerializable<TestJsonObject>.ReadFromAsync(new SequenceReader(memory), TestToken));
     }
 
     [Theory]
@@ -119,7 +120,7 @@ public sealed class JsonSerializableTests : Test
         JsonSerializable<TestJsonObject> actual;
         using (var reader = await SerializeToFileAsync(expected, hideLengthInfo))
         {
-            actual = await JsonSerializable<TestJsonObject>.ReadFromAsync(reader);
+            actual = await JsonSerializable<TestJsonObject>.ReadFromAsync(reader, token: TestToken);
         }
 
         Equal(expected, actual);
@@ -136,7 +137,7 @@ public sealed class JsonSerializableTests : Test
         JsonSerializable<TestJsonObject> actual;
         await using (var stream = await SerializeToStreamAsync(expected))
         {
-            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(PipeReader.Create(stream));
+            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(PipeReader.Create(stream), TestToken);
         }
 
         Equal(expected, actual);

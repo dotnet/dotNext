@@ -4,8 +4,7 @@ using Patterns;
 
 partial class QueuedSynchronizer
 {
-    private interface IValueTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>,
-        ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>;
+    private interface IValueTaskFactory : IValueTaskFactory<bool>;
     
     private sealed class CanceledTaskFactory : IValueTaskFactory, ISingleton<CanceledTaskFactory>
     {
@@ -65,6 +64,10 @@ partial class QueuedSynchronizer
     {
         public static CompletedTaskFactory Instance { get; } = new();
 
+        private CompletedTaskFactory()
+        {
+        }
+
         ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
             => ValueTask.CompletedTask;
 
@@ -72,14 +75,35 @@ partial class QueuedSynchronizer
             => ValueTask.FromResult(true);
     }
     
-    private sealed class ConcurrencyLimitReachedTaskFactory : IValueTaskFactory, ISingleton<ConcurrencyLimitReachedTaskFactory>
+    private protected interface IExceptionFactory
     {
-        public static ConcurrencyLimitReachedTaskFactory Instance { get; } = new();
+        static abstract Exception CreateException();
+    }
+
+    private protected readonly ref struct DefaultExceptionFactory<TException> : IExceptionFactory
+        where TException : Exception, new()
+    {
+        static Exception IExceptionFactory.CreateException() => new TException();
+    }
+
+    private readonly ref struct ConcurrencyLimitReachedExceptionFactory : IExceptionFactory
+    {
+        static Exception IExceptionFactory.CreateException() => new ConcurrencyLimitReachedException();
+    }
+    
+    private sealed class ExceptionTaskFactory<TFactory> : IValueTaskFactory, ISingleton<ExceptionTaskFactory<TFactory>>
+        where TFactory : IExceptionFactory, allows ref struct
+    {
+        public static ExceptionTaskFactory<TFactory> Instance { get; } = new();
+
+        private ExceptionTaskFactory()
+        {
+        }
 
         ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan arg1, CancellationToken arg2)
-            => ValueTask.FromException(new ConcurrencyLimitReachedException());
+            => ValueTask.FromException(TFactory.CreateException());
 
         ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan arg1, CancellationToken arg2)
-            => ValueTask.FromException<bool>(new ConcurrencyLimitReachedException());
+            => ValueTask.FromException<bool>(TFactory.CreateException());
     }
 }

@@ -1,9 +1,10 @@
-using System.Collections.Frozen;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
+
+using Collections.Generic;
 
 [DebuggerDisplay($"Source = {{{nameof(source)}}}")]
 [DebuggerTypeProxy(typeof(DebugView))]
@@ -26,5 +27,5 @@ public partial struct UserDataStorage
     /// <returns>The copy of all custom data.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyDictionary<string, object> Capture()
-        => GetStorage()?.Dump() ?? FrozenDictionary<string, object>.Empty;
+        => GetStorage()?.Dump() ?? IReadOnlyDictionary<string, object>.Empty;
 }

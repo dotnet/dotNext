@@ -1,5 +1,9 @@
-﻿namespace DotNext;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
+namespace DotNext;
+
+using Runtime;
 using Runtime.CompilerServices;
 
 public sealed class ResultTests : Test
@@ -161,6 +165,12 @@ public sealed class ResultTests : Test
         type = Result.GetUnderlyingType(typeof(Result<string>));
         Equal(typeof(string), type);
 
+        type = Result.GetUnderlyingType(typeof(Result<string>.Ok));
+        Equal(typeof(string), type);
+
+        type = Result.GetUnderlyingType(typeof(Result<string>.Failure));
+        Equal(typeof(string), type);
+
         type = Result.GetUnderlyingType(typeof(Result<float, EnvironmentVariableTarget>));
         Equal(typeof(float), type);
     }
@@ -225,7 +235,7 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
-    public unsafe static void ConvertToResultWithErrorCode()
+    public static unsafe void ConvertToResultWithErrorCode()
     {
         // Standard conversion
         Result<string, EnvironmentVariableTarget> validStringResult = "20";
@@ -267,20 +277,60 @@ public sealed class ResultTests : Test
     public static void HandleException()
     {
         Result<int> result = 20;
-        Equal(20, result.OrInvoke(static e => 10));
+        Equal(20, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(20, result.OrInvoke(&GetValue));
+        }
 
         result = new(new ArithmeticException());
-        Equal(10, result.OrInvoke(static e => 10));
+        Equal(10, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(10, result.OrInvoke(&GetValue));
+        }
+        
+        static int GetValue(Exception error)
+        {
+            NotNull(error);
+            return 10;
+        }
     }
 
     [Fact]
     public static void HandleException2()
     {
         Result<int, EnvironmentVariableTarget> result = 20;
-        Equal(20, result.OrInvoke(static e => 10));
+        Equal(20, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(20, result.OrInvoke(&GetValue));
+        }
 
         result = new(EnvironmentVariableTarget.Machine);
-        Equal(10, result.OrInvoke(static e => 10));
+        Equal(10, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(10, result.OrInvoke(&GetValue));
+        }
+
+        Throws<ArithmeticException>(() => result.OrThrow(Throw));
+        unsafe
+        {
+            Throws<ArithmeticException>(() => result.OrThrow(&Throw));
+        }
+
+        static ArithmeticException Throw(EnvironmentVariableTarget error)
+        {
+            NotEqual(EnvironmentVariableTarget.Process, error);
+            return new();
+        }
+
+        static int GetValue(EnvironmentVariableTarget error)
+        {
+            NotEqual(EnvironmentVariableTarget.Process, error);
+            return 10;
+        }
     }
 
     [Fact]
@@ -291,19 +341,26 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
-    public static void ResultToDelegate()
+    public static void DynamicInvokeResult()
     {
-        IFunctional<Func<object>> functional = Result.FromException<int>(new Exception());
-        Null(functional.ToDelegate().Invoke());
+        IFunctional functional = Result.FromException<int>(new Exception());
+        object result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
 
         functional = new Result<int>(42);
-        Equal(42, functional.ToDelegate().Invoke());
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Equal(42, result);
 
         functional = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
-        Null(functional.ToDelegate().Invoke());
+        result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
 
         functional = new Result<int, EnvironmentVariableTarget>();
-        NotNull(functional.ToDelegate().Invoke());
+        result = null;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        NotNull(result);
     }
 
     private static TResult FromError<TError, TResult>(TError error)
@@ -342,5 +399,56 @@ public sealed class ResultTests : Test
 
         result = Result.FromValue("").EnsureNotNull();
         True(result.IsSuccessful);
+    }
+
+    [Fact]
+    public static void FromInputMonads()
+    {
+        var result = Result<int>.Create<Result<int>.Ok>(42);
+        Equal(42, result.Value);
+
+        result = Result<int>.Create<Result<int>>(42);
+        Equal(42, result.Value);
+
+        result = Result<int>.Create<Result<int>.Failure>(new Exception());
+        False(result.IsSuccessful);
+        NotNull(result.Error);
+    }
+
+    public static TheoryData<IResultMonad<int>> SuccessfulResults =>
+    [
+        new Result<int>(42),
+        new Result<int>.Ok(42),
+    ];
+
+    [Theory]
+    [MemberData(nameof(SuccessfulResults))]
+    public static void SuccessfulResultInterfaceMembers(IResultMonad<int> result)
+    {
+        True(result.HasValue);
+        Equal(42, result.Value);
+        Equal(42, result.ValueOrDefault);
+        Equal(42, result.OrInvoke(static _ => 56));
+        Null(result.Error);
+        True(result.TryGet(out var value));
+        Equal(42, value);
+    }
+
+    public static TheoryData<IResultMonad<int>> UnsuccessfulResults =>
+    [
+        new Result<int>(new ArithmeticException()),
+        new Result<int>.Failure(new ArithmeticException())
+    ];
+
+    [Theory]
+    [MemberData(nameof(UnsuccessfulResults))]
+    public static void UnsuccessfulResultInterfaceMembers(IResultMonad<int> result)
+    {
+        False(result.HasValue);
+        Throws<ArithmeticException>(() => result.Value);
+        Equal(0, result.ValueOrDefault);
+        Equal(56, result.OrInvoke(static _ => 56));
+        IsType<ArithmeticException>(result.Error);
+        False(result.TryGet(out _));
     }
 }

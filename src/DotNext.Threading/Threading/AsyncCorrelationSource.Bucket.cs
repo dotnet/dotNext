@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
-using Numerics;
 using Tasks;
 
 public partial class AsyncCorrelationSource<TKey, TValue>
@@ -57,11 +55,12 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
     private sealed class Bucket : IConsumer<WaitNode>
     {
+        private readonly System.Threading.Lock syncRoot = new();
         private WaitNode? first, last, pooled;
 
         private void Add(WaitNode node)
         {
-            Debug.Assert(Monitor.IsEntered(this));
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
             if (last is null)
             {
@@ -76,7 +75,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         private void Remove(WaitNode node)
         {
-            Debug.Assert(Monitor.IsEntered(this));
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
             if (ReferenceEquals(first, node))
                 first = node.Next;
@@ -87,21 +86,35 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             node.Detach();
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         void IConsumer<WaitNode>.Invoke(WaitNode node)
+        {
+            lock (syncRoot)
+            {
+                OnCompleted(node);
+            }
+        }
+
+        private void OnCompleted(WaitNode node)
         {
             if (node.NeedsRemoval)
                 Remove(node);
 
-            if (pooled is null && node.TryReset(out var freshToken))
+            if (pooled is null)
             {
-                node.CompletionToken = freshToken;
+                node.CompletionToken = node.Reset();
                 pooled = node;
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         internal WaitNode? Remove(TKey expected, IEqualityComparer<TKey>? comparer, out short completionToken)
+        {
+            lock (syncRoot)
+            {
+                return RemoveCore(expected, comparer, out completionToken);
+            }
+        }
+
+        private WaitNode? RemoveCore(TKey expected, IEqualityComparer<TKey>? comparer, out short completionToken)
         {
             for (WaitNode? current = first, next; current is not null; current = next)
             {
@@ -114,26 +127,40 @@ public partial class AsyncCorrelationSource<TKey, TValue>
                 }
             }
 
-            completionToken = default;
+            completionToken = 0;
             return null;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal unsafe void Drain<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
+        internal void Drain<TResult>(TResult arg)
+            where TResult : struct, IResultMonad<TValue>
         {
-            Debug.Assert(action != null);
+            lock (syncRoot)
+            {
+                DrainCore(arg);
+            }
+        }
 
+        private void DrainCore<TResult>(TResult arg)
+            where TResult : struct, IResultMonad<TValue>
+        {
             for (LinkedValueTaskCompletionSource<TValue>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
-                action(current, arg);
+                current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), arg);
             }
 
             first = last = null;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         internal WaitNode CreateNode(TKey eventId, object? userData)
+        {
+            lock (syncRoot)
+            {
+                return CreateNodeCore(eventId, userData);
+            }
+        }
+
+        private WaitNode CreateNodeCore(TKey eventId, object? userData)
         {
             WaitNode node;
             if (pooled is null)

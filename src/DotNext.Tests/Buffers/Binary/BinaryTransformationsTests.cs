@@ -95,14 +95,14 @@ public sealed class BinaryTransformationsTests : Test
     [InlineData(3)]
     public static void BitwiseXor(int size)
     {
-        var x = new uint[size];
-        Random.Shared.NextBytes(MemoryMarshal.AsBytes(x.AsSpan()));
+        Span<uint> x = new uint[size];
+        Random.Shared.NextBytes(MemoryMarshal.AsBytes(x));
 
-        var y = new uint[size];
-        Random.Shared.NextBytes(MemoryMarshal.AsBytes(y.AsSpan()));
+        Span<uint> y = new uint[size];
+        Random.Shared.NextBytes(MemoryMarshal.AsBytes(y));
 
         var expected = BitwiseXorSlow(x, y);
-        BinaryTransformations.BitwiseXor<uint>(x, y);
+        x.BitwiseXor(y);
         Equal(expected, y);
 
         static uint[] BitwiseXorSlow(ReadOnlySpan<uint> x, ReadOnlySpan<uint> y)
@@ -123,11 +123,11 @@ public sealed class BinaryTransformationsTests : Test
     [InlineData(3)]
     public static void OnesComplement(int size)
     {
-        var x = new uint[size];
-        Random.Shared.NextBytes(MemoryMarshal.AsBytes(x.AsSpan()));
+        Span<uint> x = new uint[size];
+        Random.Shared.NextBytes(MemoryMarshal.AsBytes<uint>(x));
 
         var expected = OnesComplementSlow(x);
-        BinaryTransformations.OnesComplement<uint>(x);
+        x.OnesComplement();
         Equal(expected, x);
 
         static uint[] OnesComplementSlow(ReadOnlySpan<uint> x)

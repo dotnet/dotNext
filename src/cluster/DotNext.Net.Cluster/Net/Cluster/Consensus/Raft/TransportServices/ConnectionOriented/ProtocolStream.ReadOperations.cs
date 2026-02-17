@@ -119,7 +119,7 @@ internal partial class ProtocolStream
         var count = Math.Min(frameSize, bufferEnd - bufferStart);
         if (count > 0)
         {
-            buffer.Span.Slice(bufferStart, count).CopyTo(output, out count);
+            count = buffer.Span.Slice(bufferStart, count) >> output;
             bufferStart += count;
             frameSize -= count;
         }

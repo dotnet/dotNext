@@ -10,7 +10,7 @@ public class ReadOnlySequencePartitionerTests : Test
     public static void ParallelProcessing(bool splitOnSegments, int chunkSize)
     {
         var values = new int[1025];
-        values.AsSpan().ForEach(static (ref int element, int index) => element = index);
+        values.ForEach(static (element, index) => element.Value = index);
 
         var partitioner = ToReadOnlySequence<int>(values, chunkSize).CreatePartitioner(splitOnSegments);
 

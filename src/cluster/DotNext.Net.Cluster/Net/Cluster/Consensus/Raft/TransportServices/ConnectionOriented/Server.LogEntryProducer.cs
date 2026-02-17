@@ -56,7 +56,7 @@ internal partial class Server
                 ? ref this.buffer
                 : ref MemoryMarshal.GetArrayDataReference(pinnedBuffer);
 
-            return Span.AsBytes(ref buffer);
+            return Buffer.AsBytes(ref buffer);
         }
 
         public override unsafe MemoryHandle Pin(int elementIndex = 0)
@@ -100,8 +100,6 @@ internal partial class Server
         long? IDataTransferObject.Length => metadata.Length;
 
         bool IDataTransferObject.IsReusable => false;
-
-        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
         int? IRaftLogEntry.CommandId => metadata.CommandId;
 

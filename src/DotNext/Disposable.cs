@@ -12,28 +12,27 @@ namespace DotNext;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
 public abstract class Disposable : IDisposable
 {
-    private const int NotDisposedState = 0;
-    private const int DisposingState = 1;
-    private const int DisposedState = 2;
-
-    private volatile int state;
+    private volatile ObjectState state;
 
     /// <summary>
     /// Indicates that this object is disposed.
     /// </summary>
-    protected bool IsDisposed => state is DisposedState;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    protected bool IsDisposed => state is ObjectState.Disposed;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called but not yet completed.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    protected bool IsDisposing => state is DisposingState;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    protected bool IsDisposing => state is ObjectState.Disposing;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    protected bool IsDisposingOrDisposed => state is not NotDisposedState;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    protected bool IsDisposingOrDisposed => state is not ObjectState.NotDisposed;
 
     private string ObjectName => GetType().Name;
 
@@ -79,7 +78,7 @@ public abstract class Disposable : IDisposable
     /// </summary>
     /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
     protected virtual void Dispose(bool disposing)
-        => state = DisposedState;
+        => state = ObjectState.Disposed;
 
     /// <summary>
     /// Releases managed resources associated with this object asynchronously.
@@ -109,10 +108,10 @@ public abstract class Disposable : IDisposable
     /// can be trivially implemented through delegation of the call to this method.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) switch
+    protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref state, ObjectState.Disposing, ObjectState.NotDisposed) switch
     {
-        NotDisposedState => DisposeAsyncImpl(),
-        DisposingState => DisposeAsyncCore(),
+        ObjectState.NotDisposed => DisposeAsyncImpl(),
+        ObjectState.Disposing => DisposeAsyncCore(),
         _ => ValueTask.CompletedTask,
     };
 
@@ -122,7 +121,7 @@ public abstract class Disposable : IDisposable
     /// <returns><see langword="true"/> if cleanup operations can be performed; <see langword="false"/> if the object is already disposing.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     protected bool TryBeginDispose()
-        => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) is NotDisposedState;
+        => Interlocked.CompareExchange(ref state, ObjectState.Disposing, ObjectState.NotDisposed) is ObjectState.NotDisposed;
 
     /// <summary>
     /// Releases all resources associated with this object.
@@ -134,14 +133,24 @@ public abstract class Disposable : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private static void Dispose<TDisposable, TEnumerator>(TEnumerator enumerator)
+        where TDisposable : IDisposable?
+        where TEnumerator : IEnumerator<TDisposable>, allows ref struct
+    {
+        while (enumerator.MoveNext())
+        {
+            enumerator.Current?.Dispose();
+        }
+    }
+
     /// <summary>
     /// Disposes many objects.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
     public static void Dispose(IEnumerable<IDisposable?> objects)
     {
-        foreach (var obj in objects)
-            obj?.Dispose();
+        using var enumerator = objects.GetEnumerator();
+        Dispose(enumerator);
     }
 
     /// <summary>
@@ -149,7 +158,7 @@ public abstract class Disposable : IDisposable
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
+    public static async ValueTask DisposeAsync(params IEnumerable<IAsyncDisposable?> objects)
     {
         foreach (var obj in objects)
         {
@@ -162,23 +171,19 @@ public abstract class Disposable : IDisposable
     /// Disposes many objects in safe manner.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
-    public static void Dispose<T>(ReadOnlySpan<T> objects)
-        where T : IDisposable?
-    {
-        foreach (var obj in objects)
-            obj?.Dispose();
-    }
-
-    /// <summary>
-    /// Disposes many objects in safe manner.
-    /// </summary>
-    /// <param name="objects">An array of objects to dispose.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
-        => DisposeAsync(objects.AsEnumerable());
+    public static void Dispose<TDisposable>(params ReadOnlySpan<TDisposable> objects)
+        where TDisposable : IDisposable?
+        => Dispose<TDisposable, ReadOnlySpan<TDisposable>.Enumerator>(objects.GetEnumerator());
 
     /// <summary>
     /// Finalizes this object.
     /// </summary>
     ~Disposable() => Dispose(false);
+    
+    private enum ObjectState
+    {
+        NotDisposed = 0,
+        Disposing,
+        Disposed,
+    }
 }

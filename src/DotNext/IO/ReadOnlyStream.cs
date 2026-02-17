@@ -90,7 +90,7 @@ internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, Cancellation
         }
         else
         {
-            var tempBuffer = Memory.AllocateExactly<byte>(buffer.Length);
+            var tempBuffer = MemoryAllocator<byte>.Default.AllocateExactly(buffer.Length);
             timeoutSource ??= new();
             timeoutSource.CancelAfter(timeout);
             var task = ReadAsync(tempBuffer.Memory, timeoutSource.Token);

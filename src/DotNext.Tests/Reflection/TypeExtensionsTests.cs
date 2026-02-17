@@ -7,16 +7,16 @@ public sealed class TypeExtensionsTests : Test
     [Fact]
     public static void DelegateSignature()
     {
-        var signature = DelegateType.GetInvokeMethod<Func<int, string>>();
+        var signature = Func<int, string>.InvokeMethod;
         NotNull(signature);
         Equal(typeof(int), signature.GetParameters()[0].ParameterType);
-        Equal(typeof(string), signature.ReturnParameter.ParameterType);
+        Equal(typeof(string), signature.ReturnParameter?.ParameterType);
     }
 
     [Fact]
     public static void InvokeInvalidDelegate()
     {
-        var ex = ThrowsAny<GenericArgumentException>(static () => DelegateType.GetInvokeMethod<MulticastDelegate>());
+        var ex = ThrowsAny<GenericArgumentException>(DelegateType.get_InvokeMethod<MulticastDelegate>);
         Same(typeof(MulticastDelegate), ex.Argument);
     }
 
@@ -59,31 +59,31 @@ public sealed class TypeExtensionsTests : Test
     [Fact]
     public static void IsUnmanaged()
     {
-        True(typeof(IntPtr).IsUnmanaged());
-        True(typeof(UIntPtr).IsUnmanaged());
-        True(typeof(bool).IsUnmanaged());
-        True(typeof(Guid).IsUnmanaged());
-        True(typeof(DateTime).IsUnmanaged());
-        True(typeof((int, int)).IsUnmanaged());
-        True(typeof(Int128).IsUnmanaged());
-        True(typeof(UInt128).IsUnmanaged());
-        True(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
-        False(typeof(ManagedStruct).IsUnmanaged());
-        False(typeof((int, string)).IsUnmanaged());
+        True(typeof(IntPtr).IsUnmanaged);
+        True(typeof(UIntPtr).IsUnmanaged);
+        True(typeof(bool).IsUnmanaged);
+        True(typeof(Guid).IsUnmanaged);
+        True(typeof(DateTime).IsUnmanaged);
+        True(typeof((int, int)).IsUnmanaged);
+        True(typeof(Int128).IsUnmanaged);
+        True(typeof(UInt128).IsUnmanaged);
+        True(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged);
+        False(typeof(ManagedStruct).IsUnmanaged);
+        False(typeof((int, string)).IsUnmanaged);
         var method = new Func<int>(SizeOf<long>).Method;
         method = method.GetGenericMethodDefinition();
-        True(method.GetGenericArguments()[0].IsUnmanaged());
+        True(method.GetGenericArguments()[0].IsUnmanaged);
     }
 
     [Fact]
     public static void IsImmutable()
     {
-        True(typeof(ReadOnlySpan<int>).IsImmutable());
-        True(typeof(Guid).IsImmutable());
-        True(typeof(long).IsImmutable());
-        True(typeof(void*).IsImmutable());
-        True(typeof(void).MakeByRefType().IsImmutable());
-        True(typeof(EnvironmentVariableTarget).IsImmutable());
+        True(typeof(ReadOnlySpan<int>).IsImmutable);
+        True(typeof(Guid).IsImmutable);
+        True(typeof(long).IsImmutable);
+        True(typeof(void*).IsImmutable);
+        True(typeof(void).MakeByRefType().IsImmutable);
+        True(typeof(EnvironmentVariableTarget).IsImmutable);
     }
 
     [Fact]
@@ -132,10 +132,10 @@ public sealed class TypeExtensionsTests : Test
     [Fact]
     public static void DefaultValues()
     {
-        Null(typeof(string).GetDefaultValue());
-        Null(typeof(void*).GetDefaultValue());
-        Equal(0, typeof(int).GetDefaultValue());
-        Equal((nuint)0, typeof(nuint).GetDefaultValue());
-        Equal(Guid.Empty, typeof(Guid).GetDefaultValue());
+        Null(typeof(string).DefaultValue);
+        Null(typeof(void*).DefaultValue);
+        Equal(0, typeof(int).DefaultValue);
+        Equal((nuint)0, typeof(nuint).DefaultValue);
+        Equal(Guid.Empty, typeof(Guid).DefaultValue);
     }
 }

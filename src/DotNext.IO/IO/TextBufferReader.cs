@@ -8,7 +8,7 @@ internal abstract class TextBufferReader : TextReader
 
     public sealed override int Read()
     {
-        var result = default(char);
+        var result = '\0';
         return Read(MemoryMarshal.CreateSpan(ref result, 1)) > 0 ? result : InvalidChar;
     }
 
@@ -86,7 +86,7 @@ internal abstract class TextBufferReader : TextReader
         Task<string> result;
         try
         {
-            result = Task.FromResult<string>(ReadToEnd());
+            result = Task.FromResult(ReadToEnd());
         }
         catch (Exception e)
         {
@@ -101,7 +101,7 @@ internal abstract class TextBufferReader : TextReader
         Task<string?> result;
         try
         {
-            result = Task.FromResult<string?>(ReadLine());
+            result = Task.FromResult(ReadLine());
         }
         catch (Exception e)
         {

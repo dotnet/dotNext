@@ -53,26 +53,26 @@ public sealed class NumberTests : Test
     [Fact]
     public static void NumberType()
     {
-        True(Number.IsSigned<int>());
-        False(Number.IsSigned<uint>());
+        True(int.IsSigned);
+        False(uint.IsSigned);
     }
 
     [Fact]
     public static void BinarySize()
     {
-        Equal(sizeof(int), Number.GetMaxByteCount<int>());
-        Equal(sizeof(long), Number.GetMaxByteCount<long>());
+        Equal(sizeof(int), int.MaxByteCount);
+        Equal(sizeof(long), long.MaxByteCount);
     }
 
     [Fact]
     public static void IsPrime()
     {
-        False(1L.IsPrime());
-        True(2L.IsPrime());
-        True(Number.IsPrime<sbyte>(3));
-        False(4.IsPrime());
+        False(1L.IsPrime);
+        True(2L.IsPrime);
+        True(((sbyte)3).IsPrime);
+        False(4.IsPrime);
 
-        True(1669.IsPrime());
+        True(1669.IsPrime);
     }
 
     [Theory]

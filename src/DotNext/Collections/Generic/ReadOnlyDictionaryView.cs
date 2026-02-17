@@ -23,16 +23,6 @@ public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput>(IReadOnlyDi
     private readonly Func<TInput, TOutput> mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     /// <summary>
-    /// Initializes a new lazily converted view.
-    /// </summary>
-    /// <param name="dictionary">Read-only dictionary to convert.</param>
-    /// <param name="mapper">Value converter.</param>
-    public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, Converter<TInput, TOutput> mapper)
-        : this(dictionary, Unsafe.As<Func<TInput, TOutput>>(mapper))
-    {
-    }
-
-    /// <summary>
     /// Gets value associated with the key and convert it.
     /// </summary>
     /// <param name="key">The key of the element to get.</param>

@@ -1,10 +1,8 @@
-using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -54,7 +52,7 @@ partial class WriteAheadLog
                         await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
 
                         // everything up to toIndex is flushed, save the commit index
-                        await checkpoint.UpdateAsync(newIndex, token).ConfigureAwait(false);
+                        await checkpoint.UpdateAsync<CheckpointVersion0>(new(newIndex), token).ConfigureAwait(false);
                         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
                     }
                     finally
@@ -91,8 +89,8 @@ partial class WriteAheadLog
     {
         var metadataTask = metadataPages.FlushAsync(fromIndex, toIndex, token).AsTask();
 
-        var toMetadata = metadataPages[toIndex];
-        var fromMetadata = metadataPages[fromIndex];
+        var toMetadata = metadataPages.GetView<MetadataReader>(toIndex).Metadata;
+        var fromMetadata = metadataPages.GetView<MetadataReader>(fromIndex).Metadata;
         var dataTask = dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).AsTask();
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
@@ -103,7 +101,7 @@ partial class WriteAheadLog
     {
         Debug.Assert(flushCompleted is not null);
 
-        var linkedTokenSource = cancellationTokens.Combine([token, lifetimeToken]);
+        var linkedTokenSource = cancellationTokens.Combine(token, lifetimeToken);
         var registration = linkedTokenSource.Token.UnsafeRegister(Signal, flushCompleted);
         try
         {
@@ -235,43 +233,5 @@ partial class WriteAheadLog
         }
 
         static bool IFlushTrigger.IsBackground => false;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private struct Checkpoint : IDisposable
-    {
-        private const string FileName = "checkpoint";
-
-        private readonly SafeFileHandle handle;
-        private readonly byte[] buffer;
-
-        internal Checkpoint(DirectoryInfo location, out long value)
-        {
-            var path = Path.Combine(location.FullName, FileName);
-
-            // read the checkpoint
-            using (var readHandle = File.OpenHandle(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
-                Span<byte> readBuf = stackalloc byte[sizeof(long)];
-                value = RandomAccess.Read(readHandle, readBuf, 0L) >= sizeof(long)
-                    ? BinaryPrimitives.ReadInt64LittleEndian(readBuf)
-                    : 0L;
-            }
-
-            handle = File.OpenHandle(path, FileMode.Open, FileAccess.Write, options: FileOptions.Asynchronous | FileOptions.WriteThrough);
-            buffer = GC.AllocateArray<byte>(sizeof(long), pinned: true);
-        }
-
-        public ValueTask UpdateAsync(long value, CancellationToken token)
-        {
-            BinaryPrimitives.WriteInt64LittleEndian(buffer, value);
-            return RandomAccess.WriteAsync(handle, buffer, fileOffset: 0L, token);
-        }
-
-        public void Dispose()
-        {
-            handle?.Dispose();
-            this = default;
-        }
     }
 }

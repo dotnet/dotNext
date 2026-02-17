@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
+using DotNext.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using List = Collections.Generic.List;
+using Collections.Generic;
 
 /// <summary>
 /// Represents expression that is protected by null check, e.g. safe navigation operator (?. in C#).
@@ -11,7 +12,6 @@ public sealed class NullSafetyExpression : CustomExpression
 {
     private readonly BinaryExpression? assignment;
     private readonly bool alwaysNotNull;
-    private Expression? body;
 
     internal NullSafetyExpression(Expression target)
     {
@@ -56,19 +56,18 @@ public sealed class NullSafetyExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>
     /// Gets type of this expression.
     /// </summary>
-    public override Type Type
-    {
-        get => alwaysNotNull || Body.Type == typeof(void) || Body.Type is { IsClass: true } or { IsInterface: true } || Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null ?
-            Body.Type :
-            typeof(Nullable<>).MakeGenericType(Body.Type);
-    }
+    public override Type Type =>
+        alwaysNotNull || Body.Type is { IsClass: true } or { IsVoid: true } or { IsInterface: true } ||
+        Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null
+            ? Body.Type
+            : typeof(Nullable<>).MakeGenericType(Body.Type);
 
     /// <summary>
     /// Reconstructs expression with a new body.
@@ -93,9 +92,9 @@ public sealed class NullSafetyExpression : CustomExpression
         if (alwaysNotNull)
             return Body;
         var body = Body.Type.IsValueType ? Convert(Body, Type) : Body;
-        Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
+        Expression conditional = Condition(Target.IsNotNull, body, Default(body.Type));
         return assignment is null ?
             conditional :
-            Block(body.Type, List.Singleton(Target), assignment, conditional);
+            Block(body.Type, IReadOnlyList<ParameterExpression>.Singleton(Target), assignment, conditional);
     }
 }

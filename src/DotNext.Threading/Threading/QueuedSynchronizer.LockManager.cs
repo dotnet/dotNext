@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Runtime.ExceptionServices;
-
 namespace DotNext.Threading;
 
 partial class QueuedSynchronizer
@@ -10,14 +7,24 @@ partial class QueuedSynchronizer
         bool IsLockAllowed { get; }
 
         void AcquireLock();
+
+        static virtual bool RequiresEmptyQueue => true;
     }
 
-    private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
-        where TLockManager : struct, ILockManager
+    private protected interface ILockManager<in TNode> : ILockManager
+        where TNode : WaitNode
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        static virtual void Initialize(TNode node)
+        {
+        }
+    }
 
-        if (IsEmptyQueue && manager.IsLockAllowed)
+    private bool TryAcquire<TLockManager>(TLockManager manager)
+        where TLockManager : struct, ILockManager, allows ref struct
+    {
+        AssertInternalLockState();
+
+        if ((!TLockManager.RequiresEmptyQueue || IsEmptyQueue) && manager.IsLockAllowed)
         {
             manager.AcquireLock();
             return true;
@@ -26,117 +33,57 @@ partial class QueuedSynchronizer
         return false;
     }
 
-    // TODO: Migrate to ref struct
-    private T AcquireAsync<T, TBuilder, TNode, TLockManager>(ref TBuilder builder, ref TLockManager manager)
+    private protected System.Threading.Lock.Scope TryAcquire<TLockManager>(TLockManager manager, out bool acquired)
+        where TLockManager : struct, ILockManager, allows ref struct
+    {
+        var scope = waitQueue.SyncRoot.EnterScope();
+        acquired = TryAcquire(manager);
+        return scope;
+    }
+
+    private protected T EndAcquisition<T, TBuilder, TNode, TLockManager>(ref TBuilder builder, scoped TLockManager manager)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
-        where TBuilder : struct, ITaskBuilder<T>
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
+        where TLockManager : struct, ILockManager<TNode>, allows ref struct
     {
         switch (builder.IsCompleted)
         {
             case true:
                 goto default;
-            case false when Acquire<T, TBuilder, TNode>(ref builder, TryAcquire(ref manager)) is { } node:
-                manager.Invoke(node);
+            case false when Acquire<T, TBuilder, TNode>(ref builder, TryAcquire(manager)) is { } node:
+                TLockManager.Initialize(node);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return builder.Build();
+        }
+    }
+
+    private protected T EndAcquisition<T, TBuilder, TNode, TLockManager>(
+        PendingTaskInterruptedException e,
+        ref TBuilder builder,
+        TLockManager manager)
+        where T : struct, IEquatable<T>
+        where TNode : WaitNode, new()
+        where TBuilder : struct, ITaskBuilder<T>, IWaitQueueProvider, allows ref struct
+        where TLockManager : struct, ILockManager<TNode>, allows ref struct
+    {
+        WaitQueueScope scope;
+        if (builder.IsCompleted)
+        {
+            scope = default;
+        }
+        else
+        {
+            scope = builder.CaptureWaitQueue();
+            scope.SignalAll(e);
+
+            if (Acquire<T, TBuilder, TNode>(ref builder, TryAcquire(manager)) is { } node)
+                TLockManager.Initialize(node);
         }
 
-        return builder.Invoke();
-    }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager>(ref TLockManager manager, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var builder = CreateTaskBuilder(timeout, token);
-        return AcquireAsync<ValueTask, TimeoutAndCancellationToken, TNode, TLockManager>(ref builder, ref manager);
-    }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager>(ref TLockManager manager, CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var builder = CreateTaskBuilder(token);
-        return AcquireAsync<ValueTask, CancellationTokenOnly, TNode, TLockManager>(ref builder, ref manager);
-    }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager>(
-        object? interruptionReason,
-        ref TLockManager manager,
-        TimeSpan timeout,
-        CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
-        ExceptionDispatchInfo.SetCurrentStackTrace(e);
-        
-        var builder = new InterruptingTaskBuilder<ValueTask, TimeoutAndCancellationToken>
-        {
-            Builder = CreateTaskBuilder(timeout, token),
-        };
-
-        DrainWaitQueue(ref builder, e);
-        return AcquireAsync<ValueTask, InterruptingTaskBuilder<ValueTask, TimeoutAndCancellationToken>, TNode, TLockManager>(
-            ref builder,
-            ref manager);
-    }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager>(
-        object? interruptionReason,
-        ref TLockManager manager,
-        CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
-        ExceptionDispatchInfo.SetCurrentStackTrace(e);
-        
-        var builder = new InterruptingTaskBuilder<ValueTask, CancellationTokenOnly>
-        {
-            Builder = CreateTaskBuilder(token),
-        };
-
-        DrainWaitQueue(ref builder, e);
-        return AcquireAsync<ValueTask, InterruptingTaskBuilder<ValueTask, CancellationTokenOnly>, TNode, TLockManager>(
-            ref builder,
-            ref manager);
-    }
-
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager>(
-        ref TLockManager manager,
-        TimeSpan timeout,
-        CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var builder = CreateTaskBuilder(timeout, token);
-        return AcquireAsync<ValueTask<bool>, TimeoutAndCancellationToken, TNode, TLockManager>(ref builder, ref manager);
-    }
-
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager>(
-        object? interruptionReason,
-        ref TLockManager manager,
-        TimeSpan timeout,
-        CancellationToken token)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-    {
-        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
-        ExceptionDispatchInfo.SetCurrentStackTrace(e);
-        
-        var builder = new InterruptingTaskBuilder<ValueTask<bool>, TimeoutAndCancellationToken>
-        {
-            Builder = CreateTaskBuilder(timeout, token),
-        };
-
-        DrainWaitQueue(ref builder, e);
-        return AcquireAsync<ValueTask<bool>, InterruptingTaskBuilder<ValueTask<bool>, TimeoutAndCancellationToken>, TNode, TLockManager>(
-            ref builder,
-            ref manager);
+        var task = builder.Build();
+        scope.ResumeSuspendedCallers();
+        return task;
     }
 }

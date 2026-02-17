@@ -64,7 +64,7 @@ public static class Messenger
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The content of the message.</returns>
     public static Task<string> ReadAsTextAsync(this IMessage message, CancellationToken token = default)
-        => message is TextMessage text ? Task.FromResult(text.Content) : DataTransferObject.ToStringAsync(message, message.Type.GetEncoding(), null, token).AsTask();
+        => message is TextMessage text ? Task.FromResult(text.Content) : message.ToStringAsync(message.Type.Encoding, null, token).AsTask();
 
     /// <summary>
     /// Sends synchronous message with JSON payload.

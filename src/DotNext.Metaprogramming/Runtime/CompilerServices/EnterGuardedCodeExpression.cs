@@ -11,5 +11,5 @@ internal sealed class EnterGuardedCodeExpression(uint stateId) : TransitionExpre
     public override Expression Reduce() => Empty();
 
     internal override Expression Reduce(ParameterExpression stateMachine)
-        => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.EnterGuardedCode), StateId);
+        => stateMachine.Call(nameof(AsyncStateMachine<>.EnterGuardedCode), StateId);
 }

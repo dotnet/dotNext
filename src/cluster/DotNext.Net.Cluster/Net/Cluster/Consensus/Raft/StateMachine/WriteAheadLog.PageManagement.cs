@@ -6,11 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Collections.Concurrent;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Collections.Concurrent;
 using Collections.Generic;
 
 partial class WriteAheadLog
@@ -66,7 +66,7 @@ partial class WriteAheadLog
         public abstract MemoryManager<byte> GetOrAddPage(uint pageIndex);
 
         public MemoryManager<byte> this[uint pageIndex]
-            => TryGetPage(pageIndex) ?? throw new ArgumentOutOfRangeException(nameof(pageIndex));
+            => TryGetPage(pageIndex) ?? throw new MissingPageException(pageIndex);
 
         public abstract MemoryManager<byte>? TryGetPage(uint pageIndex);
 
@@ -78,14 +78,13 @@ partial class WriteAheadLog
         public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<ReadOnlyMemory<byte>>
         {
             public Enumerator GetEnumerator() => new(manager, offset, length);
-
-            private IEnumerator<ReadOnlyMemory<byte>> ToClassicEnumerator()
-                => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<byte>>();
-
+            
+            /// <inheritdoc />
             IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
-                => ToClassicEnumerator();
+                => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
 
-            IEnumerator IEnumerable.GetEnumerator() => ToClassicEnumerator();
+            /// <inheritdoc />
+            IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
 
             public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
             {
@@ -104,7 +103,7 @@ partial class WriteAheadLog
 
                 static ReadOnlySequence<byte> ReadMultiSegment(ref Enumerator enumerator)
                 {
-                    var buffer = new ReadOnlyMemoryArray();
+                    var buffer = new InlineArray3<ReadOnlyMemory<byte>>();
                     var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
                     writer.Add() = enumerator.Current;
 
@@ -113,7 +112,7 @@ partial class WriteAheadLog
                         writer.Add() = enumerator.Current;
                     }
 
-                    return Memory.ToReadOnlySequence(writer.WrittenSpan);
+                    return ReadOnlyMemory<byte>.Concat(writer.WrittenSpan);
                 }
             }
 
@@ -154,12 +153,6 @@ partial class WriteAheadLog
 
                     return false;
                 }
-            }
-
-            [InlineArray(3)]
-            private struct ReadOnlyMemoryArray
-            {
-                private ReadOnlyMemory<byte> element0;
             }
         }
     }
@@ -230,13 +223,15 @@ partial class WriteAheadLog
 
         private readonly nuint alignment;
         private readonly nint madvise;
-        private IndexPool indices;
+        private readonly IndexPool indices;
         private PageCache cache;
 
         public AnonymousPageManager(DirectoryInfo location, int pageSize)
             : base(location, pageSize, GetPages(location, out var pages))
         {
-            indices = new(PageCacheSize - 1);
+            indices = new(PageCacheSize);
+            Debug.Assert(indices.Capacity is PageCacheSize);
+            
             cache = new();
 
             alignment = GetPageAlignment(pageSize, out madvise);
@@ -260,7 +255,7 @@ partial class WriteAheadLog
             }
 
             // place at least one page to the cache
-            if (indices.TryPeek(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 MarkAsHugePageIfSupported(page = new(PageSize, alignment));
                 cache[poolIndex] = page;
@@ -310,7 +305,7 @@ partial class WriteAheadLog
         private AnonymousPage RentPage()
         {
             AnonymousPage page;
-            if (indices.TryTake(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 ref var slot = ref cache[poolIndex];
                 if (slot is null)
@@ -340,18 +335,17 @@ partial class WriteAheadLog
         protected override void ReleasePage(AnonymousPage page)
         {
             var poolIndex = page.PoolIndex;
-            if (poolIndex < 0)
-            {
-                page.As<IDisposable>().Dispose();
-            }
-            else
+            if (poolIndex >= 0)
             {
                 // THP splits the page on discard, skip this behavior for HugePages
                 if (madvise is 0)
                     page.Discard();
-                
-                indices.Return(poolIndex);
+
+                if (indices.TryReturn(poolIndex))
+                    return;
             }
+
+            page.As<IDisposable>().Dispose();
         }
 
         protected override void DeletePage(uint pageIndex, AnonymousPage page)
@@ -385,7 +379,8 @@ partial class WriteAheadLog
         {
             if (disposing)
             {
-                cache.Clear();
+                indices.Freeze();
+                cache.Clear(indices);
             }
 
             base.Dispose(disposing);
@@ -396,15 +391,11 @@ partial class WriteAheadLog
         {
             private AnonymousPage? page0;
 
-            public void Clear()
+            public void Clear(IndexPool indices)
             {
-                foreach (ref var pageRef in this)
+                while (indices.TryGet(out var index))
                 {
-                    if (pageRef is { } page)
-                    {
-                        page.As<IDisposable>().Dispose();
-                        pageRef = null;
-                    }
+                    this[index]?.As<IDisposable>().Dispose();
                 }
             }
         }

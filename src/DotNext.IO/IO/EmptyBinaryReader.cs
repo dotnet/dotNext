@@ -5,8 +5,8 @@ using System.IO.Pipelines;
 namespace DotNext.IO;
 
 using Buffers;
+using Collections.Generic;
 using Patterns;
-using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 using DecodingContext = Text.DecodingContext;
 
 internal sealed class EmptyBinaryReader : IAsyncBinaryReader, ISingleton<EmptyBinaryReader>
@@ -45,7 +45,7 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader, ISingleton<EmptyBi
         => EndOfStream<MemoryOwner<char>>();
 
     IAsyncEnumerable<ReadOnlyMemory<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token)
-        => AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new EndOfStreamException());
+        => IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(new EndOfStreamException());
 
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         => EndOfStream<T>();
@@ -56,7 +56,7 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader, ISingleton<EmptyBi
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => EndOfStream<T>();
 
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => EndOfStream<TResult>();
 
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)

@@ -1,8 +1,7 @@
 using System.Buffers;
+using DotNext.IO;
 
 namespace DotNext.Buffers;
-
-using static IO.StreamSource;
 
 public sealed class SparseBufferWriterTests : Test
 {
@@ -18,7 +17,7 @@ public sealed class SparseBufferWriterTests : Test
         using var writer = new SparseBufferWriter<byte>(128, growth);
         var sequence = ToReadOnlySequence(new ReadOnlyMemory<byte>(RandomBytes(5000)), 1000);
         writer.Write(in sequence, copyMemory);
-        Equal(sequence.ToArray(), writer.ToReadOnlySequence().ToArray());
+        Equal(sequence.ToArray(), writer.Concat().ToArray());
     }
 
     [Theory]
@@ -28,7 +27,7 @@ public sealed class SparseBufferWriterTests : Test
     public static void StressTest(int totalSize)
     {
         using var writer = new SparseBufferWriter<byte>();
-        using var output = writer.AsStream();
+        using var output = Stream.CreateWritable(writer, flush: null, flushAsync: null);
         var data = RandomBytes(2048);
         for (int remaining = totalSize, take; remaining > 0; remaining -= take)
         {

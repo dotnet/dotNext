@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace DotNext.Runtime.CompilerServices;
 
-using static Linq.Expressions.ExpressionBuilder;
+using Linq.Expressions;
 
 internal sealed class RecoverFromExceptionExpression : StateMachineExpression
 {
@@ -15,7 +15,7 @@ internal sealed class RecoverFromExceptionExpression : StateMachineExpression
         Receiver = receiver;
     }
 
-    public override Expression Reduce() => true.Const();
+    public override Expression Reduce() => true.Quoted;
 
     public override Type Type => typeof(bool);
 

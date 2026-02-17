@@ -1,15 +1,13 @@
 using System.Buffers;
 using System.Globalization;
-using System.Numerics;
 using System.Text;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;
 
+using IO;
 using DecodingContext = DotNext.Text.DecodingContext;
 using EncodingContext = DotNext.Text.EncodingContext;
-using IAsyncBinaryReader = IO.IAsyncBinaryReader;
-using LengthFormat = IO.LengthFormat;
 
 public sealed class BufferWriterTests : Test
 {
@@ -21,17 +19,17 @@ public sealed class BufferWriterTests : Test
         writer.WriteLittleEndian(44);
         writer.WriteLittleEndian<short>(46);
 
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
-        Equal(42L, await reader.ReadLittleEndianAsync<long>());
-        Equal(44, await reader.ReadLittleEndianAsync<int>());
-        Equal(46, await reader.ReadLittleEndianAsync<short>());
+        IAsyncBinaryReader reader = new SequenceReader(writer.WrittenMemory);
+        Equal(42L, await reader.ReadLittleEndianAsync<long>(TestToken));
+        Equal(44, await reader.ReadLittleEndianAsync<int>(TestToken));
+        Equal(46, await reader.ReadLittleEndianAsync<short>(TestToken));
     }
 
     private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat lengthEnc)
     {
         var writer = new ArrayBufferWriter<byte>();
         writer.Encode(value.AsSpan(), encoding, lengthEnc);
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        IAsyncBinaryReader reader = new SequenceReader(writer.WrittenMemory);
         using var buffer = await reader.DecodeAsync(encoding, lengthEnc);
         Equal(value, buffer.ToString());
     }
@@ -110,7 +108,7 @@ public sealed class BufferWriterTests : Test
             EncodeDecode(writer, Encoding.UTF32);
         }
 
-        using (var writer = new IO.FileBufferingWriter())
+        using (var writer = new FileBufferingWriter())
         {
             EncodeDecode(writer, Encoding.UTF8);
         }
@@ -145,7 +143,7 @@ public sealed class BufferWriterTests : Test
 
             var decodingContext = new DecodingContext(encoding, true);
             True(writer.TryGetWrittenContent(out var writtenMemory));
-            var reader = IAsyncBinaryReader.Create(writtenMemory);
+            var reader = new SequenceReader(writtenMemory);
             Equal(42L, reader.Parse<IFormatProvider, long>(InvariantCulture, long.Parse, in decodingContext, LengthFormat.LittleEndian));
             Equal(12UL, reader.Parse<IFormatProvider, ulong>(InvariantCulture, ulong.Parse, in decodingContext, LengthFormat.LittleEndian));
             Equal(34, reader.Parse<IFormatProvider, int>(InvariantCulture, int.Parse, in decodingContext, LengthFormat.BigEndian));
@@ -158,7 +156,7 @@ public sealed class BufferWriterTests : Test
             Equal(10, reader.Parse<byte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
             Equal(11, reader.Parse<sbyte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
             Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, Guid.Parse, in decodingContext, LengthFormat.LittleEndian));
-            Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, static (c, p) => Guid.ParseExact(c, "X"), in decodingContext, LengthFormat.LittleEndian));
+            Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, static (c, _) => Guid.ParseExact(c, "X"), in decodingContext, LengthFormat.LittleEndian));
             Equal(dt, reader.Parse<IFormatProvider, DateTime>(InvariantCulture, static (c, p) => DateTime.Parse(c, p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
             Equal(dto, reader.Parse<IFormatProvider, DateTimeOffset>(InvariantCulture, static (c, p) => DateTimeOffset.Parse(c, p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
             Equal(dt, reader.Parse<IFormatProvider, DateTime>(InvariantCulture, static (c, p) => DateTime.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
@@ -183,11 +181,11 @@ public sealed class BufferWriterTests : Test
         Equal("56", writer.ToString());
     }
 
-    public static TheoryData<BufferWriter<byte>> ContiguousBuffers() => new()
-    {
+    public static TheoryData<BufferWriter<byte>> ContiguousBuffers() =>
+    [
         new PoolingBufferWriter<byte>(),
-        new PoolingArrayBufferWriter<byte>(),
-    };
+        new PoolingArrayBufferWriter<byte>()
+    ];
 
     [Theory]
     [MemberData(nameof(ContiguousBuffers))]
@@ -208,66 +206,6 @@ public sealed class BufferWriterTests : Test
             Equal(bytes, buffer.Memory.ToArray());
             buffer.Dispose();
         }
-    }
-
-    [Theory]
-    [InlineData(10, 10)]
-    [InlineData(int.MaxValue, int.MinValue)]
-    public static void WriteInterpolatedStringToBufferWriter(int x, int y)
-    {
-        using var buffer = new PoolingArrayBufferWriter<char>();
-
-        buffer.Write($"{x,4:X} = {y,-3:X}");
-        Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
-    }
-
-    [Theory]
-    [InlineData(10, 10)]
-    [InlineData(int.MaxValue, int.MinValue)]
-    public static async Task WriteInterpolatedStringToBufferWriterAsync(int x, int y)
-    {
-        var xt = Task.FromResult(x);
-        var yt = Task.FromResult(y);
-
-        using var buffer = new PoolingArrayBufferWriter<char>();
-        var actualCount = buffer.Interpolate($"{await xt,4:X} = {await yt,-3:X}");
-        Equal(buffer.WrittenCount, actualCount);
-        Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
-    }
-
-    [Theory]
-    [InlineData(10, 10)]
-    [InlineData(int.MaxValue, int.MinValue)]
-    public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
-    {
-        var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
-        buffer.Interpolate($"{x,4:X} = {y,-3:X}");
-        Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
-        buffer.Dispose();
-    }
-
-    [Theory]
-    [InlineData(0, "UTF-8", 10, 10)]
-    [InlineData(0, "UTF-8", int.MaxValue, int.MinValue)]
-    [InlineData(0, "UTF-16LE", 10, 10)]
-    [InlineData(0, "UTF-16BE", int.MaxValue, int.MinValue)]
-    [InlineData(0, "UTF-32LE", 10, 10)]
-    [InlineData(0, "UTF-32BE", int.MaxValue, int.MinValue)]
-    [InlineData(8, "UTF-8", 10, 10)]
-    [InlineData(8, "UTF-8", int.MaxValue, int.MinValue)]
-    [InlineData(8, "UTF-16LE", 10, 10)]
-    [InlineData(8, "UTF-16BE", int.MaxValue, int.MinValue)]
-    [InlineData(8, "UTF-32LE", 10, 10)]
-    [InlineData(8, "UTF-32BE", int.MaxValue, int.MinValue)]
-    public static void EncodeInterpolatedString(int bufferSize, string encoding, int x, int y)
-    {
-        var writer = new ArrayBufferWriter<byte>();
-        Span<char> buffer = stackalloc char[bufferSize];
-
-        var context = new EncodingContext(Encoding.GetEncoding(encoding), true);
-        True(writer.Interpolate(in context, buffer, $"{x,4:X} = {y,-3:X}") > 0);
-
-        Equal($"{x,4:X} = {y,-3:X}", context.Encoding.GetString(writer.WrittenSpan));
     }
 
     [Fact]
@@ -305,7 +243,7 @@ public sealed class BufferWriterTests : Test
     [Fact]
     public static void AdvanceRewind()
     {
-        var buffer = new PoolingArrayBufferWriter<int>();
+        using var buffer = new PoolingArrayBufferWriter<int>();
 
         Throws<ArgumentOutOfRangeException>(() => buffer.Rewind(1));
 
@@ -343,7 +281,7 @@ public sealed class BufferWriterTests : Test
     [InlineData(124)]
     public static void WriteStringBuilder(int stringLength)
     {
-        var str = Random.Shared.NextString(Alphabet, stringLength);
+        var str = Random.Shared.GetString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)
@@ -364,7 +302,7 @@ public sealed class BufferWriterTests : Test
     [InlineData(124)]
     public static void WriteStringBuilder2(int stringLength)
     {
-        var str = Random.Shared.NextString(Alphabet, stringLength);
+        var str = Random.Shared.GetString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)

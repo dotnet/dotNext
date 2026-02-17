@@ -1,42 +1,39 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext;
+
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Various extension methods for core data types.
 /// </summary>
 public static class BasicExtensions
 {
-    internal static bool IsNull(object? obj) => obj is null;
-
-    internal static bool IsNotNull(object? obj) => obj is not null;
-
-    internal static bool IsTypeOf<T>(object? obj) => obj is T;
-
-    internal static TOutput Identity<TInput, TOutput>(TInput input)
-        where TInput : TOutput
-        => input;
-
     /// <summary>
-    /// Provides ad-hoc approach to associate some data with the object
-    /// without modification of it.
+    /// Extends reference types.
     /// </summary>
-    /// <remarks>
-    /// This method allows to associate arbitrary user data with any object.
-    /// User data storage is not a part of object type declaration.
-    /// Modification of user data doesn't cause modification of internal state of the object.
-    /// The storage is associated with the object reference.
-    /// Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported).
-    /// </remarks>
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">Target object.</param>
-    /// <returns>User data storage.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static UserDataStorage GetUserData<T>(this T obj)
+    extension<T>(T obj)
         where T : class
-        => new(obj);
+    {
+        /// <summary>
+        /// Provides ad-hoc approach to associate some data with the object
+        /// without modification of it.
+        /// </summary>
+        /// <remarks>
+        /// This method allows to associate arbitrary user data with any object.
+        /// User data storage is not a part of object type declaration.
+        /// Modification of user data doesn't cause modification of internal state of the object.
+        /// The storage is associated with the object reference.
+        /// Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported).
+        /// </remarks>
+        /// <value>User data storage.</value>
+        public UserDataStorage UserData => new(obj);
+    }
 
     /// <summary>
     /// Checks whether the specified object is equal to one
@@ -47,10 +44,10 @@ public static class BasicExtensions
     /// to check equality between two objects.
     /// </remarks>
     /// <typeparam name="T">The type of object to compare.</typeparam>
-    /// <param name="value">The object to compare with other.</param>
+    /// <param name="value">The object to compare with the others.</param>
     /// <param name="candidates">Candidate objects.</param>
     /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="candidates"/>.</returns>
-    public static bool IsOneOf<T>(this T value, ReadOnlySpan<T> candidates)
+    public static bool IsOneOf<T>(this T value, params ReadOnlySpan<T> candidates)
     {
         foreach (var other in candidates)
         {
@@ -60,8 +57,6 @@ public static class BasicExtensions
 
         return false;
     }
-
-    internal static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
 
     /// <summary>
     /// Reinterprets object reference.
@@ -105,14 +100,6 @@ public static class BasicExtensions
     }
 
     /// <summary>
-    /// Indicates that array is <see langword="null"/> or empty.
-    /// </summary>
-    /// <param name="array">The array to check.</param>
-    /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this Array? array)
-        => array is null || Runtime.Intrinsics.GetLength(array) is 0;
-
-    /// <summary>
     /// Determines whether the specified value is in the specified range.
     /// </summary>
     /// <example>
@@ -129,33 +116,87 @@ public static class BasicExtensions
     /// <param name="lowerBound">The lower bound.</param>
     /// <param name="upperBound">The upper bound.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is in the specified range; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="Enclosed{T}(T)"/>
-    /// <seealso cref="Disclosed{T}(T)"/>
+    /// <seealso cref="get_Enclosed{T}(T)"/>
+    /// <seealso cref="get_Disclosed{T}(T)"/>
     public static bool IsBetween<T, TLowerBound, TUpperBound>(this T value, TLowerBound lowerBound, TUpperBound upperBound)
-        where T : notnull
-        where TLowerBound : IRangeEndpoint<T>
-        where TUpperBound : IRangeEndpoint<T>
+        where T : notnull, allows ref struct
+        where TLowerBound : IRangeEndpoint<T>, allows ref struct
+        where TUpperBound : IRangeEndpoint<T>, allows ref struct
         => lowerBound.IsOnRight(value) && upperBound.IsOnLeft(value);
 
-    /// <summary>
-    /// Creates enclosed range endpoint.
-    /// </summary>
-    /// <typeparam name="T">The type of the endpoint.</typeparam>
     /// <param name="value">The endpoint value.</param>
-    /// <returns>The range endpoint.</returns>
-    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
-    public static EnclosedEndpoint<T> Enclosed<T>(this T value)
-        where T : IComparable<T>
-        => new() { Value = value };
+    /// <typeparam name="T">The type of the endpoint.</typeparam>
+    extension<T>(T value) where T : IComparable<T>, allows ref struct
+    {
+        /// <summary>
+        /// Creates enclosed range endpoint.
+        /// </summary>
+        /// <returns>The range endpoint.</returns>
+        /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+        public EnclosedEndpoint<T> Enclosed => new() { Value = value };
+
+        /// <summary>
+        /// Creates disclosed range endpoint.
+        /// </summary>
+        /// <returns>The range endpoint.</returns>
+        /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+        public DisclosedEndpoint<T> Disclosed => new() { Value = value };
+
+        /// <summary>
+        /// Gets the endpoint that represents the infinity.
+        /// </summary>
+        public static IRangeEndpoint<T> Unbounded => IRangeEndpoint<T>.Infinity;
+    }
+    
+    /// <summary>
+    /// Providers static methods for <see cref="Predicate{T}"/> type. 
+    /// </summary>
+    extension<T>(T)
+        where T : notnull
+    {
+        /// <summary>
+        /// Checks whether the specified object is of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="obj">The object to check.</param>
+        /// <returns></returns>
+        public static bool IsTypeOf([NotNullWhen(true)] object? obj) => obj is T;
+
+        /// <summary>
+        /// Checks whether the specified object is exactly of the specified type.
+        /// </summary>
+        /// <param name="obj">The object to test.</param>
+        /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExactTypeOf(object? obj) => obj?.GetType() == typeof(T);
+    }
 
     /// <summary>
-    /// Creates disclosed range endpoint.
+    /// Extends <see cref="GC"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the endpoint.</typeparam>
-    /// <param name="value">The endpoint value.</param>
-    /// <returns>The range endpoint.</returns>
-    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
-    public static DisclosedEndpoint<T> Disclosed<T>(this T value)
-        where T : IComparable<T>
-        => new() { Value = value };
+    extension(GC)
+    {
+        /// <summary>
+        /// Keeps the reference to the value type alive.
+        /// </summary>
+        /// <param name="location">A location of the object.</param>
+        /// <typeparam name="T">The value type.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void KeepAlive<T>(ref readonly T location)
+            where T : struct, allows ref struct
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                KeepAliveImpl(in location);
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            [StackTraceHidden]
+            static void KeepAliveImpl(ref readonly T location)
+            {
+                // We cannot inline this check to avoid compiler optimization to eliminate null check.
+                // This check can be eliminated because typically the location points to the field in the class
+                // and that field is already statically checked for null
+                if (Unsafe.IsNullRef(in location))
+                    throw new ArgumentNullException(nameof(location));
+            }
+        }
+    }
 }

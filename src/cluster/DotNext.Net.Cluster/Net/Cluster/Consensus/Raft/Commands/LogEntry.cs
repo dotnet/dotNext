@@ -11,7 +11,7 @@ using IO.Log;
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
 /// <seealso cref="Text.Json.JsonSerializable{T}"/>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct LogEntry<TCommand>() : IInputLogEntry
+public readonly struct LogEntry<TCommand> : IInputLogEntry
     where TCommand : ICommand<TCommand>
 {
     /// <summary>
@@ -21,9 +21,6 @@ public readonly struct LogEntry<TCommand>() : IInputLogEntry
 
     /// <inheritdoc />
     public required long Term { get; init; }
-
-    /// <inheritdoc />
-    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <inheritdoc />
     int? IRaftLogEntry.CommandId => TCommand.Id;

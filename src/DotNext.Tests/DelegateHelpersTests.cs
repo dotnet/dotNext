@@ -1,23 +1,14 @@
-using System.Globalization;
+using System.Buffers;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
+using Reflection;
+
 public sealed class DelegateHelpersTests : Test
 {
-    [Fact]
-    public static void ContravarianceTest()
-    {
-        EventHandler<string> handler = null;
-        EventHandler<object> dummy = (sender, args) => { };
-        handler += dummy.Contravariant<object, string>();
-        NotNull(handler);
-        handler -= dummy.Contravariant<object, string>();
-        Null(handler);
-    }
-
     [Fact]
     public static void ChangeDelegateType()
     {
@@ -67,73 +58,85 @@ public sealed class DelegateHelpersTests : Test
         Equal(42L, d(42M));
     }
 
-    private static int GetLength(string value) => value.Length;
-
     [Fact]
-    public static void BindUnbind1()
+    public static void FuncBindingChain()
     {
-        var func = new Func<string, int>(GetLength).Bind("abc");
-        Equal(3, func());
-        Equal(4, func.Unbind<string, int>().Invoke("abcd"));
+        var func = new Func<string, string, string, string, string, string>(Concat) << "abc" << "d" << "e" << "f" << "g";
+        Equal("abcdefg", func());
 
-        var func2 = new Func<string, bool>("abc".Contains).Bind("a");
-        True(func2());
-        True(func2.Unbind<string, bool>().Invoke("c"));
-        Throws<InvalidOperationException>(() => func2.Unbind<object, bool>());
-    }
-
-    [Fact]
-    public static void BindUnbind2()
-    {
-        var func = new Func<string, string, string>(string.Concat).Bind("abc");
-        Equal("abcde", func("de"));
-        Equal("abcde", func.Unbind<string, string, string>().Invoke("ab", "cde"));
-
-        var func2 = new Func<string, string, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1"));
-        Equal("2bc", func2.Unbind<string, string, string>().Invoke("a", "2"));
-        Throws<InvalidOperationException>(() => func2.Unbind<object, string, string>());
-    }
-
-    [Fact]
-    public static void BindUnbind3()
-    {
-        var func = new Func<string, string, string, string>(string.Concat).Bind("abc");
-        Equal("abcde", func("d", "e"));
-        Equal("abcde", func.Unbind<string, string, string, string>().Invoke("ab", "cd", "e"));
-
-        var func2 = new Func<string, string, StringComparison, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1", StringComparison.Ordinal));
-        Equal("2bc", func2.Unbind<string, string, StringComparison, string>().Invoke("a", "2", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public static void BindUnbind4()
-    {
-        var func = new Func<string, string, string, string, string>(string.Concat).Bind("abc");
-        Equal("abcdef", func("d", "e", "f"));
-        Equal("abcdef", func.Unbind<string, string, string, string, string>().Invoke("ab", "cd", "e", "f"));
-
-        var func2 = new Func<string, string, bool, CultureInfo, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1", false, CultureInfo.InvariantCulture));
-        Equal("2bc", func2.Unbind<string, string, bool, CultureInfo, string>().Invoke("a", "2", false, CultureInfo.InvariantCulture));
-    }
-
-    [Fact]
-    public static void BindUnbind5()
-    {
+        func = new Func<string, string, string, string, string, string>(Concat)
+            .Bind("abc")
+            .Bind("d")
+            .Bind("e")
+            .Bind("f")
+            .Bind("g");
+        Equal("abcdefg", func());
+        
+        Equal("abcdefg", func
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Unbind<string, string, string, string, string, string>()
+            .Invoke("abc", "d", "e", "f", "g"));
+        
         static string Concat(string str1, string str2, string str3, string str4, string str5)
             => str1 + str2 + str3 + str4 + str5;
-        var func = new Func<string, string, string, string, string, string>(Concat).Bind("abc");
-        Equal("abcdefg", func("d", "e", "f", "g"));
-        Equal("abcdefg", func.Unbind<string, string, string, string, string, string>().Invoke("ab", "cd", "e", "f", "g"));
+    }
+
+    [Fact]
+    public static void ActionBindingChain()
+    {
+        var acc = new Accumulator();
+        var action = new Action<string, string, string, string, string>(acc.Sum) << "abc" << "d" << "e" << "f" << "g";
+        action.Invoke();
+        Equal("abcdefg", acc.Value);
+
+        acc.Value = null;
+        action = new Action<string, string, string, string, string>(acc.Sum)
+            .Bind("abc")
+            .Bind("d")
+            .Bind("e")
+            .Bind("f")
+            .Bind("g");
+        action.Invoke();
+        Equal("abcdefg", acc.Value);
+        acc.Value = null;
+
+        action
+            .Unbind<string>()
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Invoke("abc", "d", "e", "f", "g");
+        Equal("abcdefg", acc.Value);
+        acc.Value = null;
+
+        var staticAction = action
+            .Unbind<string>()
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Unbind<Accumulator, string, string, string, string, string>();
+        staticAction.Invoke(acc, "abc", "d", "e", "f", "g");
+        Equal("abcdefg", acc.Value);
+    }
+    
+    private sealed class Accumulator
+    {
+        public string Value;
+
+        public void Sum(string x1, string x2, string x3, string x4, string x5)
+            => Value += x1 + x2 + x3 + x4 + x5;
     }
 
     [Fact]
     public static void BindUnbindPredicate()
     {
         Predicate<string> predicate = string.IsNullOrEmpty;
-        var func = predicate.Bind(string.Empty);
+        var func = predicate << string.Empty;
         True(func());
         func = predicate.Bind("abc");
         False(func());
@@ -149,20 +152,33 @@ public sealed class DelegateHelpersTests : Test
         static MethodInfo GetMethod(int argCount)
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            return Single(typeof(Func).GetMethods(flags),
-                candidate => candidate.Name is nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
+            return Single(typeof(DelegateHelpers).GetMethods(flags),
+                candidate => IsInvoker(candidate, argCount));
+        }
+
+        static bool IsInvoker(MethodInfo candidate, int argCount)
+        {
+            if (candidate.Name is nameof(DelegateHelpers.TryInvoke))
+            {
+                var parameters = candidate.GetParameters();
+                var delegateType = parameters[0].ParameterType;
+                if (delegateType.IsDelegate && delegateType.Name == $"Func`{argCount + 1}" && parameters.Length == argCount + 1)
+                    return true;
+            }
+
+            return false;
         }
 
         var successValue = Expression.Constant(42, typeof(int));
         var failedValue = Expression.Throw(Expression.New(typeof(ArithmeticException)), typeof(int));
-        for (var argCount = 0; argCount <= 10; argCount++)
+        for (var argCount = 0; argCount <= 6; argCount++)
         {
             var types = new Type[argCount + 1];
             Array.Fill(types, typeof(string));
             types[argCount] = typeof(int);
             var funcType = Expression.GetFuncType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.AsSpan().ForEach(static (ref ParameterExpression p, int _) => p = Expression.Parameter(typeof(string)));
+            parameters.ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);
@@ -182,47 +198,56 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static void FuncNullNotNull()
     {
-        var nullChecker = Func.IsNull<object>().AsPredicate();
+        Predicate<object> nullChecker = Predicate<object>.IsNull;
         False(nullChecker(new object()));
-        nullChecker = Func.IsNotNull<object>().AsPredicate();
+        nullChecker = Predicate<object>.IsNotNull;
         False(nullChecker(null));
     }
 
     [Fact]
     public static void ConstantProvider()
     {
-        Same(Func.Constant<string>(null), Func.Constant<string>(null));
-        Null(Func.Constant<string>(null).Invoke());
+        Same(Func<string>.Constant(null), Func<string>.Constant(null));
+        Null(Func<string>.Constant(null).Invoke());
+        
+        Same(Func<int, string>.Constant(null), Func<int, string>.Constant(null));
+        Null(Func<int, string>.Constant(null).Invoke(42));
 
-        Same(Func.Constant(true), Func.Constant(true));
-        Same(Func.Constant(false), Func.Constant(false));
+        Same(Func<bool>.Constant(true), Func<bool>.Constant(true));
+        Same(Func<bool>.Constant(false), Func<bool>.Constant(false));
+        
+        Same(Func<int, bool>.Constant(true), Func<int, bool>.Constant(true));
+        Same(Func<int, bool>.Constant(false), Func<int, bool>.Constant(false));
 
-        Equal(42, Func.Constant(42).Invoke());
-        Equal("Hello, world", Func.Constant("Hello, world").Invoke());
+        Equal(42, Func<int>.Constant(42).Invoke());
+        Equal("Hello, world", Func<string>.Constant("Hello, world").Invoke());
+
+        Equal(42, Func<int, int>.Constant(42).Invoke(0));
+        Equal("Hello, world", Func<int, string>.Constant("Hello, world").Invoke(42));
     }
     
     [Fact]
     public static void ValueTypeConst()
     {
         const long value = 42L;
-        var provider = Func.Constant(value);
-        Equal(value, provider.Target);
+        Equal(value, Func<long>.Constant(value).Target);
+        Equal(value, Func<int, long>.Constant(value).Target);
     }
 
     [Fact]
     public static void StringConst()
     {
         const string value = "Hello, world";
-        var provider = Func.Constant(value);
+        var provider = Func<string>.Constant(value);
         Same(value, provider.Target);
     }
 
     [Fact]
     public static void TypeCheck()
     {
-        var obj = "Hello, world!";
-        True(Func.IsTypeOf<string>().Invoke(obj));
-        False(Func.IsTypeOf<int>().Invoke(obj));
+        const string obj = "Hello, world!";
+        True(string.IsTypeOf(obj));
+        False(int.IsTypeOf(obj));
     }
 
     [Fact]
@@ -254,19 +279,19 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static void Constant()
     {
-        Equal(42, Func.Constant(42).Invoke());
-        Equal("Hello, world!", Func.Constant("Hello, world!").Invoke());
+        Equal(42, Func<int>.Constant(42).Invoke());
+        Equal("Hello, world!", Func<string>.Constant("Hello, world!").Invoke());
     }
 
     [Fact]
     public static unsafe void CreateAction()
     {
-        Action action = DelegateHelpers.CreateDelegate(&DoAction);
+        var action = Action.FromPointer(&DoAction);
         NotNull(action);
         action();
 
         var obj = new ClassWithProperty();
-        action = DelegateHelpers.CreateDelegate(&DoAction2, obj);
+        action = Action.FromPointer(&DoAction2, obj);
         action();
         Equal(42, obj.Prop);
 
@@ -282,11 +307,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction2()
     {
         var obj = new ClassWithProperty();
-        Action<ClassWithProperty> action = DelegateHelpers.CreateDelegate<ClassWithProperty>(&DoAction);
+        var action = Action<ClassWithProperty>.FromPointer(&DoAction);
         action(obj);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int>(&DoAction2, obj);
+        var action2 = Action<int>.FromPointer(&DoAction2, obj);
         action2(56);
         Equal(56, obj.Prop);
 
@@ -301,11 +326,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction3()
     {
         var obj = new ClassWithProperty();
-        Action<ClassWithProperty, int> action = DelegateHelpers.CreateDelegate<ClassWithProperty, int>(&DoAction);
+        var action = Action<ClassWithProperty, int>.FromPointer(&DoAction);
         action(obj, 42);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing>(&DoAction2, obj);
+        var action2 = Action<int, Missing>.FromPointer(&DoAction2, obj);
         action2(56, Missing.Value);
         Equal(56, obj.Prop);
 
@@ -320,11 +345,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction4()
     {
         var obj = new ClassWithProperty();
-        var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing>(&DoAction);
+        var action = Action<ClassWithProperty, int, Missing>.FromPointer(&DoAction);
         action(obj, 42, Missing.Value);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing>(&DoAction2, obj);
+        var action2 = Action<int, Missing, Missing>.FromPointer(&DoAction2, obj);
         action2(56, Missing.Value, Missing.Value);
         Equal(56, obj.Prop);
 
@@ -339,11 +364,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction5()
     {
         var obj = new ClassWithProperty();
-        var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing>(&DoAction);
+        var action = Action<ClassWithProperty, int, Missing, Missing>.FromPointer(&DoAction);
         action(obj, 42, Missing.Value, Missing.Value);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing>(&DoAction2, obj);
+        var action2 = Action<int, Missing, Missing, Missing>.FromPointer(&DoAction2, obj);
         action2(56, Missing.Value, Missing.Value, Missing.Value);
         Equal(56, obj.Prop);
 
@@ -358,11 +383,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction6()
     {
         var obj = new ClassWithProperty();
-        var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing>(&DoAction);
+        var action = Action<ClassWithProperty, int, Missing, Missing, Missing>.FromPointer(&DoAction);
         action(obj, 42, Missing.Value, Missing.Value, Missing.Value);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing>(&DoAction2, obj);
+        var action2 = Action<int, Missing, Missing, Missing, Missing>.FromPointer(&DoAction2, obj);
         action2(56, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
         Equal(56, obj.Prop);
 
@@ -377,11 +402,11 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateAction7()
     {
         var obj = new ClassWithProperty();
-        var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing>(&DoAction);
+        var action = Action<ClassWithProperty, int, Missing, Missing, Missing, Missing>.FromPointer(&DoAction);
         action(obj, 42, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
         Equal(42, obj.Prop);
 
-        var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing, Missing>(&DoAction2, obj);
+        var action2 = Action<int, Missing, Missing, Missing, Missing, Missing>.FromPointer(&DoAction2, obj);
         action2(56, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
         Equal(56, obj.Prop);
 
@@ -395,10 +420,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc()
     {
-        var fn = DelegateHelpers.CreateDelegate<long>(&GetValue);
+        var fn = Func<long>.FromPointer(&GetValue);
         Equal(42L, fn());
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, string>(&Constant, "Hello, world!");
+        var fn2 = Func<string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2());
 
         static long GetValue() => 42L;
@@ -409,10 +434,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc2()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, long>(&GetValue);
+        var fn = Func<long, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value));
 
         static long GetValue(long value) => 42L;
@@ -423,10 +448,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc3()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, Missing, long>(&GetValue);
+        var fn = Func<long, Missing, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L, Missing.Value));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value, Missing.Value));
 
         static long GetValue(long value, Missing arg1) => 42L;
@@ -437,10 +462,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc4()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, long>(&GetValue);
+        var fn = Func<long, Missing, Missing, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L, Missing.Value, Missing.Value));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, Missing, Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value));
 
         static long GetValue(long value, Missing arg1, Missing arg2) => 42L;
@@ -451,10 +476,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc5()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, long>(&GetValue);
+        var fn = Func<long, Missing, Missing, Missing, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, Missing, Missing, Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value));
 
         static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3) => 42L;
@@ -465,10 +490,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc6()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, Missing, long>(&GetValue);
+        var fn = Func<long, Missing, Missing, Missing, Missing, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, Missing, Missing, Missing, Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
 
         static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3, Missing arg4) => 42L;
@@ -479,10 +504,10 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static unsafe void CreateFunc7()
     {
-        var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, Missing, Missing, long>(&GetValue);
+        var fn = Func<long, Missing, Missing, Missing, Missing, Missing, long>.FromPointer(&GetValue);
         Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
 
-        var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+        var fn2 = Func<Missing, Missing, Missing, Missing, Missing, Missing, string>.FromPointer(&Constant, "Hello, world!");
         Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
 
         static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3, Missing arg4, Missing arg5) => 42L;
@@ -494,7 +519,7 @@ public sealed class DelegateHelpersTests : Test
     public static unsafe void CreateSpanAction()
     {
         const string expected = "Hello, world!";
-        var fn = DelegateHelpers.CreateDelegate<char, string>(&FillChars);
+        var fn = SpanAction<char, string>.FromPointer(&FillChars);
         Equal(expected, string.Create(expected.Length, expected, fn));
 
         static void FillChars(Span<char> dest, string source)
@@ -505,7 +530,7 @@ public sealed class DelegateHelpersTests : Test
     public static void ActionWrapper()
     {
         var i = 0;
-        Equal(42, new Action<int>(SetLocalValue).Identity<int>().Invoke(42));
+        Equal(42, new Action<int>(SetLocalValue).Identity.Invoke(42));
         Equal(42, i);
 
         void SetLocalValue(int value) => i = value;
@@ -514,7 +539,7 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static void Identity()
     {
-        Equal(42, Func.Identity<int>().Invoke(42));
+        Equal(42, Func<int, int>.Identity(42));
     }
 
     [Fact]
@@ -564,7 +589,7 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static async Task ToAsync5()
     {
-        var func = Func.Identity<int>().ToAsync();
+        var func = new Func<int, int>(Func<int, int>.Identity).ToAsync();
         Equal(42, await func.Invoke(42, new(canceled: false)));
         True(func.Invoke(42, new(canceled: true)).IsCanceled);
 
@@ -575,7 +600,7 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static async Task ToAsync6()
     {
-        var func = Func.Constant(42).ToAsync();
+        var func = Func<int>.Constant(42).ToAsync();
         Equal(42, await func.Invoke(new(canceled: false)));
         True(func.Invoke(new(canceled: true)).IsCanceled);
 
@@ -612,18 +637,40 @@ public sealed class DelegateHelpersTests : Test
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
             return Single(typeof(DelegateHelpers).GetMethods(flags),
-                candidate => candidate.Name is nameof(DelegateHelpers.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
+                candidate => IsInvoker(candidate, argCount));
+        }
+
+        static bool IsInvoker(MethodInfo candidate, int argCount)
+        {
+            if (candidate.Name is nameof(DelegateHelpers.TryInvoke))
+            {
+                var parameters = candidate.GetParameters();
+                var delegateType = parameters[0].ParameterType;
+                if (delegateType.IsDelegate)
+                {
+                    var condition = argCount switch
+                    {
+                        0 => delegateType.Name is nameof(Action),
+                        _ => delegateType.Name == $"Action`{argCount}"
+                    };
+
+                    if (condition && parameters.Length == argCount + 1)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         var successValue = Expression.Empty();
         var failedValue = Expression.Throw(Expression.New(typeof(ArithmeticException)), typeof(void));
-        for (var argCount = 0; argCount <= 10; argCount++)
+        for (var argCount = 0; argCount <= 6; argCount++)
         {
             var types = new Type[argCount];
             Array.Fill(types, typeof(string));
             var actionType = Expression.GetActionType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.AsSpan().ForEach(static (ref ParameterExpression p, int _) => p = Expression.Parameter(typeof(string)));
+            parameters.ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);
@@ -638,5 +685,35 @@ public sealed class DelegateHelpersTests : Test
             result = (Exception)method.Invoke(null, args);
             IsType<ArithmeticException>(result);
         }
+    }
+    
+    [Fact]
+    public static void OrAndXor()
+    {
+        Func<int, bool> pred1 = static i => i > 10;
+        Func<int, bool> pred2 = static i => i < 0;
+        True((pred1 | pred2).Invoke(11));
+        True((pred1 | pred2).Invoke(-1));
+        False((pred1 | pred2).Invoke(8));
+
+        pred2 = static i => i > 20;
+        True((pred1 & pred2).Invoke(21));
+        False((pred1 & pred2).Invoke(19));
+        False((pred1 ^ pred2).Invoke(21));
+        False((pred1 ^ pred2).Invoke(1));
+        True((pred1 ^ pred2).Invoke(19));
+    }
+
+    [Fact]
+    public static void NoOperation()
+    {
+        Same(Action.NoOp, Action.NoOp);
+        Action.NoOp.Invoke();
+        Action<int>.NoOp.Invoke(42);
+        Action<int, int>.NoOp.Invoke(42, 42);
+        Action<int, int, int>.NoOp.Invoke(42, 42, 42);
+        Action<int, int, int, int>.NoOp.Invoke(42, 42, 42, 42);
+        Action<int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42);
+        Action<int, int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42, 42);
     }
 }

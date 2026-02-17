@@ -2,7 +2,6 @@
 
 namespace DotNext.Threading;
 
-using Runtime;
 using static Tasks.Synchronization;
 
 /// <summary>
@@ -13,7 +12,9 @@ using static Tasks.Synchronization;
 public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
 {
     private const string NotAvailable = "<NotAvailable>";
-    private readonly BoxedValue<bool> resettable; // used as monitor
+
+    private readonly System.Threading.Lock syncRoot;
+    private readonly bool resettable;
     private Task<T>? task;
     private Func<CancellationToken, Task<T>>? factory;
 
@@ -24,7 +25,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public AsyncLazy(T value)
     {
         task = Task.FromResult(value);
-        resettable = BoxedValue<bool>.Box(false);
+        syncRoot = new();
     }
 
     /// <summary>
@@ -36,7 +37,8 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public AsyncLazy(Func<CancellationToken, Task<T>> valueFactory, bool resettable = false)
     {
         factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-        this.resettable = BoxedValue<bool>.Box(resettable);
+        syncRoot = new();
+        this.resettable = resettable;
     }
 
     private void AttachFactoryErasureCallback(Task expectedTask)
@@ -45,9 +47,9 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
 
         void EraseFactory()
         {
-            if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
+            if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(in task), expectedTask))
             {
-                lock (resettable)
+                lock (syncRoot)
                 {
                     if (ReferenceEquals(task, expectedTask))
                         factory = null;
@@ -59,12 +61,12 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
     /// </summary>
-    public bool IsValueCreated => Volatile.Read(ref task) is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
+    public bool IsValueCreated => Volatile.Read(in task) is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
 
     /// <summary>
     /// Gets value if it is already computed.
     /// </summary>
-    public Result<T>? Value => Volatile.Read(ref task).TryGetResult();
+    public Result<T>? Value => Volatile.Read(in task).TryGetResult();
 
     /// <inheritdoc />
     Task<T> ISupplier<CancellationToken, Task<T>>.Invoke(CancellationToken token)
@@ -75,7 +77,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         Task<T>? t;
         bool fastExit;
 
-        lock (resettable)
+        lock (syncRoot)
         {
             t = task; // read barrier is provided by monitor
 
@@ -87,7 +89,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
             {
                 Debug.Assert(factory is not null);
 
-                task = t = Task.Run(CreateAsyncFunc(factory, token));
+                task = t = Task.Run(new ValueFactory<T>(factory, token).Invoke);
                 fastExit = false;
             }
         }
@@ -103,10 +105,6 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         }
 
         return t;
-
-        // avoid capture of 'this' reference
-        static Func<Task<T>> CreateAsyncFunc(Func<CancellationToken, Task<T>> cancelableFactory, CancellationToken token)
-            => () => cancelableFactory(token);
     }
 
     /// <summary>
@@ -118,7 +116,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Lazy representation of the value.</returns>
     public Task<T> WithCancellation(CancellationToken token)
-        => Volatile.Read(ref task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
+        => Volatile.Read(in task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
 
     /// <summary>
     /// Removes already computed value from the current object.
@@ -127,9 +125,9 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public bool Reset()
     {
         bool result;
-        if (result = resettable && Volatile.Read(ref task) is null or { IsCompleted: true })
+        if (result = resettable && Volatile.Read(in task) is null or { IsCompleted: true })
         {
-            lock (resettable)
+            lock (syncRoot)
             {
                 if (result = task is null or { IsCompleted: true })
                     task = null;
@@ -148,10 +146,15 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <returns>The string representing this object.</returns>
     public override string? ToString()
     {
-        return Volatile.Read(ref task) is not { } t
+        return Volatile.Read(in task) is not { } t
             ? NotAvailable
             : t.Status is TaskStatus.RanToCompletion
             ? t.Result?.ToString()
             : $"<{t.Status}>";
     }
+}
+
+file sealed class ValueFactory<T>(Func<CancellationToken, Task<T>> factory, CancellationToken token) : ISupplier<Task<T>>
+{
+    public Task<T> Invoke() => factory(token);
 }

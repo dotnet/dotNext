@@ -63,7 +63,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         random = new();
         cancellationTokens = new() { MaximumRetained = 100 };
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
-        PeerComparer = configuration.EndPointComparer ?? EqualityComparer<EndPoint>.Default;
+        PeerComparer = configuration.EndPointComparer;
         activeView = ImmutableHashSet.Create(PeerComparer);
         passiveView = ImmutableHashSet.Create(PeerComparer);
         lifecycleTokenSource = new();
@@ -373,11 +373,11 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             // notify all neighbors from active view
             foreach (var peer in activeView)
             {
-                responses.Add(DisconnectOnStopAsync(peer, token));
+                responses += DisconnectOnStopAsync(peer, token);
             }
 
             // destroy all peers from passive view
-            responses.Add(DisconnectPassiveView(token));
+            responses += DisconnectPassiveView(token);
 
             await Task.WhenAll(responses).ConfigureAwait(false);
         }

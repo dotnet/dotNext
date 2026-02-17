@@ -21,5 +21,5 @@ internal sealed class ExitGuardedCodeExpression : TransitionExpression
     public override Expression Reduce() => Empty();
 
     internal override Expression Reduce(ParameterExpression stateMachine)
-        => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.ExitGuardedCode), StateId, Constant(suspendException));
+        => stateMachine.Call(nameof(AsyncStateMachine<>.ExitGuardedCode), StateId, Constant(suspendException));
 }

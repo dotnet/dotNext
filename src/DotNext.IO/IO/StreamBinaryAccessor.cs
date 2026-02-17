@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 using Buffers;
-using IO.Pipelines;
+using Pipelines;
 using Text;
 
 /// <summary>
@@ -15,7 +15,7 @@ using Text;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> buffer) : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
 {
-    private readonly Memory<byte> buffer = buffer.IsEmpty ? throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)) : buffer;
+    private readonly Memory<byte> buffer = buffer.IsEmpty ? throw ArgumentException.BufferTooSmall(nameof(buffer)) : buffer;
 
     internal Stream Stream => stream;
 
@@ -97,7 +97,7 @@ internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> b
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => stream.ParseAsync((style, provider), IAsyncBinaryReader.Parse<T>, context, lengthFormat, buffer, allocator, token);
 
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, DotNext.IO.LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, DotNext.IO.LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => stream.ParseAsync(arg, parser, context, lengthFormat, buffer, allocator, token);
 
     ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)
@@ -158,7 +158,7 @@ internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> b
     ValueTask<long> IAsyncBinaryWriter.EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         => stream.EncodeAsync(chars, context, lengthFormat, buffer, token);
 
-    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         => stream.FormatAsync(value, lengthFormat, buffer, format, provider, token);
 
     ValueTask<long> IAsyncBinaryWriter.FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
