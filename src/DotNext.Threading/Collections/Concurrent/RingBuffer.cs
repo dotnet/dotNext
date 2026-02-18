@@ -110,15 +110,12 @@ internal struct RingBuffer<T>
                     break;
 
                 tmp = positionCopy + 1U;
+                spinner.SpinOnce(sleep1Threshold: -1);
             }
             else if ((tmp = Interlocked.CompareExchange(ref position, positionCopy + 1U, positionCopy)) == positionCopy)
             {
                 newSeq = context.NextSequence;
                 return ref slot;
-            }
-            else
-            {
-                spinner.SpinOnce(sleep1Threshold: -1);
             }
         }
 
@@ -171,7 +168,7 @@ internal struct RingBuffer<T>
         static bool IOperation<EnqueueOperation>.CanRetry(ref readonly State state, nuint position)
         {
             var consumerPos = Volatile.Read(in state.Consumer);
-            return consumerPos > position;
+            return consumerPos >= position;
         }
         
         static bool IOperation<EnqueueOperation>.Retry(ref readonly bool frozenForEnqueues) => !frozenForEnqueues;
