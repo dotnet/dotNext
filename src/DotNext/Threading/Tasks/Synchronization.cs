@@ -80,7 +80,7 @@ public static partial class Synchronization
         /// Gets task result synchronously.
         /// </summary>
         /// <param name="token">Cancellation token.</param>
-        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if the receiver is not of type <see cref="Task{TResult}"/>.</returns>
         [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
         [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
         public Result<dynamic?> GetResult(CancellationToken token)
@@ -108,7 +108,7 @@ public static partial class Synchronization
         /// Gets task result synchronously.
         /// </summary>
         /// <param name="timeout">Synchronization timeout.</param>
-        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if the receiver is not of type <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="TimeoutException">Task is not completed.</exception>
         [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
         [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
