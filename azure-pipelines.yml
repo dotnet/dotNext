@@ -23,6 +23,8 @@ stages:
               nugetConfigPath: 'NuGet.config'
           - task: DotNetCoreCLI@2
             displayName: Test Debug
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: test
               projects: $(TestProject)
@@ -49,6 +51,8 @@ stages:
               arguments: --configuration Debug
           - task: DotNetCoreCLI@2
             displayName: Test Debug
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: test
               projects: $(TestProject)
@@ -67,6 +71,8 @@ stages:
         steps:
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: restore
               projects: '$(Solution)'

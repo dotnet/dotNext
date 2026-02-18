@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="node.pfx">
       <Generator></Generator>
     </EmbeddedResource>
