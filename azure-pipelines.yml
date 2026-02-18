@@ -26,10 +26,15 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish code coverage'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
       - job: Linux
         pool:
           vmImage: ubuntu-latest
