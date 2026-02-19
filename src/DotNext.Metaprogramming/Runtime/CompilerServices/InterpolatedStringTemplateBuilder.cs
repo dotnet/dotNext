@@ -225,3 +225,13 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
         }
     }
 }
+
+[InlineArray(BufferSize)]
+file struct PreallocatedCharBuffer
+{
+    private const int BufferSize = 64;
+    
+    private char element0;
+
+    public Span<char> Span => MemoryMarshal.CreateSpan(ref element0, BufferSize);
+}
