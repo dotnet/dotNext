@@ -262,7 +262,7 @@ partial class Span
         /// <param name="source">Source memory.</param>
         /// <param name="destination">Destination memory.</param>
         /// <returns>The number of copied elements.</returns>
-        public static int operator >>>(ReadOnlySpan<T> source, Span<T> destination)
+        public static int operator >>> (ReadOnlySpan<T> source, Span<T> destination)
         {
             int writtenCount;
             if (source.Length > destination.Length)
@@ -277,7 +277,7 @@ partial class Span
             source.CopyTo(destination);
             return writtenCount;
         }
-        
+
         /// <summary>
         /// Returns the first element in a span that satisfies a specified condition.
         /// </summary>
