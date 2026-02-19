@@ -92,7 +92,7 @@ public static partial class Memory
         {
             for (;; destination = writer.GetSpan())
             {
-                var writtenCount = source >> destination;
+                var writtenCount = source >>> destination;
                 writer.Advance(writtenCount);
                 source = source.Slice(writtenCount);
                 if (source.IsEmpty)

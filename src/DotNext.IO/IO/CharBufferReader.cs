@@ -29,7 +29,7 @@ internal sealed class CharBufferReader : TextBufferReader
         int result;
         if (!buffer.IsEmpty && sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty)
         {
-            result = block.Span >> buffer;
+            result = block.Span >>> buffer;
             position = sequence.GetPosition(result, position);
         }
         else

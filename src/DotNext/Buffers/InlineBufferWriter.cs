@@ -30,7 +30,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
         => consumer.Invoke(WrittenMemory, token);
 
     readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
-        => WrittenMemory.Span >> output;
+        => WrittenMemory.Span >>> output;
 
     public void Reset()
     {

@@ -359,7 +359,7 @@ public partial class FileReader : Disposable
 
     private int ReadFromBuffer(Span<byte> destination)
     {
-        var bytesCopied = BufferSpan >> destination;
+        var bytesCopied = BufferSpan >>> destination;
         ConsumeUnsafe(bytesCopied);
         return bytesCopied;
     }

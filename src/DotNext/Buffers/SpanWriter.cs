@@ -130,7 +130,7 @@ public ref struct SpanWriter<T>
     /// <returns>The number of written elements.</returns>
     public int Write(scoped ReadOnlySpan<T> input)
     {
-        var writtenCount = input >> RemainingSpan;
+        var writtenCount = input >>> RemainingSpan;
         position += writtenCount;
         return writtenCount;
     }

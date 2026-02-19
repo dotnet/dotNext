@@ -685,7 +685,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (HasBufferedData)
         {
-            totalBytes += WrittenSpan >> output;
+            totalBytes += WrittenSpan >>> output;
         }
 
     exit:
@@ -713,7 +713,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (HasBufferedData)
         {
-            totalBytes += WrittenSpan >> output.Span;
+            totalBytes += WrittenSpan >>> output.Span;
         }
 
     exit:

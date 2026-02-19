@@ -162,7 +162,7 @@ public ref struct SpanReader<T>
     /// <returns>The number of obtained elements.</returns>
     public int Read(scoped Span<T> output)
     {
-        var writtenCount = RemainingSpan >> output;
+        var writtenCount = RemainingSpan >>> output;
         position += writtenCount;
         return writtenCount;
     }

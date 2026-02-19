@@ -264,7 +264,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         var total = 0;
         for (var current = first; current is not null && !output.IsEmpty; current = current.Next)
         {
-            var writtenCount = current.WrittenMemory.Span >> output;
+            var writtenCount = current.WrittenMemory.Span >>> output;
             output = output.Slice(writtenCount);
             total += writtenCount;
         }

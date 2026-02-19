@@ -309,7 +309,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     /// <inheritdoc/>
     readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
-        => WrittenSpan >> output;
+        => WrittenSpan >>> output;
 
     /// <inheritdoc/>
     readonly void IGrowableBuffer<T>.CopyTo<TConsumer>(TConsumer consumer)

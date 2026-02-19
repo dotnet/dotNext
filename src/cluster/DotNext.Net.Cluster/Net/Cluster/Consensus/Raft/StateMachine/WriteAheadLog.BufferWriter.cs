@@ -42,13 +42,13 @@ public partial class WriteAheadLog
             var length = (uint)buffer.Length;
             var pageIndex = manager.GetPageIndex(LastWrittenAddress, out var offset);
             var page = manager.GetOrAddPage(pageIndex).GetSpan();
-            var bytesWritten = buffer >> page.Slice(offset);
+            var bytesWritten = buffer >>> page.Slice(offset);
             buffer = buffer.Slice(bytesWritten);
 
             while (!buffer.IsEmpty)
             {
                 page = manager.GetOrAddPage(++pageIndex).GetSpan();
-                bytesWritten = buffer >> page;
+                bytesWritten = buffer >>> page;
                 buffer = buffer.Slice(bytesWritten);
             }
 

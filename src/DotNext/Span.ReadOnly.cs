@@ -254,7 +254,7 @@ partial class Span
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
         public void CopyTo(Span<T> destination, out int writtenCount)
-            => writtenCount = span >> destination;
+            => writtenCount = span >>> destination;
 
         /// <summary>
         /// Copies the contents from the source span into a destination span.
@@ -262,7 +262,7 @@ partial class Span
         /// <param name="source">Source memory.</param>
         /// <param name="destination">Destination memory.</param>
         /// <returns>The number of copied elements.</returns>
-        public static int operator >>(ReadOnlySpan<T> source, Span<T> destination)
+        public static int operator >>>(ReadOnlySpan<T> source, Span<T> destination)
         {
             int writtenCount;
             if (source.Length > destination.Length)
