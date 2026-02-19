@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Threading;
 
 using Patterns;
-using Tasks;
 
 /// <summary>
 /// Provides low-level infrastructure for writing custom synchronization primitives.

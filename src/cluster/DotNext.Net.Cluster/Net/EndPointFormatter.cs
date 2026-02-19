@@ -7,7 +7,6 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
-using IO;
 using HttpEndPoint = Net.Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 

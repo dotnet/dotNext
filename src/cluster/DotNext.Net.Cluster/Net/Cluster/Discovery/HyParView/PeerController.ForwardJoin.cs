@@ -2,8 +2,6 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
-using static Collections.Generic.Collection;
-
 public partial class PeerController
 {
     /// <summary>

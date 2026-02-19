@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming;
 
 using Linq.Expressions;
-using static Collections.Generic.Collection;
 using static CodeGenerator;
 
 public sealed class LoopTests : Test

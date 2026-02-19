@@ -1,7 +1,6 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using Patterns;
-using Runtime.Serialization;
 
 public partial class CommandInterpreter : IBuildable<CommandInterpreter, CommandInterpreter.Builder>
 {

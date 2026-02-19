@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Connections;
 namespace DotNext.Net;
 
 using Buffers;
-using IO;
 using HttpEndPoint = Http.HttpEndPoint;
 
 public sealed class EndPointFormatterTests : Test
