@@ -1,4 +1,4 @@
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
@@ -8,8 +8,8 @@ internal abstract class TextBufferReader : TextReader
 
     public sealed override int Read()
     {
-        var result = '\0';
-        return Read(MemoryMarshal.CreateSpan(ref result, 1)) > 0 ? result : InvalidChar;
+        Unsafe.SkipInit(out char result);
+        return Read(new Span<char>(ref result)) > 0 ? result : InvalidChar;
     }
 
     public sealed override int Read(char[] buffer, int index, int count)
