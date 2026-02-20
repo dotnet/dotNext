@@ -27,22 +27,18 @@ partial class Span
         /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
         public unsafe bool BitwiseEquals(ReadOnlySpan<T> y)
         {
-            if (x.Length == y.Length)
-            {
-                for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
-                {
-                    size = Math.Min(maxSize, x.Length);
-                    var sizeInBytes = size * sizeof(T);
-                    var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
-                    var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                    if (partX.SequenceEqual(partY) is false)
-                        return false;
-                }
+            var result = x.Length == y.Length;
 
-                return true;
+            for (int maxSize = Array.MaxLength / sizeof(T), size; result && !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
+            {
+                size = int.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                result = partX.SequenceEqual(partY);
             }
 
-            return false;
+            return result;
         }
 
         /// <summary>
@@ -52,20 +48,14 @@ partial class Span
         /// <returns>Comparison result.</returns>
         public unsafe int BitwiseCompare(ReadOnlySpan<T> y)
         {
-            var result = x.Length;
-            result = result.CompareTo(y.Length);
-            if (result is 0)
+            var result = x.Length.CompareTo(y.Length);
+            for (int maxSize = Array.MaxLength / sizeof(T), size; result is 0 && !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
             {
-                for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
-                {
-                    size = Math.Min(maxSize, x.Length);
-                    var sizeInBytes = size * sizeof(T);
-                    var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
-                    var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                    result = partX.SequenceCompareTo(partY);
-                    if (result is not 0)
-                        break;
-                }
+                size = int.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                result = partX.SequenceCompareTo(partY);
             }
 
             return result;
@@ -322,7 +312,7 @@ partial class Span
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
 
             ref var ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
+            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (uint)count), source.Length - count);
             return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
         }
 
@@ -335,8 +325,9 @@ partial class Span
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
-            ref T ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
+            const nuint one = 1U;
+            ref var ptr = ref MemoryMarshal.GetReference(source);
+            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, one), source.Length - 1);
             return ref ptr;
         }
     }
