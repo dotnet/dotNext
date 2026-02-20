@@ -327,7 +327,7 @@ partial class Span
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
 
             ref var ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
+            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, (uint)count), source.Length - count);
             return MemoryMarshal.CreateSpan(ref ptr, count);
         }
 
@@ -340,8 +340,9 @@ partial class Span
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
-            ref T ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
+            const nuint one = 1U;
+            ref var ptr = ref MemoryMarshal.GetReference(source);
+            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, one), source.Length - 1);
             return ref ptr;
         }
     }
