@@ -11,7 +11,7 @@ using FNV1a32 = IO.Hashing.FNV1a32;
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
 public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISingleton<BitwiseComparer<T>>
-    where T : unmanaged
+    where T : unmanaged, allows ref struct
 {
     private BitwiseComparer()
     {
@@ -39,7 +39,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
     /// <param name="second">The second value to check.</param>
     /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
     public static unsafe bool Equals<TOther>(in T first, in TOther second)
-        where TOther : unmanaged
+        where TOther : unmanaged, allows ref struct
         => sizeof(T) == sizeof(TOther) && sizeof(T) switch
         {
             0 => true,
@@ -58,7 +58,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
     /// <param name="second">The second value to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
     public static unsafe int Compare<TOther>(in T first, in TOther second)
-        where TOther : unmanaged
+        where TOther : unmanaged, allows ref struct
     {
         var result = sizeof(T);
         result = result.CompareTo(sizeof(TOther));

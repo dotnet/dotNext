@@ -13,7 +13,7 @@ public static partial class Span
     /// </summary>
     /// <typeparam name="T">The blittable type.</typeparam>
     extension<T>(T)
-        where T : unmanaged
+        where T : unmanaged, allows ref struct
     {
         /// <summary>
         /// Converts contiguous memory identified by the specified pointer
