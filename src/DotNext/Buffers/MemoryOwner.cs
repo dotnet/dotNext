@@ -103,7 +103,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
             default:
                 array = null;
                 var owner = provider(length);
-                if ((this.length = Math.Min(owner.Memory.Length, length)) > 0)
+                if ((this.length = int.Min(owner.Memory.Length, length)) > 0)
                 {
                     this.owner = owner;
                 }
