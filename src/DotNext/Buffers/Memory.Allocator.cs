@@ -82,14 +82,7 @@ public static partial class Memory
             result.Truncate(length);
             return result;
         }
-    }
-
-    /// <summary>
-    /// Extends <see cref="MemoryAllocator{T}"/> delegate.
-    /// </summary>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    extension<T>(MemoryAllocator<T>? allocator)
-    {
+        
         /// <summary>
         /// Gets the array allocator.
         /// </summary>
@@ -118,7 +111,14 @@ public static partial class Memory
                     => new(ArrayPool<T>.Shared, length, exactSize: false);
             }
         }
+    }
 
+    /// <summary>
+    /// Extends <see cref="MemoryAllocator{T}"/> delegate.
+    /// </summary>
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    extension<T>(MemoryAllocator<T>? allocator)
+    {
         /// <summary>
         /// Gets <see cref="Memory.get_Default{T}"/> allocator if the current is <see langword="null"/>.
         /// </summary>
