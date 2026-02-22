@@ -63,11 +63,11 @@ public static class Set
             {
                 var minValue = lowerBound.IsOnRight(lowerBound.Value)
                     ? lowerBound.Value
-                    : lowerBound.Value + T.One;
+                    : checked(lowerBound.Value + T.One);
 
                 var maxValue = upperBound.IsOnLeft(upperBound.Value)
                     ? upperBound.Value
-                    : upperBound.Value - T.One;
+                    : checked(upperBound.Value - T.One);
 
                 return (minValue, maxValue);
             }
