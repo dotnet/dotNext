@@ -87,7 +87,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(40, slice[1]);
         Equal(50, slice[2]);
         var array = new long[3];
-        owner.Span.CopyTo(array, out _);
+        Equal(array.Length, owner.Span >>> array);
         Equal(10, array[0]);
         Equal(20, array[1]);
         Equal(30, array[2]);
