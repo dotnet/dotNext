@@ -1,7 +1,5 @@
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using static System.Runtime.InteropServices.MemoryMarshal;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using System.Runtime.InteropServices;
 
 namespace DotNext;
 
@@ -25,13 +23,15 @@ public static class StringExtensions
         [return: NotNullIfNotNull(nameof(str))]
         public string? Reverse()
         {
-            if (str is { Length: > 0 })
+            return str is { Length: > 0 }
+                ? string.Create(str.Length, str, ReverseCore)
+                : str;
+            
+            static void ReverseCore(Span<char> destination, string source)
             {
-                str = new(str);
-                CreateSpan(ref Unsafe.AsRef(in str.GetPinnableReference()), str.Length).Reverse();
+                source.CopyTo(destination);
+                destination.Reverse();
             }
-
-            return str;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ public static class StringExtensions
             var (start, length) = range.GetOffsetAndLength(str.Length);
             return str.Substring(start, length);
         }
-        
+
         /// <summary>
         /// Concatenates multiple strings.
         /// </summary>
@@ -83,44 +83,18 @@ public static class StringExtensions
         /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
         public static MemoryOwner<char> Concat(ReadOnlySpan<string?> values, MemoryAllocator<char>? allocator)
         {
-            MemoryOwner<char> result;
-
-            switch (values.Length)
-            {
-                default:
-                    var totalLength = 0L;
-                    foreach (var s in values)
-                    {
-                        if (s is { Length: > 0 })
-                        {
-                            totalLength += s.Length;
-                        }
-                    }
-
-                    if (totalLength is 0)
-                        goto case 0;
-
-                    if (totalLength > Array.MaxLength)
-                        throw new OutOfMemoryException();
-
-                    result = allocator?.Invoke((int)totalLength) ?? new(ArrayPool<char>.Shared, (int)totalLength);
-                    var output = result.Span;
-                    foreach (ReadOnlySpan<char> s in values)
-                    {
-                        s.CopyTo(output);
-                        output = output.Slice(s.Length);
-                    }
-
-                    break;
-                case 0:
-                    result = default;
-                    break;
-                case 1:
-                    result = values[0].Copy(allocator);
-                    break;
-            }
-
-            return result;
+            var list = new StringList(values);
+            return list.Concat(allocator);
         }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StringList(ReadOnlySpan<string?> values) : Span.IReadOnlySpanList<char>
+    {
+        private readonly ReadOnlySpan<string?> values = values;
+
+        int Span.IReadOnlySpanList<char>.Count => values.Length;
+
+        ReadOnlySpan<char> Span.IReadOnlySpanList<char>.this[int index] => values[index];
     }
 }
