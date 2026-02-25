@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Hashing;
 
+using Runtime.InteropServices;
 using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
@@ -175,7 +176,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         internal readonly void GetValue(Span<byte> output)
         {
             var hash = Value;
-            Span.AsReadOnlyBytes(in hash).CopyTo(output);
+            MemoryMarshal.AsReadOnlyBytes(in hash).CopyTo(output);
         }
 
         private unsafe Span<byte> RemainingBuffer

@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;
 
+using Runtime.InteropServices;
+
 public sealed class BinaryTransformationsTests : Test
 {
     [Theory]
@@ -149,11 +151,11 @@ public sealed class BinaryTransformationsTests : Test
 
         if (BitConverter.IsLittleEndian)
         {
-            Equal(BinaryPrimitives.ReadUInt32BigEndian(uint.AsReadOnlyBytes(in tmp)), i);
+            Equal(BinaryPrimitives.ReadUInt32BigEndian(MemoryMarshal.AsReadOnlyBytes(in tmp)), i);
         }
         else
         {
-            Equal(BinaryPrimitives.ReadUInt32LittleEndian(uint.AsReadOnlyBytes(in tmp)), i);
+            Equal(BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.AsReadOnlyBytes(in tmp)), i);
         }
     }
 }

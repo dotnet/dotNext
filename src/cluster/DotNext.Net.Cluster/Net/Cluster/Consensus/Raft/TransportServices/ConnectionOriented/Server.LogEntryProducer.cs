@@ -1,13 +1,14 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
-using System.Runtime.InteropServices;
 using Buffers;
 using IO;
 using IO.Log;
+using Runtime.InteropServices;
 
 internal partial class Server
 {
@@ -56,7 +57,7 @@ internal partial class Server
                 ? ref this.buffer
                 : ref MemoryMarshal.GetArrayDataReference(pinnedBuffer);
 
-            return Buffer.AsBytes(ref buffer);
+            return MemoryMarshal.AsBytes(ref buffer);
         }
 
         public override unsafe MemoryHandle Pin(int elementIndex = 0)

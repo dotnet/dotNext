@@ -1,4 +1,8 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Buffers.Binary;
+
+using Runtime.InteropServices;
 
 /// <summary>
 /// Provides various binary transformations.
@@ -24,5 +28,5 @@ public static partial class BinaryTransformations
     /// <param name="value">The value which bytes should be reversed.</param>
     public static void Reverse<T>(ref T value)
         where T : unmanaged
-        => Span.AsBytes(ref value).Reverse();
+        => MemoryMarshal.AsBytes(ref value).Reverse();
 }

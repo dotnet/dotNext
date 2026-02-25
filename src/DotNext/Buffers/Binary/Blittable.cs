@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;
 
+using Runtime.InteropServices;
+
 /// <summary>
 /// Represents a value of blittable type as <see cref="IBinaryFormattable{TSelf}"/>.
 /// </summary>
@@ -18,7 +20,7 @@ public struct Blittable<T> : IBinaryFormattable<Blittable<T>>
 
     /// <inheritdoc/>
     readonly void IBinaryFormattable<Blittable<T>>.Format(Span<byte> destination)
-        => Span.AsReadOnlyBytes(in Value).CopyTo(destination);
+        => MemoryMarshal.AsReadOnlyBytes(in Value).CopyTo(destination);
 
     /// <inheritdoc cref="IBinaryFormattable{TSelf}.Size"/>
     static int IBinaryFormattable<Blittable<T>>.Size => Unsafe.SizeOf<T>();
@@ -27,7 +29,7 @@ public struct Blittable<T> : IBinaryFormattable<Blittable<T>>
     static Blittable<T> IBinaryFormattable<Blittable<T>>.Parse(ReadOnlySpan<byte> source)
     {
         Unsafe.SkipInit(out Blittable<T> result);
-        var destination = Span.AsBytes(ref result.Value);
+        var destination = MemoryMarshal.AsBytes(ref result.Value);
         source = source.Slice(0, destination.Length);
         source.CopyTo(destination);
         return result;

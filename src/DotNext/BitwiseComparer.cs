@@ -1,8 +1,10 @@
+using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
 using Patterns;
+using Runtime.InteropServices;
 using static Runtime.CompilerServices.AdvancedHelpers;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
@@ -91,7 +93,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
         switch (sizeof(T))
         {
             default:
-                return FNV1a32.Hash(Span.AsReadOnlyBytes(in value), salted);
+                return FNV1a32.Hash(MemoryMarshal.AsReadOnlyBytes(in value), salted);
             case 0:
                 hash = 0;
                 break;

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 namespace DotNext;
 
 using Numerics;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Provides random data generation.
@@ -32,7 +33,7 @@ public static class RandomExtensions
 
             do
             {
-                RandomNumberGenerator.Fill(uint.AsBytes(ref result));
+                RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(ref result));
                 result >>>= 1; // remove sign bit
             }
             while (result is maxValue);
@@ -68,7 +69,7 @@ public static class RandomExtensions
             where T : unmanaged
         {
             Unsafe.SkipInit(out T result);
-            RandomNumberGenerator.Fill(Span.AsBytes(ref result));
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(ref result));
             return result;
         }
     }
@@ -97,7 +98,7 @@ public static class RandomExtensions
             where T : unmanaged
         {
             Unsafe.SkipInit(out T result);
-            random.NextBytes(Span.AsBytes(ref result));
+            random.NextBytes(MemoryMarshal.AsBytes(ref result));
             return result;
         }
 
