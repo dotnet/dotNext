@@ -146,6 +146,17 @@ partial class Span
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public ReadOnlySpan<T> TrimLength(int maxLength)
             => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="x">The span to trim.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public static ReadOnlySpan<T> operator %(ReadOnlySpan<T> x, int maxLength)
+            => x.TrimLength(maxLength);
         
         /// <summary>
         /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.

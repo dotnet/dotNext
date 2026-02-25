@@ -14,7 +14,7 @@ internal static class BufferReader
                  && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty;
                  position = input.GetPosition(consumedBytes, position))
             {
-                block = block.TrimLength(remainingBytes);
+                block %= remainingBytes;
                 parser.Invoke(block.Span);
                 consumedBytes = block.Length;
             }

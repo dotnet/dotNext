@@ -66,7 +66,7 @@ public sealed class SpanTests : Test
     public static void TrimByLength1()
     {
         Span<int> span = [1, 2, 3];
-        span = span.TrimLength(4);
+        span %= 4;
         Equal(3, span.Length);
         span = span.TrimLength(2);
         Equal(2, span.Length);
@@ -78,7 +78,7 @@ public sealed class SpanTests : Test
     public static void TrimByLength2()
     {
         ReadOnlySpan<int> span = [1, 2, 3];
-        span = span.TrimLength(4);
+        span %= 4;
         Equal(3, span.Length);
         span = span.TrimLength(2);
         Equal(2, span.Length);

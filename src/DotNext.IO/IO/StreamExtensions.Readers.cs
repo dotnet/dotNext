@@ -21,7 +21,7 @@ public static partial class StreamExtensions
     {
         for (int count; (count = parser.RemainingBytes) > 0; parser.Invoke(buffer.Span.Slice(0, count)))
         {
-            count = await stream.ReadAsync(buffer.TrimLength(count), token).ConfigureAwait(false);
+            count = await stream.ReadAsync(buffer % count, token).ConfigureAwait(false);
 
             if (count is 0)
                 break;
@@ -385,7 +385,7 @@ public static partial class StreamExtensions
 
         for (int bytesRead; count > 0L; count -= bytesRead)
         {
-            bytesRead = await source.ReadAsync(buffer.TrimLength(int.CreateSaturating(count)), token).ConfigureAwait(false);
+            bytesRead = await source.ReadAsync(buffer % int.CreateSaturating(count), token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
 
@@ -471,7 +471,7 @@ public static partial class StreamExtensions
 
         for (int bytesRead; count > 0L; destination.Advance(bytesRead), count -= bytesRead)
         {
-            var buffer = destination.GetMemory(bufferSize).TrimLength(int.CreateSaturating(count));
+            var buffer = destination.GetMemory(bufferSize) % int.CreateSaturating(count);
             bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
@@ -527,7 +527,7 @@ public static partial class StreamExtensions
 
         for (int bytesRead; length > 0L; length -= bytesRead)
         {
-            bytesRead = await stream.ReadAsync(buffer.Memory.TrimLength(int.CreateSaturating(length)), token).ConfigureAwait(false);
+            bytesRead = await stream.ReadAsync(buffer.Memory % int.CreateSaturating(length), token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
             

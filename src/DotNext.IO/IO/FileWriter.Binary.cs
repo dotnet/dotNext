@@ -358,7 +358,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         for (int bytesWritten; count > 0L; fileOffset += bytesWritten, count -= bytesWritten)
         {
-            bytesWritten = await source.ReadAsync(buffer.TrimLength(int.CreateSaturating(count)), token).ConfigureAwait(false);
+            bytesWritten = await source.ReadAsync(buffer % int.CreateSaturating(count), token).ConfigureAwait(false);
             if (bytesWritten <= 0)
                 throw new EndOfStreamException();
 

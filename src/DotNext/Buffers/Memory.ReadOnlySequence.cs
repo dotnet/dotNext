@@ -194,9 +194,7 @@ public static partial class Memory
             }
 
             // copy the last segment
-            block = block.TrimLength(destination.Length);
-            block.Span.CopyTo(destination);
-            writtenCount += block.Length;
+            writtenCount += block.Span >>> destination;
         }
 
         /// <summary>

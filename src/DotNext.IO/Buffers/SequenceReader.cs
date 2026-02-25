@@ -215,7 +215,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
         if (RemainingSequence is { IsEmpty: false } remaining)
         {
-            chunk = remaining.First.TrimLength(maxLength);
+            chunk = remaining.First % maxLength;
             position = remaining.GetPosition(chunk.Length);
         }
         else

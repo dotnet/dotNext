@@ -605,7 +605,7 @@ partial class PipeExtensions
                          consumed = position,
                          length -= block.Length)
                     {
-                        block = block.TrimLength(int.CreateSaturating(length));
+                        block %= int.CreateSaturating(length);
                         if (!block.IsEmpty)
                             yield return block;
                     }
