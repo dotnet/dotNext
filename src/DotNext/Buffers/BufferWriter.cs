@@ -9,6 +9,7 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
