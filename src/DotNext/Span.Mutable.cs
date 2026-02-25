@@ -103,15 +103,6 @@ partial class Span
 
             return span;
         }
-
-        /// <summary>
-        /// Copies the contents from the source span into a destination span.
-        /// </summary>
-        /// <param name="source">Source memory.</param>
-        /// <param name="destination">Destination memory.</param>
-        /// <returns>The number of copied elements.</returns>
-        public static int operator >>> (Span<T> source, Span<T> destination)
-            => (ReadOnlySpan<T>)source >>> destination;
         
         /// <summary>
         /// Swaps two ranges within the same span.
