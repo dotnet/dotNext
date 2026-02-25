@@ -22,7 +22,7 @@ public static partial class Memory
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed memory block.</returns>
         public ReadOnlyMemory<T> TrimLength(int maxLength)
-            => (uint)memory.Length <= (uint)maxLength ? memory : memory.Slice(0, maxLength);
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
         /// <summary>
         /// Trims the memory block to specified length if it exceeds it.
@@ -49,7 +49,7 @@ public static partial class Memory
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed memory block.</returns>
         public Memory<T> TrimLength(int maxLength)
-            => (uint)memory.Length <= (uint)maxLength ? memory : memory.Slice(0, maxLength);
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
         /// <summary>
         /// Trims the memory block to specified length if it exceeds it.
