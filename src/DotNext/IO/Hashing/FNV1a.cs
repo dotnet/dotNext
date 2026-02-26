@@ -69,11 +69,11 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     {
         if (typeof(T) == typeof(byte))
         {
-            hash.Append(ReadOnlySpan<byte>.ReinterpretCast(data));
+            hash.Append(Unsafe.BitCast<ReadOnlySpan<T>, ReadOnlySpan<byte>>(data));
         }
         else if (Intrinsics.AreCompatible<T, THash>())
         {
-            hash.Append(ReadOnlySpan<THash>.ReinterpretCast(data));
+            hash.Append(Unsafe.BitCast<ReadOnlySpan<T>, ReadOnlySpan<THash>>(data));
         }
         else
         {

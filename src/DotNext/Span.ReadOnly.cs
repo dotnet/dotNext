@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -119,15 +118,6 @@ partial class Span
         /// <returns><see langword="true"/> if <c>value &amp; mask != 0</c>; otherwise, <see langword="false"/>.</returns>
         public static bool operator &(ReadOnlySpan<T> value, ReadOnlySpan<T> mask)
             => value.IsBitwiseAndNonZero(mask);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ReadOnlySpan<T> ReinterpretCast<TInput>(ReadOnlySpan<TInput> input)
-            where TInput : unmanaged
-        {
-            Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<T>());
-
-            return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<TInput, T>(ref MemoryMarshal.GetReference(input)), input.Length);
-        }
     }
 
     /// <summary>
@@ -145,7 +135,7 @@ partial class Span
         /// <returns>Trimmed span.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public ReadOnlySpan<T> TrimLength(int maxLength)
-            => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
+            => Unsafe.BitCast<ReadOnlySpan<T>, Span<T>>(span).TrimLength(maxLength);
 
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
@@ -283,13 +273,7 @@ partial class Span
         /// <returns>The span containing <paramref name="count"/> elements.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of the source span.</exception>
         public ReadOnlySpan<T> Advance(int count)
-        {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
-
-            ref var ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (uint)count), source.Length - count);
-            return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
-        }
+            => Unsafe.As<ReadOnlySpan<T>, Span<T>>(ref source).Advance(count);
 
         /// <summary>
         /// Takes the first element and adjusts the span.
@@ -297,14 +281,7 @@ partial class Span
         /// <returns>The reference to the first element in the span.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The source span is empty.</exception>
         public ref readonly T Advance()
-        {
-            ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
-
-            const nuint one = 1U;
-            ref T ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, one), source.Length - 1);
-            return ref ptr;
-        }
+            => ref Unsafe.As<ReadOnlySpan<T>, Span<T>>(ref source).Advance();
     }
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
