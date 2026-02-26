@@ -42,13 +42,16 @@ public sealed class SpanTests : Test
     }
 
     [Fact]
-    public static void IndexOf()
+    public static unsafe void IndexOf()
     {
         ReadOnlySpan<ulong> span = [3, 2, 6, 4];
         Equal(1, span.IndexOf(2UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3, span.IndexOf(4UL, 0, EqualityComparer<ulong>.Default.Equals));
+        Equal(2, span.IndexOf(6UL, 0, &AreEqual));
         Equal(3UL, span[0]);
         Equal(2UL, span[1]);
+
+        static bool AreEqual(ulong x, ulong y) => x == y;
     }
 
     [Fact]
