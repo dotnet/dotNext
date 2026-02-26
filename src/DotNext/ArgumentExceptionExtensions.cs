@@ -15,6 +15,20 @@ public static class ArgumentExceptionExtensions
     extension(ArgumentException)
     {
         /// <summary>
+        /// Throws if the collection is empty.
+        /// </summary>
+        /// <param name="collection">The collection argument to validate.</param>
+        /// <param name="paramName">The name of the parameter with which argument corresponds.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        public static void ThrowIfNullOrEmpty<T>([NotNull] IReadOnlyCollection<T>? collection,
+            [CallerArgumentExpression(nameof(collection))]
+            string? paramName = null)
+        {
+            if (collection is null or { Count: 0 })
+                ThrowEmptyCollection(paramName);
+        }
+
+        /// <summary>
         /// Throws if the input buffer is empty.
         /// </summary>
         /// <param name="span">The buffer argument to validate.</param>
@@ -79,7 +93,7 @@ public static class ArgumentExceptionExtensions
         /// Creates <see cref="ArgumentException"/> that describes the empty buffer.
         /// </summary>
         /// <param name="paramName">The name of the parameter.</param>
-        /// <returns></returns>
+        /// <returns>An instance of exception.</returns>
         public static ArgumentException BufferTooSmall(string? paramName)
             => new(ExceptionMessages.BufferTooSmall, paramName);
 
@@ -87,5 +101,18 @@ public static class ArgumentExceptionExtensions
         [StackTraceHidden]
         private static void ThrowBufferTooSmall(string? paramName)
             => throw BufferTooSmall(paramName);
+
+        /// <summary>
+        /// Creates <see cref="ArgumentException"/> that describes the empty collection.
+        /// </summary>
+        /// <param name="paramName">The name of the parameter.</param>
+        /// <returns>An instance of exception.</returns>
+        public static ArgumentException EmptyCollection(string? paramName)
+            => new(ExceptionMessages.EmptyCollection, paramName);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        private static void ThrowEmptyCollection(string? paramName)
+            => throw EmptyCollection(paramName);
     }
 }

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime.InteropServices;
 
 /// <summary>
-/// Extends <see cref="ReadOnlySeque"/>
+/// Extends <see cref="SequenceMarshal"/> type.
 /// </summary>
 public static class SequenceMarshalExtensions
 {

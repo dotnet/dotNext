@@ -18,3 +18,4 @@ EndOfBuffer=The buffer has no data to read but the caller expects {0} extra elem
 OverlappedRange=The ranges are overlapped
 FullyQualifiedPathExpected=The path must be fully-qualified
 BufferTooSmall=The buffer is too small (or empty)
+EmptyCollection=The collection is empty

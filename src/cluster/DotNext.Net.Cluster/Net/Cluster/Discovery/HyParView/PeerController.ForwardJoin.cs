@@ -39,7 +39,8 @@ public partial class PeerController
             if (timeToLive == passiveRandomWalkLength)
                 await AddPeerToPassiveViewAsync(joinedPeer).ConfigureAwait(false);
 
-            await (random.Peek(activeView.Except(new[] { sender, joinedPeer })).TryGet(out var randomActivePeer)
+            await (activeView.Except([sender, joinedPeer]) is { IsEmpty: false } view
+                   && random.Peek(view) is { } randomActivePeer
                 ? ForwardJoinAsync(randomActivePeer, joinedPeer, timeToLive - 1, LifecycleToken)
                 : AddPeerToActiveViewAsync(joinedPeer, true)).ConfigureAwait(false);
         }

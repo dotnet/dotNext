@@ -19,7 +19,8 @@ public sealed class RandomTests : Test
     [Fact]
     public static void PeekRandomFromEmptyCollection()
     {
-        False(Random.Shared.Peek(Array.Empty<int>()).HasValue);
+        Throws<ArgumentException>(() => Random.Shared.Peek(Array.Empty<int>()));
+        Throws<ArgumentException>(() => Random.Shared.Peek(new LinkedList<int>()));
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public sealed class RandomTests : Test
         IReadOnlyCollection<int> collection = [10, 20, 30];
         All(Enumerable.Range(0, collection.Count), i =>
         {
-            True(Random.Shared.Peek(collection).Value is 10 or 20 or 30);
+            True(Random.Shared.Peek(collection) is 10 or 20 or 30);
         });
     }
 

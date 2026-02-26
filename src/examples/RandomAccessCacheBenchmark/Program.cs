@@ -91,7 +91,7 @@ sealed class BenchmarkState
     }
 
     private Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
-        => ReadOrAddAsync(Random.Shared.Peek(files).Value, cache, token);
+        => ReadOrAddAsync(Random.Shared.Peek(files), cache, token);
     
     private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
     {

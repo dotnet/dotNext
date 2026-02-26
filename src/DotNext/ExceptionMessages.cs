@@ -51,4 +51,6 @@ internal static class ExceptionMessages
     internal static string FullyQualifiedPathExpected => Resources.GetString("FullyQualifiedPathExpected")!;
 
     internal static string BufferTooSmall => Resources.GetString("BufferTooSmall")!;
+
+    internal static string EmptyCollection => Resources.GetString("EmptyCollection")!;
 }
