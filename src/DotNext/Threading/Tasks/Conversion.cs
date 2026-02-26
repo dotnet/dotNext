@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
@@ -64,7 +63,6 @@ public static class Conversion
     /// </remarks>
     /// <param name="task">The arbitrary task of type <see cref="Task{TResult}"/>.</param>
     /// <returns>The dynamically typed task.</returns>
-    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
     public static DynamicTaskAwaitable AsDynamic(this Task task) => new(task);
 
     /// <summary>
