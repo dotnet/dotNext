@@ -42,6 +42,15 @@ public class NativeMemoryExtensionsTests : Test
         Equal(a, b);
         Equal(42, b);
     }
+
+    [Fact]
+    public static unsafe void CopyValueUnaligned()
+    {
+        int a = 42, b = 0;
+        NativeMemory.CopyUnaligned(&a, &b);
+        Equal(a, b);
+        Equal(42, b);
+    }
     
     [Fact]
     public static unsafe void PtrHashCode()
