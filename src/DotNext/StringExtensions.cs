@@ -89,12 +89,12 @@ public static class StringExtensions
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StringList(ReadOnlySpan<string?> values) : Span.IReadOnlySpanList<char>
+    private readonly ref struct StringList(ReadOnlySpan<string?> values) : IReadOnlySpanList<char>
     {
         private readonly ReadOnlySpan<string?> values = values;
 
-        int Span.IReadOnlySpanList<char>.Count => values.Length;
+        int IReadOnlySpanList<char>.Count => values.Length;
 
-        ReadOnlySpan<char> Span.IReadOnlySpanList<char>.this[int index] => values[index];
+        ReadOnlySpan<char> IReadOnlySpanList<char>.this[int index] => values[index];
     }
 }
