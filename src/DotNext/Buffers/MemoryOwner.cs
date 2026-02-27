@@ -18,7 +18,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
 {
     // Of type ArrayPool<T> or IMemoryOwner<T>.
     // If support of another type is needed then reconsider implementation
-    // of Memory, this[nint index] and Expand members
+    // of Memory and this[int index] members
     private readonly object? owner;
     private readonly T[]? array;  // not null only if owner is ArrayPool or null
     private int length;
