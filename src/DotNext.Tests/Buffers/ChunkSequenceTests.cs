@@ -79,23 +79,23 @@ public sealed class ChunkSequenceTests : Test
     {
         var sequence = new ReadOnlySequence<byte>(new byte[] { 1, 2, 3 }.AsMemory());
         Span<byte> dest = new byte[3];
-        sequence.CopyTo(dest, out int writtenCount);
+        var writtenCount = sequence >>> dest;
         Equal(3, writtenCount);
         Equal(sequence.ToArray(), dest.ToArray());
 
         sequence = ToReadOnlySequence<byte>(RandomBytes(64), 16);
         dest = new byte[64];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(64, writtenCount);
         Equal(sequence.ToArray(), dest.ToArray());
 
         dest = new byte[100];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(64, writtenCount);
         Equal(sequence.ToArray(), dest.Slice(0, 64).ToArray());
 
         dest = new byte[10];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(10, writtenCount);
         Equal(sequence.Slice(0, 10).ToArray(), dest.ToArray());
     }

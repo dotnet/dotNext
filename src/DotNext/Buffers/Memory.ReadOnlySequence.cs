@@ -176,23 +176,22 @@ public static partial class Memory
         /// <summary>
         /// Copies the contents from the source sequence into a destination span.
         /// </summary>
-        /// <param name="destination">Destination memory.</param>
-        /// <param name="writtenCount">The number of copied elements.</param>
-        public void CopyTo(Span<T> destination, out int writtenCount)
+        /// <param name="src">The sequence to copy from.</param>
+        /// <param name="dest">Destination memory.</param>
+        /// <returns>The number of copied elements.</returns>
+        public static int operator >>> (in ReadOnlySequence<T> src, Span<T> dest)
         {
-            writtenCount = 0;
             ReadOnlyMemory<T> block;
+            var writer = new SpanWriter<T>(dest);
 
-            for (var position = source.Start;
-                 source.TryGet(ref position, out block) && block.Length <= destination.Length;
-                 writtenCount += block.Length)
+            for (var position = src.Start; src.TryGet(ref position, out block) && block.Length <= writer.FreeCapacity;)
             {
-                block.Span.CopyTo(destination);
-                destination = destination.Slice(block.Length);
+                writer += block.Span;
             }
 
             // copy the last segment
-            writtenCount += block.Span >>> destination;
+            writer += block.Span;
+            return writer.WrittenCount;
         }
 
         /// <summary>

@@ -48,7 +48,7 @@ public readonly struct BinaryLogEntry<T> : IInputLogEntry, ISupplier<MemoryAlloc
 
     /// <inheritdoc />
     MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
-        => IBinaryFormattable<T>.Format(Content, allocator);
+        => Content.Format(allocator);
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
