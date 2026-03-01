@@ -22,7 +22,7 @@ using System;
 using System.Threading;
 using DotNext.Runtime;
 
-GCMemoryInfo info = await GCNOtification.GCTriggered().WaitAsync(CancellationToken.None);
+GCMemoryInfo info = await GC.WhenTriggered().WaitAsync(CancellationToken.None);
 Console.WriteLine("GC occurred");
 ```
 
@@ -35,18 +35,18 @@ using System.Threading;
 using DotNext.Runtime;
 
 // detect GC for generation 0 or 1, but not for 2
-GCMemoryInfo info = await (!GCNOtification.GCTriggered(2)).WaitAsync(CancellationToken.None);
+GCMemoryInfo info = await (!GC.WhenTriggered(2)).WaitAsync(CancellationToken.None);
 Console.WriteLine("GC occurred");
 ```
 
-[GCNotification](xref:DotNext.Runtime.GCNotification) provides a rich set of predefined filters to capture various GC events. For instance, it is possible to detect GC memory pressure:
+[GCExtensions](xref:DotNext.Runtime.GCExtensions) exposes a rich set of predefined filters to capture various GC events. For instance, it is possible to detect GC memory pressure:
 ```csharp
 using System;
 using System.Threading;
 using DotNext.Runtime;
 
 // detect 80% memory occupation (GC after cleanup has less than 20% of free memory)
-using GCNotification.Registration reg = GCNotification.MemoryThreshold(0.8).Register(GCCallback, "Memory pressure detected");
+using GCNotification.Registration reg = GC.WhenMemoryPressure(0.8).Register(GCCallback, "Memory pressure detected");
 GC.Collect();
 
 static void GCCallback(string message, GCMemoryInfo info)
