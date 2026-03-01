@@ -162,7 +162,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
         try
         {
-            return await ISerializable<T>.ReadFromAsync(content, token: token).ConfigureAwait(false);
+            return await Serializable.ReadFromAsync<T>(content, token: token).ConfigureAwait(false);
         }
         finally
         {
