@@ -72,46 +72,46 @@ public static partial class ServiceProviderFactory
             where TService : class
             => new SingleServiceProvider<ISupplier<TService>>(typeof(TService), serviceGetter, provider);
     }
+}
 
-    private sealed class CachedServiceProvider<T>(in T tuple, IServiceProvider? fallback) : IServiceProvider
-        where T : struct, ITuple
+file sealed class CachedServiceProvider<T>(in T tuple, IServiceProvider? fallback) : IServiceProvider
+    where T : struct, ITuple
+{
+    private static readonly ReadOnlyMemory<Type> ServiceTypes;
+
+    static CachedServiceProvider()
     {
-        private static readonly ReadOnlyMemory<Type> ServiceTypes;
-
-        static CachedServiceProvider()
-        {
-            var tupleType = typeof(T);
-            ServiceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : [];
-        }
-
-        private T tuple = tuple;
-
-        object? IServiceProvider.GetService(Type serviceType)
-        {
-            var index = ServiceTypes.Span.IndexOf(serviceType);
-            return (uint)index < (uint)tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
-        }
-
-        public static Type GetServiceType(int index) => ServiceTypes.Span[index];
+        var tupleType = typeof(T);
+        ServiceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : [];
     }
 
-    private sealed class EmptyServiceProvider : IServiceProvider, ISingleton<EmptyServiceProvider>
+    private T tuple = tuple;
+
+    object? IServiceProvider.GetService(Type serviceType)
     {
-        public static EmptyServiceProvider Instance { get; } = new();
-
-        private EmptyServiceProvider()
-        {
-        }
-
-        object? IServiceProvider.GetService(Type serviceType) => null;
+        var index = ServiceTypes.Span.IndexOf(serviceType);
+        return (uint)index < (uint)tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
     }
 
-    private sealed class SingleServiceProvider<TProvider>(Type expectedType, TProvider provider, IServiceProvider? fallback) : IServiceProvider
-        where TProvider : ISupplier<object?>
-    {
-        private TProvider provider = provider;
+    public static Type GetServiceType(int index) => ServiceTypes.Span[index];
+}
 
-        object? IServiceProvider.GetService(Type serviceType)
-            => expectedType == serviceType ? provider.Invoke() : fallback?.GetService(serviceType);
+file sealed class EmptyServiceProvider : IServiceProvider, ISingleton<EmptyServiceProvider>
+{
+    public static EmptyServiceProvider Instance { get; } = new();
+
+    private EmptyServiceProvider()
+    {
     }
+
+    object? IServiceProvider.GetService(Type serviceType) => null;
+}
+
+file sealed class SingleServiceProvider<TProvider>(Type expectedType, TProvider provider, IServiceProvider? fallback) : IServiceProvider
+    where TProvider : ISupplier<object?>
+{
+    private TProvider provider = provider;
+
+    object? IServiceProvider.GetService(Type serviceType)
+        => expectedType == serviceType ? provider.Invoke() : fallback?.GetService(serviceType);
 }
