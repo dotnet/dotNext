@@ -7,8 +7,6 @@ using HttpHeaders = System.Net.Http.Headers.HttpHeaders;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-using IO;
-
 internal abstract class HttpMessage
 {
     // Perf: length = 64 which is a power of 2 (see RandomExtensions.NextString impl)
@@ -39,7 +37,7 @@ internal abstract class HttpMessage
     private protected HttpMessage(in ClusterMemberId sender)
     {
         Sender = sender;
-        Id = Random.Shared.NextString(RequestIdAllowedChars, RequestIdLength);
+        Id = Random.Shared.GetString(RequestIdAllowedChars, RequestIdLength);
     }
 
     private protected HttpMessage(IDictionary<string, StringValues> headers)
@@ -87,7 +85,7 @@ internal abstract class HttpMessage
         where T : struct, Enum
     {
         response.StatusCode = StatusCodes.Status200OK;
-        return response.WriteAsync(Enum.GetName<T>(result) ?? string.Empty, token);
+        return response.WriteAsync(Enum.GetName(result) ?? string.Empty, token);
     }
 
     private static bool ParseString(string input, [MaybeNullWhen(false)] out string output)

@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -55,8 +54,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         do
         {
-            var buffer = TrimLength(Buffer, length);
-            buffer = buffer.TrimLength(parser.RemainingBytes);
+            var buffer = TrimLength(Buffer, length) % parser.RemainingBytes;
 
             if (buffer.IsEmpty)
                 return false;
@@ -148,7 +146,7 @@ public partial class FileReader : IAsyncBinaryReader
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
         }
         else
@@ -177,7 +175,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         if (lengthInBytes > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
 
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
         }
@@ -337,7 +335,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); ConsumeUnsafe(buffer.Length))
         {
-            buffer = TrimLength(Buffer, length).TrimLength(int.CreateSaturating(count));
+            buffer = TrimLength(Buffer, length) % int.CreateSaturating(count);
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
             length -= buffer.Length;
             count -= buffer.Length;

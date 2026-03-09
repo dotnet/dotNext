@@ -17,7 +17,7 @@ internal sealed class VisitorContext : Disposable
         asyncMethodEnd = Expression.Label("end_async_method");
         attributes = new Stack<ExpressionAttributes>();
         statements = new Stack<Statement>();
-        asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FinalState;
+        asyncMethodEnd.UserData.GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FinalState;
     }
 
     internal Statement CurrentStatement => statements.Peek();
@@ -101,7 +101,7 @@ internal sealed class VisitorContext : Disposable
         if (target is not null)
         {
             ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
-            target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
+            target.UserData.GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
     }
 
@@ -121,7 +121,7 @@ internal sealed class VisitorContext : Disposable
                 AttachLabel(label.Target);
                 break;
             case GotoExpression @goto:
-                @goto.Target.GetUserData().GetOrSet(StateIdPlaceholder);
+                @goto.Target.UserData.GetOrSet(StateIdPlaceholder);
                 break;
             case LoopExpression loop:
                 AttachLabel(loop.ContinueLabel);
@@ -163,7 +163,7 @@ internal sealed class VisitorContext : Disposable
 
     internal IReadOnlyCollection<Expression> CreateJumpPrologue(GotoExpression @goto, ExpressionVisitor visitor)
     {
-        var state = @goto.Target.GetUserData().GetOrSet(StateIdPlaceholder);
+        var state = @goto.Target.UserData.GetOrSet(StateIdPlaceholder);
         var result = new LinkedList<Expression>();
 
         // iterate through snapshot of statements because collection can be modified

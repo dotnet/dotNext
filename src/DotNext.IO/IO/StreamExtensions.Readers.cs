@@ -9,9 +9,9 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
+using Collections.Generic;
 using Numerics;
 using Text;
-using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 
 public static partial class StreamExtensions
 {
@@ -21,7 +21,7 @@ public static partial class StreamExtensions
     {
         for (int count; (count = parser.RemainingBytes) > 0; parser.Invoke(buffer.Span.Slice(0, count)))
         {
-            count = await stream.ReadAsync(buffer.TrimLength(count), token).ConfigureAwait(false);
+            count = await stream.ReadAsync(buffer % count, token).ConfigureAwait(false);
 
             if (count is 0)
                 break;
@@ -45,8 +45,7 @@ public static partial class StreamExtensions
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        if (buffer.Length < T.Size)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfShorterThan(buffer, T.Size);
 
         buffer = buffer.Slice(0, T.Size);
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
@@ -68,11 +67,11 @@ public static partial class StreamExtensions
         where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
-        buffer = buffer.Slice(0, Number.GetMaxByteCount<T>());
+        buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
-        return T.ReadLittleEndian(buffer.Span, Number.IsSigned<T>() is false);
+        return T.ReadLittleEndian(buffer.Span, Number.get_IsSigned<T>() is false);
     }
 
     /// <summary>
@@ -90,11 +89,11 @@ public static partial class StreamExtensions
         where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
-        buffer = buffer.Slice(0, Number.GetMaxByteCount<T>());
+        buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
-        return T.ReadBigEndian(buffer.Span, Number.IsSigned<T>() is false);
+        return T.ReadBigEndian(buffer.Span, Number.get_IsSigned<T>() is false);
     }
 
     private static unsafe ValueTask<int> ReadLengthAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
@@ -134,9 +133,11 @@ public static partial class StreamExtensions
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
+        allocator ??= MemoryAllocator<byte>.Default;
         MemoryOwner<byte> result;
         int length;
-        using (result = allocator.AllocateExactly(Leb128<uint>.MaxSizeInBytes))
+        
+        using (result = allocator.AllocateExactly(lengthFormat.MaxByteCount))
         {
             length = await stream.ReadLengthAsync(lengthFormat, result.Memory, token).ConfigureAwait(false);
         }
@@ -180,13 +181,13 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<MemoryOwner<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         MemoryOwner<char> result;
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(length));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
 
             try
             {
@@ -238,7 +239,7 @@ public static partial class StreamExtensions
             return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, token);
         }
 
-        return AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new ArgumentException(ExceptionMessages.BufferTooSmall, paramName));
+        return IAsyncEnumerable<ReadOnlyMemory<char>>.Throw( ArgumentException.BufferTooSmall(paramName));
     }
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
@@ -270,10 +271,10 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         using var chars = await stream.DecodeAsync(context, lengthFormat, buffer, allocator, token).ConfigureAwait(false);
         return parser(chars.Span, arg);
@@ -354,7 +355,7 @@ public static partial class StreamExtensions
     public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
         where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         for (int bytesRead; (bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
         {
@@ -380,11 +381,11 @@ public static partial class StreamExtensions
         where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         for (int bytesRead; count > 0L; count -= bytesRead)
         {
-            bytesRead = await source.ReadAsync(buffer.TrimLength(int.CreateSaturating(count)), token).ConfigureAwait(false);
+            bytesRead = await source.ReadAsync(buffer % int.CreateSaturating(count), token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
 
@@ -470,7 +471,7 @@ public static partial class StreamExtensions
 
         for (int bytesRead; count > 0L; destination.Advance(bytesRead), count -= bytesRead)
         {
-            var buffer = destination.GetMemory(bufferSize).TrimLength(int.CreateSaturating(count));
+            var buffer = destination.GetMemory(bufferSize) % int.CreateSaturating(count);
             bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
@@ -495,7 +496,7 @@ public static partial class StreamExtensions
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var buffer = allocator.AllocateAtLeast(bufferSize);
+        using var buffer = allocator.DefaultIfNull.AllocateAtLeast(bufferSize);
 
         for (int bytesRead; (bytesRead = await source.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
             yield return buffer.Memory.Slice(0, bytesRead);
@@ -522,11 +523,11 @@ public static partial class StreamExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(length);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var buffer = allocator.AllocateAtLeast(bufferSize);
+        using var buffer = allocator.DefaultIfNull.AllocateAtLeast(bufferSize);
 
         for (int bytesRead; length > 0L; length -= bytesRead)
         {
-            bytesRead = await stream.ReadAsync(buffer.Memory.TrimLength(int.CreateSaturating(length)), token).ConfigureAwait(false);
+            bytesRead = await stream.ReadAsync(buffer.Memory % int.CreateSaturating(length), token).ConfigureAwait(false);
             if (bytesRead <= 0)
                 throw new EndOfStreamException();
             
@@ -555,7 +556,7 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(output);
 
         if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
@@ -593,10 +594,10 @@ public static partial class StreamExtensions
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(action);
-        ThrowIfEmpty(charsBuf);
+        ArgumentException.ThrowIfEmpty(charsBuf);
 
         if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
+            throw ArgumentException.BufferTooSmall(nameof(bytesBuf));
 
         int consumedBufferBytes, bufferOffset = 0;
         bool completed;
@@ -630,7 +631,7 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(output);
 
         if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
@@ -662,15 +663,14 @@ public static partial class StreamExtensions
     /// or <paramref name="charsBuf"/> is empty.
     /// </exception>
     public static int ReadUtf8<TArg>(this Stream stream, Span<byte> bytesBuf, Span<char> charsBuf, ReadOnlySpanAction<char, TArg> action, TArg arg)
+        where TArg : allows ref struct
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(action);
+        ArgumentException.ThrowIfEmpty(charsBuf);
 
         if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
-
-        if (charsBuf.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(charsBuf));
+            throw ArgumentException.BufferTooSmall(nameof(bytesBuf));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 

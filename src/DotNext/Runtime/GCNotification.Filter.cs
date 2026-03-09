@@ -2,15 +2,13 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime;
 
-using Patterns;
-
 public partial class GCNotification
 {
     private protected GCNotification()
     {
     }
 
-    internal abstract bool Test(in GCMemoryInfo info);
+    private protected abstract bool Test(in GCMemoryInfo info);
 
     /// <summary>
     /// Combines two filters using logical AND.
@@ -35,7 +33,7 @@ public partial class GCNotification
     {
         ArgumentNullException.ThrowIfNull(right);
 
-        return new GCOrFilter(this, right);
+        return new OrFilter(this, right);
     }
 
     /// <summary>
@@ -48,14 +46,14 @@ public partial class GCNotification
     {
         ArgumentNullException.ThrowIfNull(right);
 
-        return new GCXorFilter(this, right);
+        return new XorFilter(this, right);
     }
 
     /// <summary>
     /// Negates this filter.
     /// </summary>
     /// <returns>A new filter.</returns>
-    public virtual GCNotification Negate() => new GCNotFilter(this);
+    public virtual GCNotification Negate() => new NotFilter(this);
 
     /// <summary>
     /// Combines two filters using logical AND.
@@ -91,80 +89,6 @@ public partial class GCNotification
     /// <returns>A new filter.</returns>
     public static GCNotification operator !(GCNotification filter) => filter.Negate();
 
-    private sealed class MemoryThresholdFilter : GCNotification
-    {
-        private readonly double threshold;
-
-        internal MemoryThresholdFilter(double threshold)
-        {
-            Debug.Assert(double.IsNormal(threshold) && threshold is > 0D and <= 1D);
-
-            this.threshold = threshold;
-        }
-
-        internal override bool Test(in GCMemoryInfo info)
-            => info.MemoryLoadBytes <= info.HighMemoryLoadThresholdBytes * threshold;
-    }
-
-    private sealed class HeapCompactionFilter : GCNotification, ISingleton<HeapCompactionFilter>
-    {
-        public static HeapCompactionFilter Instance { get; } = new();
-
-        private HeapCompactionFilter()
-        {
-        }
-
-        internal override bool Test(in GCMemoryInfo info)
-            => info.Compacted;
-    }
-
-    private sealed class GCEvent : GCNotification, ISingleton<GCEvent>
-    {
-        public static GCEvent Instance { get; } = new();
-
-        private GCEvent()
-        {
-        }
-
-        internal override bool Test(in GCMemoryInfo info) => true;
-
-        public override GCNotification And(GCNotification right)
-            => right;
-
-        public override GCNotification Or(GCNotification right)
-            => this;
-    }
-
-    private sealed class GenerationFilter : GCNotification
-    {
-        private readonly int generation;
-
-        internal GenerationFilter(int generation)
-        {
-            Debug.Assert(generation >= 0 && generation <= GC.MaxGeneration);
-
-            this.generation = generation;
-        }
-
-        internal override bool Test(in GCMemoryInfo info)
-            => info.Generation == generation;
-    }
-
-    private sealed class HeapFragmentationThresholdFilter : GCNotification
-    {
-        private readonly double fragmentationPercentage;
-
-        internal HeapFragmentationThresholdFilter(double fragmentation)
-        {
-            Debug.Assert(double.IsFinite(fragmentation) && fragmentation is >= 0D and <= 1D);
-
-            fragmentationPercentage = fragmentation;
-        }
-
-        internal override bool Test(in GCMemoryInfo info)
-            => ((double)info.FragmentedBytes / info.HeapSizeBytes) >= fragmentationPercentage;
-    }
-
     private sealed class AndFilter : GCNotification
     {
         private readonly GCNotification left, right;
@@ -177,15 +101,15 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) && right.Test(in info);
     }
 
-    private sealed class GCOrFilter : GCNotification
+    private sealed class OrFilter : GCNotification
     {
         private readonly GCNotification left, right;
 
-        internal GCOrFilter(GCNotification left, GCNotification right)
+        internal OrFilter(GCNotification left, GCNotification right)
         {
             Debug.Assert(left is not null && right is not null);
 
@@ -193,15 +117,15 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) || right.Test(in info);
     }
 
-    private sealed class GCXorFilter : GCNotification
+    private sealed class XorFilter : GCNotification
     {
         private readonly GCNotification left, right;
 
-        internal GCXorFilter(GCNotification left, GCNotification right)
+        internal XorFilter(GCNotification left, GCNotification right)
         {
             Debug.Assert(left is not null && right is not null);
 
@@ -209,22 +133,22 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) ^ right.Test(in info);
     }
 
-    private sealed class GCNotFilter : GCNotification
+    private sealed class NotFilter : GCNotification
     {
         private readonly GCNotification filter;
 
-        internal GCNotFilter(GCNotification filter)
+        internal NotFilter(GCNotification filter)
         {
             Debug.Assert(filter is not null);
 
             this.filter = filter;
         }
 
-        internal override bool Test(in GCMemoryInfo info) => !filter.Test(in info);
+        private protected override bool Test(in GCMemoryInfo info) => !filter.Test(in info);
 
         public override GCNotification Negate()
             => filter;

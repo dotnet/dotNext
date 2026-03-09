@@ -68,10 +68,10 @@ public sealed class MemoryOwnerTests : Test
 
     public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() =>
     [
-        Memory.GetArrayAllocator<int>(),
-        Memory.GetPinnedArrayAllocator<int>(),
-        UnmanagedMemory.GetAllocator<int>(zeroMem: false),
-        UnmanagedMemory.GetAllocator<int>(zeroMem: true)
+        MemoryAllocator<int>.Array,
+        MemoryAllocator<int>.Pinned,
+        MemoryAllocator<int>.Unmanaged,
+        MemoryAllocator<int>.UnmanagedZeroMem
     ];
 
     [Theory]
@@ -85,20 +85,22 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ArrayAllocatorCache()
     {
-        Same(Memory.GetArrayAllocator<byte>(), Memory.GetArrayAllocator<byte>());
+        Same(MemoryAllocator<byte>.Array, MemoryAllocator<byte>.Array);
+        Same(MemoryAllocator<byte>.Pinned, MemoryAllocator<byte>.Pinned);
+        Same(MemoryAllocator<byte>.Default, MemoryAllocator<byte>.Default);
     }
 
     [Fact]
     public static void RawReference()
     {
         var owner = new MemoryOwner<byte>(Array.Empty<byte>());
-        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref owner.DataRef));
 
         owner = default;
-        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref owner.DataRef));
 
         owner = new([10]);
-        Equal(10, Memory.GetReference(in owner));
+        Equal(10, owner.DataRef);
     }
 
     [Fact]
@@ -118,7 +120,7 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ResizeBuffer()
     {
-        var allocator = Memory.GetArrayAllocator<byte>();
+        var allocator = MemoryAllocator<byte>.Array;
         var buffer = default(MemoryOwner<byte>);
 
         buffer.Resize(10, allocator);

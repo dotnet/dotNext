@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents the memory obtained from the pool or allocated
@@ -27,7 +28,7 @@ using Intrinsics = Runtime.Intrinsics;
 /// </example>
 /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public ref struct SpanOwner<T>
+public ref struct SpanOwner<T> : IDisposable
 {
     /// <summary>
     /// Global recommended number of elements that can be allocated on the stack.
@@ -38,7 +39,7 @@ public ref struct SpanOwner<T>
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public static int StackallocThreshold { get; } = 1 + Features.StackallocThreshold / Unsafe.SizeOf<T>();
+    public static int StackallocThreshold { get; } = int.Min(1, Features.StackallocThreshold / Unsafe.SizeOf<T>());
 
     private readonly object? owner;
     private readonly Span<T> memory;
@@ -120,7 +121,7 @@ public ref struct SpanOwner<T>
         {
             void* ptr;
 
-            if (IsNaturalAlignment)
+            if (Intrinsics.IsNaturallyAligned<T>())
             {
                 ptr = NativeMemory.Alloc((uint)length, (uint)Unsafe.SizeOf<T>());
             }
@@ -135,8 +136,6 @@ public ref struct SpanOwner<T>
             return new(ptr, length);
         }
     }
-
-    private static bool IsNaturalAlignment => Intrinsics.AlignOf<T>() <= nuint.Size;
 
     private static bool UseNativeAllocation
         => Features.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
@@ -187,10 +186,7 @@ public ref struct SpanOwner<T>
     /// <returns>The textual representation of the rented memory.</returns>
     public readonly override string ToString() => memory.ToString();
 
-    /// <summary>
-    /// Returns the memory to the pool.
-    /// </summary>
-    public void Dispose()
+    private readonly void Clear()
     {
         if (owner is T[] array)
         {
@@ -201,7 +197,7 @@ public ref struct SpanOwner<T>
             unsafe
             {
                 var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory));
-                if (IsNaturalAlignment)
+                if (Intrinsics.IsNaturallyAligned<T>())
                 {
                     NativeMemory.Free(ptr);
                 }
@@ -215,7 +211,14 @@ public ref struct SpanOwner<T>
         {
             Unsafe.As<IDisposable>(owner)?.Dispose();
         }
+    }
 
+    /// <summary>
+    /// Returns the memory to the pool.
+    /// </summary>
+    public void Dispose()
+    {
+        Clear();
         this = default;
     }
 }
@@ -224,9 +227,8 @@ file static class Features
 {
     private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
 
-    // TODO: [FeatureSwitchDefinition(EnableNativeAllocationFeature)]
-    internal static bool UseNativeAllocation
-        => LibraryFeature.IsSupported(UseNativeAllocationFeature);
+    [FeatureSwitchDefinition(UseNativeAllocationFeature)]
+    internal static bool UseNativeAllocation { get; } = AppContext.IsFeatureSupported(UseNativeAllocationFeature);
     
     internal static int StackallocThreshold
     {
@@ -234,15 +236,15 @@ file static class Features
         {
             const string environmentVariableName = "DOTNEXT_STACK_ALLOC_THRESHOLD";
             const string configurationParameterName = "DotNext.Buffers.StackAllocThreshold";
-            const int defaultValue = 511;
-            const int minimumValue = 14;
+            const int defaultValue = 512;
+            const int minimumValue = 16;
 
             if (AppContext.GetData(configurationParameterName) is not int result)
             {
                 int.TryParse(Environment.GetEnvironmentVariable(environmentVariableName), out result);
             }
 
-            return result > minimumValue ? result : defaultValue;
+            return result >= minimumValue ? result : defaultValue;
         }
     }
 }

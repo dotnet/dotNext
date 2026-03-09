@@ -1,19 +1,15 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Diagnostics.CodeAnalysis;
-using DotNext.IO;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-[Experimental("DOTNEXT001")]
-internal sealed class SumStateMachine : SimpleStateMachine
+using IO;
+using Runtime.InteropServices;
+
+internal sealed class SumStateMachine(DirectoryInfo location) : SimpleStateMachine(new(Path.Combine(location.FullName, "db")))
 {
     public long Value;
-    
-    public SumStateMachine(DirectoryInfo location)
-        : base(new(Path.Combine(location.FullName, "db")))
-    {
-    }
 
     protected override async ValueTask RestoreAsync(FileInfo snapshotFile, CancellationToken token)
     {
@@ -23,7 +19,7 @@ internal sealed class SumStateMachine : SimpleStateMachine
 
     protected override ValueTask PersistAsync(IAsyncBinaryWriter writer, CancellationToken token)
     {
-        var bytes = Span.AsBytes(ref Value).ToArray();
+        ReadOnlyMemory<byte> bytes = MemoryMarshal.AsReadOnlyBytes(in Value).ToArray();
         return writer.Invoke(bytes, token);
     }
 

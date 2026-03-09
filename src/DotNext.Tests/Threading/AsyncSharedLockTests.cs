@@ -1,4 +1,6 @@
-﻿namespace DotNext.Threading;
+﻿using static System.Threading.Timeout;
+
+namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncSharedLockTests : Test
@@ -8,34 +10,34 @@ public sealed class AsyncSharedLockTests : Test
     {
         using var sharedLock = new AsyncSharedLock(3);
         Equal(3, sharedLock.LockUpgradeThreshold);
-        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
+        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
         Equal(1, sharedLock.RemainingCount);
-        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
         Equal(0, sharedLock.RemainingCount);
-        False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+        False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
+        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero, TestToken));
         sharedLock.Release();
         Equal(1, sharedLock.RemainingCount);
-        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero, TestToken));
+        True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
     }
 
     [Fact]
     public static async Task StrongLocks()
     {
         using var sharedLock = new AsyncSharedLock(3);
-        True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-        False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+        True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero, TestToken));
+        False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero, TestToken));
+        False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero, TestToken));
     }
 
-    private static async void AcquireWeakLockAndRelease(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
+    private static async Task AcquireWeakLockAndRelease(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
     {
-        await Task.Delay(100);
-        await sharedLock.AcquireAsync(false, TimeSpan.Zero);
+        await Task.Delay(100, TestToken);
+        await sharedLock.AcquireAsync(false, DefaultTimeout, TestToken);
         acquireEvent.Signal();
-        await Task.Delay(100);
+        await Task.Delay(100, TestToken);
         sharedLock.Release();
     }
 
@@ -44,14 +46,15 @@ public sealed class AsyncSharedLockTests : Test
     {
         using var acquireEvent = new AsyncCountdownEvent(3L);
         using var sharedLock = new AsyncSharedLock(3);
-        AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-        AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-        AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-        True(await acquireEvent.WaitAsync(DefaultTimeout));
-        await sharedLock.AcquireAsync(true, DefaultTimeout);
+        var t1 = AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+        var t2 = AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+        var t3 = AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+        True(await acquireEvent.WaitAsync(InfiniteTimeSpan, TestToken));
+        await sharedLock.AcquireAsync(true, InfiniteTimeSpan, TestToken);
+        await Task.WhenAll(t1, t2, t3);
     }
 
-    private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
+    private static async Task AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
     {
         await sharedLock.AcquireAsync(false, DefaultTimeout, CancellationToken.None);
         acquireEvent.Signal();
@@ -62,11 +65,12 @@ public sealed class AsyncSharedLockTests : Test
     {
         using var acquireEvent = new AsyncCountdownEvent(2L);
         using var sharedLock = new AsyncSharedLock(3);
-        await sharedLock.AcquireAsync(true, TimeSpan.Zero);
-        AcquireWeakLock(sharedLock, acquireEvent);
-        AcquireWeakLock(sharedLock, acquireEvent);
+        await sharedLock.AcquireAsync(true, TimeSpan.Zero, TestToken);
+        var t1 = AcquireWeakLock(sharedLock, acquireEvent);
+        var t2 = AcquireWeakLock(sharedLock, acquireEvent);
         sharedLock.Release();
-        True(await acquireEvent.WaitAsync(DefaultTimeout));
+        True(await acquireEvent.WaitAsync(InfiniteTimeSpan, TestToken));
+        await Task.WhenAll(t1, t2);
     }
 
     [Fact]
@@ -162,8 +166,8 @@ public sealed class AsyncSharedLockTests : Test
         using var @lock = new AsyncSharedLock(3);
         True(@lock.TryAcquire(false));
 
-        var writeLockTask = @lock.AcquireAsync(true);
-        var readLockTask = @lock.AcquireAsync(false);
+        var writeLockTask = @lock.AcquireAsync(true, TestToken);
+        var readLockTask = @lock.AcquireAsync(false, TestToken);
         False(writeLockTask.IsCompleted);
         False(readLockTask.IsCompleted);
 

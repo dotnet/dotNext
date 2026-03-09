@@ -22,38 +22,46 @@ public static unsafe class ThreadPoolWorkItemFactory
     }
 
     /// <summary>
-    /// Creates thread pool work item.
+    /// Adds factory methods to <see cref="IThreadPoolWorkItem"/> type.
     /// </summary>
-    /// <param name="workItem">The pointer to the method implementing work item logic.</param>
-    /// <param name="arg">The argument to be passed to the method implementing work item logic.</param>
-    /// <typeparam name="T">The type of the work item argument.</typeparam>
-    /// <returns>The work item.</returns>
-    public static IThreadPoolWorkItem Create<T>(delegate*<T, void> workItem, T arg)
-        => workItem is not null ? new ThreadPoolWorkItem<T>(workItem, arg) : throw new ArgumentNullException(nameof(workItem));
+    extension(IThreadPoolWorkItem)
+    {
+        /// <summary>
+        /// Creates thread pool work item.
+        /// </summary>
+        /// <param name="workItem">The pointer to the method implementing work item logic.</param>
+        /// <param name="arg">The argument to be passed to the method implementing work item logic.</param>
+        /// <typeparam name="T">The type of the work item argument.</typeparam>
+        /// <returns>The work item.</returns>
+        public static IThreadPoolWorkItem Create<T>(delegate*<T, void> workItem, T arg)
+            => workItem is not null ? new ThreadPoolWorkItem<T>(workItem, arg) : throw new ArgumentNullException(nameof(workItem));
 
-    /// <summary>
-    /// Creates thread pool work item.
-    /// </summary>
-    /// <param name="workItem">The pointer to the method implementing work item logic.</param>
-    /// <param name="arg1">The first argument to be passed to the method implementing work item logic.</param>
-    /// <param name="arg2">The second argument to be passed to the method implementing work item logic.</param>
-    /// <typeparam name="T1">The type of the work item first argument.</typeparam>
-    /// <typeparam name="T2">The type of the work item second argument.</typeparam>
-    /// <returns>The work item.</returns>
-    public static IThreadPoolWorkItem Create<T1, T2>(delegate*<T1, T2, void> workItem, T1 arg1, T2 arg2)
-        => workItem is not null ? new ThreadPoolWorkItem<T1, T2>(workItem, arg1, arg2) : throw new ArgumentNullException(nameof(workItem));
+        /// <summary>
+        /// Creates thread pool work item.
+        /// </summary>
+        /// <param name="workItem">The pointer to the method implementing work item logic.</param>
+        /// <param name="arg1">The first argument to be passed to the method implementing work item logic.</param>
+        /// <param name="arg2">The second argument to be passed to the method implementing work item logic.</param>
+        /// <typeparam name="T1">The type of the work item first argument.</typeparam>
+        /// <typeparam name="T2">The type of the work item second argument.</typeparam>
+        /// <returns>The work item.</returns>
+        public static IThreadPoolWorkItem Create<T1, T2>(delegate*<T1, T2, void> workItem, T1 arg1, T2 arg2)
+            => workItem is not null ? new ThreadPoolWorkItem<T1, T2>(workItem, arg1, arg2) : throw new ArgumentNullException(nameof(workItem));
 
-    /// <summary>
-    /// Creates thread pool work item.
-    /// </summary>
-    /// <param name="workItem">The pointer to the method implementing work item logic.</param>
-    /// <param name="arg1">The first argument to be passed to the method implementing work item logic.</param>
-    /// <param name="arg2">The second argument to be passed to the method implementing work item logic.</param>
-    /// <param name="arg3">The third argument to be passed to the method implementing work item logic.</param>
-    /// <typeparam name="T1">The type of the work item first argument.</typeparam>
-    /// <typeparam name="T2">The type of the work item second argument.</typeparam>
-    /// <typeparam name="T3">The type of the work item third argument.</typeparam>
-    /// <returns>The work item.</returns>
-    public static IThreadPoolWorkItem Create<T1, T2, T3>(delegate*<T1, T2, T3, void> workItem, T1 arg1, T2 arg2, T3 arg3)
-        => workItem is not null ? new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3) : throw new ArgumentNullException(nameof(workItem));
+        /// <summary>
+        /// Creates thread pool work item.
+        /// </summary>
+        /// <param name="workItem">The pointer to the method implementing work item logic.</param>
+        /// <param name="arg1">The first argument to be passed to the method implementing work item logic.</param>
+        /// <param name="arg2">The second argument to be passed to the method implementing work item logic.</param>
+        /// <param name="arg3">The third argument to be passed to the method implementing work item logic.</param>
+        /// <typeparam name="T1">The type of the work item first argument.</typeparam>
+        /// <typeparam name="T2">The type of the work item second argument.</typeparam>
+        /// <typeparam name="T3">The type of the work item third argument.</typeparam>
+        /// <returns>The work item.</returns>
+        public static IThreadPoolWorkItem Create<T1, T2, T3>(delegate*<T1, T2, T3, void> workItem, T1 arg1, T2 arg2, T3 arg3)
+            => workItem is not null
+                ? new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3)
+                : throw new ArgumentNullException(nameof(workItem));
+    }
 }

@@ -28,6 +28,11 @@ public struct UnmanagedMemory<T>() : IUnmanagedMemory
     readonly Pointer<byte> IUnmanagedMemory.Pointer => Pointer.As<byte>();
 
     /// <summary>
+    /// Gets the raw representation of the referenced memory.
+    /// </summary>
+    public unsafe Span<byte> Bytes => new(Pointer, sizeof(T));
+
+    /// <summary>
     /// Releases the unmanaged memory.
     /// </summary>
     public void Dispose()

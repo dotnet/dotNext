@@ -91,7 +91,7 @@ public sealed class ValueReferenceTests : Test
         True(span.IsEmpty);
 
         Throws<NullReferenceException>((Func<string>)reference);
-        Throws<NullReferenceException>(((Action<string>)reference).Bind(string.Empty));
+        Throws<NullReferenceException>((Action<string>)reference << string.Empty);
     }
 
     [Fact]
@@ -115,16 +115,12 @@ public sealed class ValueReferenceTests : Test
         Equal(42, reference.Value);
 
         ((Action<int>)reference).Invoke(52);
-        Equal(52, ToFunc<ValueReference<int>, int>(reference).Invoke());
+        Equal(52, ((Func<int>)reference).Invoke());
 
         ReadOnlyValueReference<int> roRef = reference;
         Equal(52, roRef.Value);
-        Equal(52, ToFunc<ReadOnlyValueReference<int>, int>(reference).Invoke());
+        Equal(52, ((Func<int>)roRef).Invoke());
     }
-
-    private static Func<T> ToFunc<TSupplier, T>(TSupplier supplier)
-        where TSupplier : ISupplier<T>
-        => supplier.ToDelegate();
 
     [Fact]
     public static void StaticObjectAccess()
@@ -139,7 +135,7 @@ public sealed class ValueReferenceTests : Test
         
         True(reference == new ValueReference<string>(ref MyClass.StaticObject));
         Same(MyClass.StaticObject, reference.Value);
-        Same(MyClass.StaticObject, ToFunc<ValueReference<string>, string>(reference).Invoke());
+        Same(MyClass.StaticObject, ((Func<string>)reference).Invoke());
     }
     
     [Fact]
@@ -175,7 +171,7 @@ public sealed class ValueReferenceTests : Test
         var boxedInt = BoxedValue<int>.Box(42);
         ValueReference<int> reference = boxedInt;
 
-        boxedInt.Unbox() = 56;
+        boxedInt.Value = 56;
         Equal(boxedInt, reference.Value);
     }
 

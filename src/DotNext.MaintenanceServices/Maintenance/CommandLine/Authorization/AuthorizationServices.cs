@@ -1,5 +1,4 @@
 using System.CommandLine.Parsing;
-using System.Diagnostics;
 using System.Security.Principal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,7 +48,7 @@ public static class AuthorizationServices
     private static async ValueTask<bool> AuthorizeAsync(AuthorizationCallback authorizationRules, IPrincipal principal, ITypeMap context,
         CommandResult target, CancellationToken token)
     {
-        foreach (AuthorizationCallback rule in authorizationRules.GetInvocationList())
+        foreach (var rule in Delegate.EnumerateInvocationList(authorizationRules))
         {
             if (!await rule.Invoke(principal, target, context, token).ConfigureAwait(false))
                 return false;

@@ -10,26 +10,37 @@ namespace DotNext.Numerics;
 public static partial class Number
 {
     /// <summary>
-    /// Determines whether the specified numeric type is signed.
+    /// Extends numeric types.
     /// </summary>
-    /// <typeparam name="T">The type to check.</typeparam>
-    /// <returns>
-    /// <see langword="true"/> if <typeparamref name="T"/> is a signed numeric type;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public static bool IsSigned<T>()
+    /// <typeparam name="T">The numeric type.</typeparam>
+    extension<T>(T)
         where T : INumberBase<T>
-        => T.IsNegative(-T.One);
+    {
+        /// <summary>
+        /// Determines whether the specified numeric type is signed.
+        /// </summary>
+        /// <value>
+        /// <see langword="true"/> if <typeparamref name="T"/> is a signed numeric type;
+        /// otherwise, <see langword="false"/>.
+        /// </value>
+        public static bool IsSigned => T.IsNegative(-T.One);
+    }
 
     /// <summary>
-    /// Gets maximum number of bytes that can be used by <typeparamref name="T"/> type
-    /// when encoded in little-endian or big-endian format.
+    /// Extends integer types.
     /// </summary>
     /// <typeparam name="T">The integer type to check.</typeparam>
-    /// <returns>The maximum numbers bytes that can be occupied by the value of <typeparamref name="T"/>.</returns>
-    public static int GetMaxByteCount<T>()
+    extension<T>(T)
         where T : IBinaryInteger<T>
-        => typeof(T).IsPrimitive ? Unsafe.SizeOf<T>() : T.AllBitsSet.GetByteCount();
+    {
+        /// <summary>
+        /// Gets maximum number of bytes that can be used by <typeparamref name="T"/> type
+        /// when encoded in little-endian or big-endian format.
+        /// </summary>
+        /// <value>The maximum numbers bytes that can be occupied by the value of <typeparamref name="T"/>.</value>
+        public static int MaxByteCount
+            => typeof(T).IsPrimitive ? Unsafe.SizeOf<T>() : T.AllBitsSet.GetByteCount();
+    }
 
     /// <summary>
     /// Normalizes value in the specified range.
@@ -102,74 +113,83 @@ public static partial class Number
         => Normalize(unchecked((uint)value));
 
     /// <summary>
-    /// Determines whether the specified value is a prime number.
+    /// Extends signed numeric types.
     /// </summary>
+    /// <param name="value">The value to extend.</param>
     /// <typeparam name="T">The integer type.</typeparam>
-    /// <param name="value">The value to check.</param>
-    /// <returns><see langword="true"/> if <paramref name="value"/> is a prime number; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative or zero.</exception>
-    public static bool IsPrime<T>(this T value)
+    extension<T>(T value)
         where T : struct, IBinaryNumber<T>, ISignedNumber<T>, IShiftOperators<T, int, T>
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
-
-        if (value == T.One)
-            return false;
-
-        var two = T.One << 1;
-
-        if ((value & T.One) != T.Zero)
+        /// <summary>
+        /// Determines whether the specified value is a prime number.
+        /// </summary>
+        /// <value><see langword="true"/> if <paramref name="value"/> is a prime number; otherwise, <see langword="false"/>.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative or zero.</exception>
+        public bool IsPrime
         {
-            for (T divisor = two + T.One, limit = Sqrt(value); divisor <= limit; divisor += two)
+            get
             {
-                if ((value % divisor) == T.Zero)
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+
+                if (value == T.One)
                     return false;
+
+                var two = T.One << 1;
+
+                if ((value & T.One) != T.Zero)
+                {
+                    for (T divisor = two + T.One, limit = Sqrt(value); divisor <= limit; divisor += two)
+                    {
+                        if ((value % divisor) == T.Zero)
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                return value == two;
+
+                // https://math.stackexchange.com/questions/2469446/what-is-a-fast-algorithm-for-finding-the-integer-square-root/4674078#4674078
+                static T Sqrt(T value)
+                {
+                    var log2x = T.Log2(value) - T.One;
+                    var log2y = int.CreateChecked(log2x >> 1);
+
+                    var y = T.One << log2y;
+                    var y_squared = T.One << (2 * log2y);
+
+                    var sqr_diff = value - y_squared;
+
+                    // Perform lerp between powers of four
+                    y += (sqr_diff / (T.One + T.One + T.One)) >> log2y;
+
+                    // The estimate is probably too low, refine it upward
+                    y_squared = y * y;
+                    sqr_diff = value - y_squared;
+
+                    y += sqr_diff / (y << 1);
+
+                    // The estimate may be too high. If so, refine it downward
+                    y_squared = y * y;
+                    sqr_diff = value - y_squared;
+                    if (sqr_diff >= T.Zero)
+                    {
+                        return y;
+                    }
+
+                    y -= (-sqr_diff / (y << 1)) + T.One;
+
+                    // The estimate may still be 1 too high
+                    y_squared = y * y;
+                    sqr_diff = value - y_squared;
+                    if (sqr_diff < T.Zero)
+                    {
+                        --y;
+                    }
+
+                    return y;
+                }
             }
-
-            return true;
-        }
-
-        return value == two;
-
-        // https://math.stackexchange.com/questions/2469446/what-is-a-fast-algorithm-for-finding-the-integer-square-root/4674078#4674078
-        static T Sqrt(T value)
-        {
-            var log2x = T.Log2(value) - T.One;
-            var log2y = int.CreateChecked(log2x >> 1);
-
-            var y = T.One << log2y;
-            var y_squared = T.One << (2 * log2y);
-
-            var sqr_diff = value - y_squared;
-
-            // Perform lerp between powers of four
-            y += (sqr_diff / (T.One + T.One + T.One)) >> log2y;
-
-            // The estimate is probably too low, refine it upward
-            y_squared = y * y;
-            sqr_diff = value - y_squared;
-
-            y += sqr_diff / (y << 1);
-
-            // The estimate may be too high. If so, refine it downward
-            y_squared = y * y;
-            sqr_diff = value - y_squared;
-            if (sqr_diff >= T.Zero)
-            {
-                return y;
-            }
-
-            y -= (-sqr_diff / (y << 1)) + T.One;
-
-            // The estimate may still be 1 too high
-            y_squared = y * y;
-            sqr_diff = value - y_squared;
-            if (sqr_diff < T.Zero)
-            {
-                --y;
-            }
-
-            return y;
         }
     }
 
@@ -187,13 +207,13 @@ public static partial class Number
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lowerBound);
 
-        if (TryGetFromTable(cachedPrimes, lowerBound, out T result))
+        if (TryGetFromTable(cachedPrimes, lowerBound, out var result))
             return result;
 
         //outside predefined table
         for (result = lowerBound | T.One; result < T.MaxValue; result += T.One + T.One)
         {
-            if (IsPrime(result))
+            if (result.IsPrime)
                 return result;
         }
 

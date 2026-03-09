@@ -53,13 +53,13 @@ public sealed class LeaderStateContextTests : Test
         var key1 = new DummyRaftClusterMember();
         var key2 = new DummyRaftClusterMember();
 
-        var ctx1 = context.GetOrCreate(key1, CreateReplicator);
-        var ctx2 = context.GetOrCreate(key2, CreateReplicator);
+        var ctx1 = context.GetOrCreate(key1, CreateReplicator, TestToken);
+        var ctx2 = context.GetOrCreate(key2, CreateReplicator, TestToken);
 
         NotSame(ctx1, ctx2);
 
-        Same(ctx1, context.GetOrCreate(key1, CreateReplicator));
-        Same(ctx2, context.GetOrCreate(key2, CreateReplicator));
+        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, TestToken));
+        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, TestToken));
 
         GC.KeepAlive(key1);
         GC.KeepAlive(key2);
@@ -75,17 +75,17 @@ public sealed class LeaderStateContextTests : Test
         var key4 = new DummyRaftClusterMember();
         var key5 = new DummyRaftClusterMember();
 
-        var ctx1 = context.GetOrCreate(key1, CreateReplicator);
-        var ctx2 = context.GetOrCreate(key2, CreateReplicator);
-        var ctx3 = context.GetOrCreate(key3, CreateReplicator);
-        var ctx4 = context.GetOrCreate(key4, CreateReplicator);
-        var ctx5 = context.GetOrCreate(key5, CreateReplicator);
+        var ctx1 = context.GetOrCreate(key1, CreateReplicator, TestToken);
+        var ctx2 = context.GetOrCreate(key2, CreateReplicator, TestToken);
+        var ctx3 = context.GetOrCreate(key3, CreateReplicator, TestToken);
+        var ctx4 = context.GetOrCreate(key4, CreateReplicator, TestToken);
+        var ctx5 = context.GetOrCreate(key5, CreateReplicator, TestToken);
 
-        Same(ctx1, context.GetOrCreate(key1, CreateReplicator));
-        Same(ctx2, context.GetOrCreate(key2, CreateReplicator));
-        Same(ctx3, context.GetOrCreate(key3, CreateReplicator));
-        Same(ctx4, context.GetOrCreate(key4, CreateReplicator));
-        Same(ctx5, context.GetOrCreate(key5, CreateReplicator));
+        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, TestToken));
+        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, TestToken));
+        Same(ctx3, context.GetOrCreate(key3, CreateReplicator, TestToken));
+        Same(ctx4, context.GetOrCreate(key4, CreateReplicator, TestToken));
+        Same(ctx5, context.GetOrCreate(key5, CreateReplicator, TestToken));
 
         GC.KeepAlive(key1);
         GC.KeepAlive(key2);
@@ -104,11 +104,11 @@ public sealed class LeaderStateContextTests : Test
         using var context = new LeaderState<DummyRaftClusterMember>.Context(length);
 
         var keys = new DummyRaftClusterMember[length];
-        Span.Initialize<DummyRaftClusterMember>(keys);
+        keys.Initialize<DummyRaftClusterMember>();
 
         for (var i = 0; i < length; i++)
         {
-            var ctx = context.GetOrCreate(keys[i], CreateReplicator);
+            var ctx = context.GetOrCreate(keys[i], CreateReplicator, TestToken);
         }
     }
 }

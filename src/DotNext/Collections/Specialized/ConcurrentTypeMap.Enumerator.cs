@@ -5,9 +5,8 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Collections.Specialized;
 
 using Generic;
-using static Runtime.Intrinsics;
 
-public partial class ConcurrentTypeMap<TValue> : IEnumerable<TValue>
+public partial class ConcurrentTypeMap<TValue>
 {
     /// <summary>
     /// Represents an enumerator over the values in the map.
@@ -31,6 +30,11 @@ public partial class ConcurrentTypeMap<TValue> : IEnumerable<TValue>
         /// </summary>
         public readonly TValue Current => current!;
 
+        private bool TryGetValue(Entry entry)
+            => UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).TryGet(out current)
+                : Unsafe.As<GenericEntry>(entry).TryGet(out current);
+
         /// <summary>
         /// Advances this enumerator to the next element.
         /// </summary>
@@ -42,40 +46,34 @@ public partial class ConcurrentTypeMap<TValue> : IEnumerable<TValue>
                 for (nuint nextIndex;;)
                 {
                     nextIndex = index + 1U;
-                    if (nextIndex >= entries.GetLength())
+                    if (nextIndex >= Array.GetLength(entries))
                         break;
 
                     index = nextIndex;
                     var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), nextIndex);
-                    if (entry.TryAcquireLock(HasValueState))
-                    {
-                        current = entry.Value;
-                        entry.ReleaseLock(HasValueState);
+                    if (TryGetValue(entry))
                         return true;
-                    }
                 }
             }
 
             return false;
         }
 
-        /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
-        void IEnumerator<Enumerator, TValue>.Reset() => index = nuint.MaxValue;
+        /// <inheritdoc cref="IResettable.Reset()"/>
+        void IResettable.Reset() => index = nuint.MaxValue;
     }
 
     /// <summary>
     /// Gets enumerator over the values.
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
-    public Enumerator GetEnumerator() => new(Volatile.Read(ref entries));
+    public Enumerator GetEnumerator() => new(Volatile.Read(in entries));
 
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
+    /// <inheritdoc/>
+    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
+    
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
 }
 
 public partial class ConcurrentTypeMap
@@ -105,11 +103,11 @@ public partial class ConcurrentTypeMap
             return false;
         }
 
-        /// <inheritdoc cref="IEnumerator.Current"/>
+        /// <inheritdoc cref="IEnumerator{T}.Current"/>
         public readonly object Current => current ?? throw new InvalidOperationException();
         
-        /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
-        void IEnumerator<Enumerator, object>.Reset() => index = 0;
+        /// <inheritdoc cref="IResettable.Reset()"/>
+        void IResettable.Reset() => index = 0;
     }
     
     /// <summary>
@@ -117,12 +115,10 @@ public partial class ConcurrentTypeMap
     /// </summary>
     /// <returns>The enumerator over values in this map.</returns>
     public Enumerator GetEnumerator() => new(entries);
+    
+    /// <inheritdoc/>
+    IEnumerator<object> IEnumerable<object>.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
 
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<object> IEnumerable<object>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
 }

@@ -7,9 +7,6 @@ namespace DotNext.Net.Security;
 /// </summary>
 public class SslOptions
 {
-    private SslServerAuthenticationOptions? serverOptions;
-    private SslClientAuthenticationOptions? clientOptions;
-
     /// <summary>
     /// Initializes empty SSL options for server and client.
     /// </summary>
@@ -22,8 +19,8 @@ public class SslOptions
     /// </summary>
     public SslServerAuthenticationOptions ServerOptions
     {
-        get => serverOptions ??= new();
-        init => serverOptions = value ?? throw new ArgumentNullException(nameof(value));
+        get => field ??= new();
+        init => field = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -31,7 +28,7 @@ public class SslOptions
     /// </summary>
     public SslClientAuthenticationOptions ClientOptions
     {
-        get => clientOptions ??= new();
-        init => clientOptions = value ?? throw new ArgumentNullException(nameof(value));
+        get => field ??= new();
+        init => field = value ?? throw new ArgumentNullException(nameof(value));
     }
 }

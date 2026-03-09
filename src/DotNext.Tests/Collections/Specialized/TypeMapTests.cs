@@ -85,6 +85,34 @@ public sealed class TypeMapTests : Test
         True(map.Set<string>(70L, out var tmp));
         Equal(60L, tmp);
     }
+    
+    [Fact]
+    public static void ConcurrentMapOfReferenceTypeMethods()
+    {
+        var map = new ConcurrentTypeMap<object>();
+        True(map.TryAdd<string>(42L));
+        True(map.TryGetValue<string>(out var result));
+        Equal(42L, result);
+
+        Equal(42L, map.GetOrAdd<string>(60L, out var added));
+        False(added);
+        True(map.TryGetValue<string>(out result));
+        Equal(42L, result);
+
+        False(map.AddOrUpdate<string>(60L));
+        True(map.TryGetValue<string>(out result));
+        Equal(60L, result);
+
+        True(map.Remove<string>());
+        Equal(60L, map.GetOrAdd<string>(60L, out added));
+        True(added);
+
+        True(map.Remove<string>());
+        True(map.AddOrUpdate<string>(60L));
+
+        True(map.Set<string>(70L, out var tmp));
+        Equal(60L, tmp);
+    }
 
     [Theory]
     [MemberData(nameof(GetMaps))]
@@ -262,5 +290,34 @@ public sealed class TypeMapTests : Test
 
         True(map.TryGetValue(out double d));
         Equal(45, d);
+    }
+
+    [Fact]
+    public static void MutateValues()
+    {
+        var map = new TypeMap<int>();
+        map.Add<string>(42);
+        map.Add<object>(43);
+
+        foreach (ref var i in map)
+        {
+            i += 10;
+        }
+        
+        True(map.TryGetValue<string>(out var result));
+        Equal(52, result);
+        
+        True(map.TryGetValue<object>(out result));
+        Equal(53, result);
+    }
+
+    [Fact]
+    public static void TypeMapInit()
+    {
+        var map = new TypeMap { 10, "a", 40D };
+        True(map.Contains<int>());
+        True(map.Contains<string>());
+        True(map.Contains<double>());
+        False(map.Contains<byte>());
     }
 }

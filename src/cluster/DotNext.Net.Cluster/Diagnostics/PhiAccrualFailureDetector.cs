@@ -1,5 +1,3 @@
-using static System.Globalization.CultureInfo;
-
 namespace DotNext.Diagnostics;
 
 /// <summary>

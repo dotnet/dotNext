@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -18,40 +19,7 @@ using Tasks.Pooling;
 [DebuggerDisplay($"CanBeCompletedSynchronously = {{{nameof(CanBeCompletedSynchronously)}}}, Terminated = {{{nameof(IsTerminated)}}}")]
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
-    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>
-    {
-        private AsyncExchanger<T>? owner;
-        private T? value;
-
-        internal void Initialize(AsyncExchanger<T> owner, T value)
-        {
-            this.owner = owner;
-            this.value = value;
-        }
-
-        protected override void AfterConsumed() => owner?.OnCompleted(this);
-
-        protected override void CleanUp()
-        {
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                value = default;
-
-            owner = null;
-            base.CleanUp();
-        }
-
-        internal bool TryExchange(ref T value, out bool resumable)
-        {
-            if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
-            {
-                value = this.value!;
-                return true;
-            }
-
-            return false;
-        }
-    }
-
+    private readonly System.Threading.Lock syncRoot;
     private readonly TaskCompletionSource disposeTask;
     private ValueTaskPool<T> pool;
     private ExchangePoint? point;
@@ -64,9 +32,8 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         pool = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        syncRoot = new();
     }
-
-    private object SyncRoot => disposeTask;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
@@ -74,7 +41,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private ExchangePoint RentExchangePoint(T value)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = pool.Rent<ExchangePoint>();
         result.Initialize(this, value);
@@ -83,7 +50,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private void OnCompleted(ExchangePoint point)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (ReferenceEquals(this.point, point))
             {
@@ -91,12 +58,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             }
         }
 
-        if (point.TryReset(out _))
+        point.Reset();
+        lock (syncRoot)
         {
-            lock (SyncRoot)
-            {
-                pool.Return(point);
-            }
+            pool.Return(point);
         }
     }
 
@@ -140,7 +105,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             default:
                 ManualResetCompletionSource? suspendedCaller;
                 ISupplier<TimeSpan, CancellationToken, ValueTask<T>> factory;
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (IsDisposed)
                     {
@@ -194,7 +159,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
     public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
-        => ExchangeAsync(value, new(Timeout.InfiniteTicks), token);
+        => ExchangeAsync(value, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Attempts to transfer the object to another flow synchronously.
@@ -211,7 +176,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         bool result;
         var suspendedCaller = default(ManualResetCompletionSource);
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -248,7 +213,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="InvalidOperationException">The exchange is already terminated.</exception>
     public void Terminate(Exception? exception = null)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             ObjectDisposedException.ThrowIf(IsDisposed, this);
             if (termination is not null)
@@ -276,7 +241,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private void NotifyObjectDisposed()
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             point?.TrySetException(CreateException());
             point = null;
@@ -301,7 +266,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         ValueTask result;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (point is null or { IsCompleted: true })
             {
@@ -322,4 +287,38 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// </summary>
     /// <returns>The task representing state of asynchronous graceful shutdown.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+    
+    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>
+    {
+        private AsyncExchanger<T>? owner;
+        private T? value;
+
+        internal void Initialize(AsyncExchanger<T> owner, T value)
+        {
+            this.owner = owner;
+            this.value = value;
+        }
+
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
+
+        protected override void CleanUp()
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                value = default;
+
+            owner = null;
+            base.CleanUp();
+        }
+
+        internal bool TryExchange(ref T value, out bool resumable)
+        {
+            if (TrySetResult(new DefaultOptions(), new Result<T>.Ok(value), out resumable))
+            {
+                value = this.value!;
+                return true;
+            }
+
+            return false;
+        }
+    }
 }

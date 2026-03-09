@@ -2,11 +2,10 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
 
-using Runtime.CompilerServices;
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 
 /// <summary>
-/// Represents implementation of <see cref="IReadOnlySpanConsumer"/>
+/// Represents implementation of <see cref="IConsumer{T}"/>
 /// in the form of the writer to <see cref="Stream"/>.
 /// </summary>
 /// <param name="output">The writable stream.</param>
@@ -21,15 +20,11 @@ public readonly record struct StreamConsumer(Stream output) : IReadOnlySpanConsu
     public bool IsEmpty => output is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
+    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         => output.WriteAsync(input, token);
-
-    /// <inheritdoc />
-    Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> IFunctional<Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask>>.ToDelegate()
-        => output.WriteAsync;
 
     /// <inheritdoc />
     void IFlushable.Flush() => output.Flush();

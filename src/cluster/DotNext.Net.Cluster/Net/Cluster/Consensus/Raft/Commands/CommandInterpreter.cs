@@ -3,10 +3,9 @@ using System.Reflection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
-using Runtime;
+using Runtime.CompilerServices;
 using IO.Log;
 using static Reflection.MethodExtensions;
-using static Runtime.Intrinsics;
 
 /// <summary>
 /// Represents interpreter of the log entries.
@@ -55,7 +54,7 @@ public partial class CommandInterpreter : Disposable
             {
                 var parameters = method.GetParameterTypes();
                 Delegate interpreter;
-                switch (parameters.GetLength())
+                switch (Array.GetLength(parameters))
                 {
                     case 2 when parameters[0].IsValueType && parameters[1] == typeof(CancellationToken):
                         interpreter = Delegate.CreateDelegate(typeof(Func<,,>).MakeGenericType(parameters[0], parameters[1], typeof(ValueTask)),
@@ -74,7 +73,7 @@ public partial class CommandInterpreter : Disposable
                     continue;
 
                 interpreters.Add(commandId,
-                    Cast<CommandHandler>(Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(parameters[0]), interpreter)));
+                    CommandHandler.Cast(Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(parameters[0]), interpreter)));
 
                 if (isSnapshotHandler)
                     snapshotCommandId = commandId;
@@ -130,7 +129,7 @@ public partial class CommandInterpreter : Disposable
     /// </summary>
     /// <remarks>
     /// Typically this method is called by the custom implementation of
-    /// <see cref="MemoryBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/> method.
+    /// <see cref="DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.ApplyAsync"/> method.
     /// </remarks>
     /// <param name="entry">The log entry to be interpreted.</param>
     /// <param name="token">The token that can be used to cancel the interpretation.</param>
@@ -147,7 +146,7 @@ public partial class CommandInterpreter : Disposable
     /// </summary>
     /// <remarks>
     /// Typically this method is called by the custom implementation of
-    /// <see cref="MemoryBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/> method.
+    /// <see cref="DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.ApplyAsync"/> method.
     /// </remarks>
     /// <param name="entry">The log entry to be interpreted.</param>
     /// <param name="context">The context to be passed to the handler.</param>

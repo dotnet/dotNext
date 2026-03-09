@@ -12,12 +12,9 @@ using Runtime.Serialization;
 internal sealed class Message<T>() : IMessage
     where T : ISerializable<T>
 {
-    private readonly string name = string.Empty;
-    private ContentType? type;
-
     internal Message(string? mediaType)
         : this()
-        => type = mediaType is { Length: > 0 } ? new(mediaType) : new(MediaTypeNames.Application.Octet);
+        => Type = mediaType is { Length: > 0 } ? new(mediaType) : new(MediaTypeNames.Application.Octet);
 
     /// <summary>
     /// Gets payload of this message.
@@ -27,24 +24,24 @@ internal sealed class Message<T>() : IMessage
     /// <summary>
     /// Gets name of this message.
     /// </summary>
-    required public string Name
+    public required string Name
     {
-        get => name;
+        get;
         init
         {
             ArgumentException.ThrowIfNullOrEmpty(value);
 
-            name = value;
+            field = value;
         }
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Gets MIME type of this message.
     /// </summary>
     public ContentType Type
     {
-        get => type ??= new(MediaTypeNames.Application.Octet);
-        init => type = value;
+        get => field ??= new(MediaTypeNames.Application.Octet);
+        init;
     }
 
     /// <inheritdoc/>

@@ -21,7 +21,8 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     IEquatable<ValueReference<T>>,
     IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>,
     ISupplier<T>,
-    IConsumer<T>
+    IConsumer<T>,
+    ITypedReference<T>
 {
     private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
 
@@ -79,6 +80,9 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// Gets a reference to the field.
     /// </summary>
     public ref T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+
+    /// <inheritdoc/>
+    ref readonly T ITypedReference<T>.Value => ref Value;
     
     /// <summary>
     /// Obtains managed pointer to the referenced value.
@@ -91,19 +95,30 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <inheritdoc cref="IConsumer{T}.Invoke(T)"/>
     void IConsumer<T>.Invoke(T value) => Value = value;
 
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Action<T> IFunctional<Action<T>>.ToDelegate() => ToAction();
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                // supplier
+                result.Mutable<T>() = Value;
+                break;
+            case 1:
+                Value = args.Immutable<T>();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
 
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
-
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
     private Func<T> ToFunc()
-        => Intrinsics.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
+        => Unsafe.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
     
     private Action<T> ToAction()
     {
@@ -179,6 +194,22 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
         => reference.IsEmpty ? new() : new(ref reference.Value);
 
     /// <summary>
+    /// Converts the reference to variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant value referencing the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator Variant(ValueReference<T> reference)
+        => Variant.Mutable(ref reference.Value);
+
+    /// <summary>
+    /// Converts the reference to the local reference.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The local reference the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator LocalReference<T>(ValueReference<T> reference)
+        => new(ref reference.Value);
+
+    /// <summary>
     /// Returns a setter for the memory location.
     /// </summary>
     /// <param name="reference">A reference to a value.</param>
@@ -206,7 +237,8 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fieldRef) :
     IEquatable<ReadOnlyValueReference<T>>,
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>,
-    ISupplier<T>
+    ISupplier<T>,
+    ITypedReference<T>
 {
     private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
     
@@ -258,8 +290,9 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
 
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+        => ISupplier<T>.PrepareInvocation(count, result) = Value;
 
     internal Func<T> ToFunc()
     {
@@ -327,6 +360,22 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
     public static implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T> reference)
         => reference.IsEmpty ? new() : new(in reference.Value);
+    
+    /// <summary>
+    /// Converts the reference to variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant value referencing the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator Variant(ReadOnlyValueReference<T> reference)
+        => Variant.Immutable(in reference.Value);
+
+    /// <summary>
+    /// Converts the reference to the local reference.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The local reference the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator ReadOnlyLocalReference<T>(ReadOnlyValueReference<T> reference)
+        => new(in reference.Value);
 
     /// <summary>
     /// Returns a getter for the memory location.
@@ -353,8 +402,8 @@ file static class ValueReference
 
     internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
-        ref var rawData = ref Intrinsics.GetRawData(owner);
-        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.InToRef<T, byte>(in field));
+        ref var rawData = ref Unsafe.GetRawData(owner);
+        var offset = Unsafe.ByteOffset(in rawData, in Unsafe.InToRef<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
         if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
@@ -365,7 +414,7 @@ file static class ValueReference
 
     internal static ref T GetObjectData<T>(object owner, nint offset)
     {
-        ref var rawData = ref Intrinsics.GetRawData(owner);
+        ref var rawData = ref Unsafe.GetRawData(owner);
         return ref Unsafe.As<byte, T>(ref Unsafe.Add(ref rawData, offset));
     }
 }

@@ -38,9 +38,6 @@ internal static class ExceptionMessages
 
     internal static string UndefinedValueDetected => Resources.GetString("UndefinedValueDetected")!;
 
-    internal static string InvalidHexInput(char ch)
-        => string.Format(Resources.GetString("InvalidHexInput")!, ch);
-
     internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
 
     internal static string NoResult<TError>(TError errorCode)
@@ -52,4 +49,8 @@ internal static class ExceptionMessages
     internal static string OverlappedRange => Resources.GetString("OverlappedRange")!;
 
     internal static string FullyQualifiedPathExpected => Resources.GetString("FullyQualifiedPathExpected")!;
+
+    internal static string BufferTooSmall => Resources.GetString("BufferTooSmall")!;
+
+    internal static string EmptyCollection => Resources.GetString("EmptyCollection")!;
 }

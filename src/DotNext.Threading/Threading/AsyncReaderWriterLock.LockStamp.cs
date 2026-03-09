@@ -11,19 +11,16 @@ public partial class AsyncReaderWriterLock
     [StructLayout(LayoutKind.Auto)]
     public readonly struct LockStamp : IEquatable<LockStamp>
     {
-        private readonly ulong version;
-        private readonly bool valid;
+        internal readonly ulong Version;
+        internal readonly bool IsInitialized;
 
         internal LockStamp(in State state)
         {
-            version = state.Version;
-            valid = true;
+            Version = state.Version;
+            IsInitialized = true;
         }
 
-        internal bool IsValid(in State state)
-            => valid && state.Version == version && !state.WriteLock;
-
-        private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
+        private bool Equals(in LockStamp other) => Version == other.Version && IsInitialized == other.IsInitialized;
 
         /// <summary>
         /// Determines whether this stamp represents the same version of the lock state
@@ -45,7 +42,7 @@ public partial class AsyncReaderWriterLock
         /// Computes hash code for this stamp.
         /// </summary>
         /// <returns>The hash code of this stamp.</returns>
-        public override int GetHashCode() => HashCode.Combine(valid, version);
+        public override int GetHashCode() => HashCode.Combine(IsInitialized, Version);
 
         /// <summary>
         /// Determines whether the first stamp represents the same version of the lock state

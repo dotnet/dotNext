@@ -14,7 +14,7 @@ public sealed class MutationExpression : CustomExpression
 
     private readonly MethodBase? cloneMethodOrCtor;
 
-    internal MutationExpression(Expression target, IReadOnlyList<MemberAssignment> bindings)
+    private MutationExpression(Expression target, IReadOnlyList<MemberAssignment> bindings)
     {
         Debug.Assert(target is not null);
         Debug.Assert(bindings is not null);

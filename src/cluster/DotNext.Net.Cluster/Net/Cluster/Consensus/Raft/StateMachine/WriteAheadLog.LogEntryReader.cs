@@ -15,21 +15,21 @@ partial class WriteAheadLog
     /// <returns>Lazy collection of log entries.</returns>
     public ValueTask<LogEntryReader> ReadAsync(long startIndex, long endIndex, CancellationToken token = default)
     {
-        ValueTask<LogEntryReader> result;
+        ValueTask<LogEntryReader> task;
         if (IsDisposingOrDisposed)
-            result = new(GetDisposedTask<LogEntryReader>());
+            task = new(GetDisposedTask<LogEntryReader>());
         else if (startIndex < 0L)
-            result = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(startIndex)));
+            task = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (endIndex < 0L || endIndex > LastEntryIndex)
-            result = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(endIndex)));
+            task = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (backgroundTaskFailure?.SourceException is { } exception)
-            result = ValueTask.FromException<LogEntryReader>(exception);
+            task = ValueTask.FromException<LogEntryReader>(exception);
         else if (startIndex > endIndex)
-            result = new(default(LogEntryReader));
+            task = new(default(LogEntryReader));
         else
-            result = ReadCoreAsync(startIndex, endIndex, token);
+            task = ReadCoreAsync(startIndex, endIndex, token);
 
-        return result;
+        return task;
     }
 
     private async ValueTask<LogEntryReader> ReadCoreAsync(long startIndex, long endIndex, CancellationToken token)

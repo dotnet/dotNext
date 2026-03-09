@@ -16,9 +16,9 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         Debug.Assert(pair is not null);
         Debug.Assert(pair is not FakeKeyValuePair);
-        Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+        Debug.Assert(Interlocked.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        return ref Atomic.IsAtomic<TValue>()
+        return ref Interlocked.IsAtomic<TValue>()
             ? ref Unsafe.As<KeyValuePairAtomicAccess>(pair).Value
             : ref Unsafe.As<KeyValuePairNonAtomicAccess>(pair).ValueRef;
     }
@@ -28,7 +28,7 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         Debug.Assert(pair is not FakeKeyValuePair);
 
-        if (Atomic.IsAtomic<TValue>())
+        if (Interlocked.IsAtomic<TValue>())
         {
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
         }
@@ -47,7 +47,7 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             // do nothing
         }
-        else if (Atomic.IsAtomic<TValue>())
+        else if (Interlocked.IsAtomic<TValue>())
         {
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = default!;
         }
@@ -59,7 +59,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode)
     {
-        return Atomic.IsAtomic<TValue>()
+        return Interlocked.IsAtomic<TValue>()
             ? new KeyValuePairAtomicAccess(key, hashCode) { Value = value }
             : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
     }
@@ -414,7 +414,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal BucketList(int length)
         {
-            Span.Initialize<Bucket>(buckets = new Bucket[length]);
+            (buckets = new Bucket[length]).Initialize<Bucket>();
             fastMod = new((uint)length);
         }
 
@@ -528,7 +528,7 @@ public partial class RandomAccessCache<TKey, TValue>
         try
         {
             var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-            await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
             lockCount++;
 
             if (!ReferenceEquals(oldVersion, buckets))
@@ -538,7 +538,7 @@ public partial class RandomAccessCache<TKey, TValue>
             for (; lockCount < oldVersion.Count; lockCount++)
             {
                 bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-                await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
             }
             
             var newSource = new CancelableValueTaskCompletionSource();

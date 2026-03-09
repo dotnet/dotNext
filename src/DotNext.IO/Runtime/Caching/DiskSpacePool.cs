@@ -1,11 +1,13 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
+using Collections.Generic;
+using CompilerServices;
 using Number = Numerics.Number;
-using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents a pool of segments of the limited size on the disk.
@@ -71,11 +73,11 @@ public partial class DiskSpacePool : Disposable
                 // for efficient scatter/gather on Windows, the buffer needs to be page aligned
                 buffer = GC.AllocateUninitializedArray<byte>(pageSize * 2, pinned: true);
 
-                var address = (nuint)Intrinsics.AddressOf(in buffer.Span[0]); // pinned already
+                var address = (nuint)Unsafe.AddressOf(in buffer.Span[0]); // pinned already
                 var remainder = (int)(address % (uint)pageSize);
 
                 buffer = buffer.Slice(remainder is 0 ? 0 : pageSize - remainder, pageSize);
-                Debug.Assert(Intrinsics.AddressOf(in buffer.Span[0]) % pageSize is 0);
+                Debug.Assert(Unsafe.AddressOf(in buffer.Span[0]) % pageSize is 0);
             
                 buffer.Span.Clear();
             }
@@ -88,7 +90,7 @@ public partial class DiskSpacePool : Disposable
                 buffer = GC.AllocateArray<byte>(bufferSize < pageSize ? segmentSize : bufferSize, pinned: true);
             }
 
-            return List.Repeat<ReadOnlyMemory<byte>>(buffer, segmentSize / buffer.Length);
+            return IReadOnlyList<ReadOnlyMemory<byte>>.Repeat(buffer, segmentSize / buffer.Length);
         }
     }
 
@@ -323,7 +325,6 @@ public partial class DiskSpacePool : Disposable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Options
     {
-        private readonly int segments;
         private readonly bool normalAllocation;
         
         /// <summary>
@@ -353,8 +354,8 @@ public partial class DiskSpacePool : Disposable
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ExpectedNumberOfSegments
         {
-            get => segments > 0 ? segments : 1;
-            init => segments = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get => field > 0 ? field : 1;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         internal FileOptions FileOptions

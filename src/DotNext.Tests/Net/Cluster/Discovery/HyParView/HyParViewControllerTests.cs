@@ -114,7 +114,7 @@ public sealed class HyParViewControllerTests : Test
         },
         transport);
 
-        await peer1.StartAsync();
+        await peer1.StartAsync(TestToken);
 
         using var peer2 = new TestPeerController(new HttpPeerConfiguration
         {
@@ -128,8 +128,8 @@ public sealed class HyParViewControllerTests : Test
         transport);
 
         var task = WaitForPeer(peer2, new UriEndPoint(new("http://localhost:3262")));
-        await peer2.StartAsync();
-        await task.WaitAsync(DefaultTimeout);
+        await peer2.StartAsync(TestToken);
+        await task.WaitAsync(TestToken);
 
         using var peer3 = new TestPeerController(new HttpPeerConfiguration
         {
@@ -143,8 +143,8 @@ public sealed class HyParViewControllerTests : Test
         transport);
 
         task = WaitForPeer(peer3, new UriEndPoint(new("http://localhost:3262")));
-        await peer3.StartAsync();
-        await task.WaitAsync(DefaultTimeout);
+        await peer3.StartAsync(TestToken);
+        await task.WaitAsync(TestToken);
 
         using var peer4 = new TestPeerController(new HttpPeerConfiguration
         {
@@ -158,8 +158,8 @@ public sealed class HyParViewControllerTests : Test
         transport);
 
         task = WaitForPeer(peer4, new UriEndPoint(new("http://localhost:3262")));
-        await peer4.StartAsync();
-        await task.WaitAsync(DefaultTimeout);
+        await peer4.StartAsync(TestToken);
+        await task.WaitAsync(TestToken);
 
         using var peer5 = new TestPeerController(new HttpPeerConfiguration
         {
@@ -173,13 +173,13 @@ public sealed class HyParViewControllerTests : Test
         transport);
 
         task = WaitForPeer(peer5, new UriEndPoint(new("http://localhost:3262")));
-        await peer5.StartAsync();
-        await task.WaitAsync(DefaultTimeout);
+        await peer5.StartAsync(TestToken);
+        await task.WaitAsync(TestToken);
 
-        await peer5.StopAsync();
-        await peer4.StopAsync();
-        await peer3.StopAsync();
-        await peer2.StopAsync();
-        await peer1.StopAsync();
+        await peer5.StopAsync(TestToken);
+        await peer4.StopAsync(TestToken);
+        await peer3.StopAsync(TestToken);
+        await peer2.StopAsync(TestToken);
+        await peer1.StopAsync(TestToken);
     }
 }

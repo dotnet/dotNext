@@ -142,10 +142,9 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
             Chunk<T>.AddChunk(in block, ref head, ref tail);
         }
 
-        if (count > 0L)
-            throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
-
-        return Chunk<T>.CreateSequence(head, tail);
+        return count is 0L
+            ? Chunk<T>.CreateSequence(head, tail)
+            : throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
     }
 
     /// <summary>
@@ -179,7 +178,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <param name="start">The start position within this buffer.</param>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, SequencePosition start)
-        where TConsumer : IReadOnlySpanConsumer<T>
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -201,8 +200,8 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
-    public long CopyTo<TConsumer>(TConsumer consumer, scoped ref SequencePosition position, long count)
-        where TConsumer : IReadOnlySpanConsumer<T>
+    public long CopyTo<TConsumer>(scoped TConsumer consumer, scoped ref SequencePosition position, long count)
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
@@ -228,12 +227,11 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         return new Enumerator(first);
     }
-
+    
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
+        => IEnumerator<ReadOnlyMemory<T>>.Create(GetEnumerator());
 
     /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<T>>.Create(GetEnumerator());
 }

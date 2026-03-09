@@ -65,7 +65,7 @@ public sealed record LinuxUdsPeerIdentity : IIdentity
     public uint GroupId { get; }
 
     /// <inheritdoc />
-    string? IIdentity.AuthenticationType => "ucred";
+    string IIdentity.AuthenticationType => "ucred";
 
     /// <inheritdoc />
     public string? Name { get; }

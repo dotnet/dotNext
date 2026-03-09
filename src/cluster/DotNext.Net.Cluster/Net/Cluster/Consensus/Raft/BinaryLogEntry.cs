@@ -6,25 +6,19 @@ using Buffers;
 using Buffers.Binary;
 using IO;
 using IO.Log;
-using StateMachine;
 
 /// <summary>
 /// Represents a log entry with binary payload.
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry<T> : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
     where T : IBinaryFormattable<T>
 {
     /// <summary>
     /// Gets or sets the log entry payload.
     /// </summary>
     public required T Content { get; init; }
-
-    /// <summary>
-    /// Gets the timestamp of this log entry.
-    /// </summary>
-    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
@@ -54,7 +48,7 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
 
     /// <inheritdoc />
     MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
-        => IBinaryFormattable<T>.Format(Content, allocator);
+        => Content.Format(allocator);
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
@@ -65,14 +59,9 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IBufferedLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry : IBufferedLogEntry
 {
     private readonly ReadOnlyMemory<byte> content;
-
-    /// <summary>
-    /// Gets the timestamp of this log entry.
-    /// </summary>
-    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
@@ -123,14 +112,10 @@ public readonly struct BinaryLogEntry() : IBufferedLogEntry, ISupplier<MemoryAll
     }
 
     /// <inheritdoc />
-    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
-        => content.Span.Copy(allocator);
-
-    /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         => writer.WriteAsync(content, lengthFormat: null, token);
 
     /// <inheritdoc />
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-        => transformation.TransformAsync(IAsyncBinaryReader.Create(content), token);
+        => transformation.TransformAsync(new SequenceReader(content), token);
 }

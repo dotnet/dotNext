@@ -9,7 +9,7 @@ using Buffers;
 /// <param name="allocator">The memory allocator.</param>
 public class MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null) : Disposable, IDataTransferObject
 {
-    private MemoryOwner<byte> owner = length > 0 ? allocator.AllocateExactly(length) : default;
+    private MemoryOwner<byte> owner = length > 0 ? allocator.DefaultIfNull.AllocateExactly(length) : default;
 
     /// <summary>
     /// Transforms this object to serialized form.

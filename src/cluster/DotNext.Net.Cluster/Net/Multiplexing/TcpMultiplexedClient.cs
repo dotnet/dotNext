@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
@@ -14,7 +13,6 @@ namespace DotNext.Net.Multiplexing;
 /// </remarks>
 /// <param name="address">The address of the server.</param>
 /// <param name="configuration">The configuration of the client.</param>
-[Experimental("DOTNEXT001")]
 public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration), IPeer
 {
     private readonly TimeSpan connectTimeout = configuration.ConnectTimeout;
@@ -63,20 +61,18 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
     /// </summary>
     public new class Options : MultiplexedClient.Options
     {
-        private readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(30);
-
         /// <summary>
         /// Gets or sets connection timeout.
         /// </summary>
         public TimeSpan ConnectTimeout
         {
-            get => connectTimeout;
+            get;
             init
             {
                 Threading.Timeout.Validate(value);
 
-                connectTimeout = value;
+                field = value;
             }
-        }
+        } = TimeSpan.FromSeconds(30);
     }
 }

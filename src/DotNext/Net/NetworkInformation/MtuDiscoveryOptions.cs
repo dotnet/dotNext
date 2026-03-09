@@ -16,18 +16,15 @@ public class MtuDiscoveryOptions(byte ttl = 64, int minMtuSize = MtuDiscoveryOpt
     private const int DefaultMinMtuSize = 60;
     private const int DefaultMaxMtuSize = 65500;
 
-    private int minMtuSize = minMtuSize > 0 ? minMtuSize : throw new ArgumentOutOfRangeException(nameof(minMtuSize));
-    private int maxMtuSize = maxMtuSize <= DefaultMaxMtuSize ? maxMtuSize : throw new ArgumentOutOfRangeException(nameof(maxMtuSize));
-
     /// <summary>
     /// Gets or sets the lowest possible size of MTU.
     /// </summary>
     /// <value>The lowest possible size of MTU.</value>
     public int MinMtuSize
     {
-        get => minMtuSize;
-        set => minMtuSize = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = minMtuSize > 0 ? minMtuSize : throw new ArgumentOutOfRangeException(nameof(minMtuSize));
 
     /// <summary>
     /// Gets or sets the highest possible size of MTU.
@@ -35,7 +32,7 @@ public class MtuDiscoveryOptions(byte ttl = 64, int minMtuSize = MtuDiscoveryOpt
     /// <value>The highest possible size of MTU.</value>
     public int MaxMtuSize
     {
-        get => maxMtuSize;
-        set => maxMtuSize = value <= DefaultMaxMtuSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value <= DefaultMaxMtuSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = maxMtuSize <= DefaultMaxMtuSize ? maxMtuSize : throw new ArgumentOutOfRangeException(nameof(maxMtuSize));
 }

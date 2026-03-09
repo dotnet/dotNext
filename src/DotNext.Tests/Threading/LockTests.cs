@@ -1,4 +1,7 @@
-﻿namespace DotNext.Threading;
+﻿using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
+
+namespace DotNext.Threading;
 
 public sealed class LockTests : Test
 {
@@ -36,6 +39,22 @@ public sealed class LockTests : Test
         holder.Dispose();
         False(Monitor.IsEntered(syncRoot));
     }
+    
+    [Fact]
+    public static void ExclusiveLock()
+    {
+        var syncRoot = new System.Threading.Lock();
+        using var @lock = Lock.ExclusiveLock(syncRoot);
+        True(@lock.TryAcquire(out var holder));
+        True(syncRoot.IsHeldByCurrentThread);
+        holder.Dispose();
+        False(syncRoot.IsHeldByCurrentThread);
+
+        holder = @lock.Acquire(DefaultTimeout);
+        True(syncRoot.IsHeldByCurrentThread);
+        holder.Dispose();
+        False(syncRoot.IsHeldByCurrentThread);
+    }
 
     [Fact]
     public static void SemaphoreLock()
@@ -47,16 +66,72 @@ public sealed class LockTests : Test
         holder.Dispose();
         Equal(3, sem.CurrentCount);
     }
-
+    
     [Fact]
-    public static async Task InterruptibleLock()
+    public static async Task InterruptibleLock2()
     {
         using var cts = new CancellationTokenSource();
-        var obj = new object();
+        var @lock = new System.Threading.Lock();
         
-        Monitor.Enter(obj);
-        var task = Task.Factory.StartNew(() => Lock.TryEnterMonitor(obj, System.Threading.Timeout.InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
+        @lock.Enter();
+        var task = Task.Factory.StartNew(() => @lock.TryEnter(InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
         await cts.CancelAsync();
         False(await task);
+    }
+
+    [Fact]
+    public static async Task InterruptThreadJoin()
+    {
+        using var cts = new CancellationTokenSource();
+        object terminated = false;
+        var t = new Thread(Start);
+        t.Start(terminated);
+
+        var task = Task.Factory.StartNew(() => t.Join(InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
+        await cts.CancelAsync();
+        False(await task);
+
+        Unsafe.Unbox<bool>(terminated) = true;
+        True(t.Join(DefaultTimeout));
+
+        static void Start(object terminated)
+        {
+            while (!Unsafe.Unbox<bool>(terminated))
+            {
+                Thread.Sleep(1);
+            }
+        }
+    }
+    
+    [Fact]
+    public static void ReaderWriterLock()
+    {
+        var obj = new object();
+        var holder1 = Lock.AcquireReadLock(obj, DefaultTimeout);
+        if (holder1) { }
+        else Fail("Lock is not acquired");
+
+        var holder2 = Lock.AcquireReadLock(obj, DefaultTimeout);
+        if (holder2) { }
+        else Fail("Lock is not acquired");
+
+        Throws<LockRecursionException>(() => Lock.AcquireWriteLock(obj, TimeSpan.Zero));
+        holder1.Dispose();
+        holder2.Dispose();
+
+        holder1 = Lock.AcquireWriteLock(obj, TimeSpan.Zero);
+        if (holder1) { }
+        else Fail("Lock is not acquired");
+        holder1.Dispose();
+    }
+    
+    [Fact]
+    public static void InvalidLock()
+    {
+        var obj = string.Intern("Interned string");
+        Throws<InvalidOperationException>(() => Lock.AcquireReadLock(obj, DefaultTimeout));
+        Throws<InvalidOperationException>(() => Lock.AcquireWriteLock(obj, DefaultTimeout));
+        Throws<InvalidOperationException>(() => Lock.AcquireUpgradeableReadLock(obj, DefaultTimeout));
+        Throws<InvalidOperationException>(() => Lock.AcquireUpgradeableReadLock(obj, TimeSpan.Zero));
     }
 }

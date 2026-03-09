@@ -7,7 +7,6 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
-using IO;
 using HttpEndPoint = Net.Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
@@ -78,7 +77,7 @@ public static class EndPointFormatter
                 // port = 4 bytes
                 // number of address bytes, N = 1 byte
                 // address bytes = N bytes
-                writer.Add(IPEndPointPrefix);
+                writer += IPEndPointPrefix;
                 writer.WriteLittleEndian(ip.Port);
                 Serialize(ip.Address, ref writer);
                 break;
@@ -90,8 +89,8 @@ public static class EndPointFormatter
                 // address family = 4 bytes
                 // host name length, N = 4 bytes
                 // host name = N bytes
-                writer.Add(HttpEndPointPrefix);
-                writer.Add(Unsafe.BitCast<bool, byte>(http.IsSecure));
+                writer += HttpEndPointPrefix;
+                writer += Unsafe.BitCast<bool, byte>(http.IsSecure);
                 writer.WriteLittleEndian(http.Port);
                 writer.WriteLittleEndian((int)http.AddressFamily);
                 Serialize(http.Host, ref writer);
@@ -103,7 +102,7 @@ public static class EndPointFormatter
                 // address family = 4 bytes
                 // host name length, N = 4 bytes
                 // host name = N bytes
-                writer.Add(DnsEndPointPrefix);
+                writer += DnsEndPointPrefix;
                 writer.WriteLittleEndian(dns.Port);
                 writer.WriteLittleEndian((int)dns.AddressFamily);
                 Serialize(dns.Host, ref writer);
@@ -113,7 +112,7 @@ public static class EndPointFormatter
                 // UDS endpoint type = 1 byte
                 // path name length, N = 4 bytes
                 // path name = N bytes
-                writer.Add(DomainSocketEndPointPrefix);
+                writer += DomainSocketEndPointPrefix;
                 Serialize(domainSocket.ToString(), ref writer);
                 break;
             case UriEndPoint uri:
@@ -121,7 +120,7 @@ public static class EndPointFormatter
                 // URI endpoint type = 1 byte
                 // URI length, N = 4 bytes
                 // URI = N bytes
-                writer.Add(UriEndPointPrefix);
+                writer += UriEndPointPrefix;
                 Serialize(uri.ToString(), ref writer);
                 break;
             default:
@@ -171,7 +170,7 @@ public static class EndPointFormatter
 
         using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new SpanOwner<byte>(length, true);
+            : new SpanOwner<byte>(length);
 
         reader.Read(pathBuffer.Span);
         return new(HostNameEncoding.GetString(pathBuffer.Span));
@@ -183,7 +182,7 @@ public static class EndPointFormatter
 
         using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new SpanOwner<byte>(length, true);
+            : new SpanOwner<byte>(length);
 
         reader.Read(pathBuffer.Span);
         return new(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
@@ -206,7 +205,9 @@ public static class EndPointFormatter
         family = (AddressFamily)reader.ReadLittleEndian<int>();
         var length = reader.ReadLittleEndian<int>();
 
-        using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold ? stackalloc byte[length] : new SpanOwner<byte>(length, true);
+        using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+            ? stackalloc byte[length]
+            : new SpanOwner<byte>(length);
         reader.Read(hostNameBuffer.Span);
         hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
     }

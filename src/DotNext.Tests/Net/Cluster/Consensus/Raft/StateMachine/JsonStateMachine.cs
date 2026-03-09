@@ -1,19 +1,13 @@
-using System.Diagnostics.CodeAnalysis;
 using DotNext.IO;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Text.Json;
 
-[Experimental("DOTNEXT001")]
-internal sealed class JsonStateMachine : SimpleStateMachine
+internal sealed class JsonStateMachine(DirectoryInfo location) 
+    : SimpleStateMachine(new(Path.Combine(location.FullName, "db")))
 {
     private readonly List<TestJsonObject> entries = new();
-    
-    public JsonStateMachine(DirectoryInfo location)
-        : base(new(Path.Combine(location.FullName, "db")))
-    {
-    }
 
     protected override ValueTask RestoreAsync(FileInfo snapshotFile, CancellationToken token)
         => ValueTask.CompletedTask;

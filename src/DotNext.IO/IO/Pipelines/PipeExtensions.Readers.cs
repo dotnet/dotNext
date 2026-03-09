@@ -4,18 +4,16 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using static System.Linq.AsyncEnumerable;
 
 namespace DotNext.IO.Pipelines;
 
 using Buffers;
 using Buffers.Binary;
+using Collections.Generic;
 using Text;
-using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 
-/// <summary>
-/// Represents extension method for parsing data stored in pipe.
-/// </summary>
-public static partial class PipeExtensions
+partial class PipeExtensions
 {
     internal static ValueTask<TResult> ReadAsync<TResult, TParser>(PipeReader reader, TParser parser, CancellationToken token)
         where TParser : struct, IBufferReader, ISupplier<TResult>
@@ -177,7 +175,7 @@ public static partial class PipeExtensions
         MemoryOwner<char> result;
         if (length > 0)
         {
-            result = allocator.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+            result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(reader, new(in context, length, result.Memory), token).ConfigureAwait(false));
         }
         else
@@ -201,7 +199,7 @@ public static partial class PipeExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
-        => buffer.IsEmpty ? AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
+        => buffer.IsEmpty ? IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
     {
@@ -231,7 +229,7 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this PipeReader reader, TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
 
@@ -239,7 +237,7 @@ public static partial class PipeExtensions
         return parser(chars.Span, arg);
     }
 
-    private static async ValueTask<TResult> ParseAsync<TResult, TArg>(this PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, LengthFormat lengthFormat, CancellationToken token)
+    private static async ValueTask<TResult> ParseAsync<TResult, TArg>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, LengthFormat lengthFormat, CancellationToken token)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
@@ -251,7 +249,7 @@ public static partial class PipeExtensions
 
         return parser([], arg);
 
-        static TResult Parse(PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
+        static TResult Parse(PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
         {
             var consumed = source.Start;
             try
@@ -461,7 +459,7 @@ public static partial class PipeExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else
@@ -585,8 +583,8 @@ public static partial class PipeExtensions
     {
         return length switch
         {
-            < 0L => AsyncEnumerable.Throw<ReadOnlyMemory<byte>>(new ArgumentOutOfRangeException(nameof(length))),
-            0L => AsyncEnumerable.Empty<ReadOnlyMemory<byte>>(),
+            < 0L => IAsyncEnumerable<ReadOnlyMemory<byte>>.Throw(new ArgumentOutOfRangeException(nameof(length))),
+            0L => Empty<ReadOnlyMemory<byte>>(),
             _ => DoReadExactlyAsync(reader, length, token),
         };
         
@@ -607,7 +605,7 @@ public static partial class PipeExtensions
                          consumed = position,
                          length -= block.Length)
                     {
-                        block = block.TrimLength(int.CreateSaturating(length));
+                        block %= int.CreateSaturating(length);
                         if (!block.IsEmpty)
                             yield return block;
                     }

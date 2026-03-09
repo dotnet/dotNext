@@ -91,11 +91,11 @@ internal static class ProtocolStreamExtensions
     {
         protocol.Reset();
         protocol.StartFrameWrite();
-        await DataTransferObject.WriteToAsync(new MetadataTransferObject(metadata), protocol, buffer, token).ConfigureAwait(false);
+        await new MetadataTransferObject(metadata).WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
         protocol.WriteFinalFrame();
         await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
     }
 
     internal static async ValueTask<IReadOnlyDictionary<string, string>> ReadDictionaryAsync(this ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        => (await ISerializable<MetadataTransferObject>.ReadFromAsync(protocol, buffer, token).ConfigureAwait(false)).Metadata;
+        => (await MetadataTransferObject.ReadFromAsync(protocol, buffer, token).ConfigureAwait(false)).Metadata;
 }

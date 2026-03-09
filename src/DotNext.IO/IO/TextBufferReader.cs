@@ -1,4 +1,4 @@
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
@@ -8,8 +8,8 @@ internal abstract class TextBufferReader : TextReader
 
     public sealed override int Read()
     {
-        var result = default(char);
-        return Read(MemoryMarshal.CreateSpan(ref result, 1)) > 0 ? result : InvalidChar;
+        Unsafe.SkipInit(out char result);
+        return Read(new Span<char>(ref result)) > 0 ? result : InvalidChar;
     }
 
     public sealed override int Read(char[] buffer, int index, int count)
@@ -86,7 +86,7 @@ internal abstract class TextBufferReader : TextReader
         Task<string> result;
         try
         {
-            result = Task.FromResult<string>(ReadToEnd());
+            result = Task.FromResult(ReadToEnd());
         }
         catch (Exception e)
         {
@@ -101,7 +101,7 @@ internal abstract class TextBufferReader : TextReader
         Task<string?> result;
         try
         {
-            result = Task.FromResult<string?>(ReadLine());
+            result = Task.FromResult(ReadLine());
         }
         catch (Exception e)
         {

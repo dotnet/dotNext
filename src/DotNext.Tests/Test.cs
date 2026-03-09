@@ -2,8 +2,6 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-[assembly: DotNext.ReportLongRunningTests(30_000)]
-
 namespace DotNext;
 
 using static Buffers.Memory;
@@ -21,8 +19,11 @@ public abstract class Test : Assert
     {
         var result = new byte[size];
         Random.Shared.NextBytes(result);
+        
         return result;
     }
+
+    private protected static CancellationToken TestToken => TestContext.Current.CancellationToken;
 
     private static IEnumerable<ReadOnlyMemory<T>> Split<T>(ReadOnlyMemory<T> memory, int chunkSize)
     {
@@ -39,13 +40,21 @@ public abstract class Test : Assert
     }
 
     private protected static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlyMemory<T> memory, int chunkSize)
-        => Split(memory, chunkSize).ToReadOnlySequence();
+        => Split(memory, chunkSize).Concat();
 
     private protected static Action<T> Equal<T>(T expected) => actual => Equal(expected, actual);
 
     private protected static Action<T> Same<T>(T expected)
         where T : class
         => actual => Same(expected, actual);
+
+    private protected static Task<TException> ThrowsAsync<TException>(Task task)
+        where TException : Exception
+        => ThrowsAsync<TException>(Func<Task>.Constant(task));
+
+    private protected static Task<TException> ThrowsAnyAsync<TException>(Task task)
+        where TException : Exception
+        => ThrowsAnyAsync<TException>(Func<Task>.Constant(task));
     
     protected static TResult InvokeAsThread<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
     {

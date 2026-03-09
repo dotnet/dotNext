@@ -2,7 +2,6 @@ using System.Buffers;
 using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -12,7 +11,6 @@ using Buffers;
 using Buffers.Binary;
 using Numerics;
 using EncodingContext = Text.EncodingContext;
-using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
 /// <summary>
 /// Providers a uniform way to encode the data.
@@ -31,7 +29,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     ValueTask WriteAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        return IBinaryFormattable<T>.TryFormat(value, Buffer.Span)
+        return value.TryFormat(Buffer.Span)
             ? AdvanceAsync(T.Size, token)
             : WriteSlowAsync(value, token);
     }
@@ -39,7 +37,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     private async ValueTask WriteSlowAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        using var buffer = IBinaryFormattable<T>.Format(value);
+        using var buffer = value.Format();
         await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
@@ -62,7 +60,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     private async ValueTask WriteLittleEndianSlowAsync<T>(T value, CancellationToken token)
         where T : IBinaryInteger<T>
     {
-        using var buffer = Memory.AllocateExactly<byte>(Number.GetMaxByteCount<T>());
+        using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(Number.get_MaxByteCount<T>());
         value.TryWriteLittleEndian(buffer.Span, out var bytesWritten);
         await WriteAsync(buffer.Memory.Slice(0, bytesWritten), token).ConfigureAwait(false);
     }
@@ -86,13 +84,13 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     private async ValueTask WriteBigEndianSlowAsync<T>(T value, CancellationToken token)
         where T : IBinaryInteger<T>
     {
-        using var buffer = Memory.AllocateExactly<byte>(Number.GetMaxByteCount<T>());
+        using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(Number.get_MaxByteCount<T>());
         value.TryWriteBigEndian(buffer.Span, out var bytesWritten);
         await WriteAsync(buffer.Memory.Slice(0, bytesWritten), token).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Gets buffer to modify.
+    /// Gets the buffer to modify.
     /// </summary>
     /// <seealso cref="AdvanceAsync(int, CancellationToken)"/>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -143,7 +141,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     {
         for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
         {
-            input.Span.CopyTo(Buffer.Span, out bytesWritten);
+            bytesWritten = input.Span >>> Buffer.Span;
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
     }
@@ -202,7 +200,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
             if (maxChars is 0)
             {
-                using var extraBuffer = Memory.AllocateExactly<byte>(maxByteCount);
+                using var extraBuffer = MemoryAllocator<byte>.Default.AllocateExactly(maxByteCount);
                 await EncodeSingleCharAsync(encoder, chars.Span, extraBuffer.Memory, out charsUsed, out bytesWritten, token)
                     .ConfigureAwait(false);
             }
@@ -251,7 +249,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     {
         var buffer = Buffer;
 
-        var canBeDoneSynchronously = buffer.Length >= lengthFormat.GetMaxByteCount();
+        var canBeDoneSynchronously = buffer.Length >= lengthFormat.MaxByteCount;
         bytesWritten = canBeDoneSynchronously
             ? WriteLength(length, lengthFormat, buffer.Span)
             : 0;
@@ -261,7 +259,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
     private async ValueTask<int> WriteLengthSlowAsync(int length, LengthFormat lengthFormat, CancellationToken token)
     {
-        using var buffer = Memory.AllocateExactly<byte>(lengthFormat.GetMaxByteCount());
+        using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(lengthFormat.MaxByteCount);
         length = WriteLength(length, lengthFormat, buffer.Span);
         await WriteAsync(buffer.Memory.Slice(0, length), token).ConfigureAwait(false);
         return length;
@@ -296,14 +294,14 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="InternalBufferOverflowException">The internal buffer cannot place all UTF-8 bytes exposed by <paramref name="value"/>.</exception>
-    ValueTask<int> FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null,
+    ValueTask<int> FormatAsync<T>(T value, LengthFormat lengthFormat, string? format = null, IFormatProvider? provider = null,
         CancellationToken token = default)
         where T : IUtf8SpanFormattable
-        => lengthFormat is null || lengthFormat.GetValueOrDefault().HasFixedSize()
+        => lengthFormat.HasFixedSize
             ? FormatFastAsync(value, lengthFormat, format, provider, token)
             : FormatSlowAsync(value, lengthFormat, format, provider, token);
 
-    private async ValueTask<int> FormatFastAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    private async ValueTask<int> FormatFastAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         where T : IUtf8SpanFormattable
     {
         var buffer =  Buffer;
@@ -319,14 +317,9 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
         return bytesWritten;
 
-        static bool TryFormat(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, Span<byte> buffer, out int bytesWritten)
-            => lengthFormat.HasValue
-                ? TryFormatWithLength(value, lengthFormat.GetValueOrDefault(), format, provider, buffer, out bytesWritten)
-                : value.TryFormat(buffer, out bytesWritten, format, provider);
-        
-        static bool TryFormatWithLength(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, Span<byte> buffer, out int bytesWritten)
+        static bool TryFormat(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, Span<byte> buffer, out int bytesWritten)
         {
-            var lengthBuffer = buffer.TrimLength(lengthFormat.GetMaxByteCount(), out var payload);
+            var lengthBuffer = buffer.TrimLength(lengthFormat.MaxByteCount, out var payload);
 
             var completed = value.TryFormat(payload, out bytesWritten, format, provider);
             bytesWritten = completed
@@ -343,7 +336,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         const int maxBufferSize = int.MaxValue / 2;
         for (var bufferSize = SpanOwner<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
         {
-            using var buffer = Memory.AllocateAtLeast<byte>(bufferSize);
+            using var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(bufferSize);
 
             if (value.TryFormat(buffer.Span, out var bytesWritten, format, provider))
             {
@@ -426,59 +419,22 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
     {
         ArgumentNullException.ThrowIfNull(output);
-        StreamExtensions.ThrowIfEmpty(buffer);
+        ArgumentException.EnsureWritable(output);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         return new AsyncStreamBinaryAccessor(output, buffer);
     }
 
-    /// <summary>
-    /// Creates default implementation of binary writer for the pipe.
-    /// </summary>
-    /// <param name="output">The stream instance.</param>
-    /// <param name="bufferSize">The maximum numbers of bytes that can be buffered in the memory without flushing.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or is less than or equal to zero.</exception>
-    public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0L)
-    {
-        ArgumentNullException.ThrowIfNull(output);
-        ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
-
-        return new PipeBinaryWriter(output, bufferSize);
-    }
-
-    /// <summary>
-    /// Creates default implementation of binary writer for the buffer writer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
-    {
-        ArgumentNullException.ThrowIfNull(writer);
-
-        return new AsyncBufferWriter(writer);
-    }
-
-    internal static Stream GetStream<TWriter>(TWriter writer, out bool keepAlive)
+    internal static Stream CreateStream<TWriter>(TWriter writer)
         where TWriter : IAsyncBinaryWriter
-    {
-        if (keepAlive = typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
-            return Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream;
-
-        if (typeof(TWriter) == typeof(PipeBinaryWriter))
-            return Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).AsStream();
-
-        if (typeof(TWriter) == typeof(AsyncBufferWriter))
-            return Unsafe.As<TWriter, AsyncBufferWriter>(ref writer).AsStream();
-
-        return StreamSource.AsAsynchronousStream(new Wrapper<TWriter>(writer));
-    }
+        => Stream.CreateAsyncWritable(new Wrapper<TWriter>(writer));
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+    private struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
         where TWriter : IAsyncBinaryWriter
     {
+        private TWriter writer = writer; // not readonly to avoid defensive copy
+        
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
             => writer.Invoke(source, token);
 
@@ -489,17 +445,4 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         Task IFlushable.FlushAsync(CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
     }
-}
-
-file static class LengthFormatExtensions
-{
-    internal static int GetMaxByteCount(this LengthFormat format) => format switch
-    {
-        LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-        LengthFormat.Compressed => Leb128<int>.MaxSizeInBytes,
-        _ => throw new ArgumentOutOfRangeException(nameof(format)),
-    };
-
-    internal static bool HasFixedSize(this LengthFormat format)
-        => format is LengthFormat.BigEndian or LengthFormat.LittleEndian;
 }

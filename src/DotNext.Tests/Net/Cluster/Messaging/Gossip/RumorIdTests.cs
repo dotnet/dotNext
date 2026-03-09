@@ -1,7 +1,5 @@
 namespace DotNext.Net.Cluster.Messaging.Gossip;
 
-using Buffers;
-
 public sealed class RumorIdTests : Test
 {
     [Fact]

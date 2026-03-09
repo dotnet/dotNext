@@ -1,6 +1,5 @@
 using System.Diagnostics.Metrics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Diagnostics.Metrics;
 
@@ -17,20 +16,26 @@ public sealed class UpDownCounterObserver<TMeasurement>(MeasurementFilter<UpDown
     /// <summary>
     /// Gets the instant value of the counter.
     /// </summary>
-    public TMeasurement Value => VolatileRead(ref measurement);
-
-    private static void Aggregate(ref TMeasurement measurement, TMeasurement value)
+    public TMeasurement Value
     {
-        if (typeof(TMeasurement) == typeof(int))
-            Interlocked.Add(ref Unsafe.As<TMeasurement, int>(ref measurement), Unsafe.BitCast<TMeasurement, int>(value));
-
-        if (typeof(TMeasurement) == typeof(long))
-            Interlocked.Add(ref Unsafe.As<TMeasurement, long>(ref measurement), Unsafe.BitCast<TMeasurement, long>(value));
+        get
+        {
+            var result = measurement;
+            Volatile.ReadBarrier();
+            return result;
+        }
     }
 
     /// <inheritdoc />
     protected override void Record(TMeasurement value)
-        => Aggregate(ref measurement, value);
+    {
+        for (TMeasurement current = measurement, tmp;; current = tmp)
+        {
+            tmp = Interlocked.CompareExchange(ref measurement, current + value, current);
+            if (tmp == current)
+                break;
+        }
+    }
 
     /// <inheritdoc />
     TMeasurement ISupplier<TMeasurement>.Invoke() => Value;

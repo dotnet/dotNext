@@ -57,11 +57,11 @@ public sealed class PoolingBufferedStreamTests : Test
         Equal(1L, bufferedStream.Position);
 
         var actual = new byte[bufferSize - 1];
-        Equal(actual.Length, await bufferedStream.ReadAsync(actual));
+        Equal(actual.Length, await bufferedStream.ReadAsync(actual, TestToken));
         Equal(stream.Position, bufferedStream.Position);
         Equal(expected.AsSpan(1), actual.AsSpan());
         
-        Equal(0, await bufferedStream.ReadAsync(actual));
+        Equal(0, await bufferedStream.ReadAsync(actual, TestToken));
         Equal(-1, bufferedStream.ReadByte());
         False(bufferedStream.HasBufferedDataToRead);
         False(bufferedStream.HasBufferedDataToWrite);
@@ -99,14 +99,14 @@ public sealed class PoolingBufferedStreamTests : Test
         stream.Seek(0L, SeekOrigin.Begin);
 
         await using var bufferedStream = new PoolingBufferedStream(stream, leaveOpen: true) { MaxBufferSize = bufferSize };
-        True(await bufferedStream.ReadAsync());
+        True(await bufferedStream.ReadAsync(TestToken));
 
         bufferedStream.Position = bufferSize / 2;
         Equal(bufferSize, stream.Position);
         True(bufferedStream.HasBufferedDataToRead);
 
         var actual = new byte[bufferSize / 2];
-        Equal(actual.Length, await bufferedStream.ReadAsync(actual, 0, actual.Length));
+        Equal(actual.Length, await bufferedStream.ReadAsync(actual, 0, actual.Length, TestToken));
         Equal(stream.Position, bufferedStream.Position);
 
         Equal(expected.AsSpan(bufferSize / 2), actual.AsSpan());
@@ -138,14 +138,14 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        await bufferedStream.WriteAsync(expected);
+        await bufferedStream.WriteAsync(expected, TestToken);
         True(bufferedStream.HasBufferedDataToWrite);
         False(bufferedStream.HasBufferedDataToRead);
 
         Equal(0L, bufferedStream.BaseStream.Position);
         Equal(bufferSize, bufferedStream.Length);
 
-        await bufferedStream.WriteAsync();
+        await bufferedStream.WriteAsync(TestToken);
         Equal(bufferSize, bufferedStream.BaseStream.Position);
         Equal(bufferedStream.BaseStream.Length, bufferedStream.Length);
     }
@@ -175,12 +175,12 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        IBufferedWriter writer = bufferedStream;
-        expected.CopyTo(writer.Buffer);
-        writer.Produce(expected.Length);
+        True(bufferedStream.TryGetWriteBuffer(1, out var buffer));
+        expected.CopyTo(buffer);
+        bufferedStream.Write(expected.Length);
         True(bufferedStream.HasBufferedDataToWrite);
         False(bufferedStream.HasBufferedDataToRead);
-        await writer.WriteAsync();
+        await bufferedStream.WriteAsync(TestToken);
         
         False(bufferedStream.HasBufferedDataToWrite);
         False(bufferedStream.HasBufferedDataToRead);
@@ -193,15 +193,14 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        await bufferedStream.WriteAsync(expected);
-        await bufferedStream.WriteAsync();
+        await bufferedStream.WriteAsync(expected, TestToken);
+        await bufferedStream.WriteAsync(TestToken);
         bufferedStream.Position = 0L;
 
         False(bufferedStream.HasBufferedDataToRead);
-        IBufferedReader reader = bufferedStream;
-        await reader.ReadAsync();
-        True(bufferedStream.HasBufferedDataToRead);
-        Equal(expected, reader.Buffer);
+        await bufferedStream.ReadAsync(TestToken);
+        True(bufferedStream.TryGetReadBuffer(1, out var buffer));
+        Equal(expected, buffer);
     }
     
     [Fact]
@@ -211,17 +210,18 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
         bufferedStream.WriteByte(42);
         bufferedStream.WriteByte(43);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedReader>().Buffer);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedReader>().Consume(1));
+        False(bufferedStream.TryGetReadBuffer(1, out _));
+        Throws<InvalidOperationException>(() => bufferedStream.Read(1));
         
         bufferedStream.Flush();
         bufferedStream.Position = 0;
         bufferedStream.Read();
-        bufferedStream.As<IBufferedReader>().Consume(1);
-        Equal<byte>([43], bufferedStream.As<IBufferedReader>().Buffer.Span);
+        bufferedStream.Read(1);
+        True(bufferedStream.TryGetReadBuffer(1, out var buffer));
+        Equal<byte>([43], buffer.Span);
 
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedWriter>().Buffer);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedWriter>().Produce(1));
+        False(bufferedStream.TryGetWriteBuffer(1, out _));
+        Throws<InvalidOperationException>(() => bufferedStream.Write(1));
     }
 
     [Fact]
@@ -278,12 +278,12 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        await bufferedStream.WriteAsync(expected);
-        await bufferedStream.FlushAsync();
+        await bufferedStream.WriteAsync(expected, TestToken);
+        await bufferedStream.FlushAsync(TestToken);
         bufferedStream.Position = 0L;
 
         await using var destination = new MemoryStream(bufferSize);
-        await bufferedStream.CopyToAsync(destination);
+        await bufferedStream.CopyToAsync(destination, TestToken);
 
         Equal(expected, destination.GetBuffer());
     }
@@ -295,13 +295,13 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        await bufferedStream.WriteAsync(expected);
-        await bufferedStream.FlushAsync();
+        await bufferedStream.WriteAsync(expected, TestToken);
+        await bufferedStream.FlushAsync(TestToken);
         bufferedStream.Position = 0L;
-        True(await bufferedStream.ReadAsync());
+        True(await bufferedStream.ReadAsync(TestToken));
 
         await using var destination = new MemoryStream(bufferSize);
-        await bufferedStream.CopyToAsync(destination);
+        await bufferedStream.CopyToAsync(destination, TestToken);
 
         Equal(expected, destination.GetBuffer());
     }
@@ -314,7 +314,7 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(stream, leaveOpen: false)
         {
             MaxBufferSize = bufferSize,
-            Allocator = Memory.GetArrayAllocator<byte>(),
+            Allocator = MemoryAllocator<byte>.Array,
         };
 
         var expected = RandomBytes(bufferSize);
@@ -331,7 +331,7 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize), leaveOpen: false)
         {
             MaxBufferSize = bufferSize,
-            Allocator = Memory.GetArrayAllocator<byte>(),
+            Allocator = MemoryAllocator<byte>.Array,
         };
 
         var expected = RandomBytes(bufferSize);
@@ -364,12 +364,12 @@ public sealed class PoolingBufferedStreamTests : Test
         var expected = RandomBytes(4096);
         using var handle = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite,
             options: FileOptions.DeleteOnClose | FileOptions.Asynchronous);
-        await RandomAccess.WriteAsync(handle, expected, fileOffset: 0L);
+        await RandomAccess.WriteAsync(handle, expected, fileOffset: 0L, TestToken);
         RandomAccess.FlushToDisk(handle);
 
         await using var bufferedStream = new PoolingBufferedStream(handle.AsUnbufferedStream(FileAccess.Read)) { MaxBufferSize = 128 };
         var actual = new byte[expected.Length];
-        await bufferedStream.ReadExactlyAsync(actual);
+        await bufferedStream.ReadExactlyAsync(actual, TestToken);
 
         Equal(expected, actual);
     }
@@ -399,17 +399,17 @@ public sealed class PoolingBufferedStreamTests : Test
 
         await using (var buffered = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 8192 })
         {
-            await buffered.WriteAsync(expected);
-            await buffered.FlushAsync();
+            await buffered.WriteAsync(expected, TestToken);
+            await buffered.FlushAsync(TestToken);
         }
 
         ms.Position = 0;
         await using (var reader = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 4096 })
         {
             Memory<byte> buffer = new byte[dataSize];
-            await reader.ReadExactlyAsync(buffer.Slice(0, 3175));
+            await reader.ReadExactlyAsync(buffer.Slice(0, 3175), TestToken);
             reader.Position = 3303;
-            await reader.ReadExactlyAsync(buffer.Slice(0, 3107));
+            await reader.ReadExactlyAsync(buffer.Slice(0, 3107), TestToken);
             Equal(expected.Slice(3303, 3107), buffer.Slice(0, 3107));
         }
     }
@@ -447,7 +447,8 @@ public sealed class PoolingBufferedStreamTests : Test
         False(reader.Read());
         True(reader.HasBufferedDataToRead);
 
-        Equal(bytes, reader.As<IBufferedReader>().Buffer);
+        True(reader.TryGetReadBuffer(1, out var buffer));
+        Equal(bytes, buffer);
     }
     
     [Fact]
@@ -478,12 +479,12 @@ public sealed class PoolingBufferedStreamTests : Test
     public static async Task FlushNonEmptyReadBufferAsync()
     {
         using var stream = new MemoryStream();
-        await stream.WriteAsync(RandomBytes(1024));
+        await stream.WriteAsync(RandomBytes(1024), TestToken);
         stream.Position = 0L;
         await using var reader = new PoolingBufferedStream(stream) { MaxBufferSize = 64 };
         reader.ReadExactly(stackalloc byte[32]); // 32 extra bytes are in the internal buffer
         var position = reader.Position;
-        await reader.FlushAsync();
+        await reader.FlushAsync(TestToken);
         Equal(position, reader.Position);
     }
 }

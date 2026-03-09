@@ -3,123 +3,60 @@ namespace DotNext.Collections.Concurrent;
 public sealed class IndexPoolTests : Test
 {
     [Fact]
-    public static void EmptyPool()
+    public static void CheckCapacity()
     {
-        var pool = default(IndexPool);
-        False(pool.TryPeek(out _));
-        False(pool.TryTake(out _));
-        DoesNotContain(10, pool);
-        Empty(pool);
-    }
-
-    [Fact]
-    public static void EmptyPool2()
-    {
-        var pool = new IndexPool() { IsEmpty = true };
-        False(pool.TryPeek(out _));
-        False(pool.TryTake(out _));
-        DoesNotContain(10, pool);
-        Empty(pool);
-
-        pool.Reset();
-        NotEmpty(pool);
-        Contains(10, pool);
+        var pool = new IndexPool(4);
+        Equal(4, pool.Capacity);
     }
 
     [Fact]
     public static void TakeAll()
     {
-        var pool = new IndexPool();
-        NotEmpty(pool);
+        var set = new HashSet<int>();
+        var pool = new IndexPool(4);
+        False(pool.IsEmpty);
 
-        for (var i = 0; i <= IndexPool.MaxValue; i++)
+        while (pool.TryGet(out var value))
         {
-            Equal(i, pool.Take());
+            set.Add(value);
         }
-
-        Throws<OverflowException>(() => pool.Take());
-    }
-
-    [Fact]
-    public static void ContainsAll()
-    {
-        var pool = new IndexPool();
-        for (var i = 0; i <= IndexPool.MaxValue; i++)
-        {
-            True(pool.Contains(i));
-        }
-
-        for (var i = 0; i <= IndexPool.MaxValue; i++)
-        {
-            Equal(i, pool.Take());
-        }
-
-        for (var i = 0; i <= IndexPool.MaxValue; i++)
-        {
-            False(pool.Contains(i));
-        }
-    }
-
-    [Fact]
-    public static void Enumerator()
-    {
-        var pool = new IndexPool();
-        var expected = new int[pool.Count];
-        Span.ForEach(expected, static (ref int value, int index) => value = index);
-
-        Equal(expected, pool.ToArray());
-
-        while (pool.TryTake(out _))
-        {
-            // take all indicies
-        }
-
-        Equal(Array.Empty<int>(), pool.ToArray());
-    }
-
-    [Fact]
-    public static void CustomMaxValue()
-    {
-        var pool = new IndexPool(maxValue: 2);
-        Equal(3, pool.Count);
-
-        Equal(0, pool.Take());
-        Equal(2, pool.Count);
         
-        Equal(1, pool.Take());
-        Single(pool);
-        
-        Equal(2, pool.Take());
-
-        False(pool.TryTake(out _));
-        Empty(pool);
+        Equal(set.Count, pool.Capacity);
+        True(pool.IsEmpty);
     }
-
+    
     [Fact]
-    public static void Consistency()
+    public static async Task StressTest()
     {
-        var pool = new IndexPool();
-        Equal(0, pool.Take());
+        const int capacity = 2;
+        var pool = new IndexPool(capacity);
+        Equal(capacity, pool.Capacity);
 
-        Equal(1, pool.Take());
-        pool.Return(1);
+        using var barrier = new Barrier(capacity);
+        var task1 = Task.Factory.StartNew(RentReturn, TestToken);
+        var task2 = Task.Factory.StartNew(RentReturn, TestToken);
+        await Task.WhenAll(task1, task2);
 
-        Equal(1, pool.Take());
-        pool.Return(1);
+        void RentReturn()
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                int value;
+                try
+                {
+                    True(pool.TryGet(out value));
+                    True(value is 0 or 1);
 
-        pool.Return(0);
-    }
+                    barrier.SignalAndWait(TestToken);
+                }
+                catch
+                {
+                    barrier.Dispose();
+                    throw;
+                }
 
-    [Fact]
-    public static void TakeReturnMany()
-    {
-        var pool = new IndexPool();
-        Span<int> indicies = stackalloc int[IndexPool.Capacity];
-
-        Equal(IndexPool.Capacity, pool.Take(indicies));
-        Empty(pool);
-
-        pool.Return(indicies);
-        NotEmpty(pool);
+                pool.Return(value);
+            }
+        }
     }
 }

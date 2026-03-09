@@ -4,8 +4,7 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using static Reflection.CollectionType;
-using static Reflection.TypeExtensions;
+using Reflection;
 
 /// <summary>
 /// Represents access to the collection element using <see cref="ItemIndexExpression"/>.
@@ -23,7 +22,7 @@ public sealed class CollectionAccessExpression : CustomExpression
     /// <param name="collection">The expression representing collection.</param>
     /// <param name="index">The index of the element. Should be of type <see cref="System.Index"/>.</param>
     /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indices</seealso>
     public CollectionAccessExpression(Expression collection, Expression index)
     {
         ArgumentNullException.ThrowIfNull(collection);
@@ -114,7 +113,7 @@ public sealed class CollectionAccessExpression : CustomExpression
     {
         get
         {
-            var result = indexer?.PropertyType ?? Collection.Type.GetItemType();
+            var result = indexer?.PropertyType ?? Collection.Type.ItemType;
             Debug.Assert(result is not null);
             return result;
         }

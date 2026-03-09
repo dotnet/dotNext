@@ -5,7 +5,7 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.IO;
 
-using Intrinsics = Runtime.Intrinsics;
+using Runtime.CompilerServices;
 
 public partial class FileReader : IDynamicInterfaceCastable
 {
@@ -162,7 +162,7 @@ public partial class FileReader : IDynamicInterfaceCastable
     [ExcludeFromCodeCoverage]
     bool IDynamicInterfaceCastable.IsInterfaceImplemented(RuntimeTypeHandle interfaceType, bool throwIfNotImplemented)
     {
-        if (interfaceType.IsOneOf([Intrinsics.TypeOf<IValueTaskSource<int>>(), Intrinsics.TypeOf<IValueTaskSource<bool>>()]))
+        if (interfaceType.IsOneOf(IValueTaskSource<int>.TypeId, IValueTaskSource<bool>.TypeId))
             return true;
 
         return throwIfNotImplemented ? throw new InvalidCastException() : false;
@@ -171,8 +171,8 @@ public partial class FileReader : IDynamicInterfaceCastable
     [ExcludeFromCodeCoverage]
     RuntimeTypeHandle IDynamicInterfaceCastable.GetInterfaceImplementation(RuntimeTypeHandle interfaceType)
     {
-        if (interfaceType.IsOneOf([Intrinsics.TypeOf<IValueTaskSource<int>>(), Intrinsics.TypeOf<IValueTaskSource<bool>>()]))
-            return Intrinsics.TypeOf<IProxyValueTaskSource>();
+        if (interfaceType.IsOneOf(IValueTaskSource<int>.TypeId, IValueTaskSource<bool>.TypeId))
+            return IProxyValueTaskSource.TypeId;
 
         throw new InvalidCastException();
     }

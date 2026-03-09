@@ -53,11 +53,11 @@ public partial class DiskSpacePool
         => Read(absoluteOffset, buffer, segmentOffset, MaxSegmentSize - segmentOffset);
 
     private int Read(long absoluteOffset, Span<byte> buffer, int segmentOffset, int length)
-        => RandomAccess.Read(handle, buffer.TrimLength(length), absoluteOffset + segmentOffset);
+        => RandomAccess.Read(handle, buffer % length, absoluteOffset + segmentOffset);
 
     private ValueTask<int> ReadAsync(long absoluteOffset, Memory<byte> buffer, int segmentOffset, CancellationToken token)
         => ReadAsync(absoluteOffset, buffer, segmentOffset, MaxSegmentSize - segmentOffset, token);
 
     private ValueTask<int> ReadAsync(long absoluteOffset, Memory<byte> buffer, int segmentOffset, int length, CancellationToken token)
-        => RandomAccess.ReadAsync(handle, buffer.TrimLength(length), absoluteOffset + segmentOffset, token);
+        => RandomAccess.ReadAsync(handle, buffer % length, absoluteOffset + segmentOffset, token);
 }

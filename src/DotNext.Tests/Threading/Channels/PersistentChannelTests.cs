@@ -3,7 +3,6 @@ using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
 
-using static Collections.Generic.AsyncEnumerable;
 using static IO.StreamExtensions;
 
 public sealed class PersistentChannelTests : Test
@@ -40,12 +39,12 @@ public sealed class PersistentChannelTests : Test
         Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
         using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
         False(channel.Writer.TryWrite(g1));
-        await channel.Writer.WriteAsync(g1);
-        await channel.Writer.WriteAsync(g2);
-        await channel.Writer.WriteAsync(g3);
-        Equal(g1, await channel.Reader.ReadAsync());
-        Equal(g2, await channel.Reader.ReadAsync());
-        True(await channel.Reader.WaitToReadAsync());
+        await channel.Writer.WriteAsync(g1, TestToken);
+        await channel.Writer.WriteAsync(g2, TestToken);
+        await channel.Writer.WriteAsync(g3, TestToken);
+        Equal(g1, await channel.Reader.ReadAsync(TestToken));
+        Equal(g2, await channel.Reader.ReadAsync(TestToken));
+        True(await channel.Reader.WaitToReadAsync(TestToken));
         True(channel.Reader.TryRead(out var last));
         Equal(g3, last);
         Equal(1D, channel.Throughput);
@@ -58,16 +57,16 @@ public sealed class PersistentChannelTests : Test
         var options = new PersistentChannelOptions { BufferSize = 1024 };
         using (var channel = new SerializationChannel<Int128>(options))
         {
-            await channel.Writer.WriteAsync(g1);
-            await channel.Writer.WriteAsync(g2);
-            await channel.Writer.WriteAsync(g3);
-            Equal(g1, await channel.Reader.ReadAsync());
+            await channel.Writer.WriteAsync(g1, TestToken);
+            await channel.Writer.WriteAsync(g2, TestToken);
+            await channel.Writer.WriteAsync(g3, TestToken);
+            Equal(g1, await channel.Reader.ReadAsync(TestToken));
         }
         using (var channel = new SerializationChannel<Int128>(options))
         {
             Equal(2L, channel.RemainingCount);
-            Equal(g2, await channel.Reader.ReadAsync());
-            Equal(g3, await channel.Reader.ReadAsync());
+            Equal(g2, await channel.Reader.ReadAsync(TestToken));
+            Equal(g3, await channel.Reader.ReadAsync(TestToken));
         }
     }
 
@@ -82,14 +81,14 @@ public sealed class PersistentChannelTests : Test
         };
         Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>(), g4 = Random.Shared.Next<Int128>();
         using var channel = new SerializationChannel<Int128>(options);
-        await channel.Writer.WriteAsync(g1);
-        await channel.Writer.WriteAsync(g2);
-        await channel.Writer.WriteAsync(g3);
-        await channel.Writer.WriteAsync(g4);
-        Equal(g1, await channel.Reader.ReadAsync());
-        Equal(g2, await channel.Reader.ReadAsync());
-        Equal(g3, await channel.Reader.ReadAsync());
-        Equal(g4, await channel.Reader.ReadAsync());
+        await channel.Writer.WriteAsync(g1, TestToken);
+        await channel.Writer.WriteAsync(g2, TestToken);
+        await channel.Writer.WriteAsync(g3, TestToken);
+        await channel.Writer.WriteAsync(g4, TestToken);
+        Equal(g1, await channel.Reader.ReadAsync(TestToken));
+        Equal(g2, await channel.Reader.ReadAsync(TestToken));
+        Equal(g3, await channel.Reader.ReadAsync(TestToken));
+        Equal(g4, await channel.Reader.ReadAsync(TestToken));
     }
 
     [Fact]
@@ -104,22 +103,22 @@ public sealed class PersistentChannelTests : Test
         Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>(), g4 = Random.Shared.Next<Int128>();
         using (var channel = new SerializationChannel<Int128>(options))
         {
-            await channel.Writer.WriteAsync(g1);
-            await channel.Writer.WriteAsync(g2);
-            await channel.Writer.WriteAsync(g3);
-            await channel.Writer.WriteAsync(g4);
+            await channel.Writer.WriteAsync(g1, TestToken);
+            await channel.Writer.WriteAsync(g2, TestToken);
+            await channel.Writer.WriteAsync(g3, TestToken);
+            await channel.Writer.WriteAsync(g4, TestToken);
             Equal(0D, channel.Throughput);
-            Equal(g1, await channel.Reader.ReadAsync());
+            Equal(g1, await channel.Reader.ReadAsync(TestToken));
             Equal(0.25D, channel.Throughput);
         }
         using (var channel = new SerializationChannel<Int128>(options))
         {
             Equal(0.25D, channel.Throughput);
-            Equal(g2, await channel.Reader.ReadAsync());
+            Equal(g2, await channel.Reader.ReadAsync(TestToken));
             Equal(0.5D, channel.Throughput);
-            Equal(g3, await channel.Reader.ReadAsync());
+            Equal(g3, await channel.Reader.ReadAsync(TestToken));
             Equal(0.75D, channel.Throughput);
-            Equal(g4, await channel.Reader.ReadAsync());
+            Equal(g4, await channel.Reader.ReadAsync(TestToken));
             Equal(1D, channel.Throughput);
         }
     }
@@ -141,7 +140,7 @@ public sealed class PersistentChannelTests : Test
         Int128 lowerBound = 0;
         Int128 upperBound = 500;
         for (Int128 i = lowerBound; i < upperBound; i++)
-            True((await reader.ReadAsync()).IsBetween(lowerBound.Enclosed(), upperBound.Disclosed()));
+            True((await reader.ReadAsync()).IsBetween(lowerBound.Enclosed, upperBound.Disclosed));
     }
 
     [Theory]
@@ -182,20 +181,20 @@ public sealed class PersistentChannelTests : Test
     {
         Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
         using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
-        await channel.Writer.WriteAsync(g1);
-        await channel.Writer.WriteAsync(g2);
-        await channel.Writer.WriteAsync(g3);
+        await channel.Writer.WriteAsync(g1, TestToken);
+        await channel.Writer.WriteAsync(g2, TestToken);
+        await channel.Writer.WriteAsync(g3, TestToken);
         True(channel.Writer.TryComplete());
-        await ThrowsAsync<ChannelClosedException>(channel.Writer.WriteAsync(Int128.Zero).AsTask);
+        await ThrowsAsync<ChannelClosedException>(channel.Writer.WriteAsync(Int128.Zero, TestToken).AsTask);
 
         True(channel.Reader.Completion.IsCompletedSuccessfully);
-        Equal(g1, await channel.Reader.ReadAsync());
-        Equal(g2, await channel.Reader.ReadAsync());
-        True(await channel.Reader.WaitToReadAsync());
+        Equal(g1, await channel.Reader.ReadAsync(TestToken));
+        Equal(g2, await channel.Reader.ReadAsync(TestToken));
+        True(await channel.Reader.WaitToReadAsync(TestToken));
         True(channel.Reader.TryRead(out var last));
         Equal(g3, last);
-        False(await channel.Reader.WaitToReadAsync());
-        await ThrowsAsync<ChannelClosedException>(channel.Reader.ReadAsync().AsTask);
+        False(await channel.Reader.WaitToReadAsync(TestToken));
+        await ThrowsAsync<ChannelClosedException>(channel.Reader.ReadAsync(TestToken).AsTask);
     }
 
     [Fact]
@@ -204,12 +203,12 @@ public sealed class PersistentChannelTests : Test
         Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
         using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { ReliableEnumeration = true });
 
-        await channel.Writer.WriteAsync(g1);
-        await channel.Writer.WriteAsync(g2);
-        await channel.Writer.WriteAsync(g3);
+        await channel.Writer.WriteAsync(g1, TestToken);
+        await channel.Writer.WriteAsync(g2, TestToken);
+        await channel.Writer.WriteAsync(g3, TestToken);
         True(channel.Writer.TryComplete());
 
-        await using (var enumerator = channel.Reader.ReadAllAsync().GetAsyncEnumerator())
+        await using (var enumerator = channel.Reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
             Equal(g1, enumerator.Current);
@@ -217,7 +216,7 @@ public sealed class PersistentChannelTests : Test
             True(await enumerator.MoveNextAsync());
         }
 
-        await using (var enumerator = channel.Reader.ReadAllAsync().GetAsyncEnumerator())
+        await using (var enumerator = channel.Reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
             Equal(g2, enumerator.Current);

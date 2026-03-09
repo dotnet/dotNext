@@ -1,11 +1,10 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Runtime;
 
 namespace DotNext.Threading;
 
-using static Intrinsics;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Provides atomic access to non-primitive data type.
@@ -70,8 +69,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public delegate void Accumulator(ref T current, in T x);
 
     private T value;
-
-    private Atomic.Boolean lockState;
+    private bool lockState;
 
     /// <summary>
     /// Clones this container atomically.
@@ -93,9 +91,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="result">The result of atomic read.</param>
     public void Read(out T result)
     {
-        lockState.Acquire();
-        Copy(in value, out result);
-        lockState.Release();
+        Interlocked.Acquire(ref lockState);
+        RuntimeHelpers.Copy(in value, out result);
+        Interlocked.Release(ref lockState);
     }
 
     /// <summary>
@@ -107,9 +105,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The container for the value.</param>
     public void Swap(ref Atomic<T> other)
     {
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         other.Swap(ref value);
-        lockState.Release();
+        Interlocked.Release(ref lockState);
     }
 
     /// <summary>
@@ -118,9 +116,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The managed pointer to the value to swap.</param>
     public void Swap(ref T other)
     {
-        lockState.Acquire();
-        Runtime.Intrinsics.Swap(ref value, ref other);
-        lockState.Release();
+        Interlocked.Acquire(ref lockState);
+        RuntimeHelpers.Swap(ref value, ref other);
+        Interlocked.Release(ref lockState);
     }
 
     /// <summary>
@@ -129,9 +127,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="newValue">The value to be stored into this container.</param>
     public void Write(in T newValue)
     {
-        lockState.Acquire();
-        Copy(in newValue, out value);
-        lockState.Release();
+        Interlocked.Acquire(ref lockState);
+        RuntimeHelpers.Copy(in newValue, out value);
+        Interlocked.Release(ref lockState);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -139,12 +137,12 @@ public struct Atomic<T> : IStrongBox, ICloneable
         where TComparer : struct, IEqualityComparer
     {
         bool successful;
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         var current = value;
         if (successful = comparer.Equals(in current, in expected))
-            Copy(in update, out value);
-        Copy(in current, out result);
-        lockState.Release();
+            RuntimeHelpers.Copy(in update, out value);
+        RuntimeHelpers.Copy(in current, out result);
+        Interlocked.Release(ref lockState);
         return successful;
     }
 
@@ -186,16 +184,16 @@ public struct Atomic<T> : IStrongBox, ICloneable
         where TComparer : struct, IEqualityComparer
     {
         bool result;
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         try
         {
             // custom comparer may throw exception
             if (result = comparer.Equals(in value, in expected))
-                Copy(in update, out value);
+                RuntimeHelpers.Copy(in update, out value);
         }
         finally
         {
-            lockState.Release();
+            Interlocked.Release(ref lockState);
         }
 
         return result;
@@ -238,10 +236,10 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="previous">The original stored value before modification.</param>
     public void Exchange(in T update, out T previous)
     {
-        lockState.Acquire();
-        Copy(in value, out previous);
-        Copy(in update, out value);
-        lockState.Release();
+        Interlocked.Acquire(ref lockState);
+        RuntimeHelpers.Copy(in value, out previous);
+        RuntimeHelpers.Copy(in update, out value);
+        Interlocked.Release(ref lockState);
     }
 
     /// <summary>
@@ -255,16 +253,16 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         try
         {
             // custom updater may throw exception
             updater(ref value);
-            Copy(in value, out result);
+            RuntimeHelpers.Copy(in value, out result);
         }
         finally
         {
-            lockState.Release();
+            Interlocked.Release(ref lockState);
         }
     }
 
@@ -280,7 +278,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         var previous = value;
         try
         {
@@ -289,10 +287,10 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            lockState.Release();
+            Interlocked.Release(ref lockState);
         }
 
-        Copy(in previous, out result);
+        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
@@ -311,16 +309,16 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         try
         {
             // custom accumulator may throw exception
             accumulator(ref value, in x);
-            Copy(in value, out result);
+            RuntimeHelpers.Copy(in value, out result);
         }
         finally
         {
-            lockState.Release();
+            Interlocked.Release(ref lockState);
         }
     }
 
@@ -340,7 +338,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        lockState.Acquire();
+        Interlocked.Acquire(ref lockState);
         var previous = value;
         try
         {
@@ -349,17 +347,17 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            lockState.Release();
+            Interlocked.Release(ref lockState);
         }
 
-        Copy(in previous, out result);
+        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
     /// Gets or sets value atomically.
     /// </summary>
     /// <remarks>
-    /// To achieve best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
+    /// To achieve the best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
     /// because they don't cause extra allocation of stack memory for passing value.
     /// </remarks>
     public T Value
@@ -395,158 +393,174 @@ public struct Atomic<T> : IStrongBox, ICloneable
 /// </summary>
 public static partial class Atomic
 {
-    private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater, TOperations>(ref TValue value, TUpdater updater)
-        where TValue : IEqualityOperators<TValue, TValue, bool>
-        where TUpdater : ISupplier<TValue, TValue>
-        where TOperations : IInterlockedOperations<TValue>
+    private static bool Is32BitProcess => nuint.Size < sizeof(ulong);
+    
+    private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater>(ref TValue value, TUpdater updater)
+        where TUpdater : ISupplier<TValue, TValue>, allows ref struct
     {
-        TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);
+        TValue oldValue, newValue, tmp = value;
         do
         {
             newValue = updater.Invoke(oldValue = tmp);
-        }
-        while ((tmp = TOperations.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+        } while (!EqualityComparer<TValue>
+                     .Default
+                     .Equals(oldValue, tmp = Interlocked.CompareExchange(ref value!, newValue, oldValue)));
 
         return (oldValue, newValue);
     }
 
-    private static (TValue OldValue, TValue NewValue) Accumulate<TValue, TAccumulator, TOperations>(ref TValue value, TValue x, TAccumulator accumulator)
-        where TValue : IEqualityOperators<TValue, TValue, bool>
-        where TAccumulator : ISupplier<TValue, TValue, TValue>
-        where TOperations : IInterlockedOperations<TValue>
+    private static (TValue OldValue, TValue NewValue) Accumulate<TValue, TAccumulator>(ref TValue value, TValue x, TAccumulator accumulator)
+        where TAccumulator : ISupplier<TValue, TValue, TValue>, allows ref struct
     {
-        TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);
+        TValue oldValue, newValue, tmp = value;
         do
         {
             newValue = accumulator.Invoke(oldValue = tmp, x);
-        }
-        while ((tmp = TOperations.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+        } while (!EqualityComparer<TValue>
+                     .Default
+                     .Equals(oldValue, tmp = Interlocked.CompareExchange(ref value!, newValue, oldValue)));
 
         return (oldValue, newValue);
     }
 
     /// <summary>
-    /// Determines that write to the location in the memory of
-    /// type <typeparamref name="T"/> is atomic.
+    /// Introduces additional methods to <see cref="Interlocked"/> type.
     /// </summary>
-    /// <typeparam name="T">The type of the value to be written.</typeparam>
-    /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
-    /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAtomic<T>()
-        => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
-
-    private struct InterlockedOperations :
-        IInterlockedOperations<int>,
-        IInterlockedOperations<uint>,
-        IInterlockedOperations<long>,
-        IInterlockedOperations<ulong>,
-        IInterlockedOperations<nint>,
-        IInterlockedOperations<nuint>,
-        IInterlockedOperations<float>,
-        IInterlockedOperations<double>
+    /// <typeparam name="T">
+    /// The type to be used for memory location,and comparand.
+    /// This type must be a reference type, an enum type (i.e. <c>typeof(T).IsEnum</c> is <see langword="true"/>),
+    /// or a primitive type (i.e. <c>typeof(T).IsPrimitive</c> is <see langword="true"/>).
+    /// </typeparam>
+    extension<T>(Interlocked)
     {
-        static int IInterlockedOperations<int>.VolatileRead(ref readonly int location)
-            => Volatile.Read(in location);
+        /// <summary>
+        /// Determines that write to the location in the memory of
+        /// type <typeparamref name="T"/> is atomic.
+        /// </summary>
+        /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
+        /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAtomic()
+            => Unsafe.AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
+        
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <typeparam name="TAccumulator">The type implementing accumulator.</typeparam>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T AccumulateAndGet<TAccumulator>(ref T location, T x, TAccumulator accumulator)
+            where TAccumulator : ISupplier<T, T, T>, allows ref struct
+            => Accumulate(ref location, x, accumulator).NewValue;
 
-        static void IInterlockedOperations<int>.VolatileWrite(ref int location, int value)
-            => Volatile.Write(ref location, value);
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T AccumulateAndGet(ref T location, T x, Func<T, T, T> accumulator)
+            => AccumulateAndGet<T, DelegatingSupplier<T, T, T>>(ref location, x, accumulator);
 
-        static int IInterlockedOperations<int>.CompareExchange(ref int location, int value, int comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <typeparam name="TAccumulator">The type implementing accumulator.</typeparam>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T GetAndAccumulate<TAccumulator>(ref T location, T x, TAccumulator accumulator)
+            where TAccumulator : ISupplier<T, T, T>, allows ref struct
+            => Accumulate(ref location, x, accumulator).OldValue;
 
-        static uint IInterlockedOperations<uint>.VolatileRead(ref readonly uint location)
-            => Volatile.Read(in location);
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T GetAndAccumulate(ref T location, T x, Func<T, T, T> accumulator)
+            => GetAndAccumulate<T, DelegatingSupplier<T, T, T>>(ref location, x, accumulator);
 
-        static void IInterlockedOperations<uint>.VolatileWrite(ref uint location, uint value)
-            => Volatile.Write(ref location, value);
+        /// <summary>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <typeparam name="TUpdater">The type implementing updater.</typeparam>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T UpdateAndGet<TUpdater>(ref T location, TUpdater updater)
+            where TUpdater : ISupplier<T, T>, allows ref struct
+            => Update(ref location, updater).NewValue;
 
-        static uint IInterlockedOperations<uint>.CompareExchange(ref uint location, uint value, uint comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
+        /// <summary>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T UpdateAndGet(ref T location, Func<T, T> updater)
+            => UpdateAndGet<T, DelegatingSupplier<T, T>>(ref location, updater);
 
-        private static bool Is32BitProcess => nuint.Size < sizeof(ulong);
+        /// <summary>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <typeparam name="TUpdater">The type implementing updater.</typeparam>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T GetAndUpdate<TUpdater>(ref T location, TUpdater updater)
+            where TUpdater : ISupplier<T, T>, allows ref struct
+            => Update(ref location, updater).OldValue;
 
-        public static long VolatileRead(ref readonly long location)
-            => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
-
-        public static void VolatileWrite(ref long location, long value)
-        {
-            if (Is32BitProcess)
-            {
-                Interlocked.Exchange(ref location, value);
-            }
-            else
-            {
-                Volatile.Write(ref location, value);
-            }
-        }
-
-        static long IInterlockedOperations<long>.CompareExchange(ref long location, long value, long comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
-
-        public static ulong VolatileRead(ref readonly ulong location)
-            => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
-
-        public static void VolatileWrite(ref ulong location, ulong value)
-        {
-            if (Is32BitProcess)
-            {
-                Interlocked.Exchange(ref location, value);
-            }
-            else
-            {
-                Volatile.Write(ref location, value);
-            }
-        }
-
-        static ulong IInterlockedOperations<ulong>.CompareExchange(ref ulong location, ulong value, ulong comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
-
-        static nint IInterlockedOperations<nint>.VolatileRead(ref readonly nint location)
-            => Volatile.Read(in location);
-
-        static void IInterlockedOperations<nint>.VolatileWrite(ref nint location, nint value)
-            => Volatile.Write(ref location, value);
-
-        static nint IInterlockedOperations<nint>.CompareExchange(ref nint location, nint value, nint comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
-
-        static nuint IInterlockedOperations<nuint>.VolatileRead(ref readonly nuint location)
-            => Volatile.Read(in location);
-
-        static void IInterlockedOperations<nuint>.VolatileWrite(ref nuint location, nuint value)
-            => Volatile.Write(ref location, value);
-
-        static nuint IInterlockedOperations<nuint>.CompareExchange(ref nuint location, nuint value, nuint comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
-
-        static float IInterlockedOperations<float>.VolatileRead(ref readonly float location)
-            => Volatile.Read(in location);
-
-        static void IInterlockedOperations<float>.VolatileWrite(ref float location, float value)
-            => Volatile.Write(ref location, value);
-
-        static float IInterlockedOperations<float>.CompareExchange(ref float location, float value, float comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
-
-        public static double VolatileRead(ref readonly double location)
-            => Is32BitProcess
-                ? Interlocked.Read(in InToRef<double, long>(in location))
-                : Volatile.Read(in location);
-
-        public static void VolatileWrite(ref double location, double value)
-        {
-            if (Is32BitProcess)
-            {
-                Interlocked.Exchange(ref Unsafe.As<double, long>(ref location), BitConverter.DoubleToInt64Bits(value));
-            }
-            else
-            {
-                Volatile.Write(ref location, value);
-            }
-        }
-
-        static double IInterlockedOperations<double>.CompareExchange(ref double location, double value, double comparand)
-            => Interlocked.CompareExchange(ref location, value, comparand);
+        /// <summary>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="location">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull(nameof(location))]
+        public static T GetAndUpdate(ref T location, Func<T, T> updater)
+            => GetAndUpdate<T, DelegatingSupplier<T, T>>(ref location, updater);
     }
 }

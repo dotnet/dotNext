@@ -1,6 +1,5 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Maintenance.CommandLine;
 

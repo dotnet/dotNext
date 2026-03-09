@@ -1,14 +1,14 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
 using Collections.Generic;
 using Reflection;
-using Intrinsics = Runtime.Intrinsics;
+using NativeMemoryExtensions = Runtime.InteropServices.NativeMemoryExtensions;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
@@ -24,7 +24,7 @@ public readonly struct EqualityComparerBuilder<T>
     private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
     private const BindingFlags NonPublicStaticFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
-    private readonly IReadOnlySet<string>? excludedFields;
+    private readonly FrozenSet<string>? excludedFields;
 
     /// <summary>
     /// Sets an array of excluded field names.
@@ -32,7 +32,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// <value>An array of excluded fields.</value>
     public string[] ExcludedFields
     {
-        init => excludedFields = new HashSet<string>(value);
+        init => excludedFields = value.ToFrozenSet();
     }
 
     private bool IsIncluded(FieldInfo field) => excludedFields?.Contains(field.Name) ?? true;
@@ -68,7 +68,7 @@ public readonly struct EqualityComparerBuilder<T>
     private static PropertyInfo? GetDefaultEqualityComparer(Type target)
         => typeof(EqualityComparer<>)
                 .MakeGenericType(target)
-                .GetProperty(nameof(EqualityComparer<int>.Default), PublicStaticFlags);
+                .GetProperty(nameof(EqualityComparer<>.Default), PublicStaticFlags);
 
     private static FieldInfo? HashSaltField => typeof(RandomExtensions).GetField(nameof(RandomExtensions.BitwiseHashSalt), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
 
@@ -77,11 +77,11 @@ public readonly struct EqualityComparerBuilder<T>
     private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
     {
         MethodInfo? method;
-        if (first.Type.IsUnmanaged())
+        if (first.Type.IsUnmanaged)
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(first.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.Equals), PublicStaticFlags)
+                .GetMethod(nameof(BitwiseComparer<>.Equals), PublicStaticFlags)
                 ?.MakeGenericMethod(second.Type);
 
             Debug.Assert(method is not null);
@@ -93,7 +93,7 @@ public readonly struct EqualityComparerBuilder<T>
 
         method = defaultProperty
             .DeclaringType
-            ?.GetMethod(nameof(EqualityComparer<int>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            ?.GetMethod(nameof(EqualityComparer<>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
         Debug.Assert(method is not null);
         return Expression.Call(Expression.Property(null, defaultProperty), method, first, second);
@@ -105,11 +105,11 @@ public readonly struct EqualityComparerBuilder<T>
     {
         MethodInfo? method;
 
-        if (expr.Type.IsUnmanaged())
+        if (expr.Type.IsUnmanaged)
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
+                .GetMethod(nameof(BitwiseComparer<>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
 
             Debug.Assert(method is not null);
             expr = Expression.Call(method, expr, salted);
@@ -119,9 +119,9 @@ public readonly struct EqualityComparerBuilder<T>
             var defaultProperty = GetDefaultEqualityComparer(expr.Type);
             Debug.Assert(defaultProperty is not null);
 
-            method = method = defaultProperty
+            method = defaultProperty
                 .DeclaringType
-                ?.GetMethod(nameof(EqualityComparer<int>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                ?.GetMethod(nameof(EqualityComparer<>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
             Debug.Assert(method is not null);
             expr = Expression.Call(Expression.Property(null, defaultProperty), method, expr);
@@ -137,7 +137,7 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
     {
-        if (itemType.IsUnmanaged())
+        if (itemType.IsUnmanaged)
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
             return typeof(Span)
@@ -168,7 +168,7 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
     {
-        if (itemType.IsUnmanaged())
+        if (itemType.IsUnmanaged)
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
             return typeof(FNV1a32)
@@ -269,7 +269,7 @@ public readonly struct EqualityComparerBuilder<T>
                 expr = Expression.Field(inputParam, field);
                 expr = field.FieldType switch
                 {
-                    { IsPointer: true } => Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
+                    { IsPointer: true } => Expression.Call(typeof(NativeMemoryExtensions).GetMethod(nameof(NativeMemoryExtensions.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
                     { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), []),
                     { IsValueType: true } => HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode)),
                     { IsSZArray: true } => HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode)),
@@ -285,7 +285,7 @@ public readonly struct EqualityComparerBuilder<T>
         }
 
         expressions.Add(hashCodeTemp);
-        expr = Expression.Block(typeof(int), List.Singleton(hashCodeTemp), expressions);
+        expr = Expression.Block(typeof(int), IReadOnlyList<ParameterExpression>.Singleton(hashCodeTemp), expressions);
         return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();
     }
 
@@ -315,7 +315,10 @@ public readonly struct EqualityComparerBuilder<T>
     {
         var t = typeof(T);
 
-        return t.IsPrimitive || t.IsEnum || t.IsOneOf([typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset)])
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf(
+            typeof(nint), typeof(nuint),
+            typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly), typeof(TimeOnly),
+            typeof(UInt128), typeof(Int128), typeof(Half))
             ? EqualityComparer<T>.Default
             : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }

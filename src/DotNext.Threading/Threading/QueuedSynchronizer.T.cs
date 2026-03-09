@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
+using Patterns;
 
 /// <summary>
 /// Provides low-level infrastructure for writing custom synchronization primitives.
@@ -13,7 +13,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 {
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, TContext>
+        IWaitNodeFeature<TContext>
     {
         internal TContext? Context;
 
@@ -25,8 +25,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             base.CleanUp();
         }
 
-        static TContext INodeMapper<WaitNode, TContext>.GetValue(WaitNode node)
-            => node.Context!;
+        TContext IWaitNodeFeature<TContext>.Feature => Context!;
     }
 
     /// <summary>
@@ -49,7 +48,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// </summary>
     /// <param name="context">The acquisition context.</param>
     /// <returns>The exception; or <see langword="null"/>.</returns>
-    protected virtual Exception? GetAcquisitionException(TContext context) => null;
+    protected virtual ExceptionFactory? GetAcquisitionException(TContext context) => null;
 
     /// <summary>
     /// Modifies the internal state according to acquisition semantics.
@@ -73,18 +72,18 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
     {
-        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, TContext>(out var context); waitQueueVisitor.Advance())
+        for (; !queue.IsEndOfQueue<WaitNode, TContext>(out var context); queue.Advance())
         {
             switch (CanAcquire(context))
             {
-                case false when GetAcquisitionException(context) is { } e:
-                    waitQueueVisitor.SignalCurrent(e);
+                case false when GetAcquisitionException(context) is { } factory:
+                    queue.SignalCurrent(factory.CreateException());
                     goto default;
                 case false:
                     return;
-                case true when waitQueueVisitor.SignalCurrent():
+                case true when queue.SignalCurrent():
                     AcquireCore(context);
                     goto default;
                 default:
@@ -107,16 +106,18 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        var queue = CaptureWaitQueue();
+        try
         {
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -132,17 +133,19 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        var queue = CaptureWaitQueue();
+        try
         {
             ReleaseCore(context);
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -159,7 +162,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        lock (SyncRoot)
+        using (CaptureWaitQueue())
         {
             return TryAcquireCore(context);
         }
@@ -176,7 +179,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return AcquireAsync<ValueTask<bool>, TimeoutAndCancellationToken>(context, ref builder);
     }
 
@@ -192,7 +195,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return AcquireAsync<ValueTask, TimeoutAndCancellationToken>(context, ref builder);
     }
 
@@ -206,48 +209,85 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return AcquireAsync<ValueTask, CancellationTokenOnly>(context, ref builder);
     }
 
     private T AcquireAsync<T, TBuilder>(TContext context, ref TBuilder builder)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        T result;
-        if (!builder.IsCompleted)
+        bool acquired;
+        if (builder.IsCompleted)
         {
-            var acquired = TryAcquireCore(context);
-            if (!acquired && GetAcquisitionException(context) is { } e)
-            {
-                result = TBuilder.FromException(e);
-                goto exit;
-            }
-
-            if (Acquire<T, TBuilder, WaitNode>(ref builder, acquired) is { } node)
-            {
-                node.DrainOnReturn = true;
-                node.Context = context;
-            }
+            // nothing to do
+        }
+        else if (!(acquired = TryAcquireCore(context)) && GetAcquisitionException(context) is { } factory)
+        {
+            factory.As<ITaskBuilderConsumer>().Complete(ref builder);
+        }
+        else if (Acquire<T, TBuilder, WaitNode>(ref builder, acquired) is { } node)
+        {
+            node.Context = context;
         }
 
-        result = builder.Invoke();
-
-        exit:
-        builder.Dispose();
-        return result;
+        return builder.Build();
     }
 
     private bool TryAcquireCore(TContext context)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        if (IsEmptyQueue && CanAcquire(context))
+        var acquired = IsEmptyQueue && CanAcquire(context);
+        if (acquired)
         {
             AcquireCore(context);
-            return true;
         }
 
-        return false;
+        return acquired;
+    }
+    
+    private interface ITaskBuilderConsumer
+    {
+        void Complete<TBuilder>(ref TBuilder builder)
+            where TBuilder : struct, ITaskBuilder, allows ref struct;
+    }
+    
+    /// <summary>
+    /// Represents the exception factory.
+    /// </summary>
+    protected abstract class ExceptionFactory : ITaskBuilderConsumer
+    {
+        private protected ExceptionFactory()
+        {
+        }
+
+        void ITaskBuilderConsumer.Complete<TBuilder>(ref TBuilder builder)
+            => Debug.Fail("Must not be called.");
+
+        internal abstract Exception CreateException();
+
+        /// <summary>
+        /// Gets a factory for the specified exception type.
+        /// </summary>
+        /// <typeparam name="TException">The type of the provided exception.</typeparam>
+        /// <returns>The exception factory.</returns>
+        public static ExceptionFactory Of<TException>()
+            where TException : Exception, new()
+            => ExceptionFactory<TException>.Instance;
+    }
+
+    private sealed class ExceptionFactory<TException> : ExceptionFactory, ISingleton<ExceptionFactory<TException>>, ITaskBuilderConsumer
+        where TException : Exception, new()
+    {
+        public static ExceptionFactory<TException> Instance { get; } = new();
+        
+        private ExceptionFactory()
+        {
+            
+        }
+
+        void ITaskBuilderConsumer.Complete<TBuilder>(ref TBuilder builder)
+            => builder.Complete<DefaultExceptionFactory<TException>>();
+
+        internal override TException CreateException() => new();
     }
 }

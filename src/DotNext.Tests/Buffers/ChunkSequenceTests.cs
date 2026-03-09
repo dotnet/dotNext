@@ -6,37 +6,20 @@ namespace DotNext.Buffers;
 public sealed class ChunkSequenceTests : Test
 {
     [Fact]
-    public static void Concatenation()
-    {
-        ReadOnlyMemory<byte> block1 = default, block2 = default;
-        Equal([], block1.Concat(block2).ToArray());
-
-        block1 = new byte[] { 1, 2 };
-        Equal([1, 2], block1.Concat(block2).ToArray());
-
-        block2 = block1;
-        block1 = default;
-        Equal([1, 2], block1.Concat(block2).ToArray());
-
-        block1 = new byte[] { 3, 4 };
-        Equal([1, 2, 3, 4], block2.Concat(block1).ToArray());
-    }
-
-    [Fact]
     public static void Concatenation2()
     {
         ReadOnlyMemory<byte> block1 = default, block2 = default;
-        Equal([], new[] { block1, block2 }.ToReadOnlySequence().ToArray());
+        Equal([], new[] { block1, block2 }.Concat().ToArray());
 
         block1 = new byte[] { 1, 2 };
-        Equal([1, 2], new List<ReadOnlyMemory<byte>> { block1, block2 }.ToReadOnlySequence().ToArray());
+        Equal([1, 2], new List<ReadOnlyMemory<byte>> { block1, block2 }.Concat().ToArray());
 
         block2 = block1;
         block1 = default;
-        Equal([1, 2], ToEnumerable(block1, block2).ToReadOnlySequence().ToArray());
+        Equal([1, 2], ToEnumerable(block1, block2).Concat().ToArray());
 
         block1 = new byte[] { 3, 4 };
-        Equal([1, 2, 3, 4], new[] { block2, block1 }.ToReadOnlySequence().ToArray());
+        Equal([1, 2, 3, 4], new[] { block2, block1 }.Concat().ToArray());
 
         static IEnumerable<ReadOnlyMemory<byte>> ToEnumerable(ReadOnlyMemory<byte> block1, ReadOnlyMemory<byte> block2)
         {
@@ -48,31 +31,31 @@ public sealed class ChunkSequenceTests : Test
     [Fact]
     public static void Concatenation3()
     {
-        Equal([], Memory.ToReadOnlySequence([]).ToArray());
+        Equal([], ReadOnlyMemory<byte>.Concat().ToArray());
         
         ReadOnlyMemory<byte> block1 = new byte[] { 1, 2 };
-        Equal(block1.Span, Memory.ToReadOnlySequence([block1]).ToArray());
+        Equal(block1.Span, ReadOnlyMemory<byte>.Concat(block1).ToArray());
         
         ReadOnlyMemory<byte> block2 = new byte[] { 3, 4 };
-        Equal([1, 2, 3, 4], Memory.ToReadOnlySequence([block1, block2]).ToArray());
+        Equal([1, 2, 3, 4], ReadOnlyMemory<byte>.Concat(block1, block2).ToArray());
     }
 
     [Fact]
     public static void StringConcatenation1()
     {
         string block1 = string.Empty, block2 = null;
-        Equal(string.Empty, new[] { block1, block2 }.ToReadOnlySequence().ToString());
+        Equal(string.Empty, new[] { block1, block2 }.Concat().ToString());
 
         block1 = "Hello";
-        Equal(block1, new List<string> { block1, block2 }.ToReadOnlySequence().ToString());
+        Equal(block1, new List<string> { block1, block2 }.Concat().ToString());
 
         block2 = block1;
         block1 = default;
-        Equal(block2, ToEnumerable(block1, block2).ToReadOnlySequence().ToString());
+        Equal(block2, ToEnumerable(block1, block2).Concat().ToString());
 
         block1 = "Hello, ";
         block2 = "world!";
-        Equal(block1 + block2, new[] { block1, block2 }.ToReadOnlySequence().ToString());
+        Equal(block1 + block2, new[] { block1, block2 }.Concat().ToString());
 
         static IEnumerable<string> ToEnumerable(string block1, string block2)
         {
@@ -84,13 +67,11 @@ public sealed class ChunkSequenceTests : Test
     [Fact]
     public static void StringConcatenation2()
     {
-        Equal([], Memory.ToReadOnlySequence(ReadOnlySpan<string>.Empty).ToArray());
-        
         const string block1 = "Hello";
-        Equal(block1, Memory.ToReadOnlySequence([block1]).ToString());
+        Equal(block1, ReadOnlyMemory<char>.Concat(block1.AsMemory()).ToString());
 
         const string block2 = ", world!";
-        Equal(block1 + block2, Memory.ToReadOnlySequence([block1, block2]).ToString());
+        Equal(block1 + block2, ReadOnlyMemory<char>.Concat(block1.AsMemory(), block2.AsMemory()).ToString());
     }
 
     [Fact]
@@ -98,23 +79,23 @@ public sealed class ChunkSequenceTests : Test
     {
         var sequence = new ReadOnlySequence<byte>(new byte[] { 1, 2, 3 }.AsMemory());
         Span<byte> dest = new byte[3];
-        sequence.CopyTo(dest, out int writtenCount);
+        var writtenCount = sequence >>> dest;
         Equal(3, writtenCount);
         Equal(sequence.ToArray(), dest.ToArray());
 
         sequence = ToReadOnlySequence<byte>(RandomBytes(64), 16);
         dest = new byte[64];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(64, writtenCount);
         Equal(sequence.ToArray(), dest.ToArray());
 
         dest = new byte[100];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(64, writtenCount);
         Equal(sequence.ToArray(), dest.Slice(0, 64).ToArray());
 
         dest = new byte[10];
-        sequence.CopyTo(dest, out writtenCount);
+        writtenCount = sequence >>> dest;
         Equal(10, writtenCount);
         Equal(sequence.Slice(0, 10).ToArray(), dest.ToArray());
     }
@@ -126,7 +107,7 @@ public sealed class ChunkSequenceTests : Test
     [InlineData(124)]
     public static void StringBuilderToSequence(int stringLength)
     {
-        var str = Random.Shared.NextString(Alphabet, stringLength);
+        var str = Random.Shared.GetString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)
@@ -134,7 +115,7 @@ public sealed class ChunkSequenceTests : Test
             builder.Append(str);
         }
 
-        Equal(builder.ToString(), builder.ToReadOnlySequence().ToString());
+        Equal(builder.ToString(), builder.ToSequence().ToString());
     }
 
     [Fact]

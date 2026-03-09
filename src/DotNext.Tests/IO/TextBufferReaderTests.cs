@@ -47,7 +47,7 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(SmallDataSet))]
     public static void EndOfStream(ReadOnlySequence<char> smallData)
     {
-        using var tr = smallData.AsTextReader();
+        using var tr = TextReader.Create(smallData);
         var result = tr.ReadToEnd();
         Equal("HELLO", result);
         True(tr.Peek() == -1, "End of TextReader was not true after ReadToEnd");
@@ -57,7 +57,7 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(SmallDataSet))]
     public void NotEndOfStream(ReadOnlySequence<char> smallData)
     {
-        using var tr = smallData.AsTextReader();
+        using var tr = TextReader.Create(smallData);
         char[] charBuff = new char[3];
         var result = tr.Read(charBuff, 0, 3);
         Equal(3, result);
@@ -69,8 +69,8 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(LargeDataSet))]
     public static async Task ReadToEndAsync(ReadOnlySequence<char> largeData)
     {
-        using var tr = largeData.AsTextReader();
-        var result = await tr.ReadToEndAsync();
+        using var tr = TextReader.Create(largeData);
+        var result = await tr.ReadToEndAsync(TestToken);
         Equal(5000, result.Length);
     }
 
@@ -78,7 +78,7 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(CharDataSet))]
     public static void TestRead(ReadOnlySequence<char> charData)
     {
-        using var tr = charData.AsTextReader();
+        using var tr = TextReader.Create(charData);
         var expectedData = charData.ToArray();
         for (var count = 0; count < expectedData.Length; ++count)
         {
@@ -90,14 +90,14 @@ public sealed class TextBufferReaderTests : Test
     [Fact]
     public static void ReadZeroCharacters()
     {
-        using var tr = new ReadOnlySequence<char>(CharData).AsTextReader();
+        using var tr = TextReader.Create(new ReadOnlySequence<char>(CharData));
         Equal(0, tr.Read(new char[0], 0, 0));
     }
 
     [Fact]
     public static void EmptyInput()
     {
-        using var tr = ReadOnlySequence<char>.Empty.AsTextReader();
+        using var tr = TextReader.Create(ReadOnlySequence<char>.Empty);
         char[] buffer = new char[10];
         int read = tr.Read(buffer, 0, 1);
         Equal(0, read);
@@ -107,7 +107,7 @@ public sealed class TextBufferReaderTests : Test
     public static void ReadFromFragmentedBuffer()
     {
         var data = ToReadOnlySequence<char>(SmallData, 3);
-        using var tr = data.AsTextReader();
+        using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(3, tr.Read(array, 0, array.Length));
         Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
@@ -121,7 +121,7 @@ public sealed class TextBufferReaderTests : Test
     public static void ReadBlockFromFragmentedBuffer()
     {
         var data = ToReadOnlySequence<char>(SmallData, 3);
-        using var tr = data.AsTextReader();
+        using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(data.Length, tr.ReadBlock(array, 0, array.Length));
         Equal(data.ToArray(), array);
@@ -131,7 +131,7 @@ public sealed class TextBufferReaderTests : Test
     public static async Task ReadFromFragmentedBufferAsync()
     {
         var data = ToReadOnlySequence<char>(SmallData, 3);
-        using var tr = data.AsTextReader();
+        using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(3, await tr.ReadAsync(array, 0, array.Length));
         Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
@@ -145,7 +145,7 @@ public sealed class TextBufferReaderTests : Test
     public static async Task ReadBlockFromFragmentedBufferAsync()
     {
         var data = ToReadOnlySequence<char>(SmallData, 3);
-        using var tr = data.AsTextReader();
+        using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(data.Length, await tr.ReadBlockAsync(array, 0, array.Length));
         Equal(data.ToArray(), array);
@@ -155,8 +155,7 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(CharDataSet))]
     public static void ReadLines(ReadOnlySequence<char> charData)
     {
-        using var tr = charData.AsTextReader();
-        string valueString = new(charData.ToArray());
+        using var tr = TextReader.Create(charData);
         var data = tr.ReadLine();
         Equal("Char data \r\u3190 with", data);
 
@@ -173,17 +172,16 @@ public sealed class TextBufferReaderTests : Test
     [MemberData(nameof(CharDataSet))]
     public static async Task ReadLinesAsync(ReadOnlySequence<char> charData)
     {
-        using var tr = charData.AsTextReader();
-        string valueString = new(charData.ToArray());
-        var data = await tr.ReadLineAsync();
+        using var tr = TextReader.Create(charData);
+        var data = await tr.ReadLineAsync(TestToken);
         Equal("Char data \r\u3190 with", data);
 
-        data = await tr.ReadLineAsync();
+        data = await tr.ReadLineAsync(TestToken);
         Equal("multiple", data);
 
-        data = await tr.ReadLineAsync();
+        data = await tr.ReadLineAsync(TestToken);
         Equal("lines", data);
 
-        Null(await tr.ReadLineAsync());
+        Null(await tr.ReadLineAsync(TestToken));
     }
 }

@@ -9,8 +9,6 @@ internal partial class Server
     {
         internal readonly SnapshotMessage Message = SnapshotMessage.Parse(stream.WrittenBufferSpan);
 
-        DateTimeOffset ILogEntry.Timestamp => Message.Metadata.Timestamp;
-
         long? IDataTransferObject.Length => Message.Metadata.Length;
 
         int? IRaftLogEntry.CommandId => Message.Metadata.CommandId;

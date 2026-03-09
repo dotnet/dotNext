@@ -80,7 +80,7 @@ public partial class RaftCluster<TMember>
 
     private IMemberList members;
     private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
-    private Atomic.Boolean membershipState;
+    private bool membershipState;
 
     /// <summary>
     /// Gets the member by its identifier.
@@ -253,7 +253,7 @@ public partial class RaftCluster<TMember>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rounds);
 
-        if (!membershipState.FalseToTrue())
+        if (!Interlocked.FalseToTrue(ref membershipState))
             throw new ConcurrentMembershipModificationException();
 
         var leaderState = LeaderStateOrException;
@@ -302,7 +302,7 @@ public partial class RaftCluster<TMember>
         finally
         {
             await tokenSource.DisposeAsync().ConfigureAwait(false);
-            membershipState.Value = false;
+            Volatile.Write(ref membershipState, false);
         }
 
         return false;
@@ -333,7 +333,7 @@ public partial class RaftCluster<TMember>
     protected async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
     {
-        if (!membershipState.FalseToTrue())
+        if (!Interlocked.FalseToTrue(ref membershipState))
             throw new ConcurrentMembershipModificationException();
 
         if (members.TryGetValue(id, out var member))
@@ -366,7 +366,7 @@ public partial class RaftCluster<TMember>
             finally
             {
                 await tokenSource.DisposeAsync().ConfigureAwait(false);
-                membershipState.Value = false;
+                Volatile.Write(ref membershipState, false);
             }
         }
 

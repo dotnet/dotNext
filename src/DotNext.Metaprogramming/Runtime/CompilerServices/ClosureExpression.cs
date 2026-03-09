@@ -1,11 +1,7 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices;
-
-using static Collections.Generic.Collection;
-using static Linq.Expressions.ExpressionBuilder;
 
 /// <summary>
 /// Represents statement.

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace DotNext.IO;
+﻿namespace DotNext.IO;
 
 public sealed class StreamSegmentTests : Test
 {
@@ -10,9 +8,8 @@ public sealed class StreamSegmentTests : Test
     [InlineData(10, 4, "test")]
     public static void AdjustSetsSegmentOfStream(int offset, int length, string expected)
     {
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes("This is a test"));
-        using var segment = new StreamSegment(ms);
-        segment.Adjust(offset, length);
+        using var ms = new MemoryStream("This is a test"u8.ToArray());
+        using var segment = ms.Slice(offset, length);
         using StreamReader reader = new(segment);
         Equal(expected, reader.ReadToEnd());
     }
@@ -24,7 +21,7 @@ public sealed class StreamSegmentTests : Test
         using var segment = new StreamSegment(ms);
         Same(ms, segment.BaseStream);
         Equal(0, segment.Position);
-        segment.Adjust(0, 2);
+        segment.Range = (0L, 2L);
         Equal(1, segment.ReadByte());
         Equal(1, segment.Position);
 
@@ -33,6 +30,8 @@ public sealed class StreamSegmentTests : Test
 
         Equal(-1, segment.ReadByte());
         Equal(2, segment.Position);
+
+        Equal((0L, 2L), segment.Range);
     }
 
     [Fact]
@@ -40,7 +39,7 @@ public sealed class StreamSegmentTests : Test
     {
         using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
-        segment.Adjust(1, 3);
+        segment.Range = (1, 3);
         segment.Position = 1;
         Equal(5, segment.ReadByte());
         Equal(2, segment.Position);
@@ -54,7 +53,7 @@ public sealed class StreamSegmentTests : Test
     {
         using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
-        segment.Adjust(1L, 2L);
+        segment.Range = (1L, 2L);
         var buffer = new byte[4];
         Equal(2, segment.Read(buffer, 0, buffer.Length));
         Equal(3, buffer[0]);
@@ -70,9 +69,9 @@ public sealed class StreamSegmentTests : Test
     {
         using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
-        segment.Adjust(1L, 2L);
+        segment.Range = (1L, 2L);
         var buffer = new byte[4];
-        Equal(2, await segment.ReadAsync(buffer, 0, buffer.Length));
+        Equal(2, await segment.ReadAsync(buffer, 0, buffer.Length, TestToken));
         Equal(3, buffer[0]);
         Equal(5, buffer[1]);
         Equal(0, buffer[2]);
@@ -85,8 +84,8 @@ public sealed class StreamSegmentTests : Test
     public static void ReadApm()
     {
         using var ms = new MemoryStream([1, 3, 5, 8, 12]);
-        using var segment = new StreamSegment(ms);
-        segment.Adjust(1L, 2L);
+        using var segment = ms.Slice(1L, 2L);
+        segment.Range = (1L, 2L);
         var buffer = new byte[4];
         var ar = segment.BeginRead(buffer, 0, 2, null, null);
         Equal(2, segment.EndRead(ar));
@@ -104,12 +103,15 @@ public sealed class StreamSegmentTests : Test
         True(segment.CanSeek);
         False(segment.CanWrite);
         Equal(ms.CanTimeout, segment.CanTimeout);
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length + 1L, 0L));
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length, 1L));
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length - 1, 2L));
         Throws<NotSupportedException>(() => segment.WriteByte(2));
         Throws<NotSupportedException>(() => segment.Write(new byte[3], 0, 3));
         Throws<NotSupportedException>(() => segment.Write(new byte[2]));
         Throws<NotSupportedException>(() => segment.BeginWrite(new byte[2], 0, 2, null, null));
         Throws<InvalidOperationException>(() => segment.EndWrite(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3));
-        await ThrowsAsync<NotSupportedException>(segment.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3, TestToken));
+        await ThrowsAsync<NotSupportedException>(segment.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken).AsTask);
     }
 }

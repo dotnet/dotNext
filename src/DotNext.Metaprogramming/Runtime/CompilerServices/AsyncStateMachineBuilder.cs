@@ -8,9 +8,7 @@ namespace DotNext.Runtime.CompilerServices;
 
 using Linq.Expressions;
 using Reflection;
-using static Collections.Generic.Dictionary;
 using static Collections.Generic.Collection;
-using static Reflection.TypeExtensions;
 
 /// <summary>
 /// Provides initial transformation of async method.
@@ -67,13 +65,13 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 
     private static void MarkAsParameter(ParameterExpression parameter, int position)
-        => parameter.GetUserData().Set(ParameterPositionSlot, position);
+        => parameter.UserData.Set(ParameterPositionSlot, position);
 
     internal IEnumerable<ParameterExpression> Parameters
         => from candidate in Variables.Keys
-           let position = candidate.GetUserData().Get(ParameterPositionSlot, -1)
+           let position = candidate.UserData.Get(ParameterPositionSlot, -1)
            where position >= 0
-           orderby position ascending
+           orderby position
            select candidate;
 
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
@@ -148,7 +146,9 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 
     protected override Expression VisitLabel(LabelExpression node)
-        => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
+        => node.Type == typeof(void)
+            ? context.Rewrite(node, Func<LabelExpression, LabelExpression>.Identity)
+            : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
     protected override Expression VisitLambda<T>(Expression<T> node)
     {
@@ -176,7 +176,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitGoto(GotoExpression node)
     {
-        node = context.Rewrite(node, Converter.Identity<GotoExpression>());
+        node = context.Rewrite(node, Func<GotoExpression, GotoExpression>.Identity);
         return node.AddPrologue(false, context.CreateJumpPrologue(node, this));
     }
 
@@ -426,7 +426,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
         foreach (var (state, label) in stateSwitchTable)
-            cases.Add(Expression.SwitchCase(label.MakeGoto(), state.Const()));
+            cases.Add(Expression.SwitchCase(label.MakeGoto(), state.Quoted));
         return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
     }
 
@@ -454,7 +454,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
     {
-        var invokeMethod = DelegateType.GetInvokeMethod<TDelegate>();
+        var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         methodBuilder = new AsyncStateMachineBuilder(invokeMethod.ReturnType, parameters);
     }
 
@@ -466,7 +466,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         => Expression.Lambda(BuildTransitionDelegate(stateMachine.Type), body, tailCall, stateMachine);
 
     private static MemberExpression GetStateField(ParameterExpression stateMachine)
-        => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
+        => stateMachine.Field(nameof(AsyncStateMachine<>.State));
 
     private Expression<TDelegate> Build(LambdaExpression stateMachineMethod)
     {
@@ -505,7 +505,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             newBody.Add(parameterHolder.Assign(parameter));
         }
 
-        var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start));
+        var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<>.Start));
         Debug.Assert(startMethod is not null);
         newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(startMethod, stateMachineMethod, stateVariable)));
         return Expression.Lambda<TDelegate>(Expression.Block([stateVariable], newBody), true, parameters);
@@ -576,7 +576,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         {
             var v = vars[i];
             var s = slots[i];
-            variables[v] = ClosureAnalyzer.IsClosure(v) ? s.Field(nameof(StrongBox<int>.Value)) : s;
+            variables[v] = ClosureAnalyzer.IsClosure(v) ? s.Field(nameof(StrongBox<>.Value)) : s;
         }
 
         return stateMachine;

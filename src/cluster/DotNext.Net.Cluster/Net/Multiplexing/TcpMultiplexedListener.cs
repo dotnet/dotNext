@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
@@ -9,7 +8,6 @@ namespace DotNext.Net.Multiplexing;
 /// </summary>
 /// <param name="listenAddress">The local endpoint to listen to.</param>
 /// <param name="configuration">The configuration of the listener.</param>
-[Experimental("DOTNEXT001")]
 public class TcpMultiplexedListener(EndPoint listenAddress, MultiplexedListener.Options configuration) : MultiplexedListener(configuration)
 {
     private readonly int backlog = configuration.Backlog;

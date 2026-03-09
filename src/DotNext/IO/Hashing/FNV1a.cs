@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Hashing;
 
-using Intrinsics = Runtime.Intrinsics;
+using Runtime.InteropServices;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents FNV-1a hash algorithm.
@@ -68,11 +69,11 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     {
         if (typeof(T) == typeof(byte))
         {
-            hash.Append(Intrinsics.ReinterpretCast<T, byte>(data));
+            hash.Append(Unsafe.BitCast<ReadOnlySpan<T>, ReadOnlySpan<byte>>(data));
         }
         else if (Intrinsics.AreCompatible<T, THash>())
         {
-            hash.Append(Intrinsics.ReinterpretCast<T, THash>(data));
+            hash.Append(Unsafe.BitCast<ReadOnlySpan<T>, ReadOnlySpan<THash>>(data));
         }
         else
         {
@@ -175,7 +176,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         internal readonly void GetValue(Span<byte> output)
         {
             var hash = Value;
-            Span.AsReadOnlyBytes(in hash).CopyTo(output);
+            MemoryMarshal.AsReadOnlyBytes(in hash).CopyTo(output);
         }
 
         private unsafe Span<byte> RemainingBuffer

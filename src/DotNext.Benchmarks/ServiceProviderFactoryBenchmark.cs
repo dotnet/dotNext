@@ -11,15 +11,8 @@ namespace DotNext.Benchmarks;
 public class ServiceProviderFactoryBenchmark
 {
     private const string Value = "Hello, world!";
-    private static readonly IServiceProvider compiledProvider = ServiceProviderFactory.CreateFactory(
-        typeof(ICloneable),
-        typeof(IComparable),
-        typeof(IComparable<string>),
-        typeof(IConvertible),
-        typeof(IEquatable<string>),
-        typeof(IEnumerable<char>)).Invoke(new[] { Value, Value, Value, Value, Value, Value });
 
-    private static readonly IServiceProvider cachedProvider = new ServiceProviderFactory.Builder()
+    private static readonly IServiceProvider cachedProvider = IServiceProvider.CreateBuilder()
         .Add<ICloneable>(Value)
         .Add<IComparable>(Value)
         .Add<IComparable<string>>(Value)
@@ -28,20 +21,15 @@ public class ServiceProviderFactoryBenchmark
         .Add<IEnumerable<char>>(Value)
         .Build();
 
-    private static readonly IServiceProvider tupleProvider = ServiceProviderFactory.FromTuple(new ValueTuple<ICloneable, IComparable, IComparable<string>, IConvertible, IEquatable<string>, IEnumerable<char>>(
-        Value, Value, Value, Value, Value, Value));
-
-    [Benchmark]
-    public object CompiledProvider() => compiledProvider.GetService(typeof(IConvertible));
+    private static readonly IServiceProvider tupleProvider =
+        IServiceProvider.Create<(ICloneable, IComparable, IComparable<string>, IConvertible, IEquatable<string>, IEnumerable<char>)>((
+            Value, Value, Value, Value, Value, Value));
 
     [Benchmark]
     public object CachedProvider() => cachedProvider.GetService(typeof(IConvertible));
 
     [Benchmark]
     public object TupleProvider() => tupleProvider.GetService(typeof(IConvertible));
-
-    [Benchmark]
-    public object CompiledProviderMissingService() => compiledProvider.GetService(typeof(int));
 
     [Benchmark]
     public object CachedProviderMissingService() => cachedProvider.GetService(typeof(int));

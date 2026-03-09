@@ -1,5 +1,7 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Hashing;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
@@ -15,19 +17,18 @@ using Threading.Tasks;
 /// <summary>
 /// Represents the general-purpose Raft WAL.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentState
 {
     private const int DictionaryConcurrencyLevel = 3; // append flow and cleaner and applier
 
+    private readonly NonCryptographicHashAlgorithm? hash;
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
     private readonly CancellationToken lifetimeToken;
     private readonly CancellationTokenMultiplexer cancellationTokens;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
-    private long lastEntryIndex; // Append lock protects modification of this field
-    
+
     // lifetime management
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private CancellationTokenSource? lifetimeTokenSource;
@@ -42,6 +43,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        hash = configuration.CreateHashAlgorithm();
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
         var rootPath = new DirectoryInfo(configuration.Location);
@@ -63,7 +65,18 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
 
-        checkpoint = new(rootPath, out var lastReliablyWrittenEntryIndex);
+        // checkpoint
+        long lastReliablyWrittenEntryIndex;
+        checkpoint = new(rootPath, out var version);
+        switch (version)
+        {
+            case CheckpointVersion0 cp:
+                lastReliablyWrittenEntryIndex = cp.Checkpoint;
+                break;
+            default:
+                checkpoint.Dispose();
+                throw new UnsupportedCheckpointVersionException(checkpoint.Version);
+        }
         
         // page management
         {
@@ -86,8 +99,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                     d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }
-
-            metadataPages = new(m);
+            
+            metadataPages = new(m, hash?.HashLengthInBytes ?? 0);
             dataPages = new(d)
             {
                 LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
@@ -141,14 +154,33 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns></returns>
-    public virtual Task InitializeAsync(CancellationToken token = default)
-        => WaitForApplyAsync(LastCommittedEntryIndex, token).AsTask();
+    public virtual async Task InitializeAsync(CancellationToken token = default)
+    {
+        if (hash is not null)
+            VerifyIntegrity(token);
+        
+        await WaitForApplyAsync(LastCommittedEntryIndex, token).ConfigureAwait(false);
+    }
+
+    private void VerifyIntegrity(CancellationToken token)
+    {
+        Debug.Assert(hash is not null);
+
+        // skip snapshot from verification
+        for (var index = SnapshotIndex + 1L; index <= LastEntryIndex; index++, token.ThrowIfCancellationRequested())
+        {
+            var reader = metadataPages.GetView<MetadataReader>(index);
+            var metadata = reader.Metadata;
+            dataPages.ComputeHash(hash, metadata.Offset, metadata.Length);
+            reader.CompleteAndVerifyHash(hash);
+        }
+    }
 
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Atomic.Read(ref lastEntryIndex);
-        private set => Atomic.Write(ref lastEntryIndex, value);
+        get => Atomic.Read(ref field);
+        private set => Atomic.Write(ref field, value);
     }
 
     private async ValueTask<long> AppendUnbufferedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -225,7 +257,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             var entryCopy = new BinaryLogEntry
             {
                 Term = entry.Term,
-                Timestamp = entry.Timestamp,
                 Content = payload,
                 CommandId = entry.CommandId,
                 Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,
@@ -239,7 +270,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             var entryCopy = new BufferedLogEntry(((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferAllocator))
             {
                 Term = entry.Term,
-                Timestamp = entry.Timestamp,
                 CommandId = entry.CommandId,
                 Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,
             };
@@ -424,36 +454,23 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         startAddress = dataPages.LastWrittenAddress;
 
-        ValueTask task;
-        if (entry.TryGetMemory(out var memory))
-        {
-            task = ValueTask.CompletedTask;
-            try
-            {
-                dataPages.Write(memory.Span);
-            }
-            catch (Exception e)
-            {
-                task = ValueTask.FromException(e);
-            }
-        }
-        else if (dataPages.TryEnsureCapacity(entry.Length))
-        {
-            task = DataTransferObject.WriteToAsync(entry, dataPages, token);
-        }
-        else
-        {
-            task = entry.WriteToAsync(dataPages, token);
-        }
-
-        return task;
+        return dataPages.TryEnsureCapacity(entry.Length)
+            ? DataTransferObject.WriteToAsync(entry, dataPages, token)
+            : entry.WriteToAsync(dataPages, token);
     }
 
     private void WriteMetadata<TEntry>(TEntry entry, long index, ulong startAddress)
         where TEntry : IRaftLogEntry
     {
         var length = long.CreateChecked(dataPages.LastWrittenAddress - startAddress);
-        metadataPages[index] = LogEntryMetadata.Create(entry, startAddress, length);
+        var writer = metadataPages.GetView<MetadataWriter>(index);
+        writer.WriteMetadata(LogEntryMetadata.Create(entry, startAddress, length));
+
+        if (hash is not null)
+        {
+            dataPages.ComputeHash(hash, startAddress, length);
+            writer.CompleteAndWriteHash(hash);
+        }
 
         if (entry is IInputLogEntry { Context: { } ctx })
         {
@@ -593,7 +610,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         metadataPages.Dispose();
         dataPages.Dispose();
-        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, stateLock]);
+        Dispose<QueuedSynchronizer>(lockManager, appliedEvent, stateLock);
         checkpoint.Dispose();
         state.Dispose();
         context.Clear();

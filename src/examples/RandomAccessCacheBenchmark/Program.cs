@@ -91,7 +91,7 @@ sealed class BenchmarkState
     }
 
     private Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
-        => ReadOrAddAsync(Random.Shared.Peek(files).Value, cache, token);
+        => ReadOrAddAsync(Random.Shared.Peek(files), cache, token);
     
     private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
     {
@@ -123,7 +123,7 @@ sealed class BenchmarkState
         else
         {
             using var fileHandle = File.OpenHandle(fileName, options: FileOptions.Asynchronous | FileOptions.SequentialScan);
-            buffer = Memory.AllocateExactly<byte>(CacheFileSize);
+            buffer = MemoryAllocator<byte>.Default.AllocateExactly(CacheFileSize);
             await RandomAccess.ReadAsync(fileHandle, buffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
             session.SetValue(buffer);
         }

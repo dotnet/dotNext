@@ -24,7 +24,7 @@ public sealed class AsyncBridgeTests : Test
     {
         using var ev = new ManualResetEvent(false);
         ThreadPool.QueueUserWorkItem(static state => state.Set(), ev, false);
-        await ev.WaitAsync(DefaultTimeout);
+        await ev.WaitAsync(TestToken);
     }
 
     [Fact]
@@ -34,9 +34,9 @@ public sealed class AsyncBridgeTests : Test
         using var cts = new CancellationTokenSource();
 
         var task = ev.WaitAsync(cts.Token).AsTask();
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        var e = await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        var e = await ThrowsAsync<OperationCanceledException>(task);
         Equal(cts.Token, e.CancellationToken);
     }
 
@@ -44,8 +44,8 @@ public sealed class AsyncBridgeTests : Test
     public static async Task AlreadySignaled()
     {
         using var ev = new ManualResetEvent(true);
-        True(await ev.WaitAsync(DefaultTimeout));
-        True(ev.WaitAsync().IsCompletedSuccessfully);
+        True(await ev.WaitAsync(DefaultTimeout, TestToken));
+        True(ev.WaitAsync(TestToken).IsCompletedSuccessfully);
     }
 
     [Fact]
@@ -65,13 +65,13 @@ public sealed class AsyncBridgeTests : Test
         var task1 = source1.Token.WaitAsync(completeAsCanceled: true).AsTask();
         var task2 = source2.Token.WaitAsync(completeAsCanceled: false).AsTask();
 
-        source1.Cancel();
-        source2.Cancel();
-        await ThrowsAnyAsync<OperationCanceledException>(Func.Constant(task1));
+        await source1.CancelAsync();
+        await source2.CancelAsync();
+        await ThrowsAnyAsync<OperationCanceledException>(task1);
         await task2;
 
         foreach (var token in tokens)
-            token.Cancel();
+            await token.CancelAsync();
 
         await Task.WhenAll(tasks);
     }
@@ -85,65 +85,14 @@ public sealed class AsyncBridgeTests : Test
     }
 
     [Fact]
-    public static async Task WaitForCancellationSingleToken()
-    {
-        using var cts = new CancellationTokenSource();
-        var task = AsyncBridge.WaitAnyAsync([cts.Token]);
-        False(task.IsCompletedSuccessfully);
-        
-        cts.Cancel();
-        Equal(cts.Token, await task);
-    }
-    
-    [Fact]
-    public static async Task WaitForCancellationTwoTokens()
-    {
-        using var cts1 = new CancellationTokenSource();
-        using var cts2 = new CancellationTokenSource();
-        var task = AsyncBridge.WaitAnyAsync([cts1.Token, cts2.Token]);
-        False(task.IsCompletedSuccessfully);
-        
-        cts2.Cancel();
-        cts1.Cancel();
-        Equal(cts2.Token, await task);
-    }
-
-    [Fact]
-    public static async Task WaitForCancellationMultipleTokens()
-    {
-        using var cts1 = new CancellationTokenSource();
-        using var cts2 = new CancellationTokenSource();
-        using var cts3 = new CancellationTokenSource();
-        var task = AsyncBridge.WaitAnyAsync([cts1.Token, cts2.Token, cts3.Token]);
-        False(task.IsCompletedSuccessfully);
-
-        cts3.Cancel();
-        cts2.Cancel();
-        cts1.Cancel();
-        Equal(cts3.Token, await task);
-    }
-    
-    [Fact]
-    public static async Task Interruption()
-    {
-        const string interruptionReason = "Reason";
-        var task = AsyncBridge.WaitAnyAsync([new CancellationToken(canceled: false)], out var interruption);
-        False(task.IsCompletedSuccessfully);
-        True(interruption(interruptionReason));
-
-        var e = await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task));
-        Equal(interruptionReason, e.Reason);
-    }
-
-    [Fact]
     public static void CompletedTaskAsToken()
     {
         var token = Task.CompletedTask.AsCancellationToken();
         True(token.IsCancellationRequested);
 
-        token = Task.CompletedTask.AsCancellationToken(out var diposeSource);
+        token = Task.CompletedTask.AsCancellationToken(out var disposeSource);
         True(token.IsCancellationRequested);
-        False(diposeSource());
+        False(disposeSource());
     }
 
     [Fact]

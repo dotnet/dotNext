@@ -27,26 +27,6 @@ public ref struct SpanWriter<T>
     }
 
     /// <summary>
-    /// Initializes a new memory writer.
-    /// </summary>
-    /// <param name="reference">Managed pointer to the memory block.</param>
-    /// <param name="length">The length of the elements referenced by the pointer.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
-    public SpanWriter(ref T reference, int length)
-    {
-        switch (length)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(length));
-            case > 0 when Unsafe.IsNullRef(ref reference):
-                throw new ArgumentNullException(nameof(reference));
-        }
-
-        this.reference = ref reference;
-        this.length = length;
-    }
-
-    /// <summary>
     /// Gets the element at the current position in the
     /// underlying memory block.
     /// </summary>
@@ -56,13 +36,9 @@ public ref struct SpanWriter<T>
         get
         {
             if ((uint)position >= (uint)length)
-                ThrowInvalidOperationException();
+                InvalidOperationException.Throw();
 
             return ref Unsafe.Add(ref reference, position);
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowInvalidOperationException() => throw new InvalidOperationException();
         }
     }
 
@@ -154,9 +130,19 @@ public ref struct SpanWriter<T>
     /// <returns>The number of written elements.</returns>
     public int Write(scoped ReadOnlySpan<T> input)
     {
-        input.CopyTo(RemainingSpan, out var writtenCount);
+        var writtenCount = input >>> RemainingSpan;
         position += writtenCount;
         return writtenCount;
+    }
+
+    /// <inheritdoc cref="TryWrite"/>
+    public void operator += (scoped ReadOnlySpan<T> input) => position += input >>> RemainingSpan;
+
+    /// <inheritdoc cref="TryWrite"/>
+    public void operator checked += (scoped ReadOnlySpan<T> input)
+    {
+        if (!TryWrite(input))
+            InternalBufferOverflowException.Throw();
     }
 
     /// <summary>
@@ -193,14 +179,16 @@ public ref struct SpanWriter<T>
     public ref T Add()
     {
         if ((uint)position >= (uint)length)
-            ThrowInternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
 
         return ref Unsafe.Add(ref reference, position++);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
     }
+
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator checked += (T item) => Add() = item;
+
+    /// <inheritdoc cref="TryAdd(T)"/>
+    public void operator += (T item) => TryAdd(item);
 
     /// <summary>
     /// Obtains the portion of underlying span and marks it as written.
@@ -305,4 +293,15 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <returns>The textual representation of the written content.</returns>
     public readonly override string ToString() => WrittenSpan.ToString();
+}
+
+file static class InternalBufferOverflowExceptionExtensions
+{
+    extension(InternalBufferOverflowException)
+    {
+        [DoesNotReturn]
+        [StackTraceHidden]
+        public static void Throw()
+            => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+    }
 }

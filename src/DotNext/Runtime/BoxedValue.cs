@@ -23,7 +23,7 @@ namespace DotNext.Runtime;
 public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
-    internal T Value;
+    internal T Data;
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
@@ -61,7 +61,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// Unboxes the value.
     /// </summary>
     /// <param name="boxedValue">The boxed representation of the value.</param>
-    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.Value;
+    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.Data;
 
     /// <summary>
     /// Converts a value type to an object reference.
@@ -93,7 +93,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="boxedValue">Boxed value.</param>
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
-        => new(boxedValue, ref boxedValue.Value);
+        => new(boxedValue, ref boxedValue.Data);
     
     /// <inheritdoc />
     public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
@@ -111,21 +111,24 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
 public static class BoxedValue
 {
     /// <summary>
-    /// Unboxes the value.
+    /// Extends <see cref="BoxedValue{T}"/> type.
     /// </summary>
     /// <param name="boxedValue">A reference to the boxed value.</param>
     /// <typeparam name="T">The value type.</typeparam>
-    /// <returns>A reference to the boxed value.</returns>
-    public static ref T Unbox<T>(this BoxedValue<T> boxedValue)
-        where T : struct
-        => ref boxedValue.Value;
+    extension<T>(BoxedValue<T> boxedValue) where T : struct
+    {
+        /// <summary>
+        /// Unboxes the value.
+        /// </summary>
+        /// <value>A reference to the boxed value.</value>
+        public ref T Value => ref boxedValue.Data;
 
-    /// <summary>
-    /// Creates a bitwise copy of the boxed value.
-    /// </summary>
-    /// <returns>A reference to bitwise copy of the boxed value.</returns>
-    public static BoxedValue<T> Copy<T>(this BoxedValue<T> boxedValue) where T : struct
-        => Unsafe.As<BoxedValue<T>>(MemberwiseClone(boxedValue));
+        /// <summary>
+        /// Creates a bitwise copy of the boxed value.
+        /// </summary>
+        /// <returns>A reference to bitwise copy of the boxed value.</returns>
+        public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(BoxedValue.MemberwiseClone(boxedValue));
+    }
 
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = nameof(MemberwiseClone))]
     private static extern object MemberwiseClone(object target);

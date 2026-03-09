@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
@@ -25,22 +24,12 @@ partial struct Pointer<T>
         }
 
         /// <summary>
-        /// Pointer to the currently enumerating element.
+        /// Gets the current element.
         /// </summary>
-        public readonly Pointer<T> Pointer
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new(ptr + index);
-        }
+        public readonly ref T Current => ref ptr[index];
 
-        /// <summary>
-        /// Current element.
-        /// </summary>
-        public readonly T Current
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ptr[index];
-        }
+        /// <inheritdoc/>
+        readonly T IEnumerator<Enumerator, T>.Current => Current;
 
         /// <summary>
         /// Adjust pointer.

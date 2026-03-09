@@ -214,8 +214,7 @@ internal partial class LeaderState<TMember>
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
         // subtract heartbeat processing duration from heartbeat period for better stability
-        var delay = period - startTime.Elapsed;
-        return replicationEvent.WaitAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token);
+        return replicationEvent.WaitAsync(TimeSpan.Max(period - startTime.Elapsed, TimeSpan.Zero), token);
     }
 
     internal ValueTask ForceReplicationAsync(CancellationToken token)

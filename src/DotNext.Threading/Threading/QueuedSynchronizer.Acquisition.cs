@@ -2,56 +2,85 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
 partial class QueuedSynchronizer
 {
-    private protected interface ITaskBuilder : IDisposable
+    private protected interface ITaskBuilder
     {
         void Complete(WaitNode node);
 
         void CompleteAsDisposed(string objectName);
 
-        void CompleteAsTimedOut();
+        bool TryCompleteAsTimedOut();
 
-        void CompletedAsFull();
+        void Complete<TFactory>() where TFactory : IExceptionFactory, allows ref struct;
 
         void Complete();
-
-        bool IsTimedOut { get; }
 
         bool IsCompleted { get; }
     }
 
-    private protected interface ITaskBuilder<out TOutput> : ITaskBuilder, ISupplier<TOutput>
+    private protected interface ITaskBuilder<out TOutput> : ITaskBuilder
         where TOutput : struct, IEquatable<TOutput>
     {
+        TOutput Build();
+        
         static abstract bool ThrowOnTimeout { get; }
-
-        static abstract TOutput FromException(Exception e);
+    }
+    
+    private interface IValueTaskBuilder : ITaskBuilder<ValueTask>
+    {
+        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
+    }
+    
+    private interface IValueTaskBuilder<T> : ITaskBuilder<ValueTask<T>>
+    {
+        static bool ITaskBuilder<ValueTask<T>>.ThrowOnTimeout => false;
+    }
+    
+    private protected interface IWaitQueueProvider : ITaskBuilder
+    {
+        WaitQueueScope CaptureWaitQueue();
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected struct CancellationTokenOnly : ITaskBuilder<ValueTask>
+    private protected ref struct CancellationTokenOnly : IValueTaskBuilder, IWaitQueueProvider
     {
+        private readonly ref WaitQueue queue;
         private readonly CancellationToken token;
-        private object? syncRoot;
         private ISupplier<TimeSpan, CancellationToken, ValueTask>? taskFactory;
 
-        public CancellationTokenOnly(object syncRoot, CancellationToken token)
+        public CancellationTokenOnly(ref WaitQueue queue, CancellationToken token)
         {
             this.token = token;
             if (token.IsCancellationRequested)
             {
                 taskFactory = CanceledTaskFactory.Instance;
+                this.queue = ref Unsafe.NullRef<WaitQueue>();
             }
             else
             {
-                Monitor.Enter(this.syncRoot = syncRoot);
+                queue.SyncRoot.Enter();
+                this.queue = ref queue;
             }
+        }
+
+        /// <summary>
+        /// Captures the wait queue.
+        /// </summary>
+        /// <remarks>
+        /// In contrast to <see cref="QueuedSynchronizer.CaptureWaitQueue"/> the caller should not call
+        /// <see cref="WaitQueueScope.Dispose"/> to release the lock.
+        /// </remarks>
+        /// <returns>The captured wait queue.</returns>
+        public readonly WaitQueueScope CaptureWaitQueue()
+        {
+            Debug.Assert(!Unsafe.IsNullRef(in queue));
+
+            return new(ref queue);
         }
 
         [MemberNotNullWhen(true, nameof(taskFactory))]
@@ -61,50 +90,39 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => taskFactory = new QueuedSynchronizerDisposedException(objectName);
 
-        void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
-
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
 
-        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
+        void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
-        readonly bool ITaskBuilder.IsTimedOut => false;
+        readonly bool ITaskBuilder.TryCompleteAsTimedOut() => false;
 
-        void IDisposable.Dispose()
-        {
-            if (syncRoot is not null)
-            {
-                Monitor.Exit(syncRoot);
-                syncRoot = null;
-            }
-        }
-
-        readonly ValueTask ISupplier<ValueTask>.Invoke()
+        readonly ValueTask ITaskBuilder<ValueTask>.Build()
         {
             Debug.Assert(IsCompleted);
 
+            if (!Unsafe.IsNullRef(in queue))
+                queue.SyncRoot.Exit();
+
             return taskFactory.Invoke(InfiniteTimeSpan, token);
         }
-
-        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
-
-        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected struct TimeoutAndCancellationToken :
-        ITaskBuilder<ValueTask>,
-        ITaskBuilder<ValueTask<bool>>
+    private protected ref struct TimeoutAndCancellationToken :
+        IValueTaskBuilder,
+        IValueTaskBuilder<bool>,
+        IWaitQueueProvider
     {
+        private readonly ref WaitQueue queue;
         private readonly TimeSpan timeout;
         private readonly CancellationToken token;
-        private object? syncRoot;
         private IValueTaskFactory? taskFactory;
 
-        public TimeoutAndCancellationToken(object syncRoot, TimeSpan timeout, CancellationToken token)
+        public TimeoutAndCancellationToken(ref WaitQueue queue, TimeSpan timeout, CancellationToken token)
         {
             this.timeout = timeout;
             this.token = token;
-            if (timeout is { Ticks: < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutParameterTicks })
+            if (!Timeout.IsValid(timeout))
             {
                 taskFactory = InvalidTimeoutTaskFactory.Instance;
             }
@@ -112,14 +130,32 @@ partial class QueuedSynchronizer
             {
                 taskFactory = CanceledTaskFactory.Instance;
             }
-            else if (Monitor.TryEnter(syncRoot, timeout))
+            else if (queue.SyncRoot.TryEnter(timeout.Ticks is 0L ? InfiniteTimeSpan : timeout))
             {
-                this.syncRoot = syncRoot;
+                this.queue = ref queue;
+                return;
             }
             else
             {
                 taskFactory = TimedOutTaskFactory.Instance;
             }
+
+            this.queue = ref Unsafe.NullRef<WaitQueue>();
+        }
+
+        /// <summary>
+        /// Captures the wait queue.
+        /// </summary>
+        /// <remarks>
+        /// In contrast to <see cref="QueuedSynchronizer.CaptureWaitQueue"/> the caller should not call
+        /// <see cref="WaitQueueScope.Dispose"/> to release the lock.
+        /// </remarks>
+        /// <returns>The captured wait queue.</returns>
+        public readonly WaitQueueScope CaptureWaitQueue()
+        {
+            Debug.Assert(!Unsafe.IsNullRef(in queue));
+
+            return new(ref queue);
         }
 
         [MemberNotNullWhen(true, nameof(taskFactory))]
@@ -129,97 +165,47 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => taskFactory = new QueuedSynchronizerDisposedException(objectName);
 
-        void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
-
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
-        
-        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
 
-        readonly bool ITaskBuilder.IsTimedOut => timeout is { Ticks: 0L };
+        void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
-        void IDisposable.Dispose()
+        bool ITaskBuilder.TryCompleteAsTimedOut()
         {
-            if (syncRoot is not null)
-            {
-                Monitor.Exit(syncRoot);
-                syncRoot = null;
-            }
+            var timedOut = timeout is { Ticks: 0L };
+            if (timedOut)
+                taskFactory = TimedOutTaskFactory.Instance;
+
+            return timedOut;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private readonly T AsTask<T>(ISupplier<TimeSpan, CancellationToken, T> factory)
+        private readonly T Build<T>(ISupplier<TimeSpan, CancellationToken, T> factory)
             where T : struct, IEquatable<T>
-            => factory.Invoke(timeout, token);
+        {
+            if (!Unsafe.IsNullRef(in queue))
+                queue.SyncRoot.Exit();
 
-        readonly ValueTask ISupplier<ValueTask>.Invoke()
+            return factory.Invoke(timeout, token);
+        }
+
+        readonly ValueTask ITaskBuilder<ValueTask>.Build()
         {
             Debug.Assert(IsCompleted);
 
-            return AsTask<ValueTask>(taskFactory);
+            return Build<ValueTask>(taskFactory);
         }
         
-        readonly ValueTask<bool> ISupplier<ValueTask<bool>>.Invoke()
+        readonly ValueTask<bool> ITaskBuilder<ValueTask<bool>>.Build()
         {
             Debug.Assert(IsCompleted);
 
-            return AsTask<ValueTask<bool>>(taskFactory);
-        } 
-
-        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
-
-        static bool ITaskBuilder<ValueTask<bool>>.ThrowOnTimeout => false;
-        
-        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
-        
-        static ValueTask<bool> ITaskBuilder<ValueTask<bool>>.FromException(Exception e) => ValueTask.FromException<bool>(e);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private struct InterruptingTaskBuilder<T, TBuilder>
-        : ITaskBuilder<T>
-        where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
-    {
-        public required TBuilder Builder;
-        public LinkedValueTaskCompletionSource<bool>? InterruptedCallers;
-
-        void IDisposable.Dispose()
-        {
-            Builder.Dispose();
-            InterruptedCallers?.Unwind();
+            return Build<ValueTask<bool>>(taskFactory);
         }
-
-        void ITaskBuilder.Complete(WaitNode node) => Builder.Complete(node);
-
-        void ITaskBuilder.CompleteAsDisposed(string objectName) => Builder.CompleteAsDisposed(objectName);
-
-        void ITaskBuilder.CompleteAsTimedOut() => Builder.CompleteAsTimedOut();
-
-        void ITaskBuilder.Complete() => Builder.Complete();
-
-        void ITaskBuilder.CompletedAsFull() => Builder.CompletedAsFull();
-
-        bool ITaskBuilder.IsTimedOut => Builder.IsTimedOut;
-
-        public bool IsCompleted => Builder.IsCompleted;
-
-        T ISupplier<T>.Invoke() => Builder.Invoke();
-
-        static bool ITaskBuilder<T>.ThrowOnTimeout => TBuilder.ThrowOnTimeout;
-
-        static T ITaskBuilder<T>.FromException(Exception e) => TBuilder.FromException(e);
     }
 
-    private protected CancellationTokenOnly CreateTaskBuilder(CancellationToken token)
-        => new(SyncRoot, token);
+    private protected CancellationTokenOnly BeginAcquisition(CancellationToken token)
+        => new(ref waitQueue, token);
 
-    private protected TimeoutAndCancellationToken CreateTaskBuilder(TimeSpan timeout, CancellationToken token)
-        => new(SyncRoot, timeout, token);
-
-    private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
-        where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
-        => builder.InterruptedCallers = builder.IsCompleted
-            ? null
-            : DrainWaitQueue(e);
+    private protected TimeoutAndCancellationToken BeginAcquisition(TimeSpan timeout, CancellationToken token)
+        => new(ref waitQueue, timeout, token);
 }

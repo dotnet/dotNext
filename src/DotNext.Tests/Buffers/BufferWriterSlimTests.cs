@@ -33,7 +33,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(30, builder[2]);
         Equal(40, builder[3]);
         Span<int> result = stackalloc int[5];
-        builder.WrittenSpan.CopyTo(result, out var writtenCount);
+        var writtenCount = builder.WrittenSpan >>> result;
         Equal(4, writtenCount);
         Equal([10, 20, 30, 40, 0], result);
 
@@ -218,14 +218,14 @@ public sealed class BufferWriterSlimTests : Test
         var writer = new BufferWriterSlim<char>(stackalloc char[32]);
         try
         {
-            writer.Concat([]);
+            writer.Concat();
             Empty(writer.ToString());
 
-            writer.Concat(["Hello, world!"]);
+            writer.Concat("Hello, world!");
             Equal("Hello, world!", writer.ToString());
             writer.Clear(reuseBuffer: true);
 
-            writer.Concat(["Hello, ", "world!"]);
+            writer.Concat("Hello, ", "world!");
             Equal("Hello, world!", writer.ToString());
         }
         finally
@@ -403,7 +403,7 @@ public sealed class BufferWriterSlimTests : Test
         True(writer.Write(expected, format) > 0);
 
         using var buffer = writer.DetachOrCopyBuffer();
-        var reader = IAsyncBinaryReader.Create(buffer.Memory);
+        var reader = new SequenceReader(buffer.Memory);
         using var actual = reader.ReadBlock(format, allocator: null);
         Equal(expected, actual.Span);
     }
@@ -441,7 +441,7 @@ public sealed class BufferWriterSlimTests : Test
         MemoryOwner<char> actual;
         if (format.HasValue)
         {
-            var reader = IAsyncBinaryReader.Create(buffer.Memory);
+            var reader = new SequenceReader(buffer.Memory);
             actual = reader.Decode(encoding, format.GetValueOrDefault());
             Equal(expected, actual.Span);
         }

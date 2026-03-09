@@ -79,7 +79,7 @@ partial class MultiplexedStream
         var inputBuffer = readResult.Buffer;
         bool completed;
         // we cannot send more than window size
-        if (frameBuffer.Slice(FrameHeader.Size).TrimLength(inputWindow) is { Length: > 0 } payload)
+        if (frameBuffer.Slice(FrameHeader.Size) % inputWindow is { Length: > 0 } payload)
         {
             bytesWritten = inputBuffer.CopyTo(payload, out consumed);
 

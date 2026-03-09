@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using IO.Log;
@@ -10,7 +8,6 @@ using IO.Log;
 /// <remarks>
 /// This interface is not supposed to be implemented by the user.
 /// </remarks>
-[Experimental("DOTNEXT001")]
 public interface ISnapshot : IRaftLogEntry
 {
     /// <summary>

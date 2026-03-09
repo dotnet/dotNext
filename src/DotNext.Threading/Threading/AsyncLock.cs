@@ -17,9 +17,9 @@ namespace DotNext.Threading;
 /// <seealso cref="Lock"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"LockType = {{{nameof(LockTypeName)}}}, IsOwner = {{{nameof(owner)}}}")]
-public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
+public partial struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
 {
-    internal enum Type : byte
+    private enum Type : byte
     {
         None = 0,
         Exclusive,
@@ -38,18 +38,15 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// The lock can be released by calling <see cref="Dispose()"/>.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public struct Holder : IDisposable
+    public struct Scope : IDisposable
     {
         private readonly object lockedObject;
         private readonly Type type;
 
-        internal Holder(object lockedObject, Type type)
+        internal Scope(scoped ref readonly AsyncLock @lock)
         {
-            Debug.Assert(lockedObject is not null);
-            Debug.Assert(type is not Type.None);
-
-            this.lockedObject = lockedObject;
-            this.type = type;
+            lockedObject = @lock.lockedObject;
+            type = @lock.type;
         }
 
         /// <summary>
@@ -90,9 +87,9 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
         /// <summary>
         /// Indicates that the object holds successfully acquired lock.
         /// </summary>
-        /// <param name="holder">The lock holder.</param>
+        /// <param name="scope">The lock holder.</param>
         /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
-        public static implicit operator bool(in Holder holder) => holder.lockedObject is not null;
+        public static implicit operator bool(in Scope scope) => scope.lockedObject is not null;
     }
 
     private readonly object lockedObject;
@@ -112,8 +109,6 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     private readonly string? LockTypeName => Enum.GetName(type);
-
-    private readonly Holder CreateHolder() => new(lockedObject, type);
 
     /// <summary>
     /// Creates exclusive asynchronous lock but doesn't acquire it.
@@ -201,7 +196,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The task returning the acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public readonly ValueTask<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
+    public readonly ValueTask<Scope> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
 
     [Conditional("DEBUG")]
     private readonly void AssertLockType()
@@ -234,43 +229,30 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <returns>The task returning the acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public readonly async ValueTask<Holder> AcquireAsync(TimeSpan timeout, CancellationToken token = default)
+    public readonly async ValueTask<Scope> AcquireAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        await AcquireCoreAsync(timeout, token).ConfigureAwait(false);
+        return new(in this);
+    }
+
+    private readonly ValueTask AcquireCoreAsync(TimeSpan timeout, CancellationToken token)
     {
         AssertLockType();
-
-        ValueTask task;
-        switch (type)
+        
+        return type switch
         {
-            default:
-                return default;
-            case Type.Exclusive:
-                task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
-                break;
-            case Type.ReadLock:
-                task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
-                break;
-            case Type.WriteLock:
-                task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);
-                break;
-            case Type.Upgrade:
-                task = As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token);
-                break;
-            case Type.Semaphore:
-                task = timeout == InfiniteTimeSpan
-                    ? new(As<SemaphoreSlim>(lockedObject).WaitAsync(token))
-                    : CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
-                break;
-            case Type.Strong:
-                task = As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token);
-                break;
-            case Type.Weak:
-                task = As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout, token);
-                break;
-        }
-
-        await task.ConfigureAwait(false);
-        return CreateHolder();
-
+            Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token),
+            Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token),
+            Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token),
+            Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token),
+            Type.Semaphore => timeout == InfiniteTimeSpan
+                ? new(As<SemaphoreSlim>(lockedObject).WaitAsync(token))
+                : CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
+            Type.Strong => As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token),
+            Type.Weak => As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout, token),
+            _ => ValueTask.CompletedTask
+        };
+        
         static async ValueTask CheckOnTimeoutAsync(Task<bool> task)
         {
             if (!await task.ConfigureAwait(false))
@@ -278,6 +260,16 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Tries to acquire the lock asynchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public readonly async ValueTask<Scope> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
+        => await TryAcquireCoreAsync(timeout, token).ConfigureAwait(false) ? new(in this) : default;
+    
     private readonly ValueTask<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token)
     {
         AssertLockType();
@@ -294,16 +286,6 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
             _ => new(false),
         };
     }
-
-    /// <summary>
-    /// Tries to acquire the lock asynchronously.
-    /// </summary>
-    /// <param name="timeout">The interval to wait for the lock.</param>
-    /// <param name="token">The token that can be used to abort acquisition operation.</param>
-    /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public readonly async ValueTask<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => await TryAcquireCoreAsync(timeout, token).ConfigureAwait(false) ? CreateHolder() : default;
 
     /// <summary>
     /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.
@@ -365,19 +347,19 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is AsyncLock @lock && Equals(in @lock);
+    public readonly override bool Equals([NotNullWhen(true)] object? other) => other is AsyncLock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.
     /// </summary>
     /// <returns>The hash code of this lock.</returns>
-    public override readonly int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
+    public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
     /// <summary>
     /// Returns actual type of this lock in the form of the string.
     /// </summary>
     /// <returns>The actual type of this lock.</returns>
-    public override readonly string ToString() => type.ToString();
+    public readonly override string ToString() => type.ToString();
 
     /// <summary>
     /// Determines whether two locks are the same.

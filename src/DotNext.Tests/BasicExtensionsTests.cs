@@ -17,14 +17,22 @@ public sealed class BasicExtensionsTests : Test
     public static void UserDataStorage()
     {
         var slot = new UserDataSlot<long>();
+        True(slot.IsAllocated);
+        
         var str = new string('a', 3);
-        str.GetUserData().Set(slot, 42);
-        Equal(42, str.GetUserData().Get(slot));
+        str.UserData.Set(slot, 42);
+        Equal(42, str.UserData.Get(slot));
         str = null;
         GC.Collect();
         GC.WaitForFullGCComplete();
         str = new string('a', 3);
-        Equal(0, str.GetUserData().Get(slot));
+        Equal(0, str.UserData.Get(slot));
+    }
+
+    [Fact]
+    public static void EmptyDataSlot()
+    {
+        False(default(UserDataSlot<long>).IsAllocated);
     }
 
     [Fact]
@@ -35,8 +43,8 @@ public sealed class BasicExtensionsTests : Test
         var obj1 = new UserDataSupport(owner);
         var obj2 = new UserDataSupport(owner);
         NotSame(obj1, obj2);
-        obj2.GetUserData().Set(slot, 42L);
-        Equal(42L, obj1.GetUserData().Get(slot));
+        obj2.UserData.Set(slot, 42L);
+        Equal(42L, obj1.UserData.Get(slot));
     }
 
     [Fact]
@@ -46,12 +54,12 @@ public sealed class BasicExtensionsTests : Test
         var str1 = new string('a', 3);
         var str2 = new string('b', 3);
         NotSame(str1, str2);
-        str1.GetUserData().Set(slot, 42L);
-        str1.GetUserData().CopyTo(str2);
-        Equal(42L, str2.GetUserData().Get(slot));
-        str2.GetUserData().Set(slot, 50L);
-        Equal(50L, str2.GetUserData().Get(slot));
-        Equal(42L, str1.GetUserData().Get(slot));
+        str1.UserData.Set(slot, 42L);
+        str1.UserData.CopyTo(str2);
+        Equal(42L, str2.UserData.Get(slot));
+        str2.UserData.Set(slot, 50L);
+        Equal(50L, str2.UserData.Get(slot));
+        Equal(42L, str1.UserData.Get(slot));
     }
 
     [Fact]
@@ -61,12 +69,12 @@ public sealed class BasicExtensionsTests : Test
         var obj1 = new UserDataSupport();
         var obj2 = new UserDataSupport();
         NotSame(obj1, obj2);
-        obj1.GetUserData().Set(slot, 42L);
-        obj1.GetUserData().CopyTo(obj2);
-        Equal(42L, obj2.GetUserData().Get(slot));
-        obj2.GetUserData().Set(slot, 50L);
-        Equal(50L, obj2.GetUserData().Get(slot));
-        Equal(42L, obj1.GetUserData().Get(slot));
+        obj1.UserData.Set(slot, 42L);
+        obj1.UserData.CopyTo(obj2);
+        Equal(42L, obj2.UserData.Get(slot));
+        obj2.UserData.Set(slot, 50L);
+        Equal(50L, obj2.UserData.Get(slot));
+        Equal(42L, obj1.UserData.Get(slot));
     }
 
     [Fact]
@@ -76,10 +84,10 @@ public sealed class BasicExtensionsTests : Test
         var str1 = new string('a', 3);
         var str2 = new string('b', 3);
         NotSame(str1, str2);
-        str2.GetUserData().Set(slot, 42L);
-        str1.GetUserData().CopyTo(str2);
+        str2.UserData.Set(slot, 42L);
+        str1.UserData.CopyTo(str2);
 
-        False(str2.GetUserData().TryGet(slot, out _));
+        False(str2.UserData.TryGet(slot, out _));
     }
 
     [Fact]
@@ -89,7 +97,7 @@ public sealed class BasicExtensionsTests : Test
 
         var obj = new object();
         var slot = new UserDataSlot<string>();
-        Equal("42", obj.GetUserData().GetOrSet(slot, 42, ToStr));
+        Equal("42", obj.UserData.GetOrSet(slot, 42, ToStr));
     }
 
     [Fact]
@@ -99,14 +107,14 @@ public sealed class BasicExtensionsTests : Test
 
         var obj = new object();
         var slot = new UserDataSlot<string>();
-        Equal("Hello, world!", obj.GetUserData().GetOrSet(slot, CreateString));
+        Equal("Hello, world!", obj.UserData.GetOrSet(slot, CreateString));
     }
 
     [Fact]
     public static void InvalidDataSlot()
     {
         var str = new string('b', 3);
-        Throws<ArgumentException>(() => str.GetUserData().Set(default(UserDataSlot<int>), 10));
+        Throws<ArgumentException>(() => str.UserData.Set(default(UserDataSlot<int>), 10));
     }
 
     [Fact]
@@ -117,7 +125,7 @@ public sealed class BasicExtensionsTests : Test
         var slot3 = new UserDataSlot<ulong>();
         var slot4 = new UserDataSlot<ulong>();
 
-        var data = new object().GetUserData();
+        var data = new object().UserData;
         data.Set(slot1, 42UL);
         data.Set(slot2, 43UL);
         data.Set(slot3, 44UL);
@@ -138,7 +146,7 @@ public sealed class BasicExtensionsTests : Test
         var slot4 = new UserDataSlot<uint>();
         var slot5 = new UserDataSlot<sbyte>();
 
-        var data = new object().GetUserData();
+        var data = new object().UserData;
         data.Set(slot1, 42UL);
         data.Set(slot2, (ushort)43);
         data.Set(slot3, (short)44);
@@ -161,7 +169,7 @@ public sealed class BasicExtensionsTests : Test
         var slot4 = new UserDataSlot<uint>();
         var slot5 = new UserDataSlot<sbyte>();
 
-        var data = new object().GetUserData();
+        var data = new object().UserData;
         True(data.IsValid);
         data.Set(slot1, 42UL);
         data.Set(slot2, (ushort)43);
@@ -181,35 +189,35 @@ public sealed class BasicExtensionsTests : Test
     [Fact]
     public static void OneOfValues()
     {
-        True(2.IsOneOf(stackalloc int[] { 2, 5, 7 }));
-        False(2.IsOneOf(stackalloc int[] { 3, 5, 7 }));
+        True(2.IsOneOf(2, 5, 7));
+        False(2.IsOneOf(3, 5, 7));
     }
 
     [Fact]
     public static void Range()
     {
-        True(15M.IsBetween(10M.Enclosed(), 20M.Enclosed()));
-        False(10M.IsBetween(10M.Disclosed(), 20M.Disclosed()));
-        True(10M.IsBetween(10M.Enclosed(), 20M.Disclosed()));
-        False(15M.IsBetween(10M.Enclosed(), 12M.Enclosed()));
+        True(15M.IsBetween(10M.Enclosed, 20M.Enclosed));
+        False(10M.IsBetween(10M.Disclosed, 20M.Disclosed));
+        True(10M.IsBetween(10M.Enclosed, 20M.Disclosed));
+        False(15M.IsBetween(10M.Enclosed, 12M.Enclosed));
     }
 
     [Fact]
     public static void LeftGreaterThanRight()
     {
-        False(4L.IsBetween(4L.Enclosed(), 3L.Enclosed()));
-        False(4L.IsBetween(4L.Enclosed(), 4L.Disclosed()));
+        False(4L.IsBetween(4L.Enclosed, 3L.Enclosed));
+        False(4L.IsBetween(4L.Enclosed, 4L.Disclosed));
     }
 
     [Fact]
     public static void InfinityEndpoints()
     {
-        True(4L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Enclosed()));
-        False(10L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Disclosed()));
+        True(4L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Enclosed));
+        False(10L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Disclosed));
 
-        True(4L.IsBetween(0L.Disclosed(), IRangeEndpoint<long>.Infinity));
-        False(10L.IsBetween(10L.Disclosed(), IRangeEndpoint<long>.Infinity));
+        True(4L.IsBetween(0L.Disclosed, long.Unbounded));
+        False(10L.IsBetween(10L.Disclosed, long.Unbounded));
 
-        True(long.MinValue.IsBetween(IRangeEndpoint<long>.Infinity, IRangeEndpoint<long>.Infinity));
+        True(long.MinValue.IsBetween(long.Unbounded, long.Unbounded));
     }
 }

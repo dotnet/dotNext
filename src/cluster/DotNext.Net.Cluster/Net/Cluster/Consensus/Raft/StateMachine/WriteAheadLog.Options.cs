@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO.Hashing;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -35,18 +36,49 @@ partial class WriteAheadLog
         /// </remarks>
         PrivateMemory,
     }
-    
+
+    /// <summary>
+    /// Represents the hash algorithm that control the integrity of the log entries.
+    /// </summary>
+    public enum IntegrityHashAlgorithm : byte
+    {
+        /// <summary>
+        /// No integrity check is performed.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.Crc32"/> is applied for integrity check.
+        /// </summary>
+        Crc32,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.Crc64"/> is applied for integrity check.
+        /// </summary>
+        Crc64,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.XxHash32"/> is applied for integrity check.
+        /// </summary>
+        XxHash32,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.XxHash64"/> is applied for integrity check.
+        /// </summary>
+        XxHash64,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.XxHash3"/> is applied for integrity check.
+        /// </summary>
+        XxHash3,
+    }
+
     /// <summary>
     /// Represents configuration options.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     public class Options
     {
-        private readonly int chunkSize = Environment.SystemPageSize;
-        private readonly int concurrencyLevel = Environment.ProcessorCount * 2 + 1;
-        private readonly string location = string.Empty;
-        private readonly TimeSpan flushInterval;
-
         /// <summary>
         /// Gets or sets the path to the root folder to be used by the log to persist log entries.
         /// </summary>
@@ -54,11 +86,11 @@ partial class WriteAheadLog
         [Required]
         public required string Location
         {
-            get => location;
-            init => location = value is { Length: > 0 }
+            get;
+            init => field = value is { Length: > 0 }
                 ? Path.GetFullPath(value)
                 : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+        } = string.Empty;
 
         /// <summary>
         /// Gets or sets the interval of the checkpoint.
@@ -71,35 +103,38 @@ partial class WriteAheadLog
         /// </value>
         public TimeSpan FlushInterval
         {
-            get => flushInterval;
+            get;
             init
             {
                 Timeout.Validate(value);
-                
-                flushInterval = value;
+
+                field = value;
             }
         }
 
         /// <summary>
         /// Gets or sets the maximum size of the single chunk file, in bytes.
         /// </summary>
+        /// <remarks>
+        /// The property cannot be changed for existing WAL.
+        /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ChunkSize
         {
-            get => chunkSize;
+            get;
             init
             {
-                chunkSize = value > 0
+                field = value > 0
                     ? RoundUpToPageSize(value)
                     : throw new ArgumentOutOfRangeException(nameof(value));
-                
+
                 static int RoundUpToPageSize(int value)
                 {
                     var result = ((uint)value).RoundUp((uint)Page.MinSize);
                     return checked((int)result);
                 }
             }
-        }
+        } = Environment.SystemPageSize;
 
         /// <summary>
         /// Gets or sets an expected number of concurrent users of the log.
@@ -107,9 +142,9 @@ partial class WriteAheadLog
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ConcurrencyLevel
         {
-            get => concurrencyLevel;
-            init => concurrencyLevel = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+            get;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        } = Environment.ProcessorCount * 2 + 1;
 
         /// <summary>
         /// Gets or sets the memory allocator.
@@ -124,6 +159,31 @@ partial class WriteAheadLog
         /// Gets or sets the memory management strategy.
         /// </summary>
         public MemoryManagementStrategy MemoryManagement { get; init; }
+
+        /// <summary>
+        /// Gets or sets the hash algorithm for the log integrity control.
+        /// </summary>
+        /// <remarks>
+        /// Once WAL created, the hash algorithm should not be changed. However, it's possible to migrate
+        /// log entries to a different log with modified or disabled hash algorithm with <see cref="WriteAheadLog.ImportAsync"/>
+        /// method.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">The hash algorithm is not supported.</exception>
+        public IntegrityHashAlgorithm HashAlgorithm
+        {
+            get;
+            init => field = Enum.IsDefined(value) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+        
+        internal NonCryptographicHashAlgorithm? CreateHashAlgorithm() => HashAlgorithm switch
+        {
+            IntegrityHashAlgorithm.Crc32 => new Crc32(),
+            IntegrityHashAlgorithm.Crc64 => new Crc64(),
+            IntegrityHashAlgorithm.XxHash32 => new XxHash32(),
+            IntegrityHashAlgorithm.XxHash64 => new XxHash64(),
+            IntegrityHashAlgorithm.XxHash3 => new XxHash3(),
+            _ => null,
+        };
         
         /// <summary>
         /// Gets or sets a list of tags to be associated with each measurement.

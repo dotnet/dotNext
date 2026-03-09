@@ -1,16 +1,19 @@
+using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
-using static Runtime.Intrinsics;
+using Patterns;
+using Runtime.InteropServices;
+using static Runtime.CompilerServices.AdvancedHelpers;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
 /// Represents bitwise comparer for the arbitrary value type.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
-    where T : unmanaged
+public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISingleton<BitwiseComparer<T>>
+    where T : unmanaged, allows ref struct
 {
     private BitwiseComparer()
     {
@@ -38,7 +41,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="second">The second value to check.</param>
     /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
     public static unsafe bool Equals<TOther>(in T first, in TOther second)
-        where TOther : unmanaged
+        where TOther : unmanaged, allows ref struct
         => sizeof(T) == sizeof(TOther) && sizeof(T) switch
         {
             0 => true,
@@ -57,7 +60,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="second">The second value to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
     public static unsafe int Compare<TOther>(in T first, in TOther second)
-        where TOther : unmanaged
+        where TOther : unmanaged, allows ref struct
     {
         var result = sizeof(T);
         result = result.CompareTo(sizeof(TOther));
@@ -90,7 +93,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         switch (sizeof(T))
         {
             default:
-                return FNV1a32.Hash(Span.AsReadOnlyBytes(in value), salted);
+                return FNV1a32.Hash(MemoryMarshal.AsReadOnlyBytes(in value), salted);
             case 0:
                 hash = 0;
                 break;

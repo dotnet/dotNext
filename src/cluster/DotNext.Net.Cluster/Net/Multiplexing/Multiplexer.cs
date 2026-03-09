@@ -5,24 +5,10 @@ namespace DotNext.Net.Multiplexing;
 
 internal abstract partial class Multiplexer(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
-    IProducerConsumerCollection<ProtocolCommand> commands) : Disposable
+    IProducerConsumerCollection<ProtocolCommand> commands)
 {
     protected readonly IProducerConsumerCollection<ProtocolCommand> Commands = commands;
     protected readonly ConcurrentDictionary<uint, MultiplexedStream> Streams = streams;
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            source.Dispose();
-        }
-
-        base.Dispose(disposing);
-    }
-
-    protected override ValueTask DisposeAsyncCore() => source.DisposeAsync();
-
-    public new ValueTask DisposeAsync() => base.DisposeAsync();
 }
 
 internal abstract class Multiplexer<T>(

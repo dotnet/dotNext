@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming;
 
 using Linq.Expressions;
-using static Collections.Generic.Collection;
 using static CodeGenerator;
 
 public sealed class LoopTests : Test
@@ -120,7 +119,7 @@ public sealed class LoopTests : Test
         var sum = Lambda<Func<long, long>>((fun, result) =>
         {
             var arg = fun[0];
-            For(0L.Const(), i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
+            For(0L.Quoted, i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
             {
                 Assign(result, result.AsDynamic() + loopVar);
             });
@@ -135,11 +134,11 @@ public sealed class LoopTests : Test
         var factorial = Lambda<Func<long, long>>((fun, result) =>
         {
             var arg = fun[0];
-            Assign(result, 1L.Const());
+            Assign(result, 1L.Quoted);
             While((Expression)(arg.AsDynamic() > 1L), () =>
             {
                 Assign(result, result.AsDynamic() * arg);
-                Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+                Assign(arg, arg.AsDynamic() - 1L);
             });
         })
         .Compile();
@@ -152,14 +151,14 @@ public sealed class LoopTests : Test
         var factorial = Lambda<Func<long, long>>((fun, result) =>
         {
             var arg = fun[0];
-            Assign(result, 1L.Const());
+            Assign(result, 1L.Quoted);
             Loop(() =>
             {
                 If((Expression)(arg.AsDynamic() > 1L))
                     .Then(() =>
                     {
                         Assign(result, result.AsDynamic() * arg);
-                        Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+                        Assign(arg, arg.AsDynamic() - 1L);
                     })
                     .Else(Break)
                 .End();

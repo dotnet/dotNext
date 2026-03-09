@@ -1,6 +1,6 @@
 namespace DotNext.Metaprogramming;
 
-internal class Statement : LexicalScope
+internal abstract class Statement : LexicalScope
 {
     private protected Statement()
         : base(true)

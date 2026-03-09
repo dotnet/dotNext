@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using DotNext.Buffers;
 using DotNext.Text;
 
 namespace DotNext.IO;

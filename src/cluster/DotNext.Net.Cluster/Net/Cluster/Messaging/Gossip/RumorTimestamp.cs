@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
@@ -6,7 +7,6 @@ namespace DotNext.Net.Cluster.Messaging.Gossip;
 
 using Buffers;
 using Buffers.Binary;
-using Hex = Buffers.Text.Hex;
 
 /// <summary>
 /// Represents Lamport timestamp of the rumor mixed with the timestamp returned
@@ -120,7 +120,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         writer.Write(this);
-        return Hex.EncodeToUtf16(writer.WrittenSpan);
+        return Convert.ToHexString(writer.WrittenSpan);
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     {
         Span<byte> bytes = stackalloc byte[Size];
 
-        if (Hex.DecodeFromUtf16(timestamp, bytes) == bytes.Length)
+        if (Convert.FromHexString(timestamp, bytes, out _, out var bytesWritten) is OperationStatus.Done && bytesWritten == Size)
         {
             result = new(bytes);
             return true;

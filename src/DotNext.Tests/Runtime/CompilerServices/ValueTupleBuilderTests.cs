@@ -38,7 +38,7 @@ public sealed class ValueTupleBuilderTests : Test
         Equal(8, builder.Count);
 
         var tupleType = builder.Build();
-        const string restFieldName = nameof(ValueTuple<bool, bool, bool, bool, bool, bool, bool, bool>.Rest);
+        const string restFieldName = nameof(ValueTuple<,,,,,,,>.Rest);
         Equal(typeof(ValueTuple<bool>), tupleType.GetField(restFieldName)?.FieldType);
 
         var members = builder.Build(Expression.New, out _);

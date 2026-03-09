@@ -11,20 +11,20 @@ internal sealed class DecodingTextReader : TextBufferReader
 {
     private readonly Encoding encoding;
     private readonly Decoder decoder;
-    private readonly MemoryAllocator<char>? allocator;
+    private readonly MemoryAllocator<char> allocator;
     private ReadOnlySequence<byte> sequence;
     private MemoryOwner<char> buffer;
     private int charPos, charLen;
 
-    internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
+    internal DecodingTextReader(in ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+        ArgumentNullException.ThrowIfNull(encoding);
 
-        this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+        this.encoding = encoding;
         decoder = encoding.GetDecoder();
         this.sequence = sequence;
-        this.allocator = allocator;
-        buffer = allocator.AllocateAtLeast(bufferSize);
+        buffer = (this.allocator = allocator.DefaultIfNull).AllocateAtLeast(bufferSize);
     }
 
     private Span<char> Buffer => buffer.Span;
@@ -56,14 +56,14 @@ internal sealed class DecodingTextReader : TextBufferReader
     }
 
     public override int Peek()
-        => charPos == charLen && ReadBuffer() == 0 ? InvalidChar : buffer[charPos];
+        => charPos == charLen && ReadBuffer() is 0 ? InvalidChar : buffer[charPos];
 
     public override int Read(Span<char> buffer)
     {
         int writtenCount, result = 0;
         if (charPos < charLen)
         {
-            ReadyToReadChars.CopyTo(buffer, out writtenCount);
+            writtenCount = ReadyToReadChars >>> buffer;
             charPos += writtenCount;
             buffer = buffer.Slice(writtenCount);
             result += writtenCount;
@@ -73,7 +73,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             writtenCount = ReadBuffer(buffer);
 
-            if (writtenCount == 0)
+            if (writtenCount is 0)
                 break;
 
             buffer = buffer.Slice(writtenCount);
@@ -85,7 +85,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
     public override string? ReadLine()
     {
-        if (charPos == charLen && ReadBuffer() == 0)
+        if (charPos == charLen && ReadBuffer() is 0)
             return null;
 
         // this variable is needed to save temporary the length of characters that are candidates for line termination string
@@ -97,7 +97,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             do
             {
-                ref var first = ref Memory.GetReference(in buffer);
+                ref var first = ref buffer.DataRef;
 
                 do
                 {
@@ -118,9 +118,9 @@ internal sealed class DecodingTextReader : TextBufferReader
                     }
 
                     if ((uint)newLineBufferPosition > 0U)
-                        result.Write(newLine.Slice(0, newLineBufferPosition));
+                        result += newLine.Slice(0, newLineBufferPosition);
 
-                    result.Add(ch);
+                    result += ch;
                     newLineBufferPosition = 0;
                 }
                 while (++charPos < charLen);
@@ -129,10 +129,10 @@ internal sealed class DecodingTextReader : TextBufferReader
 
             // add trailing characters recognized as a part of uncompleted line termination
             if ((uint)newLineBufferPosition > 0U)
-                result.Write(newLine.Slice(0, newLineBufferPosition));
+                result += newLine.Slice(0, newLineBufferPosition);
 
             exit:
-            return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;
+            return (uint)result.WrittenCount > 0U ? new(result.WrittenSpan) : string.Empty;
         }
         finally
         {
@@ -159,7 +159,7 @@ internal sealed class DecodingTextReader : TextBufferReader
                 break;
         }
 
-        return new string(writer.WrittenSpan);
+        return new(writer.WrittenSpan);
     }
 
     public override string ReadToEnd()
@@ -168,14 +168,12 @@ internal sealed class DecodingTextReader : TextBufferReader
         var length = sequence.Length;
 
         // the rest of the sequence is already decoded
-        if (length == 0L)
-            return bufferNotEmpty ? new string(ReadyToReadChars) : string.Empty;
-
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
-
-        // slow path - decoding required
-        return ReadToEnd((int)length, bufferNotEmpty);
+        return length switch
+        {
+            0L => bufferNotEmpty ? new(ReadyToReadChars) : string.Empty,
+            > int.MaxValue => throw new InsufficientMemoryException(),
+            _ => ReadToEnd((int)length, bufferNotEmpty)
+        };
     }
 
     protected override void Dispose(bool disposing)

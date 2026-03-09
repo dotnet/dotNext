@@ -24,11 +24,9 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal void Detach()
     {
-        if (Previous is not null)
-            Previous.Next = Next;
+        Previous?.Next = Next;
 
-        if (Next is not null)
-            Next.Previous = Previous;
+        Next?.Previous = Previous;
 
         Next = Previous = null;
     }
@@ -49,14 +47,15 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         }
     }
 
-    internal LinkedValueTaskCompletionSource<T>? SetResult(in Result<T> result)
+    internal LinkedValueTaskCompletionSource<T>? SetResult<TValue>(TValue result)
+        where TValue : struct, IResultMonad<T>
     {
         var detachedQueue = new LinkedList();
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (current.TrySetResult(Sentinel.Instance, completionToken: null, in result, out var resumable) && resumable)
+            if (current.TrySetResult(new CustomCompletionData(Sentinel.Instance), result, out var resumable) && resumable)
                 detachedQueue.Add(current);
         }
 

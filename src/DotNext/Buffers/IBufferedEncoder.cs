@@ -15,7 +15,7 @@ internal interface IBufferedEncoder<TOutput> : IBufferedEncoder
     
     static abstract int MaxFlushBufferSize { get; }
     
-    protected static async IAsyncEnumerable<ReadOnlyMemory<TOutput>> EncodeAsync<TEncoder>(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes, MemoryAllocator<TOutput>? allocator, [EnumeratorCancellation] CancellationToken token)
+    protected static async IAsyncEnumerable<ReadOnlyMemory<TOutput>> EncodeAsync<TEncoder>(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes, MemoryAllocator<TOutput> allocator, [EnumeratorCancellation] CancellationToken token)
         where TEncoder : struct, IBufferedEncoder<TOutput>
     {
         var encoder = new TEncoder();

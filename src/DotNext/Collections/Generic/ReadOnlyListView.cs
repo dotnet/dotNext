@@ -21,16 +21,6 @@ public readonly struct ReadOnlyListView<TInput, TOutput>(IReadOnlyList<TInput> l
     private readonly Func<TInput, TOutput> mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     /// <summary>
-    /// Initializes a new lazily converted view.
-    /// </summary>
-    /// <param name="list">Read-only list to convert.</param>
-    /// <param name="mapper">List items converter.</param>
-    public ReadOnlyListView(IReadOnlyList<TInput> list, Converter<TInput, TOutput> mapper)
-        : this(list, Unsafe.As<Func<TInput, TOutput>>(mapper))
-    {
-    }
-
-    /// <summary>
     /// Gets item at the specified position.
     /// </summary>
     /// <param name="index">Zero-based index of the item.</param>

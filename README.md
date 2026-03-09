@@ -4,35 +4,22 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnet/dotNext/blob/master/LICENSE)
 ![Test Coverage](https://img.shields.io/azure-devops/coverage/dotnet/dotnext/160/master)
 [![CodeQL](https://github.com/dotnet/dotNext/workflows/CodeQL/badge.svg)](https://github.com/dotnet/dotNext/actions?query=workflow%3ACodeQL)
-[![Join the chat](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dotnet/dotNext)
 
-.NEXT (dotNext) is a set of powerful libraries aimed to improve development productivity and extend .NET API with unique features. Some of these features are planned in future releases of .NET platform but already implemented in the library:
-
-| Proposal | Implementation |
-| ---- | ---- |
-| [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://dotnet.github.io/dotNext/api/DotNext.DelegateHelpers.html) factory methods |
-| [Check if an instance of T is default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html) |
-| [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), e.g. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html) |
-| [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://dotnet.github.io/dotNext/features/threading/index.html) |
-| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)  |
-| [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/features/io/mmfile.html) |
-| [Memory-mapped file as ReadOnlySequence&lt;byte&gt;](https://github.com/dotnet/runtime/issues/24805) | [ReadOnlySequenceAccessor](https://dotnet.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html) |
-| [A dictionary where the keys are represented by generic arguments](https://github.com/dotnet/runtime/issues/59718) | [Documentation](https://dotnet.github.io/dotNext/features/core/typem.html) |
-| [Process asynchronous tasks as they complete](https://github.com/dotnet/runtime/issues/61959) | [Documentation](https://dotnet.github.io/dotNext/features/threading/taskpipe.html) |
-| [Soft References](https://github.com/dotnet/runtime/issues/63113) | [Documentation](https://dotnet.github.io/dotNext/features/core/softref.html) |
-
-Quick overview of additional features:
-
-* [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
-* Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html)
-* Fast conversion of bytes to hexadecimal representation and vice versa with [Hex](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.Hex.html) class
-* `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
-* [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
-* [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
-* A rich set of high-performance [memory buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
-* String formatting, encoding and decoding with low GC pressure: [dynamic char buffers](https://dotnet.github.io/dotNext/features/io/buffers.html#char-buffer)
-* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#raft)
-* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#hyparview)
+.NEXT (dotNext) is a set of powerful libraries designed for high-performance scenarios when your application expects near zero memory allocation and high flexibility. It is aimed to high-load microservices, database engines, actors, and various types of distributed applications. The feature list includes a rich set of efficient tools with low overhead:
+* [Buffer manipulations](https://dotnet.github.io/dotNext/features/io/buffers.html)
+* [String building](https://dotnet.github.io/dotNext/features/core/stringb.html)
+* Monadic types
+* Advanced [GC notifications](https://dotnet.github.io/dotNext/features/core/gcnotif.html)
+* Low-level API to work with memory: [alignment detection](https://dotnet.github.io/dotNext/features/core/intrinsics.html), type-safe unmanaged allocators, [Span&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.span-1) manipulations
+* Base64 streaming [encoder/decoder](https://dotnet.github.io/dotNext/features/core/base64.html)
+* Async-friendly [SIEVE cache](https://dotnet.github.io/dotNext/features/cache/index.html)
+* [Async locks](https://dotnet.github.io/dotNext/features/threading/index.html)
+* Extended LINQ Expression Trees and dynamic code generation tools with async lambdas for [metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html)
+* [Raft Consensus Algorithm](https://dotnet.github.io/dotNext/features/cluster/raft.html) with extensions such as the failure detection
+* Fast general-purpose [Write Ahead Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)
+* [TCP multiplexing](https://dotnet.github.io/dotNext/features/cluster/multiplex.html) protocol
+* [HyParView protocol](https://dotnet.github.io/dotNext/features/cluster/gossip.html) implementation
 
 All these things are implemented in 100% managed code on top of existing .NET API.
 
@@ -44,12 +31,54 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 01-14-2026
+Release Date: 03-09-2026
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.26.3">DotNext.IO 5.26.3</a>
-* Fixed incorrect position adjustment in `PoolingBufferedStream` class if internal buffer is not empty and flush is called
+.NEXT 6.0.0 has been released! Migration guide is [here](https://dotnet.github.io/dotNext/migration/4.html). All changes are mostly driven by [Extension Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14#extension-members) feature in C# 14. Most of the things in .NEXT now expressed naturally as extensions for existing .NET classes.
 
-Changelog for previous versions located [here](./CHANGELOG.md).
+<a href="https://www.nuget.org/packages/dotnext/6.0.0">DotNext 6.0.0</a>
+* Introduced convenient operators to work with spans: `>>>` for safe copying and `%` for trimming
+* `BufferWriterSlim<T>` now implements [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface which allows to use it in generic scenarios
+* Greatly improved performance of bit vector conversion methods exposed by `Number` class
+* Removed memory allocation caused by `Bind` extension methods
+* Added convenient static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
+* Improved AOT compatibility
+* Introduced `Variant` type that represents the functionality similar to [TypedReference](https://learn.microsoft.com/en-us/dotnet/api/system.typedreference) but without related compiler restrictions
+* Added **allows ref struct** anti-constraint to many parts of the library
+* Improved performance of `ConcurrentTypeMap` class
+* Built-in delegate types from .NET are extended with static extension methods
+* Added static extensions to [ArgumentOutOfRangeException](https://learn.microsoft.com/en-us/dotnet/api/system.argumentoutofrangeexception) class to cover more validation scenarios
+* Introduced `Enum<T>` to enable the power of the Generic Math when working with enums
+* All zero-alloc and encoding interpolation string handlers now in one place: `DotNext.Text` namespace
+* Added `+=` operator overloading to `SpanWriter<T>` and `BufferWriterSlim<T>` types
+* Added cancellation token support to [Lock](https://learn.microsoft.com/en-us/dotnet/api/system.threading.lock) and [Thread](https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread) classes
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.0.0">DotNext.Metaprogramming 6.0.0</a>
+* Expression nodes can be combined with built-in operators: `+`, `-`, `/`, etc.
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.0.0">DotNext.Unsafe 6.0.0</a>
+* `OpaqueValue<T>` type is introduced to unify the way of passing value types and reference types to unmanaged code. It's especially useful for passing .NET data types to the unmanaged callbacks implemented in C#
+* Added static extension properties to `MemoryAllocator<T>` delegate to expose unmanaged memory allocators
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.0.0">DotNext.Threading 6.0.0</a>
+* `CancellationTokenMultiplexer` has improved CTS pooling mechanism
+* Introduced fast bounded object pool
+* Significantly reduced contention overhead in async locks
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.26.0">DotNext.IO 5.26.0</a>
+* Added static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
+* Improved integration between `IJsonSerializable<T>` interface and JSON serialization infrastructure in .NET
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.0.0">DotNext.Net.Cluster 6.0.0</a>
+* Old WAL implementation represented by `MemoryBasedStateMachine` and `DiskBasedStateMachine` classes is completely removed in favor of `WriteAheadLog` class
+* Improved performance of the log entry serialization
+* Improved AOT compatibility
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.0.0">DotNext.AspNetCore.Cluster 6.0.0</a>
+* Improved AOT compatibility
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.0.0">DotNext.MaintenanceServices 1.0.0</a>
+* Upgrade to `System.CommandLine` stable release
+* Stabilized public API surface
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).

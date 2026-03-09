@@ -7,7 +7,7 @@ public sealed class MemorySegmentStreamTests : Test
     private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat lengthEnc)
     {
         Memory<byte> buffer = new byte[16];
-        await using var ms = new MemorySegmentStream(new byte[1024]);
+        await using var ms = Stream.Create(new Memory<byte>(new byte[1024]));
         await ms.EncodeAsync(value.AsMemory(), encoding, lengthEnc, buffer);
         ms.Position = 0;
         using var result = await ms.DecodeAsync(encoding, lengthEnc, buffer);
@@ -82,14 +82,14 @@ public sealed class MemorySegmentStreamTests : Test
         False(stream.RemainingSpan.IsEmpty);
 
         ReadOnlyMemory<byte> dataToWrite = RandomBytes(bufferSize);
-        await stream.WriteAsync(dataToWrite);
+        await stream.WriteAsync(dataToWrite, TestToken);
         True(stream.RemainingSpan.IsEmpty);
 
         Equal(dataToWrite.Span, stream.ConsumedSpan);
 
         Memory<byte> readBuffer = new byte[buffer.Length];
         stream.Position = 0L;
-        Equal(buffer.Length, await stream.ReadAsync(readBuffer));
+        Equal(buffer.Length, await stream.ReadAsync(readBuffer, TestToken));
         Equal(dataToWrite, readBuffer);
     }
 

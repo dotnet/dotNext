@@ -29,14 +29,17 @@ public readonly struct GCLatencyModeScope : IDisposable
         if (currentMode.HasValue)
             GCSettings.LatencyMode = currentMode.GetValueOrDefault();
     }
+}
 
+/// <summary>
+/// Represents extension for <see cref="GCLatencyMode"/> type.
+/// </summary>
+public static class GCLatencyModeExtensions
+{
     /// <summary>
-    /// Creates a scope with <see cref="GCLatencyMode.SustainedLowLatency"/> GC intrusion level.
+    /// Enters the specified GC latency mode.
     /// </summary>
-    public static GCLatencyModeScope SustainedLowLatency => new(GCLatencyMode.SustainedLowLatency);
-
-    /// <summary>
-    /// Creates a scope with <see cref="GCLatencyMode.LowLatency"/> GC intrusion level.
-    /// </summary>
-    public static GCLatencyModeScope LowLatency => new(GCLatencyMode.LowLatency);
+    /// <param name="mode">The desired mode.</param>
+    /// <returns>The scope that controls GC latency mode.</returns>
+    public static GCLatencyModeScope Enable(this GCLatencyMode mode) => new(mode);
 }

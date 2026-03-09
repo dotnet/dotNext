@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
+using DotNext.Reflection;
 
 namespace DotNext.Metaprogramming;
 
+using Collections.Generic;
 using Linq.Expressions;
 using Runtime.CompilerServices;
-using static Reflection.DelegateType;
-using List = Collections.Generic.List;
 
 internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
     where TDelegate : Delegate
@@ -20,7 +20,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     {
         if (typeof(TDelegate).IsAbstract)
             throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
-        var invokeMethod = GetInvokeMethod<TDelegate>();
+        var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         taskType = new TaskType(invokeMethod.ReturnType);
         Parameters = GetParameters(invokeMethod.GetParameters());
         this.usePooling = usePooling;
@@ -35,10 +35,12 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     {
         get
         {
-            if (taskType.ResultType == typeof(void))
+            if (taskType.ResultType.IsVoid)
                 return null;
-            else if (lambdaResult is null)
+            
+            if (lambdaResult is null)
                 DeclareVariable(lambdaResult = Expression.Variable(taskType.ResultType, "result"));
+            
             return lambdaResult;
         }
     }
@@ -72,7 +74,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
         {
             lambda = Expression.Lambda<TDelegate>(
                 Expression.Block(
-                List.Singleton(recursion),
+                IReadOnlyList<ParameterExpression>.Singleton(recursion),
                 Expression.Assign(recursion, lambda),
                 Expression.Invoke(recursion, Parameters)), Parameters);
         }

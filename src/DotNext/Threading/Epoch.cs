@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -6,170 +5,53 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime;
+using Runtime.CompilerServices;
 using Runtime.ExceptionServices;
 
 /// <summary>
 /// Implements epoch-based reclamation.
 /// </summary>
 /// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
-public partial class Epoch
+public sealed partial class Epoch
 {
-    private State state = new();
-
-    /// <summary>
-    /// Enters the current epoch, but doesn't execute any deferred actions.
-    /// </summary>
-    /// <remarks>
-    /// This method is reentrant and never throws an exception.
-    /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
-    /// <param name="bin">An action that can be called at any point in time to invoke deferred actions.</param>
-    /// <returns>A scope that represents the current epoch.</returns>
-    public Scope Enter(bool drainGlobalCache, out RecycleBin bin)
-    {
-        var scope = new Scope(ref state);
-
-        Reclaim(scope.Handle, drainGlobalCache, out bin);
-        return scope;
-    }
-
-    /// <summary>
-    /// Enters the current epoch, and optionally executes a deferred actions.
-    /// </summary>
-    /// <remarks>
-    /// This method is reentrant. In case of exceptions in one or more deferred actions the method closes the scope correctly.
-    /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="null"/> to avoid reclamation;
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
-    /// <returns>A scope that represents the current epoch.</returns>
-    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
-    public Scope Enter(bool? drainGlobalCache = false)
-    {
-        var scope = new Scope(ref state);
-
-        if (drainGlobalCache.HasValue && Reclaim(scope.Handle, drainGlobalCache.GetValueOrDefault()) is { IsEmpty: false } exceptions)
-        {
-            scope.Dispose();
-            exceptions.ThrowIfNeeded();
-        }
-
-        return scope;
-    }
-
-    /// <summary>
-    /// Enters the current epoch, and optionally executes a deferred actions.
-    /// </summary>
-    /// <remarks>
-    /// This method is reentrant. In case of exceptions in one or more deferred actions the aggregated exception is propagated
-    /// to the caller. In this case, the caller is responsible to close the scope correctly.
-    /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
-    /// <param name="scope">The protection scope. It is initialized in case of exceptions raised by the deferred actions invoked by the method.</param>
-    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
-    public void Enter(bool drainGlobalCache, out Scope scope)
-    {
-        scope = new(ref state);
-
-        UnsafeReclaim(scope.Handle, drainGlobalCache);
-    }
-
-    /// <summary>
-    /// Enters the current epoch, and optionally executes a deferred actions.
-    /// </summary>
-    /// <remarks>
-    /// This method is reentrant. In case of exceptions in one or more deferred actions the aggregated exception is propagated
-    /// to the caller. There is no way for the caller to close the scope correctly.
-    /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
-    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
-    public Scope UnsafeEnter(bool drainGlobalCache = false)
-    {
-        Enter(drainGlobalCache, out Scope scope);
-        return scope;
-    }
+    private uint globalEpoch;
     
-    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin action)
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private EpochEntryCollection entries;
+
+    /// <summary>
+    /// Initializes a new EBR implementation.
+    /// </summary>
+    public Epoch()
     {
-        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
-        {
-            action = default;
-        }
-        else if (drainGlobalCache)
-        {
-            action = new(garbage.ReclaimGlobal());
-        }
-        else
-        {
-            action = new(garbage.ReclaimLocal());
-        }
+        entries[0] = new(2, 1);
+        entries[1] = new(0, 2);
+        entries[2] = new(1, 0);
     }
 
-    private ExceptionAggregator Reclaim(uint protectedEntryHandle, bool drainGlobalCache)
-    {
-        var exceptions = new ExceptionAggregator();
-        if (state.TryBumpEpoch(protectedEntryHandle) is { IsEmpty: false } garbage)
-        {
-            if (drainGlobalCache)
-            {
-                foreach (var bucket in garbage.ReclaimGlobal())
-                {
-                    bucket.Drain(ref exceptions);
-                }
-            }
-            else if (garbage.ReclaimLocal() is { } bucket)
-            {
-                bucket.Drain(ref exceptions);
-            }
-        }
-
-        return exceptions;
-    }
-
-    private void UnsafeReclaim(uint protectedEntryHandle, bool drainGlobalCache)
-    {
-        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
-        {
-            // do nothing
-        }
-        else if (drainGlobalCache)
-        {
-            foreach (var bucket in garbage.ReclaimGlobal())
-            {
-                bucket.Drain();
-            }
-        }
-        else if (garbage.ReclaimLocal() is { } bucket)
-        {
-            bucket.Drain();
-        }
-    }
+    /// <summary>
+    /// Enters the current epoch without the execution of the deferred actions.
+    /// </summary>
+    /// <remarks>
+    /// This method is reentrant. It is recommended to call this method by the reader.
+    /// </remarks>
+    /// <returns>A scope that represents the current epoch.</returns>
+    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
+    public Scope Enter() => new(this);
 
     /// <summary>
     /// Invokes all deferred actions across all epochs.
     /// </summary>
     /// <remarks>
     /// This method is not thread-safe and cannot be called concurrently with other threads entered a protected region
-    /// with <see cref="Enter(bool?)"/>. The caller must ensure that all threads finished their work prior to this method.
+    /// with <see cref="Enter()"/>. The caller must ensure that all threads finished their work prior to this method.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
     /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
     public void UnsafeClear()
     {
         var exceptions = new ExceptionAggregator();
-        state.UnsafeDrain(ref exceptions);
+        UnsafeDrain(ref exceptions);
         exceptions.ThrowIfNeeded();
     }
 
@@ -232,14 +114,14 @@ public partial class Epoch
         private ReadOnlySpan<Discardable> Span => count switch
         {
             0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in Intrinsics.InToRef<object, Discardable>(in discardable)),
+            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable)),
             _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
         };
 
         /// <summary>
         /// Gets a value indicating that the action is empty.
         /// </summary>
-        public bool IsEmpty => Span.IsEmpty;
+        public bool IsEmpty => count is 0;
 
         /// <summary>
         /// Invokes all deferred actions.
@@ -278,7 +160,7 @@ public partial class Epoch
                 }
                 catch (Exception e)
                 {
-                    exceptions.Add(e);
+                    exceptions += e;
                 }
             }
             else
@@ -355,17 +237,15 @@ public partial class Epoch
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
-    public readonly ref struct Scope
+    public readonly struct Scope : IDisposable
     {
-        internal readonly uint Handle;
+        private readonly Epoch state;
+        private readonly uint handle;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref State state;
-
-        internal Scope(ref State state)
+        internal Scope(Epoch state)
         {
-            this.state = ref state;
-            Handle = state.Enter();
+            this.state = state;
+            handle = state.EnterEpoch();
         }
 
         /// <summary>
@@ -381,7 +261,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            state.Defer(Handle, new ActionNode(callback));
+            state.Defer(handle, new ActionNode(callback));
         }
 
         /// <summary>
@@ -398,7 +278,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            state.Defer(Handle, new ActionNode<T>(arg, callback));
+            state.Defer(handle, new ActionNode<T>(arg, callback));
         }
 
         /// <summary>
@@ -409,7 +289,7 @@ public partial class Epoch
         /// <typeparam name="TWorkItem">The type of the callback.</typeparam>
         public void Defer<TWorkItem>(TWorkItem workItem)
             where TWorkItem : struct, IThreadPoolWorkItem
-            => state.Defer(Handle, new WorkItem<TWorkItem>(workItem));
+            => state.Defer(handle, new WorkItem<TWorkItem>(workItem));
 
         /// <summary>
         /// Registers an object to be disposed at some point in future when the resource protected by the epoch is no longer
@@ -421,7 +301,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(disposable);
 
-            state.Defer(Handle, new Cleanup(disposable));
+            state.Defer(handle, new Cleanup(disposable));
         }
 
         /// <summary>
@@ -434,8 +314,19 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(discardable);
 
-            state.Defer(Handle, discardable);
+            state.Defer(handle, discardable);
         }
+
+        /// <summary>
+        /// Reclaims the deferred actions.
+        /// </summary>
+        /// <param name="drainGlobalCache">
+        /// <see langword="true"/> to capture all deferred actions across all threads;
+        /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
+        /// </param>
+        /// <returns>A collection of reclaimed actions that can be executed at any point in time.</returns>
+        public RecycleBin Reclaim(bool drainGlobalCache = false)
+            => state.Reclaim(handle, drainGlobalCache);
 
         /// <summary>
         /// Releases epoch scope.
@@ -443,22 +334,9 @@ public partial class Epoch
         /// <remarks>
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Dispose()
-        {
-            ref var stateCopy = ref state;
-            if (Unsafe.IsNullRef(in stateCopy) is false)
-                state.Exit(Handle);
-        }
+        public void Dispose() => state?.ExitEpoch(handle);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebugView
-        {
-            get
-            {
-                ref var stateCopy = ref state;
-                return Unsafe.IsNullRef(in stateCopy) ? "Empty" : stateCopy.GetDebugView(Handle);
-            }
-        }
+        private string DebugView => state is not null ? state.GetDebugView(handle) : "Empty";
     }
 }

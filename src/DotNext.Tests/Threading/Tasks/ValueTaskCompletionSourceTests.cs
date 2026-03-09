@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
@@ -11,7 +13,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task SuccessfulCompletion(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, default);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
         False(task.IsCompleted);
         True(source.TrySetResult());
         await task;
@@ -23,7 +25,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task CompleteWithError(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, default);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
         True(source.TrySetException(new ArithmeticException()));
         await ThrowsAsync<ArithmeticException>(task.AsTask);
     }
@@ -37,9 +39,27 @@ public sealed class ValueTaskCompletionSourceTests : Test
         using var cancellation = new CancellationTokenSource();
         var task = source.CreateTask(InfiniteTimeSpan, cancellation.Token);
         False(task.IsCompleted);
-        cancellation.Cancel();
+        await cancellation.CancelAsync();
         await ThrowsAsync<OperationCanceledException>(task.AsTask);
         False(source.TrySetResult());
+    }
+
+    [Fact]
+    public static async Task CancelImmediately()
+    {
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetCanceled(new CancellationToken(canceled: true)));
+
+        await ThrowsAsync<OperationCanceledException>(source.CreateTask(InfiniteTimeSpan, new(canceled: false)).AsTask);
+    }
+
+    [Fact]
+    public static void UseTokenAndCompletionData()
+    {
+        var source = new ValueTaskCompletionSource();
+        var expectedToken = source.Reset();
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedTokenAndCustomData(expectedToken, string.Empty)));
+        Same(string.Empty, source.CompletionData);
     }
 
     [Theory]
@@ -48,7 +68,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task ForceTimeout(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
+        var task = source.CreateTask(TimeSpan.FromMilliseconds(20), TestToken);
         await ThrowsAsync<TimeoutException>(task.AsTask);
         False(source.TrySetResult());
     }
@@ -60,10 +80,10 @@ public sealed class ValueTaskCompletionSourceTests : Test
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var completionToken = source.Reset();
-        var task = source.CreateTask(InfiniteTimeSpan, default);
-        False(source.TrySetResult(completionData: null, short.MaxValue));
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        False(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(short.MaxValue)));
         False(task.IsCompleted);
-        True(source.TrySetResult(completionToken));
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(completionToken)));
         await task;
     }
 
@@ -73,12 +93,12 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task Reuse(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, default);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
         True(source.TrySetResult());
         await task;
 
         source.Reset();
-        task = source.CreateTask(InfiniteTimeSpan, default);
+        task = source.CreateTask(InfiniteTimeSpan, TestToken);
         True(source.TrySetResult());
         await task;
     }
@@ -89,9 +109,9 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task AsyncCompletion(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, default);
-        var result = Task.Run(task.AsTask);
-        await Task.Delay(10);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var result = Task.Run(task.AsTask, TestToken);
+        await Task.Delay(10, TestToken);
         True(source.TrySetResult());
         await result;
     }
@@ -102,16 +122,16 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task AsyncLocalAccess(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, default);
-        var local = new AsyncLocal<int>() { Value = 56 };
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var local = new AsyncLocal<int> { Value = 56 };
         var result = Task.Run(async () =>
         {
             Equal(56, local.Value);
             await task;
             Equal(56, local.Value);
-        });
+        }, TestToken);
 
-        await Task.Delay(100);
+        await Task.Delay(100, TestToken);
         True(source.TrySetResult());
         await result;
     }
@@ -122,10 +142,10 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task InteropWithTaskCompletionSourceTimeout(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), default).Task;
+        var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), TestToken).Task;
 
         Equal("Hello, world!", task.AsyncState);
-        await ThrowsAsync<TimeoutException>(Func.Constant(task));
+        await ThrowsAsync<TimeoutException>(task);
     }
 
     [Fact]
@@ -165,31 +185,56 @@ public sealed class ValueTaskCompletionSourceTests : Test
     {
         var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, new(true)).AsTask();
-        await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        await ThrowsAsync<OperationCanceledException>(task);
     }
 
     [Fact]
     public static async Task LazyCompletion()
     {
-        var source = new TestCompletionSource();
+        var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
         
-        True(source.TrySetResult(string.Empty, completionToken: null, e: null, out var resumable));
+        True(TrySetResult(source, new ManualResetCompletionSource.CustomCompletionData(string.Empty), dispatchInfo: null, out var resumable));
         True(resumable);
         Same(string.Empty, source.CompletionData);
         False(task.IsCompleted);
-        
-        source.NotifyConsumer();
+
+        NotifyConsumer(source);
         await task;
+        source.Reset();
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "NotifyConsumer")]
+        static extern void NotifyConsumer(ManualResetCompletionSource source);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "TrySetResult")]
+        static extern bool TrySetResult<TOptions>(ValueTaskCompletionSource source,
+            TOptions options,
+            ExceptionDispatchInfo dispatchInfo,
+            out bool resumable)
+            where TOptions : ManualResetCompletionSource.ICompletionOptions, allows ref struct;
     }
-    
-    private sealed class TestCompletionSource : ValueTaskCompletionSource
+
+    [Fact]
+    public static async Task AttachContinuationToCompletedSource()
     {
-        public new bool TrySetResult(object completionData, short? completionToken, Exception e, out bool resumable)
-            => base.TrySetResult(completionData, completionToken, e, out resumable);
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetResult());
 
-        public new object CompletionData => base.CompletionData;
+        var task = new TaskCompletionSource();
+        var awaiter = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).GetAwaiter();
+        awaiter.UnsafeOnCompleted(() =>
+        {
+            try
+            {
+                awaiter.GetResult();
+                task.SetResult();
+            }
+            catch (Exception e)
+            {
+                task.SetException(e);
+            }
+        });
 
-        public new void NotifyConsumer() => base.NotifyConsumer();
+        await task.Task;
     }
 }

@@ -1,8 +1,7 @@
 using System.Numerics;
+using DotNext.IO;
 
 namespace DotNext.Buffers.Binary;
-
-using static IO.StreamSource;
 
 public sealed class Leb128Tests : Test
 {
@@ -13,8 +12,8 @@ public sealed class Leb128Tests : Test
 
         foreach (var expected in values)
         {
-            True(Leb128<T>.TryGetBytes(expected, buffer, out var bytesWritten));
-            True(Leb128<T>.TryParse(buffer, out var actual, out var bytesConsumed));
+            True(expected.TryWriteLeb128(buffer, out var bytesWritten));
+            True(Leb128.TryReadLeb128<T>(buffer, out var actual, out var bytesConsumed));
             Equal(bytesWritten, bytesConsumed);
             Equal(expected, actual);
         }
@@ -35,10 +34,10 @@ public sealed class Leb128Tests : Test
     [Fact]
     public static void EncodeDecodeEmptyBuffer()
     {
-        False(Leb128<int>.TryGetBytes(42, Span<byte>.Empty, out _));
-        False(Leb128<short>.TryParse(ReadOnlySpan<byte>.Empty, out _, out _));
+        False(42.TryWriteLeb128(Span<byte>.Empty, out _));
+        False(short.TryReadLeb128(ReadOnlySpan<byte>.Empty, out _, out _));
     }
-    
+
     [Theory]
     [InlineData(0)]
     [InlineData(100500)]
@@ -49,8 +48,8 @@ public sealed class Leb128Tests : Test
     public static void CompatibilityWithBinaryReader(int expected)
     {
         var buffer = new byte[Leb128<int>.MaxSizeInBytes];
-        using var reader = new BinaryReader(new ReadOnlyMemory<byte>(buffer).AsStream());
-        True(Leb128<uint>.TryGetBytes((uint)expected, buffer, out _));
+        using var reader = new BinaryReader(Stream.Create(new ReadOnlyMemory<byte>(buffer)));
+        True(((uint)expected).TryWriteLeb128(buffer, out _));
         Equal(expected, reader.Read7BitEncodedInt());
     }
 
@@ -67,7 +66,7 @@ public sealed class Leb128Tests : Test
         using var writer = new BinaryWriter(stream);
         writer.Write7BitEncodedInt(expected);
         
-        True(Leb128<uint>.TryParse(stream.GetBuffer(), out var actual, out _));
+        True(uint.TryReadLeb128(stream.GetBuffer(), out var actual, out _));
         Equal((uint)expected, actual);
     }
 
@@ -77,10 +76,10 @@ public sealed class Leb128Tests : Test
         Equal(Leb128<int>.MaxSizeInBytes, Leb128<uint>.MaxSizeInBytes);
         
         Span<byte> buffer = stackalloc byte[Leb128<int>.MaxSizeInBytes];
-        True(Leb128<uint>.TryGetBytes(0x7Fu, buffer, out var bytesWritten));
+        True(0x7Fu.TryWriteLeb128(buffer, out var bytesWritten));
         Equal(1, bytesWritten);
         
-        True(Leb128<int>.TryGetBytes(0x7F, buffer, out bytesWritten));
+        True(0x7F.TryWriteLeb128(buffer, out bytesWritten));
         Equal(2, bytesWritten);
     }
     

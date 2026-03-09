@@ -8,75 +8,89 @@ namespace DotNext;
 public partial struct UserDataStorage
 {
     // provides a storage of typed user data slots
-    private sealed class BackingStorageEntry
+    [StructLayout(LayoutKind.Auto)]
+    private struct BackingStorageEntry()
     {
+        private readonly Lock syncRoot = new();
         private Array? array; // of type Optional<T>[]
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void CopyTo(int typeIndex, Dictionary<string, object> output)
+        
+        public void CopyTo(int typeIndex, Dictionary<string, object> output)
         {
-            if (array is not null)
+            lock (syncRoot)
             {
-                output.EnsureCapacity(array.Length);
-
-                for (var i = 0; i < array.Length; i++)
+                if (array is not null)
                 {
-                    if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
-                        output[UserDataSlot.ToString(typeIndex, i + 1)] = value;
+                    output.EnsureCapacity(array.Length);
+
+                    for (var i = 0; i < array.Length; i++)
+                    {
+                        if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
+                            output[TypeSlot.ToString(typeIndex, i)] = value;
+                    }
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private void CopyFrom(Array? source)
-            => array = source?.Clone() as Array;
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void CopyTo(BackingStorageEntry destination)
-            => destination.CopyFrom(array);
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal Optional<TValue> Get<TValue>(int index)
         {
-            return Unsafe.As<Optional<TValue>[]>(this.array) is { } array && (uint)index < (uint)array.Length
-                ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index)
-                : Optional.None<TValue>();
+            lock (syncRoot)
+            {
+                array = source?.Clone() as Array;
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal TValue GetOrAdd<TValue>(int index, TValue value)
+        public readonly void CopyTo(ref BackingStorageEntry destination)
         {
-            Debug.Assert(this.array is null or Optional<TValue>[]);
-
-            // resize if needed
-            if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array)
+            lock (syncRoot)
             {
-                this.array = array = new Optional<TValue>[index + 1];
+                destination.CopyFrom(array);
             }
-            else if ((uint)index >= (uint)array.Length)
+        }
+        
+        public readonly Optional<TValue> Get<TValue>(int index)
+        {
+            lock (syncRoot)
             {
-                Array.Resize(ref array, index + 1);
-                this.array = array;
+                return Unsafe.As<Optional<TValue>[]>(this.array) is { } array && (uint)index < (uint)array.Length
+                    ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index)
+                    : Optional.None<TValue>();
             }
-
-            ref var valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-            if (valueRef.HasValue)
+        }
+        
+        public TValue GetOrAdd<TValue>(int index, TValue value)
+        {
+            lock (syncRoot)
             {
-                value = valueRef.ValueOrDefault;
-            }
-            else
-            {
-                valueRef = value;
+                ref var valueRef = ref EnsureSlotAllocated<TValue>(index);
+                if (valueRef.HasValue)
+                {
+                    value = valueRef.ValueOrDefault;
+                }
+                else
+                {
+                    valueRef = value;
+                }
             }
 
             return value;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void Set<TValue>(int index, TValue value)
+        public void Set<TValue>(int index, TValue value)
         {
-            Debug.Assert(this.array is null or Optional<TValue>[]);
+            lock (syncRoot)
+            {
+                EnsureSlotAllocated<TValue>(index) = value;
+            }
+        }
 
+        private ref Optional<TValue> EnsureSlotAllocated<TValue>(int index)
+            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(EnsureCapacity<TValue>(index)), index);
+        
+        private Optional<TValue>[] EnsureCapacity<TValue>(int index)
+        {
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
+            Debug.Assert(this.array is null or Optional<TValue>[]);
+            
             // resize if needed
             if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array)
             {
@@ -88,25 +102,27 @@ public partial struct UserDataStorage
                 this.array = array;
             }
 
-            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index) = value;
+            return array;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal Optional<TValue> Remove<TValue>(int index)
+        public readonly Optional<TValue> Remove<TValue>(int index)
         {
-            Debug.Assert(this.array is null or Optional<TValue>[]);
-
             Optional<TValue> result;
 
-            if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array || (uint)index >= (uint)array.Length)
+            lock (syncRoot)
             {
-                result = Optional.None<TValue>();
-            }
-            else
-            {
-                ref var valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-                result = valueRef;
-                valueRef = Optional.None<TValue>();
+                Debug.Assert(this.array is null or Optional<TValue>[]);
+
+                if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array || (uint)index >= (uint)array.Length)
+                {
+                    result = Optional.None<TValue>();
+                }
+                else
+                {
+                    ref var valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+                    result = valueRef;
+                    valueRef = Optional.None<TValue>();
+                }
             }
 
             return result;
@@ -116,6 +132,8 @@ public partial struct UserDataStorage
     // represents specialized dictionary to store all user data associated with the single object
     private sealed class BackingStorage : ICloneable
     {
+        private readonly Lock syncRoot;
+        
         // Each element indexed using UserDataSlot<T>.TypeIndex
         // Each element in the inner array indexed using UserDataSlot<T>.ValueIndex
         private volatile BackingStorageEntry[] tables;
@@ -128,28 +146,30 @@ public partial struct UserDataStorage
 
         private BackingStorage(bool isEmpty)
         {
+            syncRoot = new();
             if (isEmpty)
             {
                 tables = [];
             }
             else
             {
-                tables = new BackingStorageEntry[UserDataSlot.SlotTypesCount];
-                tables.AsSpan().Initialize();
+                Span.Initialize(tables = new BackingStorageEntry[TypeSlot.Count]);
             }
         }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal BackingStorage Copy()
+        
+        public BackingStorage Copy()
         {
-            var copy = new BackingStorage(isEmpty: true);
-            copy.CopyFrom(tables);
-            return copy;
+            lock (syncRoot)
+            {
+                var copy = new BackingStorage(isEmpty: true);
+                copy.CopyFrom(tables);
+                return copy;
+            }
         }
 
         object ICloneable.Clone() => Copy();
 
-        internal IReadOnlyDictionary<string, object> Dump()
+        public IReadOnlyDictionary<string, object> Dump()
         {
             var tables = this.tables;
             var result = new Dictionary<string, object>(tables.Length);
@@ -160,71 +180,72 @@ public partial struct UserDataStorage
             return result;
         }
 
-        private void CopyFrom(BackingStorageEntry[] source)
+        private void CopyFrom(ReadOnlySpan<BackingStorageEntry> source)
         {
             var destination = new BackingStorageEntry[source.Length];
 
             for (var i = 0; i < source.Length; i++)
-                source[i].CopyTo(destination[i] = new());
+            {
+                ref var entry = ref destination[i];
+                entry = new();
+                source[i].CopyTo(ref entry);
+            }
 
             tables = destination;
         }
 
         // copy must be atomic operation
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void CopyTo(BackingStorage destination)
-            => destination.CopyFrom(tables);
-
-        private Optional<TValue> Get<TValue>(int typeIndex, int valueIndex)
+        public void CopyTo(BackingStorage destination)
         {
-            var tables = this.tables;
-
-            return (uint)typeIndex < (uint)tables.Length
-                ? tables[typeIndex].Get<TValue>(valueIndex)
-                : Optional.None<TValue>();
+            lock (syncRoot)
+            {
+                destination.CopyFrom(tables);
+            }
         }
 
+        private static Optional<TValue> Get<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
+            => (uint)typeIndex < (uint)tables.Length
+                ? tables[typeIndex].Get<TValue>(valueIndex)
+                : Optional.None<TValue>();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Optional<TValue> Get<TValue>(UserDataSlot<TValue> slot)
+        public Optional<TValue> Get<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Get<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return Get<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private BackingStorageEntry[] Resize(int typeIndex)
         {
-            var tables = this.tables;
-            var length = tables.Length;
-
-            if ((uint)typeIndex >= (uint)length)
+            lock (syncRoot)
             {
-                Array.Resize(ref tables, typeIndex + 1);
-                tables.AsSpan(length).Initialize();
-                this.tables = tables;
-            }
+                var tables = this.tables;
+                var length = tables.Length;
 
-            return tables;
+                if ((uint)typeIndex >= (uint)length)
+                {
+                    Array.Resize(ref tables, typeIndex + 1);
+                    tables.AsSpan(length).Initialize();
+                    this.tables = tables;
+                }
+
+                return tables;
+            }
         }
 
         private TValue? GetOrSet<TValue, TSupplier>(int typeIndex, int valueIndex, TSupplier valueFactory)
-           where TSupplier : struct, ISupplier<TValue>
+            where TSupplier : struct, ISupplier<TValue>, allows ref struct
         {
-            var tables = this.tables;
-
-            if ((uint)typeIndex >= (uint)tables.Length)
-                tables = Resize(typeIndex);
-
-            var valueHolder = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(tables), typeIndex);
+            ref var valueHolder = ref EnsureSlotAllocated(typeIndex);
             var result = valueHolder.Get<TValue>(valueIndex);
 
             return result.HasValue ? result.ValueOrDefault : valueHolder.GetOrAdd(valueIndex, valueFactory.Invoke());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
-            where TSupplier : struct, ISupplier<TValue>
+        public TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
+            where TSupplier : struct, ISupplier<TValue>, allows ref struct
         {
             Debug.Assert(slot.IsAllocated);
 
@@ -232,38 +253,39 @@ public partial struct UserDataStorage
         }
 
         private void Set<TValue>(int typeIndex, int valueIndex, TValue value)
-        {
-            var tables = this.tables;
-
-            if ((uint)typeIndex >= (uint)tables.Length)
-                tables = Resize(typeIndex);
-
-            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(tables), typeIndex).Set(valueIndex, value);
-        }
+            => EnsureSlotAllocated(typeIndex).Set(valueIndex, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Set<TValue>(UserDataSlot<TValue> slot, TValue value)
+        public void Set<TValue>(UserDataSlot<TValue> slot, TValue value)
         {
             Debug.Assert(slot.IsAllocated);
 
             Set(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
         }
 
-        private Optional<TValue> Remove<TValue>(int typeIndex, int valueIndex)
+        private ref BackingStorageEntry EnsureSlotAllocated(int typeIndex)
+            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(EnsureCapacity(typeIndex)), typeIndex);
+
+        private BackingStorageEntry[] EnsureCapacity(int typeIndex)
         {
             var tables = this.tables;
+            if ((uint)typeIndex >= (uint)tables.Length)
+                tables = Resize(typeIndex);
 
-            return (uint)typeIndex < (uint)tables.Length
-                ? tables[typeIndex].Remove<TValue>(valueIndex)
-                : Optional.None<TValue>();
+            return tables;
         }
 
+        private static Optional<TValue> Remove<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
+            => (uint)typeIndex < (uint)tables.Length
+                ? tables[typeIndex].Remove<TValue>(valueIndex)
+                : Optional.None<TValue>();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Optional<TValue> Remove<TValue>(UserDataSlot<TValue> slot)
+        public Optional<TValue> Remove<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Remove<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return Remove<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
         }
     }
 
@@ -296,6 +318,6 @@ public partial struct UserDataStorage
     {
         ref var partition = ref GetPartition(source);
         ConditionalWeakTable<object, BackingStorage> newStorage;
-        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
+        return Volatile.Read(in partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }
 }

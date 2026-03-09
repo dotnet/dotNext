@@ -33,7 +33,7 @@ internal sealed class SparseMemoryStream(SparseBufferWriter writer) : ReadOnlySt
             return 0;
 
         var currentBlock = current.WrittenMemory.Span;
-        currentBlock.Slice(offset).CopyTo(output, out var writtenCount);
+        var writtenCount = currentBlock.Slice(offset) >>> output;
         offset += writtenCount;
         position += writtenCount;
         if (offset == currentBlock.Length)

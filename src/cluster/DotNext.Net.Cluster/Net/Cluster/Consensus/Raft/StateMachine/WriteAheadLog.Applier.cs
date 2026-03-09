@@ -69,7 +69,7 @@ partial class WriteAheadLog
         var ts = new Timestamp();
         for (long index = fromIndex, appliedIndex; index <= toIndex; index = long.Max(appliedIndex + 1L, index + 1L))
         {
-            if (metadataPages[index] is { HasPayload: true } metadata)
+            if (metadataPages.GetView<MetadataReader>(index) is { Metadata: { HasPayload: true } metadata })
             {
                 var entry = new LogEntry(metadata, index, dataPages)
                 {

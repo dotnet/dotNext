@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace DotNext;
 
 public partial class ServiceProviderFactory
@@ -7,10 +9,10 @@ public partial class ServiceProviderFactory
     /// </summary>
     public sealed class Builder : ISupplier<IServiceProvider>, IResettable
     {
-        private readonly Dictionary<Type, object?> services = new();
+        private readonly Dictionary<Type, Func<object>> services = new();
 
         /// <summary>
-        /// Registers service of the specified type.
+        /// Registers the service of the specified type.
         /// </summary>
         /// <remarks>
         /// This builder doesn't allow registration of multiple services of the same type.
@@ -21,7 +23,22 @@ public partial class ServiceProviderFactory
         public Builder Add<TService>(TService service)
             where TService : notnull
         {
-            services.Add(typeof(TService), service);
+            services.Add(typeof(TService), Func<object>.Constant(service));
+            return this;
+        }
+
+        /// <summary>
+        /// Registers the service factory of the specified type.
+        /// </summary>
+        /// <param name="factory">The service factory.</param>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <returns>This builder for subsequent calls.</returns>
+        public Builder Add<TService>(Func<TService> factory)
+            where TService : class
+        {
+            ArgumentNullException.ThrowIfNull(factory);
+
+            services.Add(typeof(TService), factory);
             return this;
         }
 
@@ -33,7 +50,7 @@ public partial class ServiceProviderFactory
         public IServiceProvider Build(IServiceProvider? fallback = null)
         {
             if (services.Count == 0)
-                return fallback ?? Empty;
+                return fallback ?? IServiceProvider.Empty;
 
             return new CachedServiceProvider(services, fallback);
         }
@@ -46,4 +63,12 @@ public partial class ServiceProviderFactory
         /// <inheritdoc />
         IServiceProvider ISupplier<IServiceProvider>.Invoke() => Build();
     }
+}
+
+file sealed class CachedServiceProvider(IDictionary<Type, Func<object>> services, IServiceProvider? fallback) : IServiceProvider
+{
+    private readonly FrozenDictionary<Type, Func<object>> services = services.ToFrozenDictionary();
+
+    object? IServiceProvider.GetService(Type serviceType)
+        => services.TryGetValue(serviceType, out var service) ? service.Invoke() : fallback?.GetService(serviceType);
 }

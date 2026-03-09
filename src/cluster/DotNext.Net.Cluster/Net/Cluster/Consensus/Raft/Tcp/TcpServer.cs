@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using Buffers;
+using Reflection;
 using TransportServices;
 using TransportServices.ConnectionOriented;
-using static Reflection.TaskType;
 
 internal sealed class TcpServer : Server, ITcpTransport
 {
@@ -249,7 +249,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         if (disposing)
         {
             CleanUp();
-            if (!SpinWait.SpinUntil(noPendingConnectionsEvent.Task.GetIsCompletedGetter(), GracefulShutdownTimeout))
+            if (!SpinWait.SpinUntil(noPendingConnectionsEvent.Task.IsCompletedGetter, GracefulShutdownTimeout))
                 logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
         }
 

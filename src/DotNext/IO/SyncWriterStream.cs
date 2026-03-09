@@ -1,9 +1,7 @@
 ﻿namespace DotNext.IO;
 
-using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
-
 internal sealed class SyncWriterStream<TOutput>(TOutput output) : WriterStream<TOutput>(output)
-    where TOutput : IReadOnlySpanConsumer, IFlushable
+    where TOutput : IConsumer<ReadOnlySpan<byte>>, IFlushable
 {
     public override bool CanTimeout => false;
 
@@ -14,5 +12,17 @@ internal sealed class SyncWriterStream<TOutput>(TOutput output) : WriterStream<T
     }
 
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
-        => SubmitWrite(buffer.Length, output.Invoke(buffer, token));
+    {
+        var task = ValueTask.CompletedTask;
+        try
+        {
+            Write(buffer.Span);
+        }
+        catch (Exception e)
+        {
+            task = ValueTask.FromException(e);
+        }
+
+        return task;
+    }
 }

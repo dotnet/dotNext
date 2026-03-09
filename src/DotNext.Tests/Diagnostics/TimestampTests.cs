@@ -8,6 +8,7 @@ public sealed class TimestampTests : Test
         var ts = new Timestamp();
         Thread.Sleep(10);
         True(ts.Elapsed >= TimeSpan.FromMilliseconds(10));
+        True(ts.ElapsedTicks >= TimeSpan.FromMicroseconds(10).Ticks);
         True(new Timestamp() > ts);
         True(new Timestamp() != ts);
         var other = ts;
@@ -86,11 +87,15 @@ public sealed class TimestampTests : Test
     public static void PointInTime()
     {
         True(default(Timestamp).IsPast);
+        True(default(Timestamp).IsPast(TimeProvider.System));
         False(default(Timestamp).IsFuture);
+        False(default(Timestamp).IsFuture(TimeProvider.System));
 
         var ts = new Timestamp() + TimeSpan.FromHours(1);
         True(ts.IsFuture);
+        True(ts.IsFuture(TimeProvider.System));
         False(ts.IsPast);
+        False(ts.IsPast(TimeProvider.System));
     }
 
     [Fact]
@@ -110,5 +115,15 @@ public sealed class TimestampTests : Test
         Thread.Sleep(10);
         var e = ts.ElapsedMilliseconds;
         True(e >= 10D);
+    }
+
+    [Fact]
+    public static void CompareExchange()
+    {
+        var current = new Timestamp();
+        var value = default(Timestamp);
+
+        Equal(default, Timestamp.CompareExchange(ref value, current, default));
+        Equal(current, value);
     }
 }

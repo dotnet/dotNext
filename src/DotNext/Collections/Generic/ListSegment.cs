@@ -39,13 +39,13 @@ public readonly struct ListSegment<T> : IList<T>, IReadOnlyList<T>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int ToAbsoluteIndex(int index)
-        => index.IsBetween(0.Enclosed(), Count.Disclosed()) ? index + startIndex : throw new ArgumentOutOfRangeException(nameof(index));
+        => index.IsBetween(0.Enclosed, Count.Disclosed) ? index + startIndex : throw new ArgumentOutOfRangeException(nameof(index));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool ToRelativeIndex(ref int index)
     {
         index -= startIndex;
-        return index.IsBetween(0.Enclosed(), Count.Disclosed());
+        return index.IsBetween(0.Enclosed, Count.Disclosed);
     }
 
     /// <summary>
@@ -144,8 +144,10 @@ public readonly struct ListSegment<T> : IList<T>, IReadOnlyList<T>
     public IEnumerator<T> GetEnumerator()
     {
         var enumerator = list.GetEnumerator();
-        enumerator.Skip(startIndex);
-        return enumerator.Limit(Count);
+
+        return enumerator << startIndex
+            ? enumerator.Limit(Count)
+            : Enumerable.Empty<T>().GetEnumerator();
     }
 
     /// <inheritdoc/>

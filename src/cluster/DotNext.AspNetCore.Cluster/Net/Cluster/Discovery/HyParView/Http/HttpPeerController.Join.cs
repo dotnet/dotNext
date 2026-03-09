@@ -6,7 +6,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
-using IO;
 using IO.Pipelines;
 
 internal partial class HttpPeerController
@@ -36,7 +35,7 @@ internal partial class HttpPeerController
 
     private static EndPoint DeserializeJoinRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return reader.ReadEndPoint();
     }
 

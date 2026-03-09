@@ -35,9 +35,9 @@ internal readonly struct FrameHeader(uint id, FrameControl control, ushort lengt
     public void Format(Span<byte> destination)
     {
         var writer = new SpanWriter<byte>(destination);
-        writer.Add(CurrentVersion);
+        writer += CurrentVersion;
         writer.WriteLittleEndian(id);
-        writer.Add((byte)control);
+        writer += (byte)control;
         writer.WriteLittleEndian(length);
     }
 

@@ -5,7 +5,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
-using Runtime;
+using Runtime.CompilerServices;
 using InlinedToken = ValueTuple<object?>;
 
 /// <summary>
@@ -16,7 +16,7 @@ using InlinedToken = ValueTuple<object?>;
 /// This source is not resettable. Calling of <see cref="CancellationTokenSource.TryReset"/>
 /// may lead to unpredictable results.
 /// </remarks>
-public abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
+internal abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
 {
     // represents inlined CancellationToken
     private InlinedToken cancellationOrigin;
@@ -33,7 +33,7 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
         {
             Debug.Assert(source is LinkedCancellationTokenSource);
 
-            Unsafe.As<LinkedCancellationTokenSource>(source).Cancel(token);
+            Unsafe.As<LinkedCancellationTokenSource>(source).NotifyCancellation(token);
         }
     }
 
@@ -53,18 +53,23 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
         }
     }
 
-    private void Cancel(CancellationToken token)
+    private void NotifyCancellation(CancellationToken token)
     {
         if (TrySetCancellationOrigin(token))
         {
-            try
-            {
-                Cancel(throwOnFirstException: false);
-            }
-            catch (ObjectDisposedException)
-            {
-                // suppress exception
-            }
+            OnCanceled();
+        }
+    }
+
+    private protected virtual void OnCanceled()
+    {
+        try
+        {
+            Cancel(throwOnFirstException: false);
+        }
+        catch (ObjectDisposedException)
+        {
+            // suppress exception
         }
     }
     
@@ -109,6 +114,9 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
         }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private protected bool IsCancellationOriginSet => Volatile.Read(in cancellationOrigin.Item1) is not null;
+
     /// <summary>
     /// Gets the token caused cancellation.
     /// </summary>
@@ -133,7 +141,7 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     }
 
     /// <summary>
-    /// Gets a value indicating that this token source is cancelled by the timeout associated with this source,
+    /// Gets a value indicating that this token source is canceled by the timeout associated with this source,
     /// or by calling <see cref="CancellationTokenSource.Cancel()"/> manually.
     /// </summary>
     internal bool IsRootCause
@@ -149,7 +157,7 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
 
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
-    internal static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, InlinedToken>()
+    internal static bool CanInlineToken => Unsafe.AreCompatible<CancellationToken, InlinedToken>()
                                            && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 
     internal static LinkedCancellationTokenSource? Combine(ref CancellationToken first, CancellationToken second)

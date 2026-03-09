@@ -1,0 +1,66 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Bench" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Cluster/">
+    <Project Path="cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj">
+      <BuildType Solution="Bench|*" Project="Release" />
+    </Project>
+    <Project Path="cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj">
+      <BuildType Solution="Bench|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/Examples/">
+    <Project Path="examples/CommandLineAMI/CommandLineAMI.csproj">
+      <BuildType Solution="Bench|*" Project="Debug" />
+    </Project>
+    <Project Path="examples/HyParViewPeer/HyParViewPeer.csproj">
+      <BuildType Solution="Bench|*" Project="Debug" />
+    </Project>
+    <Project Path="examples/RaftNode/RaftNode.csproj">
+      <BuildType Solution="Bench|*" Project="Release" />
+    </Project>
+    <Project Path="examples/RandomAccessCacheBenchmark/RandomAccessCacheBenchmark.csproj">
+      <BuildType Solution="Bench|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/Misc/">
+    <Project Path="DotNext.Benchmarks.WAL/DotNext.Benchmarks.WAL.csproj">
+      <BuildType Solution="Bench|*" Project="Debug" />
+    </Project>
+    <Project Path="DotNext.Benchmarks/DotNext.Benchmarks.csproj">
+      <BuildType Solution="Bench|*" Project="Release" />
+    </Project>
+    <Project Path="DotNext.Tests/DotNext.Tests.csproj">
+      <BuildType Solution="Bench|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="../CHANGELOG.md" />
+    <File Path="../README.md" />
+    <File Path="../azure-pipelines.yml" />
+    <File Path="Directory.Packages.props" />
+    <File Path="../global.json" />
+  </Folder>
+  <Project Path="DotNext.IO/DotNext.IO.csproj">
+    <BuildType Solution="Bench|*" Project="Release" />
+  </Project>
+  <Project Path="DotNext.MaintenanceServices/DotNext.MaintenanceServices.csproj">
+    <BuildType Solution="Bench|*" Project="Debug" />
+  </Project>
+  <Project Path="DotNext.Metaprogramming/DotNext.Metaprogramming.csproj">
+    <BuildType Solution="Bench|*" Project="Release" />
+  </Project>
+  <Project Path="DotNext.Threading/DotNext.Threading.csproj">
+    <BuildType Solution="Bench|*" Project="Release" />
+  </Project>
+  <Project Path="DotNext.Unsafe/DotNext.Unsafe.csproj">
+    <BuildType Solution="Bench|*" Project="Release" />
+  </Project>
+  <Project Path="DotNext/DotNext.csproj">
+    <BuildType Solution="Bench|*" Project="Release" />
+  </Project>
+</Solution>

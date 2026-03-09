@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-[Experimental("DOTNEXT001")]
 internal sealed class NoOpStateMachine : NoOpSnapshotManager, IStateMachine
 {
     public readonly Dictionary<long, object> Context = new();

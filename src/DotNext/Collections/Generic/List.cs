@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -16,92 +15,70 @@ using static Reflection.CollectionType;
 public static partial class List
 {
     /// <summary>
-    /// Provides strongly-typed access to list indexer.
+    /// Extends <see cref="IReadOnlyList{T}"/> type.
     /// </summary>
     /// <typeparam name="T">Type of list items.</typeparam>
-    public static class Indexer<T>
+    /// <param name="list">Read-only list instance.</param>
+    extension<T>(IReadOnlyList<T> list)
     {
         /// <summary>
-        /// Represents read-only list item getter.
+        /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
+        /// attached to the list instance.
         /// </summary>
-        public static Func<IReadOnlyList<T>, int, T> ReadOnly { get; }
-
-        /// <summary>
-        /// Represents list item getter.
-        /// </summary>
-        public static Func<IList<T>, int, T> Getter { get; }
-
-        /// <summary>
-        /// Represents list item setter.
-        /// </summary>
-        public static Action<IList<T>, int, T> Setter { get; }
-
-        static Indexer()
+        /// <value>A delegate representing indexer.</value>
+        public Func<int, T> IndexerGetter
         {
-            Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-            Pop(out RuntimeMethodHandle method);
-            Ldtoken(Type<IReadOnlyList<T>>());
-            Pop(out RuntimeTypeHandle type);
-            ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
-
-            Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Ldtoken(Type<IList<T>>());
-            Pop(out type);
-            Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
-
-            Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<int, T>>();
+            }
         }
     }
 
     /// <summary>
-    /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
-    /// attached to the list instance.
-    /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    /// <param name="list">Read-only list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list)
-    {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Func<int, T>>();
-    }
-
-    /// <summary>
-    /// Returns <see cref="IList{T}.get_Item"/> as delegate
-    /// attached to the list instance.
+    /// Extends <see cref="IList{T}"/> type.
     /// </summary>
     /// <typeparam name="T">Type of list items.</typeparam>
     /// <param name="list">Mutable list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Func<int, T> IndexerGetter<T>(this IList<T> list)
+    extension<T>(IList<T> list)
     {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Func<int, T>>();
-    }
+        /// <summary>
+        /// Returns <see cref="IList{T}.get_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <value>A delegate representing indexer.</value>
+        public Func<int, T> IndexerGetter
+        {
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertyGet(Type<IList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<int, T>>();
+            }
+        }
 
-    /// <summary>
-    /// Returns <see cref="IList{T}.set_Item"/> as delegate
-    /// attached to the list instance.
-    /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    /// <param name="list">Mutable list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Action<int, T> IndexerSetter<T>(this IList<T> list)
-    {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertySet(Type<IList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Action<int, T>>();
+        /// <summary>
+        /// Returns <see cref="IList{T}.set_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <returns>A delegate representing indexer.</returns>
+        public Action<int, T> IndexerSetter
+        {
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertySet(Type<IList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Action<int, T>>();
+            }
+        }
     }
 
     private static TOutput[] ToArray<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
@@ -187,16 +164,41 @@ public static partial class List
     /// <typeparam name="TInput">Type of items in the source list.</typeparam>
     /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
     /// <returns>Lazily converted read-only list.</returns>
-    public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
+    public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Func<TInput, TOutput> converter)
         => new(list, converter);
 
     /// <summary>
-    /// Constructs read-only list with a single item in it.
+    /// Extends <see cref="IReadOnlyList{T}"/> type.
     /// </summary>
-    /// <param name="item">An item to be placed into list.</param>
     /// <typeparam name="T">Type of list items.</typeparam>
-    /// <returns>Read-only list containing single item.</returns>
-    public static IReadOnlyList<T> Singleton<T>(T item) => new Specialized.SingletonList<T> { Item = item };
+    extension<T>(IReadOnlyList<T>)
+    {
+        /// <summary>
+        /// Constructs read-only list with a single item in it.
+        /// </summary>
+        /// <param name="item">An item to be placed into list.</param>
+        /// <returns>Read-only list containing single item.</returns>
+        public static IReadOnlyList<T> Singleton(T item) => new Specialized.SingletonList<T> { Item = item };
+
+        /// <summary>
+        /// Generates a list that contains one repeated value.
+        /// </summary>
+        /// <param name="item">The item to be returned from the list.</param>
+        /// <param name="count">The number of elements in the list.</param>
+        /// <returns>A list that contains a repeated value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+        public static IReadOnlyList<T> Repeat(T item, int count)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+            return count switch
+            {
+                0 => [],
+                1 => Singleton(item),
+                _ => new RepeatList<T>(item, count),
+            };
+        }
+    }
 
     /// <summary>
     /// Inserts the item into sorted list.
@@ -317,7 +319,7 @@ public static partial class List
         => list.Insert(index.GetOffset(list.Count), item);
 
     /// <summary>
-    /// Removes the item at the specifie index.
+    /// Removes the item at the specified index.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="list">The list to modify.</param>
@@ -336,24 +338,4 @@ public static partial class List
     /// <returns>The section of the list.</returns>
     public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
         => new(list, range);
-
-    /// <summary>
-    /// Generates a list that contains one repeated value.
-    /// </summary>
-    /// <param name="item">The item to be returned from the list.</param>
-    /// <param name="count">The number of elements in the list.</param>
-    /// <typeparam name="T">Type of the list.</typeparam>
-    /// <returns>A list that contains a repeated value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
-    public static IReadOnlyList<T> Repeat<T>(T item, int count)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(count);
-
-        return count switch
-        {
-            0 => Array.Empty<T>(),
-            1 => Singleton(item),
-            _ => new RepeatList<T>(item, count),
-        };
-    }
 }

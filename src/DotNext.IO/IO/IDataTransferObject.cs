@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 
 namespace DotNext.IO;
 
@@ -86,8 +85,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfEmpty(buffer);
 
         try
         {
@@ -114,7 +112,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        var buffer = allocator.AllocateAtLeast(DefaultBufferSize);
+        var buffer = allocator.DefaultIfNull.AllocateAtLeast(DefaultBufferSize);
         try
         {
             return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -156,12 +154,10 @@ public interface IDataTransferObject
         => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
     // use rented buffer of the small size
-    private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
+    private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, int length, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        Debug.Assert(length <= Array.MaxLength);
-
-        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = (int)length };
+        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
     }
@@ -172,10 +168,9 @@ public interface IDataTransferObject
         where TTransformation : ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
-        await using (output.ConfigureAwait(false))
+        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
+        try
         {
-            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
-
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
 
@@ -184,8 +179,19 @@ public interface IDataTransferObject
                 return await parser.TransformAsync(new SequenceReader(memory), token).ConfigureAwait(false);
 
             var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
-            await using (input.ConfigureAwait(false))
+            try
+            {
                 return await parser.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                await input.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            buffer.Dispose();
+            await output.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -205,10 +211,9 @@ public interface IDataTransferObject
             PreallocationSize = length,
         });
 
-        await using (fs.ConfigureAwait(false))
+        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
+        try
         {
-            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
-
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
             await fs.FlushAsync(token).ConfigureAwait(false);
@@ -216,6 +221,11 @@ public interface IDataTransferObject
             // deserialize
             fs.Position = 0L;
             return await parser.TransformAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+        }
+        finally
+        {
+            buffer.Dispose();
+            await fs.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -236,12 +246,12 @@ public interface IDataTransferObject
         where TTransformation : ITransformation<TResult>
     {
         if (TryGetMemory(out var memory))
-            return transformation.TransformAsync(IAsyncBinaryReader.Create(memory), token);
+            return transformation.TransformAsync(new SequenceReader(memory), token);
 
         return Length switch
         {
             { } length and < FileBufferingWriter.Options.DefaultMemoryThreshold => GetSmallObjectDataAsync<TResult, TTransformation>(transformation,
-                length, token),
+                int.CreateTruncating(length), token),
             { } length => GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token),
             _ => GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token)
         };

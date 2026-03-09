@@ -7,10 +7,7 @@ public partial class SparseBufferWriter<T>
     internal abstract class MemoryChunk : Disposable
     {
         private protected MemoryChunk(MemoryChunk? previous)
-        {
-            if (previous is not null)
-                previous.Next = this;
-        }
+            => previous?.Next = this;
 
         internal abstract int FreeCapacity { get; }
 
@@ -52,7 +49,7 @@ public partial class SparseBufferWriter<T>
         internal override int Write(ReadOnlySpan<T> input) => 0;
     }
 
-    private sealed class PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null) : MemoryChunk(previous)
+    private sealed class PooledMemoryChunk(MemoryAllocator<T> allocator, int length, MemoryChunk? previous = null) : MemoryChunk(previous)
     {
         private MemoryOwner<T> owner = allocator.AllocateAtLeast(length);
         private int writtenCount;
@@ -73,7 +70,7 @@ public partial class SparseBufferWriter<T>
 
         internal override int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(FreeSpan, out var count);
+            var count = input >>> FreeSpan;
             writtenCount += count;
             return count;
         }
@@ -86,7 +83,7 @@ public partial class SparseBufferWriter<T>
             writtenCount = length;
         }
 
-        internal void Realloc(MemoryAllocator<T>? allocator, int length)
+        internal void Realloc(MemoryAllocator<T> allocator, int length)
         {
             owner.Dispose();
             owner = allocator.AllocateAtLeast(length);

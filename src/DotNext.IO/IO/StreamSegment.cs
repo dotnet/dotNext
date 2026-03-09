@@ -1,6 +1,6 @@
 ﻿namespace DotNext.IO;
 
-using static Buffers.Memory;
+using Buffers;
 
 /// <summary>
 /// Represents read-only view over the portion of underlying stream.
@@ -20,22 +20,23 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     public Stream BaseStream => stream;
 
     /// <summary>
-    /// Establishes segment bounds.
+    /// Gets or sets the segment range.
     /// </summary>
-    /// <remarks>
-    /// This method modifies <see cref="Stream.Position"/> property of the underlying stream.
-    /// </remarks>
-    /// <param name="offset">The offset in the underlying stream.</param>
-    /// <param name="length">The length of the segment.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the remaining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
-    public void Adjust(long offset, long length)
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The length is larger than the remaining length of the underlying stream;
+    /// or the offset is greater than the length of the underlying stream.
+    /// </exception>
+    public (long Offset, long Length) Range
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)stream.Length, nameof(offset));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(stream.Length - offset), nameof(length));
+        get => (offset, length);
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value.Offset, (ulong)stream.Length, nameof(value));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value.Length, (ulong)(stream.Length - value.Offset), nameof(value));
 
-        this.length = length;
-        this.offset = offset;
-        stream.Position = offset;
+            (offset, length) = value;
+            stream.Position = offset;
+        }
     }
 
     /// <summary>
@@ -99,7 +100,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
-        => stream.Read(buffer.TrimLength(int.CreateSaturating(RemainingBytes)));
+        => stream.Read(buffer % int.CreateSaturating(RemainingBytes));
 
     /// <inheritdoc/>
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -117,7 +118,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-        => stream.ReadAsync(buffer.TrimLength(int.CreateSaturating(RemainingBytes)), token);
+        => stream.ReadAsync(buffer % int.CreateSaturating(RemainingBytes), token);
 
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)

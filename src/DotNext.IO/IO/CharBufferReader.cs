@@ -14,7 +14,7 @@ internal sealed class CharBufferReader : TextBufferReader
     /// Initializes a new reader for the buffer containing characters.
     /// </summary>
     /// <param name="sequence">The buffer containing characters.</param>
-    internal CharBufferReader(ReadOnlySequence<char> sequence)
+    internal CharBufferReader(in ReadOnlySequence<char> sequence)
     {
         this.sequence = sequence;
         position = sequence.Start;
@@ -29,7 +29,7 @@ internal sealed class CharBufferReader : TextBufferReader
         int result;
         if (!buffer.IsEmpty && sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty)
         {
-            block.Span.CopyTo(buffer, out result);
+            result = block.Span >>> buffer;
             position = sequence.GetPosition(result, position);
         }
         else
@@ -87,7 +87,7 @@ internal sealed class CharBufferReader : TextBufferReader
             length += newLineBufferPosition;
 
         exit:
-        return length == 0L ? defaultResult : sequence.Slice(start, length).ToString();
+        return length is 0L ? defaultResult : sequence.Slice(start, length).ToString();
     }
 
     /// <inheritdoc />

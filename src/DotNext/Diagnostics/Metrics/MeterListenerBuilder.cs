@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using System.Numerics;
 
 namespace DotNext.Diagnostics.Metrics;
 
@@ -18,7 +19,7 @@ public sealed class MeterListenerBuilder
     /// <typeparam name="TInstrument">The type of the instrument.</typeparam>
     /// <returns>This builder.</returns>
     public MeterListenerBuilder Observe<TMeasurement, TInstrument>(Predicate<TInstrument> filter, InstrumentObserver<TMeasurement, TInstrument> observer)
-        where TMeasurement : struct
+        where TMeasurement : unmanaged, INumberBase<TMeasurement>
         where TInstrument : Instrument<TMeasurement>
     {
         registration += new InstrumentHandler<TMeasurement, TInstrument>(filter, observer).Publish;
@@ -37,7 +38,7 @@ public sealed class MeterListenerBuilder
     
     private sealed class InstrumentHandler<TMeasurement, TInstrument>(Predicate<TInstrument> filter,
         InstrumentObserver<TMeasurement, TInstrument> observer)
-        where TMeasurement : struct
+        where TMeasurement : unmanaged, INumberBase<TMeasurement>
         where TInstrument : Instrument<TMeasurement>
     {
         public void Publish(Instrument instrument, MeterListener listener)

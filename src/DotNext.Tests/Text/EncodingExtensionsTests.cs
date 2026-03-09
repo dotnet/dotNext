@@ -4,10 +4,12 @@ namespace DotNext.Text;
 
 public sealed class EncodingExtensionsTests : Test
 {
-    [Fact]
-    public static void ByteOrderMark()
+    public static TheoryData<Encoding> NoBomEncodings => [Encoding.UTF8.WithoutPreamble, Encoding.UTF8NoBom];
+    
+    [Theory]
+    [MemberData(nameof(NoBomEncodings))]
+    public static void ByteOrderMark(Encoding withoutPreamble)
     {
-        var withoutPreamble = Encoding.UTF8.WithoutPreamble();
         Empty(withoutPreamble.GetPreamble());
         Equal(Encoding.UTF8.BodyName, withoutPreamble.BodyName);
         Equal(Encoding.UTF8.IsAlwaysNormalized(), withoutPreamble.IsAlwaysNormalized());

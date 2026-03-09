@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext;
 
@@ -9,7 +11,7 @@ namespace DotNext;
 /// <seealso cref="StringComparer"/>
 public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
 {
-    private static readonly DefaultCharComparer?[] CachedComparers = new DefaultCharComparer?[(int)Enum.GetValues<StringComparison>().Max() + 1];
+    private static readonly CharComparer?[] CachedComparers = new CharComparer?[(int)Enum.GetValues<StringComparison>().Max() + 1];
 
     /// <summary>
     /// Initializes a new instance of comparer.
@@ -80,14 +82,14 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     {
         var index = (int)comparison;
 
-        return (uint)index < (uint)CachedComparers.Length ?
-            EnsureInitialized(ref CachedComparers[index], comparison)
+        return (uint)index < (uint)CachedComparers.Length
+            ? EnsureInitialized(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(CachedComparers), index), comparison)
             : throw new ArgumentOutOfRangeException(nameof(comparison));
 
-        static DefaultCharComparer EnsureInitialized(ref DefaultCharComparer? comparer, StringComparison comparison)
+        static CharComparer EnsureInitialized(ref CharComparer? comparer, StringComparison comparison)
         {
             DefaultCharComparer newComparer;
-            return Volatile.Read(ref comparer) ?? Interlocked.CompareExchange(ref comparer, newComparer = new(comparison), null) ?? newComparer;
+            return Volatile.Read(in comparer) ?? Interlocked.CompareExchange(ref comparer, newComparer = new(comparison), null) ?? newComparer;
         }
     }
 
@@ -104,32 +106,32 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
 
         return new CultureSpecificCharComparer(culture, options);
     }
+}
 
-    private sealed class DefaultCharComparer(StringComparison comparisonType) : CharComparer
-    {
-        public override bool Equals(char x, char y)
-            => Equals(x, y, comparisonType);
+file sealed class DefaultCharComparer(StringComparison comparisonType) : CharComparer
+{
+    public override bool Equals(char x, char y)
+        => Equals(x, y, comparisonType);
 
-        public override int Compare(char x, char y)
-            => Compare(x, y, comparisonType);
+    public override int Compare(char x, char y)
+        => Compare(x, y, comparisonType);
 
-        public override int GetHashCode(char ch)
-            => GetHashCode(ch, comparisonType);
+    public override int GetHashCode(char ch)
+        => GetHashCode(ch, comparisonType);
 
-        public override string ToString() => comparisonType.ToString();
-    }
+    public override string ToString() => comparisonType.ToString();
+}
 
-    private sealed class CultureSpecificCharComparer(CultureInfo culture, CompareOptions options) : CharComparer
-    {
-        private readonly CompareInfo comparison = culture.CompareInfo;
+file sealed class CultureSpecificCharComparer(CultureInfo culture, CompareOptions options) : CharComparer
+{
+    private readonly CompareInfo comparison = culture.CompareInfo;
 
-        public override bool Equals(char x, char y)
-            => Compare(x, y) is 0;
+    public override bool Equals(char x, char y)
+        => Compare(x, y) is 0;
 
-        public override int Compare(char x, char y)
-            => comparison.Compare(new ReadOnlySpan<char>(ref x), new(ref y), options);
+    public override int Compare(char x, char y)
+        => comparison.Compare(new ReadOnlySpan<char>(ref x), new(ref y), options);
 
-        public override int GetHashCode(char ch)
-            => comparison.GetHashCode(new ReadOnlySpan<char>(ref ch), options);
-    }
+    public override int GetHashCode(char ch)
+        => comparison.GetHashCode(new ReadOnlySpan<char>(ref ch), options);
 }

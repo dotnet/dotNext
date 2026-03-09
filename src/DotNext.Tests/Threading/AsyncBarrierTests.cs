@@ -9,7 +9,7 @@ public sealed class AsyncBarrierTests : Test
     public static async Task RemovingWaitingParticipants()
     {
         using var barrier = new AsyncBarrier(4);
-        var task = barrier.SignalAndWaitAsync();
+        var task = barrier.SignalAndWaitAsync(TestToken);
         Equal(3, barrier.ParticipantsRemaining);
         barrier.RemoveParticipants(2);
         Equal(1, barrier.ParticipantsRemaining);
@@ -41,7 +41,7 @@ public sealed class AsyncBarrierTests : Test
 
             var tasks = new Task[actions.Length];
             for (var k = 0; k < tasks.Length; k++)
-                tasks[k] = Task.Factory.StartNew(index => actions[Convert.ToInt32(index)](), k, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+                tasks[k] = Task.Factory.StartNew(index => actions[Convert.ToInt32(index)](), k, TestToken, TaskCreationOptions.None, TaskScheduler.Default);
             await Task.WhenAll(tasks);
             Equal(0, barrier.ParticipantCount);
         }
@@ -53,16 +53,16 @@ public sealed class AsyncBarrierTests : Test
         using var barrier = new AsyncBarrier(3);
         ICollection<Task> tasks = new LinkedList<Task>();
         Equal(0, barrier.CurrentPhaseNumber);
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
-        tasks.Add(barrier.SignalAndWaitAsync(InfiniteTimeSpan).AsTask());
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(TestToken).AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(InfiniteTimeSpan, TestToken).AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(TestToken).AsTask());
         await Task.WhenAll(tasks);
         Equal(1, barrier.CurrentPhaseNumber);
 
         tasks.Clear();
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(TestToken).AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(TestToken).AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(TestToken).AsTask());
         await Task.WhenAll(tasks);
         Equal(2, barrier.CurrentPhaseNumber);
     }
@@ -74,13 +74,13 @@ public sealed class AsyncBarrierTests : Test
 
         var task1 = Task.Run(async () =>
         {
-            await barrier.SignalAndWaitAsync();
+            await barrier.SignalAndWaitAsync(TestToken);
             return 24;
         });
 
         var task2 = Task.Run(async () =>
         {
-            await barrier.SignalAndWaitAsync();
+            await barrier.SignalAndWaitAsync(TestToken);
             return 42;
         });
 
@@ -97,15 +97,15 @@ public sealed class AsyncBarrierTests : Test
 
         var task1 = Task.Run(async () =>
         {
-            await barrier.SignalAndWaitAsync();
+            await barrier.SignalAndWaitAsync(TestToken);
             Equal(2L, barrier.ParticipantsRemaining);
-        });
+        }, TestToken);
 
         var task2 = Task.Run(async () =>
         {
-            await barrier.SignalAndWaitAsync();
+            await barrier.SignalAndWaitAsync(TestToken);
             Equal(2L, barrier.ParticipantsRemaining);
-        });
+        }, TestToken);
 
         await Task.WhenAll(task1, task2);
     }

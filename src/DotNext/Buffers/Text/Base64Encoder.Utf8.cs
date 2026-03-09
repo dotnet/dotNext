@@ -1,17 +1,20 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
 
 using Buffers;
+using Runtime.InteropServices;
 
 public partial struct Base64Encoder
 {
-    private void EncodeToUtf8Core(scoped ReadOnlySpan<byte> bytes, ref BufferWriterSlim<byte> chars, bool flush)
+    private void EncodeToUtf8Core<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped TWriter writer, bool flush)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         var charsWritten = Base64.GetMaxEncodedToUtf8Length(bytes.Length);
-        var buffer = chars.InternalGetSpan(charsWritten);
+        var buffer = writer.GetSpan(charsWritten);
 
         switch (Base64.EncodeToUtf8(bytes, buffer, out var bytesRead, out charsWritten, (bytes.Length % 3) is 0 || flush))
         {
@@ -21,14 +24,15 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - bytesRead;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(bytesRead).CopyTo(Span.AsBytes(ref reservedBuffer));
+                bytes.Slice(bytesRead).CopyTo(MemoryMarshal.AsBytes(ref reservedBuffer));
                 break;
         }
 
-        chars.Advance(charsWritten);
+        writer.Advance(charsWritten);
     }
 
-    private void EncodeToUtf8Buffered(scoped ReadOnlySpan<byte> bytes, ref BufferWriterSlim<byte> chars, bool flush)
+    private void EncodeToUtf8Buffered<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped TWriter writer, bool flush)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         if (HasBufferedData)
         {
@@ -36,12 +40,12 @@ public partial struct Base64Encoder
             tempBuffer.Write(BufferedData);
             bytes = bytes.Slice(tempBuffer.Write(bytes));
 
-            EncodeToUtf8Core(tempBuffer.WrittenSpan, ref chars, bytes.IsEmpty && flush);
+            EncodeToUtf8Core(tempBuffer.WrittenSpan, writer, bytes.IsEmpty && flush);
         }
 
-        if (bytes.IsEmpty is false)
+        if (bytes.Length > 0)
         {
-            EncodeToUtf8Core(bytes, ref chars, flush);
+            EncodeToUtf8Core(bytes, writer, flush);
         }
     }
 
@@ -56,13 +60,13 @@ public partial struct Base64Encoder
     /// </param>
     /// <returns>The buffer containing encoded bytes.</returns>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public MemoryOwner<byte> EncodeToUtf8(ReadOnlySpan<byte> bytes, MemoryAllocator<byte>? allocator = null, bool flush = false)
+    public MemoryOwner<byte> EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, MemoryAllocator<byte>? allocator = null, bool flush = false)
     {
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
         var writer = new BufferWriterSlim<byte>(GetMaxEncodedLength(bytes.Length), allocator);
-        EncodeToUtf8Buffered(bytes, ref writer, flush);
+        EncodeToUtf8Buffered<BufferWriterSlim<byte>.Ref>(bytes, new(ref writer), flush);
 
         return writer.DetachOrCopyBuffer();
     }
@@ -80,12 +84,12 @@ public partial struct Base64Encoder
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToUtf8(ReadOnlySpan<byte> bytes, ref BufferWriterSlim<byte> chars, bool flush = false)
+    public void EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, scoped ref BufferWriterSlim<byte> chars, bool flush = false)
     {
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
-        EncodeToUtf8Buffered(bytes, ref chars, flush);
+        EncodeToUtf8Buffered<BufferWriterSlim<byte>.Ref>(bytes, new(ref chars), flush);
     }
 
     /// <summary>
@@ -99,19 +103,14 @@ public partial struct Base64Encoder
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="chars"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToUtf8(ReadOnlySpan<byte> bytes, IBufferWriter<byte> chars, bool flush = false)
+    public void EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, IBufferWriter<byte> chars, bool flush = false)
     {
         ArgumentNullException.ThrowIfNull(chars);
 
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
-        var maxChars = GetMaxEncodedLength(bytes.Length);
-        var writer = new BufferWriterSlim<byte>(chars.GetSpan(maxChars));
-        EncodeToUtf8Buffered(bytes, ref writer, flush);
-
-        Debug.Assert(writer.WrittenCount <= maxChars);
-        chars.Advance(writer.WrittenCount);
+        EncodeToUtf8Buffered<BufferWriterReference<byte>>(bytes, new(chars), flush);
     }
 
     /// <summary>
@@ -124,7 +123,7 @@ public partial struct Base64Encoder
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<byte>> EncodeToUtf8Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes,
         MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator, token);
+        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator.DefaultIfNull, token);
 
     /// <summary>
     /// Flushes the buffered data as base64-encoded UTF-8 characters to the output buffer.

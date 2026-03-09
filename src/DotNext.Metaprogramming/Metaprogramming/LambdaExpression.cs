@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
+using DotNext.Reflection;
 
 namespace DotNext.Metaprogramming;
 
-using static Reflection.DelegateType;
-using List = Collections.Generic.List;
+using Collections.Generic;
 
 /// <summary>
 /// Represents lambda function builder.
@@ -56,7 +56,7 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
     {
         if (typeof(TDelegate).IsAbstract)
             throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
-        var invokeMethod = GetInvokeMethod<TDelegate>();
+        var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         Parameters = GetParameters(invokeMethod.GetParameters());
         returnType = invokeMethod.ReturnType;
     }
@@ -78,7 +78,7 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
     {
         get
         {
-            if (returnType == typeof(void))
+            if (returnType.IsVoid)
                 return null;
             if (lambdaResult is null)
                 DeclareVariable(lambdaResult = Expression.Variable(returnType, "result"));
@@ -112,7 +112,7 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
         if (recursion is not null)
         {
             body = Expression.Block(
-                List.Singleton(recursion),
+                IReadOnlyList<ParameterExpression>.Singleton(recursion),
                 Expression.Assign(recursion, Expression.Lambda<TDelegate>(body, tailCall, Parameters)),
                 Expression.Invoke(recursion, Parameters));
         }

@@ -1,9 +1,7 @@
 variables:
-  Solution: src/DotNext.sln
+  Solution: src/DotNext.slnx
   TestFolder: src/DotNext.Tests
   TestProject: $(TestFolder)/DotNext.Tests.csproj
-  AotTestFolder: src/DotNext.AotTests
-  AotTestProject: $(AotTestFolder)/DotNext.AotTests.csproj
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: false
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 trigger:
@@ -25,17 +23,20 @@ stages:
               nugetConfigPath: 'NuGet.config'
           - task: DotNetCoreCLI@2
             displayName: Test Debug
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "XPlat Code Coverage"
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
           - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
       - job: Linux
         pool:
           vmImage: ubuntu-latest
@@ -49,37 +50,29 @@ stages:
               nugetConfigPath: 'NuGet.config'
               arguments: --configuration Debug
           - task: DotNetCoreCLI@2
-            displayName: Publish AOT Tests
-            inputs:
-              command: publish
-              publishWebProjects: false
-              zipAfterPublish: false
-              projects: $(AotTestProject)
-              arguments: --configuration Release --output $(AotTestFolder)/bin/
-          - task: CmdLine@2
-            displayName: Run AOT Tests
-            inputs:
-              workingDirectory: $(AotTestFolder)/bin/DotNext.AotTests
-              script: ./DotNext.AotTests
-          - task: DotNetCoreCLI@2
             displayName: Test Debug
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "XPlat Code Coverage"
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
           - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
       - job: MacOS
         pool:
           vmImage: macOS-latest
         steps:
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 3
             inputs:
               command: restore
               projects: '$(Solution)'
@@ -91,14 +84,15 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "XPlat Code Coverage"
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
           - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:

@@ -1,5 +1,3 @@
-using Debug = System.Diagnostics.Debug;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using IO;

@@ -7,14 +7,16 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Enumerator = Collections.Generic.Enumerator;
+using Runtime;
+using Runtime.CompilerServices;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
 /// </summary>
 /// <typeparam name="T">The data type that can be written.</typeparam>
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
-public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
+public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
 {
     private const string ElementTypeMeterAttribute = "dotnext.buffers.element";
 
@@ -55,6 +57,28 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <inheritdoc/>
     ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
 
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<ReadOnlyMemory<T>>() = WrittenMemory;
+                break;
+            case 1:
+                this.As<IGrowableBuffer<T>>().Write(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    IFunctional.GetArgument<CancellationToken>(in args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
+
     /// <summary>
     /// Gets or sets the amount of data written to the underlying memory so far.
     /// </summary>
@@ -88,14 +112,11 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
         => consumer.Invoke(WrittenMemory.Span);
 
     /// <inheritdoc />
-    void IGrowableBuffer<T>.Clear() => Clear();
+    void IResettable.Reset() => Clear();
 
     /// <inheritdoc />
     int IGrowableBuffer<T>.CopyTo(Span<T> output)
-    {
-        WrittenMemory.Span.CopyTo(output, out var writtenCount);
-        return writtenCount;
-    }
+        => WrittenMemory.Span >>> output;
 
     /// <inheritdoc />
     bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
@@ -119,6 +140,9 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
         position += 1;
     }
 
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add(item);
+
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);
 
@@ -133,22 +157,13 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
             return;
 
         var span = GetSpan(items.Count);
-        int count;
-        switch (items)
+        var count = items switch
         {
-            case List<T> list:
-                CollectionsMarshal.AsSpan(list).CopyTo(span, out count);
-                break;
-            case T[] array:
-                array.AsSpan().CopyTo(span, out count);
-                break;
-            case ArraySegment<T> segment:
-                segment.AsSpan().CopyTo(span, out count);
-                break;
-            default:
-                count = CopyFromCollection(items, span);
-                break;
-        }
+            List<T> list => CollectionsMarshal.AsSpan(list) >>> span,
+            T[] array => array.AsSpan() >>> span,
+            ArraySegment<T> segment => segment.AsSpan() >>> span,
+            _ => CopyFromCollection(items, span)
+        };
 
         position += count;
 
@@ -212,14 +227,9 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
 
         var newPosition = position + count;
         if ((uint)newPosition > (uint)Capacity)
-            ThrowInvalidOperationException();
+            InvalidOperationException.Throw();
 
         position = newPosition;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidOperationException()
-            => throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -289,7 +299,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// Gets enumerator over all written elements.
     /// </summary>
     /// <returns>The enumerator over all written elements.</returns>
-    public IEnumerator<T> GetEnumerator() => Enumerator.ToEnumerator(WrittenMemory);
+    public IEnumerator<T> GetEnumerator() => MemoryMarshal.ToEnumerator(WrittenMemory);
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

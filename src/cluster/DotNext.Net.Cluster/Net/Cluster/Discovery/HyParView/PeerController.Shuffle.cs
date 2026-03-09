@@ -25,7 +25,7 @@ public partial class PeerController
 
     private async Task ProcessShuffleAsync()
     {
-        if (random.Peek(activeView).TryGet(out var activePeer))
+        if (!activeView.IsEmpty && random.Peek(activeView) is { } activePeer)
         {
             PoolingArrayBufferWriter<EndPoint> peersToSend;
 
@@ -38,8 +38,8 @@ public partial class PeerController
 
                 // add randomly selected peers from active and passive views
                 peersToSend = new PoolingArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
-                peersToSend.Write(activeViewCopy.Span.TrimLength(shuffleActiveViewCount));
-                peersToSend.Write(passiveViewCopy.Span.TrimLength(shufflePassiveViewCount));
+                peersToSend.Write(activeViewCopy.Span % shuffleActiveViewCount);
+                peersToSend.Write(passiveViewCopy.Span % shufflePassiveViewCount);
             }
 
             // attempts to send Shuffle message to the randomly selected peer
@@ -128,7 +128,8 @@ public partial class PeerController
 
             await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
         }
-        else if (random.Peek(activeView.Except(new[] { sender, origin })).TryGet(out var activePeer))
+        else if (activeView.Except([sender, origin]) is { IsEmpty: false } view
+                 && random.Peek(view) is { } activePeer)
         {
             // resend announcement
             await ShuffleAsync(activePeer, origin, announcement, ttl - 1, LifecycleToken).ConfigureAwait(false);

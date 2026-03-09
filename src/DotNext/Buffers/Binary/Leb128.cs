@@ -31,7 +31,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
 
     static Leb128()
     {
-        var bitCount = Number.GetMaxByteCount<T>() * 8;
+        var bitCount = Number.get_MaxByteCount<T>() * 8;
         bitCount = Math.DivRem(bitCount, 7, out var remainder);
         bitCount += Unsafe.BitCast<bool, byte>(remainder is not 0);
         
@@ -60,7 +60,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         const byte signBit = 0x40;
 
         // return back sign bit for signed integers
-        if (Number.IsSigned<T>() && !nextOctetExpected && shift < MaxSizeInBits && (b & signBit) is not 0)
+        if (Number.get_IsSigned<T>() && !nextOctetExpected && shift < MaxSizeInBits && (b & signBit) is not 0)
             value |= T.AllBitsSet << shift;
 
         return nextOctetExpected;
@@ -99,53 +99,6 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     public readonly Enumerator GetEnumerator() => new(value);
 
     /// <summary>
-    /// Tries to encode the value by using LEB128 binary format.
-    /// </summary>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="buffer">The output buffer.</param>
-    /// <param name="bytesWritten">The number of bytes written.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has enough space to save the encoded value; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetBytes(T value, Span<byte> buffer, out int bytesWritten)
-    {
-        bytesWritten = 0;
-        var index = 0;
-        foreach (var octet in new Leb128<T> { Value = value })
-        {
-            if ((uint)index >= (uint)buffer.Length)
-                return false;
-
-            buffer[index++] = octet;
-        }
-
-        bytesWritten = index;
-        return true;
-    }
-
-    /// <summary>
-    /// Decodes LEB128-encoded integer.
-    /// </summary>
-    /// <param name="buffer">The input buffer containing LEB128 octets.</param>
-    /// <param name="result">The decoded value.</param>
-    /// <param name="bytesConsumed">The number of bytes consumed from <paramref name="buffer"/>.</param>
-    /// <returns><see langword="true"/> if operation is successful; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(ReadOnlySpan<byte> buffer, out T result, out int bytesConsumed)
-    {
-        bytesConsumed = 0;
-        var decoder = new Leb128<T>();
-        var successful = false;
-
-        foreach (var octet in buffer)
-        {
-            bytesConsumed += 1;
-            if (successful = !decoder.Append(octet))
-                break;
-        }
-
-        result = decoder.Value;
-        return successful;
-    }
-
-    /// <summary>
     /// Represents an enumerator that produces 7-bit encoded integer as a sequence of octets.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
@@ -171,7 +124,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
             if (completed)
                 return false;
 
-            if (Number.IsSigned<T>())
+            if (Number.get_IsSigned<T>())
             {
                 MoveNextSigned();
             }
@@ -215,6 +168,67 @@ public struct Leb128<T> : ISupplier<T>, IResettable
                 current = byte.CreateTruncating(value);
                 completed = true;
             }
+        }
+    }
+}
+
+/// <summary>
+/// Provides LEB128 related methods to integer types.
+/// </summary>
+public static class Leb128
+{
+    /// <summary>
+    /// Extends the binary integer types.
+    /// </summary>
+    /// <param name="value">The value to encoder.</param>
+    /// <typeparam name="T">The binary integer type.</typeparam>
+    extension<T>(T value)
+        where T : struct, IBinaryInteger<T>
+    {
+        /// <summary>
+        /// Decodes LEB128-encoded integer.
+        /// </summary>
+        /// <param name="buffer">The input buffer containing LEB128 octets.</param>
+        /// <param name="result">The decoded value.</param>
+        /// <param name="bytesConsumed">The number of bytes consumed from <paramref name="buffer"/>.</param>
+        /// <returns><see langword="true"/> if operation is successful; otherwise, <see langword="false"/>.</returns>
+        public static bool TryReadLeb128(ReadOnlySpan<byte> buffer, out T result, out int bytesConsumed)
+        {
+            bytesConsumed = 0;
+            var decoder = new Leb128<T>();
+            var successful = false;
+
+            foreach (var octet in buffer)
+            {
+                bytesConsumed += 1;
+                if (successful = !decoder.Append(octet))
+                    break;
+            }
+
+            result = decoder.Value;
+            return successful;
+        }
+        
+        /// <summary>
+        /// Tries to encode the value by using LEB128 binary format.
+        /// </summary>
+        /// <param name="buffer">The output buffer.</param>
+        /// <param name="bytesWritten">The number of bytes written.</param>
+        /// <returns><see langword="true"/> if <paramref name="buffer"/> has enough space to save the encoded value; otherwise, <see langword="false"/>.</returns>
+        public bool TryWriteLeb128(Span<byte> buffer, out int bytesWritten)
+        {
+            bytesWritten = 0;
+            var index = 0;
+            foreach (var octet in new Leb128<T> { Value = value })
+            {
+                if ((uint)index >= (uint)buffer.Length)
+                    return false;
+
+                buffer[index++] = octet;
+            }
+
+            bytesWritten = index;
+            return true;
         }
     }
 }

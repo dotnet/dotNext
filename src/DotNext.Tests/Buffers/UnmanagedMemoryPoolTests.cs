@@ -1,15 +1,16 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using static Runtime.Intrinsics;
+using Runtime.InteropServices;
 
 public sealed class UnmanagedMemoryPoolTests : Test
 {
     [Fact]
     public static void ReadWriteTest()
     {
-        using var owner = UnmanagedMemory.Allocate<ushort>(3);
+        using var owner = IUnmanagedMemory<ushort>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -31,7 +32,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ArrayInteropTest()
     {
-        using var owner = UnmanagedMemory.Allocate<ushort>(3);
+        using var owner = IUnmanagedMemory<ushort>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -50,7 +51,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ResizeTest()
     {
-        using var owner = UnmanagedMemory.Allocate<long>(5);
+        using var owner = IUnmanagedMemory<long>.Allocate(5);
         Span<long> array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -69,7 +70,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void SliceTest()
     {
-        using var owner = UnmanagedMemory.Allocate<long>(5);
+        using var owner = IUnmanagedMemory<long>.Allocate(5);
         Span<long> span = owner.Span;
         span[0] = 10;
         span[1] = 20;
@@ -86,7 +87,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(40, slice[1]);
         Equal(50, slice[2]);
         var array = new long[3];
-        owner.Span.CopyTo(array, out _);
+        Equal(array.Length, owner.Span >>> array);
         Equal(10, array[0]);
         Equal(20, array[1]);
         Equal(30, array[2]);
@@ -99,7 +100,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Allocation()
     {
-        using var manager = UnmanagedMemory.AllocateZeroed<long>(2);
+        using var manager = IUnmanagedMemory<long>.AllocateZeroed(2);
         Equal(2, manager.Length);
 
         Equal(sizeof(long) * 2U, manager.Size);
@@ -113,25 +114,49 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(20L, manager.Memory.Span[1]);
     }
 
-    [Fact]
-    public static void Pooling()
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public static void Pooling(bool trackAllocations, bool zeroedMemory)
     {
-        using var pool = new UnmanagedMemoryPool<long>(10) { TrackAllocations = true, AllocateZeroedMemory = true };
+        using var pool = new UnmanagedMemoryPool<long>(10)
+        {
+            TrackAllocations = trackAllocations,
+            AllocateZeroedMemory = zeroedMemory,
+        };
+        
         using var manager = pool.Rent(2);
         Equal(2, manager.Memory.Length);
 
-        Equal(0, manager.Memory.Span[0]);
-        Equal(0, manager.Memory.Span[1]);
         manager.Memory.Span[0] = 10L;
         manager.Memory.Span[1] = 20L;
         Equal(10L, manager.Memory.Span[0]);
         Equal(20L, manager.Memory.Span[1]);
     }
 
+    [Theory]
+    [InlineData(64)]
+    [InlineData(128)]
+    [InlineData(256)]
+    public static void CheckDefaultBufferSize(int defaultBufferSize)
+    {
+        using var pool = new UnmanagedMemoryPool<byte>(1024)
+        {
+            DefaultBufferSize = defaultBufferSize,
+        };
+
+        Equal(defaultBufferSize, pool.DefaultBufferSize);
+
+        using var memory = pool.Rent();
+        Equal(defaultBufferSize, memory.Memory.Length);
+    }
+
     [Fact]
     public static void EnumeratorTest()
     {
-        using var owner = UnmanagedMemory.Allocate<int>(3);
+        using var owner = IUnmanagedMemory<int>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -146,7 +171,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ZeroMem()
     {
-        using var memory = UnmanagedMemory.Allocate<byte>(3);
+        using var memory = IUnmanagedMemory<byte>.Allocate(3);
         memory.Span[0] = 10;
         memory.Span[1] = 20;
         memory.Span[2] = 30;
@@ -161,16 +186,16 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void StreamInterop()
     {
-        using var memory = UnmanagedMemory.Allocate<ushort>(3);
+        using var memory = IUnmanagedMemory<ushort>.Allocate(3);
         using var ms = new MemoryStream();
         new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
         ms.Write(memory.Bytes);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach((ref byte value, int _) =>
+        buffer.AsSpan().ForEach((element, _) =>
         {
-            if (value is 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
 
         ms.Position = 0;
@@ -181,7 +206,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ToStreamConversion()
     {
-        using var memory = UnmanagedMemory.AllocateZeroed<byte>(3);
+        using var memory = IUnmanagedMemory<byte>.AllocateZeroed(3);
         new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
         using var stream = memory.AsStream();
         var bytes = new byte[3];
@@ -194,7 +219,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void Pinning()
     {
-        using var memory = UnmanagedMemory.AllocateZeroed<int>(3) as MemoryManager<int>;
+        using var memory = IUnmanagedMemory<int>.AllocateZeroed(3) as MemoryManager<int>;
         NotNull(memory);
         memory.GetSpan()[0] = 10;
         memory.GetSpan()[1] = 20;
@@ -216,18 +241,18 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void MarshalAsMemory()
     {
-        int* ptr = stackalloc int[] { 10, 20, 30 };
-        var memory = UnmanagedMemory.AsMemory(ptr, 3);
+        var ptr = stackalloc int[] { 10, 20, 30 };
+        var memory = Memory<int>.FromPointer(ptr, 3);
         False(memory.IsEmpty);
         Equal([10, 20, 30], memory.Span);
 
-        KeepAlive(in memory);
+        GC.KeepAlive(in memory);
     }
 
     [Fact]
     public static unsafe void AllocateSystemPages()
     {
-        using var owner = UnmanagedMemory.AllocateSystemPages(2);
+        using var owner = NativeMemory.AllocateSystemPages(2);
         using var handle = owner.Memory.Pin();
         True((nuint)handle.Pointer % (uint)Environment.SystemPageSize is 0);
     }
@@ -235,16 +260,16 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void AllocateSystemPagesInvalidPageCount()
     {
-        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocateSystemPages(-1));
+        Throws<ArgumentOutOfRangeException>(static () => NativeMemory.AllocateSystemPages(-1));
         
-        var owner = UnmanagedMemory.AllocateSystemPages(0);
+        var owner = NativeMemory.AllocateSystemPages(0);
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
     [Fact]
     public static unsafe void AllocatePageAlignedMemory()
     {
-        using var owner = UnmanagedMemory.AllocatePageAlignedMemory(Environment.SystemPageSize - 1, roundUpSize: true);
+        using var owner = NativeMemory.AllocatePageAlignedMemory(Environment.SystemPageSize - 1, roundUpSize: true);
         Equal(Environment.SystemPageSize, owner.Memory.Length);
         
         using var handle = owner.Memory.Pin();
@@ -254,20 +279,20 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void AllocatePageAlignedMemoryInvalidSize()
     {
-        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocatePageAlignedMemory(-1));
+        Throws<ArgumentOutOfRangeException>(static () => NativeMemory.AllocatePageAlignedMemory(-1));
 
-        var owner = UnmanagedMemory.AllocatePageAlignedMemory(0);
+        var owner = NativeMemory.AllocatePageAlignedMemory(0);
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
-    [PlatformSpecificFact("linux", "windows")]
+    [PlatformSpecificFact(["linux", "windows"])]
     public static void DiscardPages()
     {
-        using var systemPages = UnmanagedMemory.AllocateSystemPages(1);
+        using var systemPages = NativeMemory.AllocateSystemPages(1);
         systemPages.Memory.Span[0] = 42;
         
         // On FreeBSD and MacOS, the method doesn't clear the memory
-        UnmanagedMemory.Discard(systemPages.Memory.Span);
+        NativeMemory.Discard(systemPages.Memory.Span);
         
         Equal(0, systemPages.Memory.Span[0]);
     }
@@ -276,15 +301,15 @@ public sealed class UnmanagedMemoryPoolTests : Test
     public static void DiscardPinnedMemory()
     {
         var bytes = GC.AllocateArray<byte>(Environment.SystemPageSize * 2, pinned: true);
-        True(UnmanagedMemory.GetPageAlignedOffset(bytes, out var offset));
+        True(NativeMemory.GetPageAlignedOffset(bytes, out var offset));
         
-        UnmanagedMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
+        NativeMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
     }
 
     [Fact]
     public static void UnmanagedMemoryMarshalling()
     {
-        using var memory = UnmanagedMemory.Allocate<long>(2);
-        Equal(memory.Pointer.Address, Runtime.InteropServices.UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
+        using var memory = IUnmanagedMemory<long>.Allocate(2);
+        Equal(memory.Pointer.Address, UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
     }
 }

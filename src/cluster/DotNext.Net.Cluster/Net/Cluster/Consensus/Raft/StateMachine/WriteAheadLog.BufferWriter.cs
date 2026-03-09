@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Hashing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -41,13 +42,13 @@ public partial class WriteAheadLog
             var length = (uint)buffer.Length;
             var pageIndex = manager.GetPageIndex(LastWrittenAddress, out var offset);
             var page = manager.GetOrAddPage(pageIndex).GetSpan();
-            buffer.CopyTo(page.Slice(offset), out var bytesWritten);
+            var bytesWritten = buffer >>> page.Slice(offset);
             buffer = buffer.Slice(bytesWritten);
 
             while (!buffer.IsEmpty)
             {
                 page = manager.GetOrAddPage(++pageIndex).GetSpan();
-                buffer.CopyTo(page, out bytesWritten);
+                bytesWritten = buffer >>> page;
                 buffer = buffer.Slice(bytesWritten);
             }
 
@@ -67,7 +68,23 @@ public partial class WriteAheadLog
 
             LastWrittenAddress += (uint)count;
         }
-        
+
+        ValueTask IAsyncBinaryWriter.AdvanceAsync(int count, CancellationToken token)
+        {
+            ValueTask task;
+            if (count < 0)
+            {
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
+            }
+            else
+            {
+                task = ValueTask.CompletedTask;
+                LastWrittenAddress += (uint)count;
+            }
+
+            return task;
+        }
+
         Memory<byte> IBufferWriter<byte>.GetMemory(int sizeHint)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
@@ -88,6 +105,23 @@ public partial class WriteAheadLog
                 : throw new InsufficientMemoryException();
         }
 
+        Memory<byte> IAsyncBinaryWriter.Buffer => GetOrAdd(out var offset).Memory.Slice(offset);
+
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+        {
+            var task = ValueTask.CompletedTask;
+            try
+            {
+                Write(source.Span);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
+
         private MemoryManager<byte> GetOrAdd(out int offset)
             => manager.GetOrAddPage(manager.GetPageIndex(LastWrittenAddress, out offset));
 
@@ -99,7 +133,16 @@ public partial class WriteAheadLog
 
         IEnumerable<ReadOnlyMemory<byte>> IMemoryView.EnumerateMemoryBlocks(ulong address, long length)
             => manager.GetRange(address, length);
-        
+
+        public void ComputeHash(NonCryptographicHashAlgorithm hash, ulong offset, long length)
+        {
+            // hash data
+            foreach (var fragment in manager.GetRange(offset, length))
+            {
+                hash.Append(fragment.Span);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -108,24 +151,6 @@ public partial class WriteAheadLog
             }
             
             base.Dispose(disposing);
-        }
-
-        Memory<byte> IAsyncBinaryWriter.Buffer => GetOrAdd(out var offset).Memory.Slice(offset);
-        
-        ValueTask IAsyncBinaryWriter.AdvanceAsync(int bytesWritten, CancellationToken token)
-        {
-            ValueTask task;
-            if (bytesWritten < 0)
-            {
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(bytesWritten)));
-            }
-            else
-            {
-                task = ValueTask.CompletedTask;
-                LastWrittenAddress += (uint)bytesWritten;
-            }
-
-            return task;
         }
     }
 }

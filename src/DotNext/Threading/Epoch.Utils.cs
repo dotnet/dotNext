@@ -9,8 +9,77 @@ namespace DotNext.Threading;
 using IO.Hashing;
 using Runtime.ExceptionServices;
 
-public partial class Epoch
+partial class Epoch
 {
+    private void Defer(uint epoch, Discardable node)
+        => entries[epoch].Defer(node);
+
+    private uint EnterEpoch()
+    {
+        while (true)
+        {
+            var currentEpoch = globalEpoch;
+            ref var counter = ref entries[currentEpoch].Counter;
+            Interlocked.Increment(ref counter); // acts as a barrier for 'globalEpoch' reads
+
+            // Rollback the counter if we're not in the same epoch after the increment
+            if (currentEpoch == globalEpoch)
+                return currentEpoch;
+
+            Interlocked.Decrement(ref counter);
+        }
+    }
+
+    private void ExitEpoch(uint epoch)
+        => Interlocked.Decrement(ref entries[epoch].Counter);
+
+    private RecycleBin Reclaim(uint currentEpoch, bool drainGlobalCache)
+    {
+        RecycleBin bin;
+        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } safeToReclaimEpoch)
+        {
+            bin = default;
+        }
+        else if (drainGlobalCache)
+        {
+            bin = new(safeToReclaimEpoch.Value.DetachGlobal());
+        }
+        else
+        {
+            bin = new(safeToReclaimEpoch.Value.DetachLocal());
+        }
+
+        return bin;
+    }
+
+    private ReadOnlyLocalReference<Entry> TryBumpEpoch(uint currentEpoch)
+    {
+        ref readonly var currentEpochState = ref entries[currentEpoch];
+        var nextEpochIndex = currentEpochState.Next;
+        ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
+
+        return previousEpochState.Counter is 0U
+               && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
+            ? new(in previousEpochState)
+            : default;
+    }
+
+    private void UnsafeDrain(ref ExceptionAggregator exceptions)
+    {
+        foreach (ref readonly var state in entries)
+        {
+            if (state.Counter > 0U)
+            {
+                throw new InvalidOperationException();
+            }
+
+            foreach (var bucket in state.DetachGlobal())
+            {
+                bucket.Drain(ref exceptions);
+            }
+        }
+    }
+    
     /// <summary>
     /// Represents an object which lifetime is controlled by <see cref="Epoch"/> internal Garbage Collector.
     /// </summary>
@@ -46,7 +115,7 @@ public partial class Epoch
                 }
                 catch (Exception e)
                 {
-                    exceptions.Add(e);
+                    exceptions += e;
                 }
             }
         }
@@ -101,14 +170,14 @@ public partial class Epoch
         [ThreadStatic]
         private static int? bucketForCurrentThread;
         
+        private static readonly uint RecommendedSize = BitOperations.RoundUpToPowerOf2((uint)Environment.ProcessorCount + 1U);
+        
         // cached epoch numbers
         internal readonly uint Previous = previous, Next = next;
         
         // size of the array must be a power of 2 to optimize modulo operation
         private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
-        internal ulong Counter;
-        
-        private static uint RecommendedSize => BitOperations.RoundUpToPowerOf2((uint)Environment.ProcessorCount + 1U);
+        internal uint Counter;
 
         private readonly ref Discardable? this[int index]
         {
@@ -165,7 +234,7 @@ public partial class Epoch
                     _ => uint.MaxValue,
                 };
 
-                var hasDeferredActions = callbacks.Any(Func.IsNotNull<Discardable?>());
+                var hasDeferredActions = Array.Exists(callbacks, Predicate<Discardable>.IsNotNull);
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
         }
@@ -186,7 +255,7 @@ public partial class Epoch
 
         public Discardable Current
         {
-            readonly get;
+            readonly get => field ?? throw new InvalidOperationException();
             private set;
         }
 
@@ -220,91 +289,5 @@ public partial class Epoch
                 return ref Unsafe.Add(ref entry, epoch);
             }
         }
-    }
-
-    internal struct State
-    {
-        private uint globalEpoch;
-        
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private EpochEntryCollection entries;
-
-        public State()
-        {
-            entries[0] = new(2, 1);
-            entries[1] = new(0, 2);
-            entries[2] = new(1, 0);
-        }
-
-        [UnscopedRef] internal readonly ReadOnlySpan<Entry> Entries => entries;
-
-        internal readonly void Defer(uint currentEpoch, Discardable node) => entries[currentEpoch].Defer(node);
-
-        internal uint Enter()
-        {
-            for (;;)
-            {
-                var currentEpoch = globalEpoch;
-                ref var counter = ref entries[currentEpoch].Counter;
-                Interlocked.Increment(ref counter);
-
-                if (currentEpoch == globalEpoch)
-                    return currentEpoch;
-
-                // rollback and try again
-                Interlocked.Decrement(ref counter);
-            }
-        }
-
-        internal void Exit(uint epoch)
-            => Interlocked.Decrement(ref entries[epoch].Counter);
-
-        [ExcludeFromCodeCoverage]
-        internal readonly string GetDebugView(uint epoch) => entries[epoch].DebugView;
-
-        [UnscopedRef]
-        internal SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
-        {
-            ref readonly var currentEpochState = ref entries[currentEpoch];
-            var nextEpochIndex = currentEpochState.Next;
-            ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
-
-            return previousEpochState.Counter is 0U
-                   && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
-                ? new(in previousEpochState)
-                : default;
-        }
-
-        internal readonly void UnsafeDrain(ref ExceptionAggregator exceptions)
-        {
-            foreach (ref readonly var state in entries)
-            {
-                if (state.Counter > 0UL)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                foreach (var bucket in state.DetachGlobal())
-                {
-                    bucket.Drain(ref exceptions);
-                }
-            }
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct SafeToReclaimEpoch
-    {
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref readonly Entry reference;
-
-        internal SafeToReclaimEpoch(ref readonly Entry reference)
-            => this.reference = ref reference;
-
-        internal bool IsEmpty => Unsafe.IsNullRef(in reference);
-
-        internal Discardable? ReclaimLocal() => reference.DetachLocal();
-
-        internal DetachingEnumerable ReclaimGlobal() => reference.DetachGlobal();
     }
 }

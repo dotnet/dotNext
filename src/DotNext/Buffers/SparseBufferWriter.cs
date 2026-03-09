@@ -6,6 +6,9 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents builder of the sparse memory buffer.
 /// </summary>
@@ -20,7 +23,7 @@ namespace DotNext.Buffers;
 public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
     private readonly int chunkSize;
-    private readonly MemoryAllocator<T>? allocator;
+    private readonly MemoryAllocator<T> allocator;
     private readonly unsafe delegate*<int, ref int, int> growth;
     private int chunkIndex; // used for linear and exponential allocation strategies only
     private MemoryChunk? first;
@@ -41,7 +44,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(chunkSize);
 
         this.chunkSize = chunkSize;
-        this.allocator = allocator;
+        this.allocator = allocator.DefaultIfNull;
 
         unsafe
         {
@@ -110,7 +113,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
         if (IsSingleSegment)
         {
-            segment = first is null ? ReadOnlyMemory<T>.Empty : first.WrittenMemory;
+            segment = first?.WrittenMemory ?? ReadOnlyMemory<T>.Empty;
             return true;
         }
 
@@ -195,6 +198,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void Add(T item) => Write(new(ref item));
 
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add(item);
+
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);
 
@@ -217,7 +223,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (var current = first; current is not null; current = current.Next)
@@ -230,7 +236,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     async ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        for (MemoryChunk? current = first; current is not null; current = current.Next)
+        for (var current = first; current is not null; current = current.Next)
         {
             await consumer.Invoke(current.WrittenMemory, token).ConfigureAwait(false);
         }
@@ -244,7 +250,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TArg">The type of the argument to tbe passed to the callback.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
-        => CopyTo(new DelegatingReadOnlySpanConsumer<T, TArg>(writer, arg));
+        => CopyTo(new ReadOnlySpanConsumer<T, TArg>(writer, arg));
 
     /// <summary>
     /// Copies the contents of this builder to the specified memory block.
@@ -256,10 +262,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         var total = 0;
-        for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
+        for (var current = first; current is not null && !output.IsEmpty; current = current.Next)
         {
-            var buffer = current.WrittenMemory.Span;
-            buffer.CopyTo(output, out var writtenCount);
+            var writtenCount = current.WrittenMemory.Span >>> output;
             output = output.Slice(writtenCount);
             total += writtenCount;
         }
@@ -279,8 +284,37 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     }
 
     /// <inheritdoc />
+    void IResettable.Reset() => Clear();
+
+    /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
+        => WrittenSequence;
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private ReadOnlySequence<T> WrittenSequence
+        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.Concat(this);
+    
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<ReadOnlySequence<T>>() = WrittenSequence;
+                break;
+            case 1:
+                Write(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    IFunctional.GetArgument<CancellationToken>(in args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     private void ReleaseChunks()
     {
@@ -310,7 +344,12 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <returns>The textual representation of this buffer.</returns>
     public override string ToString()
     {
-        return typeof(T) == typeof(char) && length <= int.MaxValue ? BuildString(first, (int)length) : GetType().ToString();
+        return typeof(T) == typeof(char) && length <= Array.MaxLength
+            ? BuildString(first, (int)length)
+            : GetType().ToString();
+        
+        static string BuildString(MemoryChunk? first, int length)
+            => length is 0 ? string.Empty : string.Create(length, first, FillChars);
 
         static void FillChars(Span<char> output, MemoryChunk? chunk)
         {
@@ -323,35 +362,18 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
                 CreateReadOnlySpan(ref firstChar, input.Length).CopyTo(output);
             }
         }
-
-        static string BuildString(MemoryChunk? first, int length)
-        {
-            string result;
-
-            if (length is 0)
-            {
-                result = string.Empty;
-            }
-            else
-            {
-                result = new('\0', length);
-                FillChars(CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length), first);
-            }
-
-            return result;
-        }
     }
 }
 
 file static class SparseBufferWriter
 {
-    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize * ++chunkIndex, chunkSize);
 
-    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
+    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize << ++chunkIndex, chunkSize);
 
     internal static int NoGrowth(int chunkSize, ref int chunkIndex)
     {
-        Debug.Assert(chunkIndex == 0);
+        Debug.Assert(chunkIndex is 0);
         return chunkSize;
     }
 }

@@ -7,7 +7,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
-using IO;
 using IO.Pipelines;
 
 internal partial class HttpPeerController
@@ -40,7 +39,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeDisconnectRequest(ref reader);
     }
 
@@ -68,7 +67,7 @@ internal partial class HttpPeerController
         try
         {
             writer.WriteEndPoint(localNode);
-            writer.Add(Unsafe.BitCast<bool, byte>(isAlive));
+            writer += Unsafe.BitCast<bool, byte>(isAlive);
 
             result = writer.DetachOrCopyBuffer();
         }

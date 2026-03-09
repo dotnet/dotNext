@@ -8,7 +8,6 @@ public class PeerConfiguration : IPeerConfiguration
     private readonly Random random = new();
     private int activeViewCapacity = 5;
     private int passiveViewCapacity = 10;
-    private int activeRandomWalkLength = 3;
     private int passiveRandomWalkLength = 2;
     private int? shuffleActiveViewCount, shufflePassiveViewCount, shuffleRandomWalkLength;
     private int? queueCapacity;
@@ -37,9 +36,9 @@ public class PeerConfiguration : IPeerConfiguration
     /// </summary>
     public int ActiveRandomWalkLength
     {
-        get => activeRandomWalkLength;
-        set => activeRandomWalkLength = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 3;
 
     /// <summary>
     /// Gets or sets the value specifies at which point in the walk the peer is inserted into passive view.

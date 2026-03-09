@@ -176,15 +176,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
             static void MakeLink(KeyValuePair? previous, KeyValuePair? next)
             {
-                if (previous is not null)
-                {
-                    previous.sieveLinks.Next = next;
-                }
+                previous?.sieveLinks.Next = next;
 
-                if (next is not null)
-                {
-                    next.sieveLinks.Previous = previous;
-                }
+                next?.sieveLinks.Previous = previous;
             }
         }
 
@@ -281,7 +275,7 @@ public partial class RandomAccessCache<TKey, TValue>
             do
             {
                 current = tmp;
-                if (current.IsStub())
+                if (current.IsStub)
                     return;
             } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, ValueTaskSourceHelpers.CompletedStub, current), current));
 
@@ -313,7 +307,7 @@ public partial class RandomAccessCache<TKey, TValue>
             return TryReset();
         }
 
-        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { } c && c.IsStub()
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { IsStub: false }
             ? ValueTaskSourceStatus.Succeeded
             : ValueTaskSourceStatus.Pending;
 
@@ -338,7 +332,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal void Cancel()
         {
-            if (Interlocked.Exchange(ref continuation, ValueTaskSourceHelpers.CanceledStub) is { } c && !c.IsStub())
+            if (Interlocked.Exchange(ref continuation, ValueTaskSourceHelpers.CanceledStub) is { IsStub: false } c)
             {
                 c(continuationState);
                 continuationState = null;
@@ -353,7 +347,9 @@ file static class ValueTaskSourceHelpers
     internal static readonly Action<object?> CanceledStub = Stub;
 
     private static void Stub(object? state) => Debug.Fail("Should never be called");
-    
-    internal static bool IsStub(this Action<object?>? continuation)
-        => continuation?.Method == CompletedStub.Method;
+
+    extension(Action<object?>? continuation)
+    {
+        public bool IsStub => continuation?.Method == CompletedStub.Method;
+    }
 }

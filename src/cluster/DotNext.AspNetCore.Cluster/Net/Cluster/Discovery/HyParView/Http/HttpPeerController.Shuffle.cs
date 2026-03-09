@@ -6,7 +6,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
-using IO;
 using IO.Pipelines;
 
 internal partial class HttpPeerController
@@ -48,7 +47,7 @@ internal partial class HttpPeerController
 
     private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeShuffleReply(ref reader);
     }
 
@@ -131,7 +130,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, EndPoint, int, IReadOnlySet<EndPoint>) DeserializeShuffleRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeShuffleRequest(ref reader);
     }
 

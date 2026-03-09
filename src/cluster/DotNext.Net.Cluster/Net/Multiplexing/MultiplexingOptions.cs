@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 
 namespace DotNext.Net.Multiplexing;
@@ -9,7 +8,6 @@ using Buffers;
 /// <summary>
 /// Represents multiplexing protocol options.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public abstract class MultiplexingOptions
 {
     private readonly int backlog = 10;

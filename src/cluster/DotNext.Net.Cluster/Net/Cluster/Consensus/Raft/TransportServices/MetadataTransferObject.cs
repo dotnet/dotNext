@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,6 +6,7 @@ using System.Text;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Collections.Generic;
 using IO;
 using Runtime.Serialization;
 using Text;
@@ -15,14 +15,13 @@ using Text;
 internal readonly struct MetadataTransferObject : ISerializable<MetadataTransferObject>
 {
     private const LengthFormat LengthEncoding = LengthFormat.Compressed;
-    private readonly IReadOnlyDictionary<string, string>? metadata;
 
     internal MetadataTransferObject(IReadOnlyDictionary<string, string> metadata)
-        => this.metadata = metadata;
+        => Metadata = metadata;
 
     private static Encoding Encoding => Encoding.UTF8;
 
-    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? FrozenDictionary<string, string>.Empty;
+    internal IReadOnlyDictionary<string, string> Metadata => field ?? IReadOnlyDictionary<string, string>.Empty;
 
     long? IDataTransferObject.Length => null;
 

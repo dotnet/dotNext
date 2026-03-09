@@ -9,14 +9,15 @@ namespace DotNext.Collections.Concurrent;
 [Orderer(SummaryOrderPolicy.Declared)]
 public class IndexPoolBenchmark
 {
-    private readonly ConcurrentBag<object> bag = new(CreateObjects());
+    private const int PoolSize = 128;
+    private readonly ConcurrentQueue<object> bag = new(CreateObjects());
     private readonly object[] objects = CreateObjects();
-    private IndexPool pool = new();
+    private readonly IndexPool pool = new(PoolSize);
 
     [Benchmark(Description = "IndexPool Take/Return", Baseline = true)]
     public int IndexPoolTakeReturn()
     {
-        pool.TryTake(out var index);
+        pool.TryGet(out var index);
         var hashCode = objects[index].GetHashCode();
 
         pool.Return(index);
@@ -26,17 +27,17 @@ public class IndexPoolBenchmark
     [Benchmark(Description = "ConcurrentBag Take/Return")]
     public int ConcurrentBagTakeReturn()
     {
-        bag.TryTake(out var obj);
+        bag.TryDequeue(out var obj);
         var hashCode = obj.GetHashCode();
 
-        bag.Add(obj);
+        bag.Enqueue(obj);
         return hashCode;
     }
 
     private static object[] CreateObjects()
     {
-        var result = new object[64];
-        Span.Initialize<object>(result);
+        var result = new object[PoolSize];
+        result.Initialize<object>();
         return result;
     }
 }

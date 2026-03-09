@@ -63,7 +63,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         random = new();
         cancellationTokens = new() { MaximumRetained = 100 };
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
-        PeerComparer = configuration.EndPointComparer ?? EqualityComparer<EndPoint>.Default;
+        PeerComparer = configuration.EndPointComparer;
         activeView = ImmutableHashSet.Create(PeerComparer);
         passiveView = ImmutableHashSet.Create(PeerComparer);
         lifecycleTokenSource = new();
@@ -258,7 +258,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         if (activeView.Contains(peer) || passiveView.Contains(peer) || IsLocalNode(peer))
             goto exit;
 
-        if (passiveView.Count >= passiveViewCapacity && random.Peek(passiveView).TryGet(out var removedPeer))
+        if (passiveView.Count >= passiveViewCapacity && random.Peek(passiveView) is { } removedPeer)
         {
             passiveView = passiveView.Remove(removedPeer);
             result = removedPeer;
@@ -278,7 +278,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             if (activeView.Contains(peer) || passiveViewCopy.Contains(peer))
                 continue;
 
-            if (passiveViewCopy.Count >= passiveViewCapacity && random.Peek(passiveViewCopy).TryGet(out var removedPeer))
+            if (passiveViewCopy.Count >= passiveViewCapacity && random.Peek(passiveViewCopy) is { } removedPeer)
             {
                 passiveViewCopy.Remove(removedPeer);
                 await DestroyAsync(removedPeer).ConfigureAwait(false);
@@ -328,7 +328,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         passiveView = passiveView.Remove(peer);
 
         // allocate space in active view if it is full
-        if (activeView.Count >= activeViewCapacity && random.Peek(activeView).TryGet(out var removedPeer))
+        if (activeView.Count >= activeViewCapacity && random.Peek(activeView) is { } removedPeer)
         {
             activeView = activeView.Remove(removedPeer);
             try
@@ -373,11 +373,11 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             // notify all neighbors from active view
             foreach (var peer in activeView)
             {
-                responses.Add(DisconnectOnStopAsync(peer, token));
+                responses += DisconnectOnStopAsync(peer, token);
             }
 
             // destroy all peers from passive view
-            responses.Add(DisconnectPassiveView(token));
+            responses += DisconnectPassiveView(token);
 
             await Task.WhenAll(responses).ConfigureAwait(false);
         }

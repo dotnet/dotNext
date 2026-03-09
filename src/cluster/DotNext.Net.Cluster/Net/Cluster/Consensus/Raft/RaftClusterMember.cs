@@ -14,11 +14,11 @@ using TransportServices;
 /// </summary>
 public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
-    private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("response-time", unit: "ms", description: "Response Time");
+    private protected static readonly Histogram<double> ResponseTimeMeter = Metrics.Instrumentation.ClientSide.CreateHistogram<double>("response-time", unit: "ms", description: "Response Time");
 
     private protected readonly ILocalMember localMember;
     private readonly TimeSpan requestTimeout;
-    internal readonly ClusterMemberId Id;
+    private readonly ClusterMemberId id;
     private protected readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
     private volatile ClusterMemberStatus status;
@@ -32,10 +32,10 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 
         this.localMember = localMember;
         EndPoint = endPoint;
-        Id = ClusterMemberId.FromEndPoint(endPoint);
+        id = ClusterMemberId.FromEndPoint(endPoint);
         requestTimeout = TimeSpan.FromSeconds(30);
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
-        IsRemote = localMember.Id != Id;
+        IsRemote = localMember.Id != id;
     }
 
     internal TimeSpan RequestTimeout
@@ -45,7 +45,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     }
 
     /// <inheritdoc />
-    ClusterMemberId IClusterMember.Id => Id;
+    ClusterMemberId IClusterMember.Id => id;
 
     private protected ILogger Logger => localMember.Logger;
 
@@ -155,5 +155,5 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         => IsRemote ? SynchronizeAsync(commitIndex, token) : Task.FromResult<long?>(null);
 
     /// <inheritdoc />
-    public override string ToString() => EndPoint.ToString() ?? Id.ToString();
+    public override string ToString() => EndPoint.ToString() ?? id.ToString();
 }

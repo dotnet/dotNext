@@ -71,7 +71,7 @@ public partial class TaskCompletionPipe<T>
 
     private void AddCompletedTaskNode(LinkedTaskNode node)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
         Debug.Assert(node.Task.IsCompleted);
 
         if (lastTask is null)
@@ -105,7 +105,9 @@ public partial class TaskCompletionPipe<T>
         {
             next = current.Next;
             waitQueue.Remove(current);
-            if (current.TrySetResult(Sentinel.Instance, completionToken: null, true, out var resumable) && resumable)
+            if (current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance),
+                    Result.True,
+                    out var resumable) && resumable)
                 return current;
         }
 
@@ -115,7 +117,7 @@ public partial class TaskCompletionPipe<T>
     private void EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
     {
         ManualResetCompletionSource? suspendedCaller;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             suspendedCaller = version == expectedVersion
                 ? EnqueueCompletedTask(node)
@@ -127,7 +129,7 @@ public partial class TaskCompletionPipe<T>
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task, out object? userData)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         if (firstTask is not null)
         {
@@ -147,7 +149,7 @@ public partial class TaskCompletionPipe<T>
 
     private void ClearTaskQueue()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         firstTask = lastTask = null;
     }

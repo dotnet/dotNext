@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 using Buffers.Binary;
+using Runtime.InteropServices;
 using Runtime.Serialization;
+using SequenceReader = Buffers.SequenceReader;
 
 /// <summary>
 /// Represents a value of blittable type as DTO.
@@ -43,7 +45,7 @@ public class BlittableTransferObject<T> : MemoryManager<byte>, ISerializable<Bli
             ? ref value
             : ref MemoryMarshal.GetArrayDataReference(pinnedBuffer);
 
-        return Span.AsBytes(ref valueRef);
+        return MemoryMarshal.AsBytes(ref valueRef);
     }
 
     /// <inheritdoc/>
