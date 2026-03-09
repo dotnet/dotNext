@@ -130,7 +130,7 @@ partial class QueuedSynchronizer
             {
                 taskFactory = CanceledTaskFactory.Instance;
             }
-            else if (queue.SyncRoot.TryEnter(timeout))
+            else if (queue.SyncRoot.TryEnter(timeout.Ticks is 0L ? InfiniteTimeSpan : timeout))
             {
                 this.queue = ref queue;
                 return;
