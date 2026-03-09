@@ -31,7 +31,7 @@ public sealed class UpDownCounterObserver<TMeasurement>(MeasurementFilter<UpDown
     {
         for (TMeasurement current = measurement, tmp;; current = tmp)
         {
-            tmp = Interlocked.CompareExchange(ref measurement, current + TMeasurement.One, current);
+            tmp = Interlocked.CompareExchange(ref measurement, current + value, current);
             if (tmp == current)
                 break;
         }
