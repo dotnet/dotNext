@@ -99,7 +99,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/DelegateHelpers.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_Size_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Size*"></a>
   <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_Size" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Size">Size</h4>
@@ -129,7 +129,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/DelegateHelpers.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_Format_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Format*"></a>
   <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_Format_System_Span_System_Byte__" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Format(System.Span{System.Byte})">Format(scoped Span&lt;byte&gt;)</h4>
@@ -160,107 +160,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_Format_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Format*"></a>
-  <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_Format__0_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Format(`0,DotNext.Buffers.MemoryAllocator{System.Byte})">Format(TSelf, MemoryAllocator&lt;byte&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Formats object as a sequence of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;byte&gt; Format(TSelf value, MemoryAllocator&lt;byte&gt;? allocator = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TSelf</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">allocator</span></td>
-        <td><p>The memory allocator.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><p>The buffer containing formatted value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_Parse_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Parse*"></a>
-  <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_Parse_System_Buffers_ReadOnlySequence_System_Byte___" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Parse(System.Buffers.ReadOnlySequence{System.Byte}@)">Parse(in ReadOnlySequence&lt;byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Restores the object from its binary representation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TSelf Parse(in ReadOnlySequence&lt;byte&gt; source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">source</span></td>
-        <td><p>The input buffer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TSelf</span></td>
-        <td><p>The restored object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/DelegateHelpers.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_Parse_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Parse*"></a>
   <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_Parse_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.Parse(System.ReadOnlySpan{System.Byte})">Parse(scoped ReadOnlySpan&lt;byte&gt;)</h4>
@@ -306,112 +206,6 @@
     </tbody>
   </table>
 
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_TryFormat_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.TryFormat*"></a>
-  <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_TryFormat__0_System_Span_System_Byte__" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.TryFormat(`0,System.Span{System.Byte})">TryFormat(TSelf, Span&lt;byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Attempts to format object as a sequence of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryFormat(TSelf value, Span&lt;byte&gt; destination)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TSelf</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">destination</span></td>
-        <td><p>The output buffer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the value converted successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Binary_IBinaryFormattable_1_TryParse_" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.TryParse*"></a>
-  <h4 id="DotNext_Buffers_Binary_IBinaryFormattable_1_TryParse_System_ReadOnlySpan_System_Byte___0__" data-uid="DotNext.Buffers.Binary.IBinaryFormattable`1.TryParse(System.ReadOnlySpan{System.Byte},`0@)">TryParse(scoped ReadOnlySpan&lt;byte&gt;, out TSelf?)</h4>
-  <div class="markdown level1 summary"><p>Attempts to restore the object from its binary representation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryParse(scoped ReadOnlySpan&lt;byte&gt; source, out TSelf? result)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">source</span></td>
-        <td><p>The input buffer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">TSelf</span></td>
-        <td><span class="parametername">result</span></td>
-        <td><p>The restored object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the parsing done successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
 </article>
           </div>
 
@@ -420,7 +214,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Binary/IBinaryFormattable.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/DelegateHelpers.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

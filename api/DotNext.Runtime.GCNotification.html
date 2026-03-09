@@ -112,7 +112,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_And_" data-uid="DotNext.Runtime.GCNotification.And*"></a>
   <h4 id="DotNext_Runtime_GCNotification_And_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.And(DotNext.Runtime.GCNotification)">And(GCNotification)</h4>
@@ -175,7 +175,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_ExclusiveOr_" data-uid="DotNext.Runtime.GCNotification.ExclusiveOr*"></a>
   <h4 id="DotNext_Runtime_GCNotification_ExclusiveOr_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.ExclusiveOr(DotNext.Runtime.GCNotification)">ExclusiveOr(GCNotification)</h4>
@@ -238,258 +238,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_GCNotification_GCTriggered_" data-uid="DotNext.Runtime.GCNotification.GCTriggered*"></a>
-  <h4 id="DotNext_Runtime_GCNotification_GCTriggered" data-uid="DotNext.Runtime.GCNotification.GCTriggered">GCTriggered()</h4>
-  <div class="markdown level1 summary"><p>Creates a filter that triggers notification on every GC occurred.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GCNotification GCTriggered()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></td>
-        <td><p>A new filter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_GCNotification_GCTriggered_" data-uid="DotNext.Runtime.GCNotification.GCTriggered*"></a>
-  <h4 id="DotNext_Runtime_GCNotification_GCTriggered_System_Int32_" data-uid="DotNext.Runtime.GCNotification.GCTriggered(System.Int32)">GCTriggered(int)</h4>
-  <div class="markdown level1 summary"><p>Creates a filter that allows to detect garbage collection of the specified generation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GCNotification GCTriggered(int generation)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">generation</span></td>
-        <td><p>The expected generation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></td>
-        <td><p>A new filter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">generation</code> is less than 0 or greater than <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.gc.maxgeneration">MaxGeneration</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_GCNotification_HeapCompaction_" data-uid="DotNext.Runtime.GCNotification.HeapCompaction*"></a>
-  <h4 id="DotNext_Runtime_GCNotification_HeapCompaction" data-uid="DotNext.Runtime.GCNotification.HeapCompaction">HeapCompaction()</h4>
-  <div class="markdown level1 summary"><p>Creates a filter that allows to detect heap compaction.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GCNotification HeapCompaction()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></td>
-        <td><p>A new filter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_GCNotification_HeapFragmentation_" data-uid="DotNext.Runtime.GCNotification.HeapFragmentation*"></a>
-  <h4 id="DotNext_Runtime_GCNotification_HeapFragmentation_System_Double_" data-uid="DotNext.Runtime.GCNotification.HeapFragmentation(System.Double)">HeapFragmentation(double)</h4>
-  <div class="markdown level1 summary"><p>Creates a filter that allows to detect managed heap fragmentation threshold.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GCNotification HeapFragmentation(double threshold)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
-        <td><span class="parametername">threshold</span></td>
-        <td><p>The memory threshold. The memory threshold; must be in range (0, 1].</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></td>
-        <td><p>A new filter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">threshold</code> is invalid.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_GCNotification_MemoryThreshold_" data-uid="DotNext.Runtime.GCNotification.MemoryThreshold*"></a>
-  <h4 id="DotNext_Runtime_GCNotification_MemoryThreshold_System_Double_" data-uid="DotNext.Runtime.GCNotification.MemoryThreshold(System.Double)">MemoryThreshold(double)</h4>
-  <div class="markdown level1 summary"><p>Creates a filter that allows to detect managed heap occupation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static GCNotification MemoryThreshold(double threshold)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
-        <td><span class="parametername">threshold</span></td>
-        <td><p>The memory threshold. The memory threshold; must be in range (0, 1].</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></td>
-        <td><p>A new filter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Runtime_GCNotification_MemoryThreshold_System_Double__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This filter allows to detect a specific ratio between <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.gcmemoryinfo.memoryloadbytes">MemoryLoadBytes</a>
-and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.gcmemoryinfo.highmemoryloadthresholdbytes">HighMemoryLoadThresholdBytes</a>.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">threshold</code> is invalid.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_Negate_" data-uid="DotNext.Runtime.GCNotification.Negate*"></a>
   <h4 id="DotNext_Runtime_GCNotification_Negate" data-uid="DotNext.Runtime.GCNotification.Negate">Negate()</h4>
@@ -518,7 +267,7 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.gcmemory
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_Or_" data-uid="DotNext.Runtime.GCNotification.Or*"></a>
   <h4 id="DotNext_Runtime_GCNotification_Or_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.Or(DotNext.Runtime.GCNotification)">Or(GCNotification)</h4>
@@ -581,7 +330,7 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.gcmemory
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_Register_" data-uid="DotNext.Runtime.GCNotification.Register*"></a>
   <h4 id="DotNext_Runtime_GCNotification_Register__1_System_Action___0_System_GCMemoryInfo____0_System_Boolean_" data-uid="DotNext.Runtime.GCNotification.Register``1(System.Action{``0,System.GCMemoryInfo},``0,System.Boolean)">Register&lt;T&gt;(Action&lt;T, GCMemoryInfo&gt;, T, bool)</h4>
@@ -676,7 +425,7 @@ However, the delay between these two events is possible.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_WaitAsync_" data-uid="DotNext.Runtime.GCNotification.WaitAsync*"></a>
   <h4 id="DotNext_Runtime_GCNotification_WaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.GCNotification.WaitAsync(System.Threading.CancellationToken)">WaitAsync(CancellationToken)</h4>
@@ -744,7 +493,7 @@ However, the delay between these two events is possible.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_WaitAsync_" data-uid="DotNext.Runtime.GCNotification.WaitAsync*"></a>
   <h4 id="DotNext_Runtime_GCNotification_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.GCNotification.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitAsync(TimeSpan, CancellationToken)</h4>
@@ -825,7 +574,7 @@ However, the delay between these two events is possible.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_op_BitwiseAnd_" data-uid="DotNext.Runtime.GCNotification.op_BitwiseAnd*"></a>
   <h4 id="DotNext_Runtime_GCNotification_op_BitwiseAnd_DotNext_Runtime_GCNotification_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.op_BitwiseAnd(DotNext.Runtime.GCNotification,DotNext.Runtime.GCNotification)">operator &amp;(GCNotification, GCNotification)</h4>
@@ -878,7 +627,7 @@ However, the delay between these two events is possible.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_op_BitwiseOr_" data-uid="DotNext.Runtime.GCNotification.op_BitwiseOr*"></a>
   <h4 id="DotNext_Runtime_GCNotification_op_BitwiseOr_DotNext_Runtime_GCNotification_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.op_BitwiseOr(DotNext.Runtime.GCNotification,DotNext.Runtime.GCNotification)">operator |(GCNotification, GCNotification)</h4>
@@ -931,7 +680,7 @@ However, the delay between these two events is possible.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_op_ExclusiveOr_" data-uid="DotNext.Runtime.GCNotification.op_ExclusiveOr*"></a>
   <h4 id="DotNext_Runtime_GCNotification_op_ExclusiveOr_DotNext_Runtime_GCNotification_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.op_ExclusiveOr(DotNext.Runtime.GCNotification,DotNext.Runtime.GCNotification)">operator ^(GCNotification, GCNotification)</h4>
@@ -984,7 +733,7 @@ However, the delay between these two events is possible.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_GCNotification_op_LogicalNot_" data-uid="DotNext.Runtime.GCNotification.op_LogicalNot*"></a>
   <h4 id="DotNext_Runtime_GCNotification_op_LogicalNot_DotNext_Runtime_GCNotification_" data-uid="DotNext.Runtime.GCNotification.op_LogicalNot(DotNext.Runtime.GCNotification)">operator !(GCNotification)</h4>
@@ -1048,7 +797,7 @@ However, the delay between these two events is possible.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/GCNotification.Filter.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/GCNotification.Filter.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

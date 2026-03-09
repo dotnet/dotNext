@@ -112,7 +112,72 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_AsBytes_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.AsBytes*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_AsBytes__1___0__" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.AsBytes``1(``0*)">AsBytes&lt;T&gt;(T*)</h4>
+  <div class="markdown level1 summary"><p>Converts contiguous memory identified by the specified pointer
+into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static Span&lt;byte&gt; AsBytes&lt;T&gt;(T* pointer) where T : unmanaged, allows ref struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T*</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The typed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><p>The span of contiguous memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Blittable type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Compare_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Compare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Compare_System_Void__System_Void__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Compare(System.Void*,System.Void*,System.UIntPtr)">Compare(void*, void*, nuint)</h4>
@@ -172,7 +237,7 @@ public static int Compare(void* first, void* second, nuint length)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_CopyUnaligned_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.CopyUnaligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_CopyUnaligned__1___0____0__" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.CopyUnaligned``1(``0*,``0*)">CopyUnaligned&lt;T&gt;(T*, T*)</h4>
@@ -226,7 +291,7 @@ public static void CopyUnaligned&lt;T&gt;(T* input, T* output) where T : unmanag
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Copy_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Copy*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Copy__1___0____0__" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Copy``1(``0*,``0*)">Copy&lt;T&gt;(T*, T*)</h4>
@@ -280,7 +345,7 @@ public static void Copy&lt;T&gt;(T* input, T* output) where T : unmanaged</code>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Equals_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Equals_System_Void__System_Void__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Equals(System.Void*,System.Void*,System.UIntPtr)">Equals(void*, void*, nuint)</h4>
@@ -340,7 +405,7 @@ public static bool Equals(void* first, void* second, nuint length)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_PointerHashCode_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.PointerHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_PointerHashCode_System_Void__" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.PointerHashCode(System.Void*)">PointerHashCode(void*)</h4>
@@ -388,7 +453,7 @@ public static int PointerHashCode(void* pointer)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Swap_" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Swap*"></a>
   <h4 id="DotNext_Runtime_InteropServices_NativeMemoryExtensions_Swap__1___0____0__" data-uid="DotNext.Runtime.InteropServices.NativeMemoryExtensions.Swap``1(``0*,``0*)">Swap&lt;T&gt;(T*, T*)</h4>
@@ -449,7 +514,7 @@ public static void Swap&lt;T&gt;(T* first, T* second) where T : unmanaged</code>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/44d66129d4b896953edb940dda9d9c4a75633a1f/src/DotNext/Runtime/InteropServices/NativeMemoryExtensions.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

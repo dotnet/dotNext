@@ -3,9 +3,6 @@
 
 .NEXT (dotNext) is the family of powerful libraries aimed to improve development productivity and extend the .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
 
-> [!NOTE]
-> The documentation for previous major versions is no longer available on this website. However, API docs are still available on [FuGet](https://www.fuget.org/) website for any specific library version. Migration guides are [here](./migration/index.md).
-
 This chapter gives a quick overview of these libraries. Read [articles](./features/core/index.md) for a closer look at all available features.
 
 Prerequisites:

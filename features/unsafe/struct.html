@@ -95,7 +95,7 @@ var i = array[0] + array[1];    //i == 40
 <p><code>Reallocate</code> method accepts the new length of the array, not size in bytes.</p>
 <p>Memory span and typed pointer are not valid after re-allocation. You must ensure that consumers obtain a fresh version of there structures every time when working with unmanaged memory.</p>
 <h1 id="struct-allocation">struct Allocation</h1>
-<p>The same type can be used to allocate single value of blittable value type in unmanaged memory. To do that, you can specify length of <em>1</em> when allocating unmanaged memory via .</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> can be used to allocate blittable value type in unmanaged memory.</p>
 <p>The simpliest way to understand this concept is to provide the following example in C:</p>
 <pre><code class="lang-c">#include &lt;stdlib.h&gt;
 
@@ -110,7 +110,7 @@ c-&gt;real = 30;
 free(c);
 </code></pre>
 <p>The equivalent code in C# using <code>UnmanagedMemory&lt;T&gt;</code> is</p>
-<pre><code class="lang-csharp">using DotNext.Buffers;
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 struct Complex
 {
@@ -123,8 +123,7 @@ ptr.Image = 20;
 ptr.Real = 30;
 </code></pre>
 <p>Direct memory manipulations available using typed pointer:</p>
-<pre><code class="lang-csharp">using DotNext.Buffers;
-using DotNext.Runtime.InteropServices;
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 struct Complex
 {
@@ -142,8 +141,7 @@ pReal.Value = 2;
 <li>Through <code>Bytes</code> property which provides memory span for bytes</li>
 <li>Through <code>Pointer</code> and its ability to reinterpret pointer type</li>
 </ol>
-<pre><code class="lang-csharp">using DotNext.Buffers;
-using DotNext.Runtime.InteropServices;
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 using System;
 
 var id = Guid.NewGuid();
