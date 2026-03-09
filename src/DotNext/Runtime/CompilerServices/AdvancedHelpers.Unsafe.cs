@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -82,5 +83,5 @@ file abstract class RawData
 {
     internal byte Data;
 
-    private RawData() => throw new NotImplementedException();
+    private RawData() => throw new UnreachableException();
 }
