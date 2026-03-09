@@ -90,7 +90,8 @@ The libraries are versioned according to [Semantic Versioning 2.0](https://semve
 | 2.x | .NET Standard 2.1 | :x: |
 | 3.x | .NET Standard 2.1, .NET 5 | :x: |
 | 4.x | .NET 6 | :x: |
-| 5.x | .NET 8 | :heavy_check_mark: |
+| 5.x | .NET 8 | :white_check_mark: |
+| 6.x | .NET 10 | :heavy_check_mark: |
 
 :x: - unsupported, :white_check_mark: - bug and security fixes only, :heavy_check_mark: - active development
 
