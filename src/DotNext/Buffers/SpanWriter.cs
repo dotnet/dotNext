@@ -136,7 +136,7 @@ public ref struct SpanWriter<T>
     }
 
     /// <inheritdoc cref="TryWrite"/>
-    public void operator += (scoped ReadOnlySpan<T> input) => TryWrite(input);
+    public void operator += (scoped ReadOnlySpan<T> input) => position += input >>> RemainingSpan;
 
     /// <inheritdoc cref="TryWrite"/>
     public void operator checked += (scoped ReadOnlySpan<T> input)
