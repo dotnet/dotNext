@@ -15,7 +15,8 @@ Span<int> s = stackalloc int[4];
 The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:
 
 1. [UnmanagedMemoryPool&lt;T&gt;](xref:DotNext.Buffers.UnmanagedMemoryPool`1) provides allocation of unmanaged memory
-1. [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory`1) provides structured access to the allocated unmanaged memory.
+1. [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory`1) provides structured access to the allocated unmanaged memory
+1. [UnmanagedMemory&lt;T&gt;](xref:DotNext.Runtime.InteropServices.UnmanagedMemory`1) provides type-safety and lifetime control over the blittable type allocated in the unmanaged memory
 
 All unmanaged data types are not thread-safe.
 
@@ -32,6 +33,7 @@ The pointer data type is convertible to/from [native int](https://docs.microsoft
 
 The following example demonstrates usage of the typed pointer to work with stack-allocated memory:
 ```csharp
+using DotNext.IO;
 using DotNext.Runtime.InteropServices;
 using System.IO;
 

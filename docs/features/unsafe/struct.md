@@ -39,7 +39,7 @@ var i = array[0] + array[1];    //i == 40
 Memory span and typed pointer are not valid after re-allocation. You must ensure that consumers obtain a fresh version of there structures every time when working with unmanaged memory.
 
 # struct Allocation
-The same type can be used to allocate single value of blittable value type in unmanaged memory. To do that, you can specify length of _1_ when allocating unmanaged memory via .
+[UnmanagedMemory&lt;T&gt;](xref:DotNext.Runtime.InteropServices.UnmanagedMemory`1) can be used to allocate blittable value type in unmanaged memory.
 
 The simpliest way to understand this concept is to provide the following example in C:
 ```c
@@ -58,7 +58,7 @@ free(c);
 
 The equivalent code in C# using `UnmanagedMemory<T>` is
 ```csharp
-using DotNext.Buffers;
+using DotNext.Runtime.InteropServices;
 
 struct Complex
 {
@@ -73,7 +73,6 @@ ptr.Real = 30;
 
 Direct memory manipulations available using typed pointer:
 ```csharp
-using DotNext.Buffers;
 using DotNext.Runtime.InteropServices;
 
 struct Complex
@@ -93,7 +92,6 @@ Byte-level manipulations can be organized in two ways:
 1. Through `Pointer` and its ability to reinterpret pointer type
 
 ```csharp
-using DotNext.Buffers;
 using DotNext.Runtime.InteropServices;
 using System;
 
