@@ -13,7 +13,7 @@ namespace DotNext.Collections.Generic;
 /// but can be converted to it by using regular type cast.
 /// </remarks>
 /// <typeparam name="TSelf">The value type that implements an enumerator.</typeparam>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The type of objects to enumerate.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public interface IEnumerator<TSelf, out T> : IResettable
     where TSelf : struct, IEnumerator<TSelf, T>

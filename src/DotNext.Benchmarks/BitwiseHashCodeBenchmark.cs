@@ -2,7 +2,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
-using System.Collections.Generic;
 
 namespace DotNext;
 

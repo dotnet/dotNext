@@ -6,7 +6,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
-using IO;
 using IO.Pipelines;
 
 internal partial class HttpPeerController

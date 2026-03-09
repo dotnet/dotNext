@@ -70,7 +70,7 @@ public partial class SparseBufferWriter<T>
 
         internal override int Write(ReadOnlySpan<T> input)
         {
-            var count = input >> FreeSpan;
+            var count = input >>> FreeSpan;
             writtenCount += count;
             return count;
         }

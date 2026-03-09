@@ -50,7 +50,7 @@ public sealed class MemorySegmentStream(Memory<byte> data) : ModernStream
     {
         AssertState();
 
-        var count = RemainingSpan >> buffer;
+        var count = RemainingSpan >>> buffer;
         position += count;
         return count;
     }

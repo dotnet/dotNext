@@ -1,6 +1,6 @@
 ﻿namespace DotNext.IO;
 
-using static Buffers.Memory;
+using Buffers;
 
 /// <summary>
 /// Represents read-only view over the portion of underlying stream.
@@ -100,7 +100,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
-        => stream.Read(buffer.TrimLength(int.CreateSaturating(RemainingBytes)));
+        => stream.Read(buffer % int.CreateSaturating(RemainingBytes));
 
     /// <inheritdoc/>
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -118,7 +118,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-        => stream.ReadAsync(buffer.TrimLength(int.CreateSaturating(RemainingBytes)), token);
+        => stream.ReadAsync(buffer % int.CreateSaturating(RemainingBytes), token);
 
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)

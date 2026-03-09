@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
 
@@ -33,7 +34,7 @@ public sealed class UnmanagedMemoryTests : Test
     {
         var expected = 42L;
         IUnmanagedMemory memory = new UnmanagedMemory<long>(expected);
-        Equal(Span.AsReadOnlyBytes(in expected), memory.Bytes);
+        Equal(MemoryMarshal.AsReadOnlyBytes(in expected), memory.Bytes);
         Equal((uint)sizeof(ulong), memory.Size);
         Equal(memory.Pointer.ToString(), memory.ToString());
     }

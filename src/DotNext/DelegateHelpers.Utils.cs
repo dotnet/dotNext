@@ -8,12 +8,8 @@ using Runtime.CompilerServices;
 public static partial class DelegateHelpers
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct TargetRewriter : ISupplier<Delegate, object?>
+    private readonly struct TargetRewriter(object target) : ISupplier<Delegate, object?>
     {
-        private readonly object target;
-
-        internal TargetRewriter(object newTarget) => target = newTarget;
-
         object? ISupplier<Delegate, object?>.Invoke(Delegate d) => target;
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using System.Text;
 using DotNext.Buffers.Binary;
 using DotNext.Runtime.Serialization;
@@ -6,6 +7,7 @@ using DotNext.Runtime.Serialization;
 namespace DotNext.IO;
 
 using Buffers;
+using Runtime.InteropServices;
 
 public sealed class DataTransferObjectTests : Test
 {
@@ -27,7 +29,7 @@ public sealed class DataTransferObjectTests : Test
     [Fact]
     public static async Task MemoryDTO()
     {
-        byte[] content = { 1, 2, 3 };
+        byte[] content = [1, 2, 3];
         IDataTransferObject dto = new BinaryTransferObject(content);
         Equal(3L, dto.Length);
         True(dto.IsReusable);
@@ -41,7 +43,7 @@ public sealed class DataTransferObjectTests : Test
     [Fact]
     public static async Task MemoryDTO2()
     {
-        byte[] content = { 1, 2, 3 };
+        byte[] content = [1, 2, 3];
         IDataTransferObject dto = new BinaryTransferObject(content);
         Equal(3L, dto.Length);
         True(dto.IsReusable);
@@ -56,7 +58,7 @@ public sealed class DataTransferObjectTests : Test
     {
         var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
+        MemoryMarshal.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         Equal(sizeof(long), dto.As<IDataTransferObject>().Length);
         True(dto.As<IDataTransferObject>().IsReusable);
         var writer = new ArrayBufferWriter<byte>();
@@ -72,7 +74,7 @@ public sealed class DataTransferObjectTests : Test
     {
         var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
+        MemoryMarshal.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         using var memory = await dto.ToMemoryAsync(token: TestToken);
         Equal(expected, BitConverter.ToInt64(memory.Span));
     }
@@ -82,7 +84,7 @@ public sealed class DataTransferObjectTests : Test
     {
         var expected = 42M;
         var bytes = new byte[sizeof(decimal)];
-        Span.AsReadOnlyBytes(in expected).CopyTo(bytes);
+        MemoryMarshal.AsReadOnlyBytes(in expected).CopyTo(bytes);
         var dto = new BinaryTransferObject(bytes);
         Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto, TestToken)).Content);
     }

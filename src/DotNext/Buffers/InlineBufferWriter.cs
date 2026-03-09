@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
@@ -12,7 +11,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     private MemoryOwner<T> buffer;
     private int position;
 
-    readonly long IGrowableBuffer<T>.WrittenCount => WrittenCount;
+    readonly long IGrowableBuffer<T>.WrittenCount => position;
 
     public int Capacity
     {
@@ -30,7 +29,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
         => consumer.Invoke(WrittenMemory, token);
 
     readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
-        => WrittenMemory.Span >> output;
+        => WrittenMemory.Span >>> output;
 
     public void Reset()
     {
@@ -44,9 +43,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
         return true;
     }
 
-    public readonly int WrittenCount => position;
-
-    public readonly ReadOnlyMemory<T> WrittenMemory => buffer.Memory.Slice(0, position);
+    private readonly ReadOnlyMemory<T> WrittenMemory => buffer.Memory.Slice(0, position);
 
     public void Advance(int count)
     {

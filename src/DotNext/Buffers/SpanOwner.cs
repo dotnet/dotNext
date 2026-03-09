@@ -39,7 +39,7 @@ public ref struct SpanOwner<T> : IDisposable
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public static int StackallocThreshold { get; } = 1 + Features.StackallocThreshold / Unsafe.SizeOf<T>();
+    public static int StackallocThreshold { get; } = int.Min(1, Features.StackallocThreshold / Unsafe.SizeOf<T>());
 
     private readonly object? owner;
     private readonly Span<T> memory;
@@ -236,15 +236,15 @@ file static class Features
         {
             const string environmentVariableName = "DOTNEXT_STACK_ALLOC_THRESHOLD";
             const string configurationParameterName = "DotNext.Buffers.StackAllocThreshold";
-            const int defaultValue = 511;
-            const int minimumValue = 14;
+            const int defaultValue = 512;
+            const int minimumValue = 16;
 
             if (AppContext.GetData(configurationParameterName) is not int result)
             {
                 int.TryParse(Environment.GetEnvironmentVariable(environmentVariableName), out result);
             }
 
-            return result > minimumValue ? result : defaultValue;
+            return result >= minimumValue ? result : defaultValue;
         }
     }
 }

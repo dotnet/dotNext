@@ -54,8 +54,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         do
         {
-            var buffer = TrimLength(Buffer, length);
-            buffer = buffer.TrimLength(parser.RemainingBytes);
+            var buffer = TrimLength(Buffer, length) % parser.RemainingBytes;
 
             if (buffer.IsEmpty)
                 return false;
@@ -336,7 +335,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); ConsumeUnsafe(buffer.Length))
         {
-            buffer = TrimLength(Buffer, length).TrimLength(int.CreateSaturating(count));
+            buffer = TrimLength(Buffer, length) % int.CreateSaturating(count);
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
             length -= buffer.Length;
             count -= buffer.Length;

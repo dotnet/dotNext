@@ -63,12 +63,12 @@ public partial class ServiceProviderFactory
         /// <inheritdoc />
         IServiceProvider ISupplier<IServiceProvider>.Invoke() => Build();
     }
+}
 
-    private sealed class CachedServiceProvider(IDictionary<Type, Func<object>> services, IServiceProvider? fallback) : IServiceProvider
-    {
-        private readonly FrozenDictionary<Type, Func<object>> services = services.ToFrozenDictionary();
+file sealed class CachedServiceProvider(IDictionary<Type, Func<object>> services, IServiceProvider? fallback) : IServiceProvider
+{
+    private readonly FrozenDictionary<Type, Func<object>> services = services.ToFrozenDictionary();
 
-        object? IServiceProvider.GetService(Type serviceType)
-            => services.TryGetValue(serviceType, out var service) ? service.Invoke() : fallback?.GetService(serviceType);
-    }
+    object? IServiceProvider.GetService(Type serviceType)
+        => services.TryGetValue(serviceType, out var service) ? service.Invoke() : fallback?.GetService(serviceType);
 }

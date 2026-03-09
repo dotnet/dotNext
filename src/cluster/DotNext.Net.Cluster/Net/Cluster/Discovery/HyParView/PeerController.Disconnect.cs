@@ -2,8 +2,6 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
-using static Collections.Generic.Collection;
-
 public partial class PeerController
 {
     /// <summary>
@@ -57,7 +55,7 @@ public partial class PeerController
         OnPeerGone(sender);
 
         // move random peer from passive view to active view
-        while (random.Peek(passiveView).TryGet(out var candidate))
+        while (!passiveView.IsEmpty && random.Peek(passiveView) is { } candidate)
         {
             try
             {
@@ -65,7 +63,7 @@ public partial class PeerController
             }
             catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
             {
-                // peer controller has stopped, leave the loop without furher actions
+                // peer controller has stopped, leave the loop without further actions
                 goto exit;
             }
             catch (Exception e)

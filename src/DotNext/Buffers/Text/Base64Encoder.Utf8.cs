@@ -1,10 +1,12 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
 
 using Buffers;
+using Runtime.InteropServices;
 
 public partial struct Base64Encoder
 {
@@ -22,7 +24,7 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - bytesRead;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(bytesRead).CopyTo(ushort.AsBytes(ref reservedBuffer));
+                bytes.Slice(bytesRead).CopyTo(MemoryMarshal.AsBytes(ref reservedBuffer));
                 break;
         }
 

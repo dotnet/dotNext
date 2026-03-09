@@ -6,6 +6,7 @@ using Base64 = System.Buffers.Text.Base64;
 
 namespace DotNext.Buffers.Text;
 
+using Runtime.InteropServices;
 using static Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
@@ -66,7 +67,7 @@ public partial struct Base64Decoder : IBufferedDecoder<byte>, IBufferedDecoder<c
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [UnscopedRef]
     private Span<byte> ByteBuffer
-        => ulong.AsBytes(ref reservedBuffer);
+        => MemoryMarshal.AsBytes(ref reservedBuffer);
 
     private readonly ReadOnlySpan<byte> BufferedBytes
     {

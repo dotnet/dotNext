@@ -200,7 +200,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
-    public long CopyTo<TConsumer>(TConsumer consumer, ref SequencePosition position, long count)
+    public long CopyTo<TConsumer>(scoped TConsumer consumer, scoped ref SequencePosition position, long count)
         where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);

@@ -5,7 +5,6 @@ using static System.Threading.Timeout;
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
-using IO;
 using Threading;
 
 /// <summary>

@@ -29,7 +29,7 @@ public sealed class SynchronizationTests : Test
     public static void GetDynamicResult()
     {
         Task task = Task.FromResult(42);
-        Result<dynamic> result = task.GetResult(CancellationToken.None);
+        var result = task.GetResult(CancellationToken.None);
         Equal(42, result);
         result = task.GetResult(TimeSpan.Zero);
         Equal(42, result);
@@ -52,18 +52,18 @@ public sealed class SynchronizationTests : Test
         var source1 = new TaskCompletionSource<int>();
         var source2 = new TaskCompletionSource<int>();
 
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(100);
             source1.SetResult(10);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(200);
             source2.SetResult(20);
         });
 
-        var (result1, result2) = await Synchronization.WhenAll(source1.Task, source2.Task);
+        var (result1, result2) = await Task.WhenAll<int, int>(source1.Task, source2.Task);
 
         Equal(10, result1.Value);
         Equal(20, result2.Value);
@@ -76,23 +76,23 @@ public sealed class SynchronizationTests : Test
         var source2 = new TaskCompletionSource<int>();
         var source3 = new TaskCompletionSource<int>();
 
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(100);
             source1.SetResult(10);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(200);
             source2.SetResult(20);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(170);
             source3.SetResult(30);
         });
 
-        var (result1, result2, result3) = await Synchronization.WhenAll(source1.Task, source2.Task, source3.Task);
+        var (result1, result2, result3) = await Task.WhenAll<int, int, int>(source1.Task, source2.Task, source3.Task);
 
         Equal(10, result1.Value);
         Equal(20, result2.Value);
@@ -107,28 +107,28 @@ public sealed class SynchronizationTests : Test
         var source3 = new TaskCompletionSource<int>();
         var source4 = new TaskCompletionSource<int>();
 
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(100);
             source1.SetResult(10);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(200);
             source2.SetResult(20);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(170);
             source3.SetResult(30);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(120);
             source4.SetResult(40);
         });
 
-        var (result1, result2, result3, result4) = await Synchronization.WhenAll(source1.Task, source2.Task, source3.Task, source4.Task);
+        var (result1, result2, result3, result4) = await Task.WhenAll<int, int, int, int>(source1.Task, source2.Task, source3.Task, source4.Task);
 
         Equal(10, result1.Value);
         Equal(20, result2.Value);
@@ -145,33 +145,33 @@ public sealed class SynchronizationTests : Test
         var source4 = new TaskCompletionSource<int>();
         var source5 = new TaskCompletionSource<int>();
 
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(100);
             source1.SetResult(10);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(200);
             source2.SetResult(20);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(170);
             source3.SetResult(30);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(120);
             source4.SetResult(40);
         });
-        ThreadPool.QueueUserWorkItem(state =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             Thread.Sleep(180);
             source5.SetResult(50);
         });
 
-        var (result1, result2, result3, result4, result5) = await Synchronization.WhenAll(source1.Task, source2.Task, source3.Task, source4.Task, source5.Task);
+        var (result1, result2, result3, result4, result5) = await Task.WhenAll<int, int, int, int, int>(source1.Task, source2.Task, source3.Task, source4.Task, source5.Task);
 
         Equal(10, result1.Value);
         Equal(20, result2.Value);

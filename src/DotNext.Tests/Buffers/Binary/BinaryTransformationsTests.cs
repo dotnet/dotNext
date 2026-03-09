@@ -1,9 +1,9 @@
-using System.Buffers;
 using System.Buffers.Binary;
-using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;
+
+using Runtime.InteropServices;
 
 public sealed class BinaryTransformationsTests : Test
 {
@@ -20,7 +20,7 @@ public sealed class BinaryTransformationsTests : Test
         Random.Shared.NextBytes(y);
 
         var expected = BitwiseAndSlow(x, y);
-        BinaryTransformations.BitwiseAnd<byte>(x, y);
+        x.BitwiseAnd(y);
         Equal(expected, y);
 
         static byte[] BitwiseAndSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
@@ -48,7 +48,7 @@ public sealed class BinaryTransformationsTests : Test
         Random.Shared.NextBytes(y);
 
         var expected = BitwiseAndNotSlow(x, y);
-        BinaryTransformations.AndNot<byte>(x, y);
+        x.AndNot(y);
         Equal(expected, y);
 
         static byte[] BitwiseAndNotSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
@@ -76,7 +76,7 @@ public sealed class BinaryTransformationsTests : Test
         Random.Shared.NextBytes(y);
 
         var expected = BitwiseOrSlow(x, y);
-        BinaryTransformations.BitwiseOr<byte>(x, y);
+        x.BitwiseOr(y);
         Equal(expected, y);
 
         static byte[] BitwiseOrSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
@@ -126,7 +126,7 @@ public sealed class BinaryTransformationsTests : Test
     public static void OnesComplement(int size)
     {
         Span<uint> x = new uint[size];
-        Random.Shared.NextBytes(MemoryMarshal.AsBytes<uint>(x));
+        Random.Shared.NextBytes(MemoryMarshal.AsBytes(x));
 
         var expected = OnesComplementSlow(x);
         x.OnesComplement();
@@ -151,11 +151,11 @@ public sealed class BinaryTransformationsTests : Test
 
         if (BitConverter.IsLittleEndian)
         {
-            Equal(BinaryPrimitives.ReadUInt32BigEndian(Span.AsReadOnlyBytes(in tmp)), i);
+            Equal(BinaryPrimitives.ReadUInt32BigEndian(MemoryMarshal.AsReadOnlyBytes(in tmp)), i);
         }
         else
         {
-            Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
+            Equal(BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.AsReadOnlyBytes(in tmp)), i);
         }
     }
 }

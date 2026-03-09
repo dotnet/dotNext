@@ -25,7 +25,7 @@ public partial struct UserDataStorage
                     for (var i = 0; i < array.Length; i++)
                     {
                         if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
-                            output[TypeSlot.ToString(typeIndex, i + 1)] = value;
+                            output[TypeSlot.ToString(typeIndex, i)] = value;
                     }
                 }
             }
@@ -39,7 +39,7 @@ public partial struct UserDataStorage
             }
         }
 
-        public readonly void CopyTo(BackingStorageEntry destination)
+        public readonly void CopyTo(ref BackingStorageEntry destination)
         {
             lock (syncRoot)
             {
@@ -185,7 +185,11 @@ public partial struct UserDataStorage
             var destination = new BackingStorageEntry[source.Length];
 
             for (var i = 0; i < source.Length; i++)
-                source[i].CopyTo(destination[i] = new());
+            {
+                ref var entry = ref destination[i];
+                entry = new();
+                source[i].CopyTo(ref entry);
+            }
 
             tables = destination;
         }

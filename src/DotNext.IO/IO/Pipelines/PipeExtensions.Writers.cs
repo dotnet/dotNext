@@ -42,7 +42,7 @@ public static partial class PipeExtensions
 
         for (int bytesRead; count > 0L; count -= bytesRead)
         {
-            var buffer = destination.GetMemory().TrimLength(int.CreateSaturating(count));
+            var buffer = destination.GetMemory() % int.CreateSaturating(count);
             bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false);
 
             if (bytesRead <= 0)

@@ -50,7 +50,7 @@ public partial class DiskSpacePool
 
         private void Write(DiskSpacePool pool, long absoluteOffset, ReadOnlySpan<byte> buffer, int offset, int length)
         {
-            buffer = buffer.TrimLength(length);
+            buffer %= length;
             pool.Write(absoluteOffset, buffer, offset);
             this.length = int.Max(this.length, buffer.Length + offset);
         }
@@ -76,7 +76,7 @@ public partial class DiskSpacePool
 
         private ValueTask WriteWithoutLengthAdjustmentAsync(DiskSpacePool pool, long absoluteOffset, ReadOnlyMemory<byte> buffer, int offset, int length,
             CancellationToken token)
-            => pool.WriteAsync(absoluteOffset, buffer.TrimLength(length), offset, token);
+            => pool.WriteAsync(absoluteOffset, buffer % length, offset, token);
 
         protected override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, long offset, CancellationToken token)
         {

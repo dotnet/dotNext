@@ -63,7 +63,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         int writtenCount, result = 0;
         if (charPos < charLen)
         {
-            writtenCount = ReadyToReadChars >> buffer;
+            writtenCount = ReadyToReadChars >>> buffer;
             charPos += writtenCount;
             buffer = buffer.Slice(writtenCount);
             result += writtenCount;

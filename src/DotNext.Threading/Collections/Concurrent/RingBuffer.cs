@@ -79,28 +79,7 @@ internal struct RingBuffer<T>
         }
     }
 
-    public ref Slot TryDequeue(out nuint sequence)
-    {
-        for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
-        {
-            var position = state.Consumer;
-            ref var slot = ref this[position & indexMask];
-            var generation = position >>> indexBits;
-
-            if (slot.Sequence != (generation | StateBit))
-                break;
-
-            if (Interlocked.CompareExchange(ref state.Consumer, position + 1U, position) == position)
-            {
-                // the slot becomes available for write in the next generation
-                sequence = (generation + 1U) & ~StateBit;
-                return ref slot;
-            }
-        }
-
-        sequence = 0;
-        return ref Unsafe.NullRef<Slot>();
-    }
+    public ref Slot TryDequeue(out nuint sequence) => ref DoOperation<DequeueOperation>(ref state.Consumer, out sequence);
 
     public readonly bool IsEmpty
     {
@@ -113,26 +92,34 @@ internal struct RingBuffer<T>
         }
     }
 
-    public ref Slot TryEnqueue(out nuint sequence)
+    public ref Slot TryEnqueue(out nuint sequence) => ref DoOperation<EnqueueOperation>(ref state.Producer, out sequence);
+
+    private readonly ref Slot DoOperation<TOperation>(scoped ref nuint position, out nuint newSeq)
+        where TOperation : struct, IOperation<TOperation>, allows ref struct
     {
-        for (var spinner = new SpinWait(); !frozenForEnqueues; spinner.SpinOnce(sleep1Threshold: -1))
+        var spinner = new SpinWait();
+        for (nuint positionCopy = Volatile.Read(in position), tmp; TOperation.Retry(in frozenForEnqueues); positionCopy = tmp)
         {
-            var position = state.Producer;
-            ref var slot = ref this[position & indexMask];
-            var generation = position >>> indexBits;
+            ref var slot = ref this[positionCopy & indexMask];
+            var context = TOperation.Create(positionCopy >>> indexBits);
+            var slotSeq = slot.Sequence;
 
-            if (slot.Sequence != generation)
-                break;
-
-            if (Interlocked.CompareExchange(ref state.Producer, position + 1U, position) == position)
+            if (!context.IsValidSequence(slotSeq))
             {
-                // the slot becomes available for consumption in the current generation
-                sequence = generation | StateBit;
+                if (!TOperation.CanRetry(in state, positionCopy))
+                    break;
+
+                tmp = positionCopy + 1U;
+                spinner.SpinOnce(sleep1Threshold: -1);
+            }
+            else if ((tmp = Interlocked.CompareExchange(ref position, positionCopy + 1U, positionCopy)) == positionCopy)
+            {
+                newSeq = context.NextSequence;
                 return ref slot;
             }
         }
 
-        sequence = 0;
+        Unsafe.SkipInit(out newSeq);
         return ref Unsafe.NullRef<Slot>();
     }
 
@@ -156,6 +143,67 @@ internal struct RingBuffer<T>
             return sequence == (frozenGen | StateBit);
         }
     }
+    
+    private interface IOperation<out TSelf>
+        where TSelf : struct, IOperation<TSelf>, allows ref struct
+    {
+        static abstract bool Retry(ref readonly bool frozenForEnqueues);
+
+        static abstract bool CanRetry(ref readonly State state, nuint position);
+
+        nuint NextSequence { get; }
+
+        bool IsValidSequence(nuint sequence);
+
+        public static abstract TSelf Create(nuint generation);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct EnqueueOperation : IOperation<EnqueueOperation>
+    {
+        private readonly nuint generation;
+
+        private EnqueueOperation(nuint generation) => this.generation = generation;
+
+        static bool IOperation<EnqueueOperation>.CanRetry(ref readonly State state, nuint position)
+        {
+            var consumerPos = Volatile.Read(in state.Consumer);
+            return consumerPos >= position;
+        }
+        
+        static bool IOperation<EnqueueOperation>.Retry(ref readonly bool frozenForEnqueues) => !frozenForEnqueues;
+
+        // the slot becomes available for consumption in the current generation
+        nuint IOperation<EnqueueOperation>.NextSequence => generation | StateBit;
+
+        bool IOperation<EnqueueOperation>.IsValidSequence(nuint sequence) => sequence == generation;
+
+        static EnqueueOperation IOperation<EnqueueOperation>.Create(nuint generation) => new(generation);
+        
+        public override string ToString() => generation.ToString("X");
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct DequeueOperation : IOperation<DequeueOperation>
+    {
+        private readonly nuint generation;
+        
+        private DequeueOperation(nuint generation) => this.generation = generation;
+        
+        static bool IOperation<DequeueOperation>.Retry(ref readonly bool frozenForEnqueues) => true;
+        
+        static bool IOperation<DequeueOperation>.CanRetry(ref readonly State state, nuint position)
+            => position != Volatile.Read(in state.Producer);
+
+        // the slot can be occupied in the next generation only
+        nuint IOperation<DequeueOperation>.NextSequence => (generation + 1U) & ~StateBit;
+
+        bool IOperation<DequeueOperation>.IsValidSequence(nuint sequence) => sequence == (generation | StateBit);
+
+        static DequeueOperation IOperation<DequeueOperation>.Create(nuint generation) => new(generation);
+
+        public override string ToString() => generation.ToString("X");
+    }
 }
 
 // producer/consumer positions are used by different threads, so it's better to avoid memory cache sharing
@@ -165,6 +213,6 @@ internal struct State
 {
     private const int CacheLineSize = 128;
 
-    [FieldOffset(1 * CacheLineSize)] public volatile nuint Producer;
-    [FieldOffset(2 * CacheLineSize)] public volatile nuint Consumer;
+    [FieldOffset(1 * CacheLineSize)] public nuint Producer;
+    [FieldOffset(2 * CacheLineSize)] public nuint Consumer;
 }

@@ -151,7 +151,7 @@ public static partial class Number
             }
             else
             {
-                SoftwareFallback(number, bits.TrimLength(sizeInBits));
+                SoftwareFallback(number, bits % sizeInBits);
             }
 
             static void UsingBmi2(ref byte bytes, nuint length, ref byte bits)

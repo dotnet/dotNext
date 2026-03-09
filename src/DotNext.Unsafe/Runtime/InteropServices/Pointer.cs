@@ -104,7 +104,7 @@ public readonly partial struct Pointer<T> :
     /// <summary>
     /// Converts this pointer into span of bytes.
     /// </summary>
-    public unsafe Span<byte> Bytes => IsNull ? [] : Span.AsBytes(value);
+    public unsafe Span<byte> Bytes => IsNull ? [] : NativeMemory.AsBytes(value);
 
     /// <summary>
     /// Gets or sets pointer value at the specified position in the memory.

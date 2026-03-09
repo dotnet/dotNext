@@ -1,4 +1,7 @@
-﻿namespace DotNext.Threading;
+﻿using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
+
+namespace DotNext.Threading;
 
 public sealed class LockTests : Test
 {
@@ -71,9 +74,33 @@ public sealed class LockTests : Test
         var @lock = new System.Threading.Lock();
         
         @lock.Enter();
-        var task = Task.Factory.StartNew(() => @lock.TryEnter(System.Threading.Timeout.InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
+        var task = Task.Factory.StartNew(() => @lock.TryEnter(InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
         await cts.CancelAsync();
         False(await task);
+    }
+
+    [Fact]
+    public static async Task InterruptThreadJoin()
+    {
+        using var cts = new CancellationTokenSource();
+        object terminated = false;
+        var t = new Thread(Start);
+        t.Start(terminated);
+
+        var task = Task.Factory.StartNew(() => t.Join(InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
+        await cts.CancelAsync();
+        False(await task);
+
+        Unsafe.Unbox<bool>(terminated) = true;
+        True(t.Join(DefaultTimeout));
+
+        static void Start(object terminated)
+        {
+            while (!Unsafe.Unbox<bool>(terminated))
+            {
+                Thread.Sleep(1);
+            }
+        }
     }
     
     [Fact]

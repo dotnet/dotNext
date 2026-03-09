@@ -36,11 +36,19 @@ public sealed class BoundedObjectPoolTests : Test
         {
             for (var i = 0; i < 100; i++)
             {
-                var str = pool.TryGet();
-                NotNull(str);
-                
-                barrier.SignalAndWait(TestToken);
-                True(pool.TryReturn(str));
+                try
+                {
+                    var str = pool.TryGet();
+                    NotNull(str);
+
+                    barrier.SignalAndWait(TestToken);
+                    True(pool.TryReturn(str));
+                }
+                catch
+                {
+                    barrier.Dispose();
+                    throw;
+                }
             }
         }
     }

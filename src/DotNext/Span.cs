@@ -1,48 +1,40 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 namespace DotNext;
+
+using Buffers;
 
 /// <summary>
 /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
 /// </summary>
 public static partial class Span
 {
-    /// <summary>
-    /// Extends blittable types.
-    /// </summary>
-    /// <typeparam name="T">The blittable type.</typeparam>
-    extension<T>(T)
-        where T : unmanaged
+    internal static MemoryOwner<T> Concat<T, TList>(this ref TList list, MemoryAllocator<T>? allocator)
+        where TList : struct, IReadOnlySpanList<T>, allows ref struct
     {
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="Span{T}"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer.</param>
-        /// <returns>The span of contiguous memory.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Span<byte> AsBytes(ref T value)
-            => MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), sizeof(T));
+        var length = 0UL;
+        for (var i = 0; i < list.Count; i++)
+        {
+            var span = list[i];
+            length += (uint)span.Length;
+        }
 
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="ReadOnlySpan{T}"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer.</param>
-        /// <returns>The span of contiguous memory.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<byte> AsReadOnlyBytes(ref readonly T value)
-            => AsBytes(ref Unsafe.AsRef(in value));
-        
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="Span{T}"/>.
-        /// </summary>
-        /// <param name="pointer">The typed pointer.</param>
-        /// <returns>The span of contiguous memory.</returns>
-        [CLSCompliant(false)]
-        public static unsafe Span<byte> AsBytes(T* pointer)
-            => AsBytes(ref *pointer);
+        if (length > (uint)Array.MaxLength)
+            throw new OutOfMemoryException();
+
+        MemoryOwner<T> buffer;
+        if (length is 0UL)
+        {
+            buffer = default;
+        }
+        else
+        {
+            buffer = allocator.DefaultIfNull.AllocateExactly((int)length);
+            var writer = new SpanWriter<T>(buffer.Span);
+            for (var i = 0; i < list.Count; i++)
+            {
+                writer += list[i];
+            }
+        }
+
+        return buffer;
     }
 }

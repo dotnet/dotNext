@@ -17,9 +17,7 @@ public sealed class GrowableBufferTests : Test
         }
 
         private void Append(ReadOnlySpan<byte> input)
-        {
-            offset += input >> output.AsSpan(offset);
-        }
+            => offset += input >>> output.AsSpan(offset);
 
         internal static void Append(ReadOnlySpan<byte> input, ArrayCopyOperation output)
             => output.Append(input);

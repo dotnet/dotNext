@@ -1,8 +1,11 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using DotNext.IO;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
+
+using IO;
+using Runtime.InteropServices;
 
 internal sealed class SumStateMachine(DirectoryInfo location) : SimpleStateMachine(new(Path.Combine(location.FullName, "db")))
 {
@@ -16,7 +19,7 @@ internal sealed class SumStateMachine(DirectoryInfo location) : SimpleStateMachi
 
     protected override ValueTask PersistAsync(IAsyncBinaryWriter writer, CancellationToken token)
     {
-        ReadOnlyMemory<byte> bytes = long.AsReadOnlyBytes(in Value).ToArray();
+        ReadOnlyMemory<byte> bytes = MemoryMarshal.AsReadOnlyBytes(in Value).ToArray();
         return writer.Invoke(bytes, token);
     }
 

@@ -82,5 +82,17 @@ public static class NativeMemoryExtensions
         [CLSCompliant(false)]
         public static unsafe int PointerHashCode([In] void* pointer)
             => ((nuint*)&pointer)->GetHashCode();
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">Blittable type.</typeparam>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe Span<byte> AsBytes<T>(T* pointer)
+            where T : unmanaged, allows ref struct
+            => MemoryMarshal.AsBytes(ref *pointer);
     }
 }

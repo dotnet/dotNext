@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine.Authentication;

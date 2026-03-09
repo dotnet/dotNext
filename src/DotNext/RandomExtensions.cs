@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 namespace DotNext;
 
 using Numerics;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Provides random data generation.
@@ -32,7 +33,7 @@ public static class RandomExtensions
 
             do
             {
-                RandomNumberGenerator.Fill(uint.AsBytes(ref result));
+                RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(ref result));
                 result >>>= 1; // remove sign bit
             }
             while (result is maxValue);
@@ -68,7 +69,7 @@ public static class RandomExtensions
             where T : unmanaged
         {
             Unsafe.SkipInit(out T result);
-            RandomNumberGenerator.Fill(Span.AsBytes(ref result));
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(ref result));
             return result;
         }
     }
@@ -97,7 +98,7 @@ public static class RandomExtensions
             where T : unmanaged
         {
             Unsafe.SkipInit(out T result);
-            random.NextBytes(Span.AsBytes(ref result));
+            random.NextBytes(MemoryMarshal.AsBytes(ref result));
             return result;
         }
 
@@ -140,21 +141,22 @@ public static class RandomExtensions
         /// </summary>
         /// <typeparam name="T">The type of elements in the collection.</typeparam>
         /// <param name="collection">The collection to get the random element.</param>
-        /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
-        public Optional<T> Peek<T>(IReadOnlyCollection<T> collection)
+        /// <returns>The random element from the collection.</returns>
+        /// <exception cref="ArgumentException"><paramref name="collection"/> is empty.</exception>
+        public T Peek<T>(IReadOnlyCollection<T> collection)
         {
+            ArgumentException.ThrowIfNullOrEmpty(collection);
+            
             return collection switch
             {
-                null => throw new ArgumentNullException(nameof(collection)),
-                { Count: 0 } => Optional<T>.None,
                 { Count: 1 } => collection.ElementAt(0),
-                T[] array => random.Peek(array.AsSpan()),
-                List<T> list => random.Peek(CollectionsMarshal.AsSpan(list)),
+                T[] array => random.PeekCore(array.AsSpan()),
+                List<T> list => random.PeekCore(CollectionsMarshal.AsSpan(list)),
                 _ => PeekRandomSlow(random, collection),
             };
 
             [MethodImpl(MethodImplOptions.NoInlining)]
-            static Optional<T> PeekRandomSlow(Random random, IReadOnlyCollection<T> collection)
+            static T PeekRandomSlow(Random random, IReadOnlyCollection<T> collection)
             {
                 var index = random.Next(collection.Count);
                 using var enumerator = collection.GetEnumerator();
@@ -164,7 +166,7 @@ public static class RandomExtensions
                         return enumerator.Current;
                 }
 
-                return Optional<T>.None;
+                throw ArgumentException.EmptyCollection(nameof(collection));
             }
         }
 
@@ -173,17 +175,21 @@ public static class RandomExtensions
         /// </summary>
         /// <typeparam name="T">The type of elements in the span.</typeparam>
         /// <param name="span">The span of elements.</param>
-        /// <returns>Randomly selected element from the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-        public Optional<T> Peek<T>(ReadOnlySpan<T> span)
+        /// <returns>Randomly selected element from the span.</returns>
+        /// <exception cref="ArgumentException"><paramref name="span"/> is empty.</exception>
+        public T Peek<T>(ReadOnlySpan<T> span)
+        {
+            ArgumentException.ThrowIfEmpty(span);
+
+            return random.PeekCore(span);
+        }
+
+        private T PeekCore<T>(ReadOnlySpan<T> span)
         {
             var length = span.Length;
-
-            return length switch
-            {
-                0 => Optional<T>.None,
-                1 => MemoryMarshal.GetReference(span),
-                _ => span[random.Next(length)],
-            };
+            return length is 1
+                ? MemoryMarshal.GetReference(span)
+                : span[random.Next(length)];
         }
     }
 }

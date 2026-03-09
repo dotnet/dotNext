@@ -87,7 +87,7 @@ public sealed class TimestampTests : Test
     public static void PointInTime()
     {
         True(default(Timestamp).IsPast);
-        True(default(Timestamp).IsFuture(TimeProvider.System));
+        True(default(Timestamp).IsPast(TimeProvider.System));
         False(default(Timestamp).IsFuture);
         False(default(Timestamp).IsFuture(TimeProvider.System));
 

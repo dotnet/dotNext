@@ -62,22 +62,24 @@ partial class Span
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public Span<T> TrimLength(int maxLength)
         {
-            switch (maxLength)
-            {
-                case < 0:
-                    throw new ArgumentOutOfRangeException(nameof(maxLength));
-                case 0:
-                    span = default;
-                    break;
-                default:
-                    if (span.Length > maxLength)
-                        span = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), maxLength);
-                    break;
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
 
-            return span;
+            return maxLength < span.Length
+                ? MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), maxLength)
+                : span;
         }
 
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="x">The span to trim.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public static Span<T> operator %(Span<T> x, int maxLength)
+            => x.TrimLength(maxLength);
+        
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
@@ -88,38 +90,10 @@ partial class Span
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public Span<T> TrimLength(int maxLength, out Span<T> rest)
         {
-            switch (maxLength)
-            {
-                case < 0:
-                    throw new ArgumentOutOfRangeException(nameof(maxLength));
-                case 0:
-                    rest = span;
-                    span = default;
-                    break;
-                default:
-                    span = TrimLengthCore(span, maxLength, out rest);
-                    break;
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
 
-            return span;
+            return TrimLengthCore(span, maxLength, out rest);
         }
-
-        /// <summary>
-        /// Copies the contents from the source span into a destination span.
-        /// </summary>
-        /// <param name="destination">Destination memory.</param>
-        /// <param name="writtenCount">The number of copied elements.</param>
-        public void CopyTo(Span<T> destination, out int writtenCount)
-            => writtenCount = span >> destination;
-
-        /// <summary>
-        /// Copies the contents from the source span into a destination span.
-        /// </summary>
-        /// <param name="source">Source memory.</param>
-        /// <param name="destination">Destination memory.</param>
-        /// <returns>The number of copied elements.</returns>
-        public static int operator >> (Span<T> source, Span<T> destination)
-            => (ReadOnlySpan<T>)source >> destination;
         
         /// <summary>
         /// Swaps two ranges within the same span.
@@ -327,7 +301,7 @@ partial class Span
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
 
             ref var ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
+            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, (uint)count), source.Length - count);
             return MemoryMarshal.CreateSpan(ref ptr, count);
         }
 
@@ -340,8 +314,9 @@ partial class Span
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
+            const nuint one = 1U;
             ref T ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
+            source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, one), source.Length - 1);
             return ref ptr;
         }
     }
@@ -372,7 +347,7 @@ partial class Span
         }
         else
         {
-            rest = default;
+            rest = Span<T>.Empty;
         }
 
         return span;

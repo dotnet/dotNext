@@ -9,48 +9,58 @@ namespace DotNext.Buffers;
 public static partial class Memory
 {
     /// <summary>
-    /// Releases all resources encapsulated by the container.
+    /// Extends <see cref="ReadOnlyMemory{T}"/> type.
     /// </summary>
-    /// <remarks>
-    /// This method calls <see cref="IDisposable.Dispose"/> for each
-    /// object in the rented block.
-    /// </remarks>
-    /// <typeparam name="T">The type of items in the rented memory.</typeparam>
-    /// <param name="owner">The rented memory.</param>
-    public static void ReleaseAll<T>(this ref MemoryOwner<T> owner)
-        where T : IDisposable
+    /// <param name="memory">A contiguous region of arbitrary memory.</param>
+    /// <typeparam name="T">The type of items in the span.</typeparam>
+    extension<T>(ReadOnlyMemory<T> memory)
     {
-        foreach (ref var item in owner.Span)
-        {
-            item.Dispose();
-            item = default!;
-        }
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public ReadOnlyMemory<T> TrimLength(int maxLength)
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
-        owner.Clear(clearBuffer: false);
-        owner = default;
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <param name="x">The memory to trim.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public static ReadOnlyMemory<T> operator %(ReadOnlyMemory<T> x, int maxLength)
+            => x.TrimLength(maxLength);
     }
-
+    
     /// <summary>
-    /// Trims the memory block to specified length if it exceeds it.
-    /// If length is less that <paramref name="maxLength" /> then the original block returned.
+    /// Extends <see cref="Memory{T}"/> type.
     /// </summary>
-    /// <typeparam name="T">The type of items in the span.</typeparam>
     /// <param name="memory">A contiguous region of arbitrary memory.</param>
-    /// <param name="maxLength">Maximum length.</param>
-    /// <returns>Trimmed memory block.</returns>
-    public static ReadOnlyMemory<T> TrimLength<T>(this ReadOnlyMemory<T> memory, int maxLength)
-        => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
+    /// <typeparam name="T">The type of items in the span.</typeparam>
+    extension<T>(Memory<T> memory)
+    {
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public Memory<T> TrimLength(int maxLength)
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
-    /// <summary>
-    /// Trims the memory block to specified length if it exceeds it.
-    /// If length is less that <paramref name="maxLength" /> then the original block returned.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the span.</typeparam>
-    /// <param name="memory">A contiguous region of arbitrary memory.</param>
-    /// <param name="maxLength">Maximum length.</param>
-    /// <returns>Trimmed memory block.</returns>
-    public static Memory<T> TrimLength<T>(this Memory<T> memory, int maxLength)
-        => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <param name="x">The memory to trim.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public static Memory<T> operator %(Memory<T> x, int maxLength)
+            => x.TrimLength(maxLength);
+    }
 
     /// <summary>
     /// Resizes the buffer.
@@ -75,7 +85,7 @@ public static partial class Memory
     internal static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
         where TWriter : struct, IBufferWriter<T>, allows ref struct
     {
-        var destination = writer.GetSpan();
+        var destination = GetSpan(writer);
 
         // Fast path, try copying to the available memory directly
         if (value.Length <= destination.Length)
@@ -90,14 +100,19 @@ public static partial class Memory
 
         static void WriteMultiSegment(TWriter writer, ReadOnlySpan<T> source, Span<T> destination)
         {
-            for (;; destination = writer.GetSpan())
+            for (;; destination = GetSpan(writer))
             {
-                var writtenCount = source >> destination;
+                var writtenCount = source >>> destination;
                 writer.Advance(writtenCount);
                 source = source.Slice(writtenCount);
                 if (source.IsEmpty)
                     break;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static Span<T> GetSpan(TWriter writer) => typeof(TWriter) == typeof(BufferWriterSlim<T>.Ref)
+            ? Unsafe.As<TWriter, BufferWriterSlim<T>.Ref>(ref writer).Value.InternalGetSpan(0)
+            : writer.GetSpan();
     }
 }

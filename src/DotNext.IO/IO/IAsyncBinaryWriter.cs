@@ -29,7 +29,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     ValueTask WriteAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        return IBinaryFormattable<T>.TryFormat(value, Buffer.Span)
+        return value.TryFormat(Buffer.Span)
             ? AdvanceAsync(T.Size, token)
             : WriteSlowAsync(value, token);
     }
@@ -37,7 +37,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     private async ValueTask WriteSlowAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        using var buffer = IBinaryFormattable<T>.Format(value);
+        using var buffer = value.Format();
         await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
@@ -141,7 +141,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     {
         for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
         {
-            bytesWritten = input.Span >> Buffer.Span;
+            bytesWritten = input.Span >>> Buffer.Span;
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
     }

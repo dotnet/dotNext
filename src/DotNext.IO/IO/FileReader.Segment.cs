@@ -100,8 +100,8 @@ public partial class FileReader
     }
 
     private static ReadOnlyMemory<byte> TrimLength(ReadOnlyMemory<byte> buffer, SegmentLength length)
-        => buffer.TrimLength(length.Truncate(buffer.Length));
+        => buffer % length.Truncate(buffer.Length);
 
     private static Memory<byte> TrimLength(Memory<byte> buffer, SegmentLength length)
-        => buffer.TrimLength(length.Truncate(buffer.Length));
+        => buffer % length.Truncate(buffer.Length);
 }

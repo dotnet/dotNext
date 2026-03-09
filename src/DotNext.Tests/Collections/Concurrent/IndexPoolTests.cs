@@ -41,10 +41,20 @@ public sealed class IndexPoolTests : Test
         {
             for (var i = 0; i < 100; i++)
             {
-                True(pool.TryGet(out var value));
-                True(value is 0 or 1);
+                int value;
+                try
+                {
+                    True(pool.TryGet(out value));
+                    True(value is 0 or 1);
 
-                barrier.SignalAndWait(TestToken);
+                    barrier.SignalAndWait(TestToken);
+                }
+                catch
+                {
+                    barrier.Dispose();
+                    throw;
+                }
+
                 pool.Return(value);
             }
         }

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -26,22 +24,24 @@ partial class AdvancedHelpers
         /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullable<T>() => default(T) is null;
-        
+
         /// <summary>
         /// Indicates that specified value type is the default value.
         /// </summary>
         /// <typeparam name="T">The type of the value to check.</typeparam>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
-        {
-            0 => true,
-            sizeof(byte) => Unsafe.InToRef<T, byte>(in value) is 0,
-            sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)) is 0,
-            sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(in value)) is 0U,
-            sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)) is 0UL,
-            _ => IsZero(ref Unsafe.InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
-        };
+        public static bool IsDefault<T>(in T value)
+            where T : allows ref struct
+            => Unsafe.SizeOf<T>() switch
+            {
+                0 => true,
+                sizeof(byte) => Unsafe.InToRef<T, byte>(in value) is 0,
+                sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)) is 0,
+                sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(in value)) is 0U,
+                sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)) is 0UL,
+                _ => IsZero(ref Unsafe.InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
+            };
         
         /// <summary>
         /// Copies one value into another.

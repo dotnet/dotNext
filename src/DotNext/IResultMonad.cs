@@ -1,5 +1,3 @@
-using System.Runtime.ExceptionServices;
-
 namespace DotNext;
 
 /// <summary>

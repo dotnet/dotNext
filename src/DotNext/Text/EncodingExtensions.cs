@@ -22,6 +22,11 @@ public static class EncodingExtensions
             => encoding is UTF8Encoding ? Utf8WithoutPreamble : new EncodingWithoutPreamble(encoding);
 
         /// <summary>
+        /// Gets <see cref="Encoding.UTF8"/> encoding that doesn't emit byte order mark.
+        /// </summary>
+        public static UTF8Encoding UTF8NoBom => Utf8WithoutPreamble;
+
+        /// <summary>
         /// Encodes a set of characters from the specified read-only span.
         /// </summary>
         /// <param name="chars">The characters to encode.</param>

@@ -1,5 +1,3 @@
-using static System.Linq.Enumerable;
-
 namespace DotNext.Net.Cluster.Messaging;
 
 internal static class MessageHandler

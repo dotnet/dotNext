@@ -1,5 +1,3 @@
-using DotNext.Threading;
-
 namespace DotNext.Net.Multiplexing;
 
 internal interface IApplicationSideStream

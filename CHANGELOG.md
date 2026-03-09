@@ -1,6 +1,91 @@
 Release Notes
 ====
 
+# 03-09-2026
+.NEXT 6.0.0 has been released! Migration guide is [here](https://dotnet.github.io/dotNext/migration/4.html). All changes are mostly driven by [Extension Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14#extension-members) feature in C# 14. Most of the things in .NEXT now expressed naturally as extensions for existing .NET classes.
+
+<a href="https://www.nuget.org/packages/dotnext/6.0.0">DotNext 6.0.0</a>
+* Introduced convenient operators to work with spans: `>>>` for safe copying and `%` for trimming
+* `BufferWriterSlim<T>` now implements [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface which allows to use it in generic scenarios
+* Greatly improved performance of bit vector conversion methods exposed by `Number` class
+* Removed memory allocation caused by `Bind` extension methods
+* Added convenient static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
+* Improved AOT compatibility
+* Introduced `Variant` type that represents the functionality similar to [TypedReference](https://learn.microsoft.com/en-us/dotnet/api/system.typedreference) but without related compiler restrictions
+* Added **allows ref struct** anti-constraint to many parts of the library
+* Improved performance of `ConcurrentTypeMap` class
+* Built-in delegate types from .NET are extended with static extension methods
+* Added static extensions to [ArgumentOutOfRangeException](https://learn.microsoft.com/en-us/dotnet/api/system.argumentoutofrangeexception) class to cover more validation scenarios
+* Introduced `Enum<T>` to enable the power of the Generic Math when working with enums
+* All zero-alloc and encoding interpolation string handlers now in one place: `DotNext.Text` namespace
+* Added `+=` operator overloading to `SpanWriter<T>` and `BufferWriterSlim<T>` types
+* Added cancellation token support to [Lock](https://learn.microsoft.com/en-us/dotnet/api/system.threading.lock) and [Thread](https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread) classes
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.0.0">DotNext.Metaprogramming 6.0.0</a>
+* Expression nodes can be combined with built-in operators: `+`, `-`, `/`, etc.
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.0.0">DotNext.Unsafe 6.0.0</a>
+* `OpaqueValue<T>` type is introduced to unify the way of passing value types and reference types to unmanaged code. It's especially useful for passing .NET data types to the unmanaged callbacks implemented in C#
+* Added static extension properties to `MemoryAllocator<T>` delegate to expose unmanaged memory allocators
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.0.0">DotNext.Threading 6.0.0</a>
+* `CancellationTokenMultiplexer` has improved CTS pooling mechanism
+* Introduced fast bounded object pool
+* Significantly reduced contention overhead in async locks
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.0.0">DotNext.IO 6.0.0</a>
+* Added static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
+* Improved integration between `IJsonSerializable<T>` interface and JSON serialization infrastructure in .NET
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.0.0">DotNext.Net.Cluster 6.0.0</a>
+* Old WAL implementation represented by `MemoryBasedStateMachine` and `DiskBasedStateMachine` classes is completely removed in favor of `WriteAheadLog` class
+* Improved performance of the log entry serialization
+* Improved AOT compatibility
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.0.0">DotNext.AspNetCore.Cluster 6.0.0</a>
+* Improved AOT compatibility
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.0.0">DotNext.MaintenanceServices 1.0.0</a>
+* Upgrade to `System.CommandLine` stable release
+* Stabilized public API surface
+
+# 02-10-2026
+<a href="https://www.nuget.org/packages/dotnext.io/5.26.3">DotNext.IO 5.26.3</a>
+* Fixed incorrect position adjustment in `PoolingBufferedStream` class if internal buffer is not empty and flush is called
+
+# 01-14-2026
+<a href="https://www.nuget.org/packages/dotnext.threading/5.26.3">DotNext.Threading 5.26.3</a>
+* Fixed race condition in `CancellationTokenMultiplexer` class
+
+# 01-11-2026
+<a href="https://www.nuget.org/packages/dotnext/5.26.3">DotNext 5.26.3</a>
+* Fixed partial Base64 decoding in `Base64Decoder` class
+
+# 01-09-2026
+<a href="https://www.nuget.org/packages/dotnext/5.26.2">DotNext 5.26.2</a>
+* Fixed race condition in `Epoch` class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.26.2">DotNext.Metaprogramming 5.26.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.26.2">DotNext.Unsafe 5.26.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.26.2">DotNext.Threading 5.26.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.26.2">DotNext.IO 5.26.2</a>
+* Fixed handling of small buffer in the default methods of `IAsyncBinaryWriter` interface
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.26.2">DotNext.Net.Cluster 5.26.2</a>
+* Optimized write performance of `WriteAheadLog` class when the length of the custom log entry is not known
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.26.2">DotNext.AspNetCore.Cluster 5.26.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.8.0">DotNext.MaintenanceServices 0.8.0</a>
+* Migration to `System.CommandLine` release package
+
 # 11-03-2025
 <a href="https://www.nuget.org/packages/dotnext/5.26.1">DotNext 5.26.1</a>
 * Lock upgrade logic provided by `ReaderWriterSpinLock` is adjusted according to [275](https://github.com/dotnet/dotNext/issues/275)
@@ -37,7 +122,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/5.26.0">DotNext.Threading 5.26.0</a>
-* Improved support of timeouts in `CancellationTokenMultiplexer`. The scope object now has explicit property to detect whether the multiplexed token source is cancelled due to timeout
+* Improved support of timeouts in `CancellationTokenMultiplexer`. The scope object now has explicit property to detect whether the multiplexed token source is canceled due to timeout
 
 <a href="https://www.nuget.org/packages/dotnext.io/5.26.0">DotNext.IO 5.26.0</a>
 * Migration to `ModernStream` class

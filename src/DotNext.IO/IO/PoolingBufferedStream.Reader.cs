@@ -91,7 +91,7 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
 
         do
         {
-            if (ReadBuffer.TrimLength(parser.RemainingBytes) is not { IsEmpty: false } buffer)
+            if (ReadBuffer % parser.RemainingBytes is not { IsEmpty: false } buffer)
                 return false;
 
             parser.Invoke(buffer.Span);
@@ -135,7 +135,7 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
              count > 0L && (HasBufferedDataToRead || await ReadCoreAsync(token).ConfigureAwait(false));
              AdvanceReader(buffer.Length))
         {
-            buffer = ReadBuffer.TrimLength(int.CreateSaturating(count));
+            buffer = ReadBuffer % int.CreateSaturating(count);
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
             count -= buffer.Length;
         }

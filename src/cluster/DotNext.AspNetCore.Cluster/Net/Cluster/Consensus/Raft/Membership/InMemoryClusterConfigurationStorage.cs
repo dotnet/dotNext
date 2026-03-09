@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Connections;
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
-using IO;
 
 internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<UriEndPoint>
 {

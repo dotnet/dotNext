@@ -7,7 +7,6 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
-using IO;
 using HttpEndPoint = Net.Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
@@ -171,7 +170,7 @@ public static class EndPointFormatter
 
         using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new SpanOwner<byte>(length, true);
+            : new SpanOwner<byte>(length);
 
         reader.Read(pathBuffer.Span);
         return new(HostNameEncoding.GetString(pathBuffer.Span));
@@ -183,7 +182,7 @@ public static class EndPointFormatter
 
         using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new SpanOwner<byte>(length, true);
+            : new SpanOwner<byte>(length);
 
         reader.Read(pathBuffer.Span);
         return new(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
@@ -206,7 +205,9 @@ public static class EndPointFormatter
         family = (AddressFamily)reader.ReadLittleEndian<int>();
         var length = reader.ReadLittleEndian<int>();
 
-        using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold ? stackalloc byte[length] : new SpanOwner<byte>(length, true);
+        using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+            ? stackalloc byte[length]
+            : new SpanOwner<byte>(length);
         reader.Read(hostNameBuffer.Span);
         hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
     }

@@ -68,264 +68,271 @@ public static partial class Synchronization
     /// <param name="task">The task to synchronize.</param>
     /// <returns>Task result; or <see langword="null"/> if <paramref name="task"/> is not completed.</returns>
     public static Result<TResult>? TryGetResult<TResult>(this Task<TResult>? task)
-        => task is { IsCompleted: true } ? GetResult(task, CancellationToken.None) : null;
+        => task is { IsCompleted: true } ? task.GetResult(CancellationToken.None) : null;
 
     /// <summary>
-    /// Gets task result synchronously.
+    /// Extends <see cref="Task"/> type.
     /// </summary>
-    /// <param name="task">The task to synchronize.</param>
-    /// <param name="token">Cancellation token.</param>
-    /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    public static Result<dynamic?> GetResult(this Task task, CancellationToken token)
+    /// <param name="task">The task to extend.</param>
+    extension(Task task)
     {
-        Result<object?> result;
-        try
+        /// <summary>
+        /// Gets task result synchronously.
+        /// </summary>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if the receiver is not of type <see cref="Task{TResult}"/>.</returns>
+        [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+        [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+        public Result<dynamic?> GetResult(CancellationToken token)
         {
-            task.Wait(token);
-            var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
-            result = new(awaiter.GetRawResult());
-        }
-        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
-        {
-            result = new(innerEx);
-        }
-        catch (Exception e)
-        {
-            result = new(e);
+            Result<object?> result;
+            try
+            {
+                task.Wait(token);
+                var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
+                result = new(awaiter.GetRawResult());
+            }
+            catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
+            {
+                result = new(innerEx);
+            }
+            catch (Exception e)
+            {
+                result = new(e);
+            }
+
+            return result;
         }
 
-        return result;
-    }
-
-    /// <summary>
-    /// Gets task result synchronously.
-    /// </summary>
-    /// <param name="task">The task to synchronize.</param>
-    /// <param name="timeout">Synchronization timeout.</param>
-    /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
-    /// <exception cref="TimeoutException">Task is not completed.</exception>
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    public static Result<dynamic?> GetResult(this Task task, TimeSpan timeout)
-    {
-        Result<dynamic?> result;
-        try
+        /// <summary>
+        /// Gets task result synchronously.
+        /// </summary>
+        /// <param name="timeout">Synchronization timeout.</param>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if the receiver is not of type <see cref="Task{TResult}"/>.</returns>
+        /// <exception cref="TimeoutException">Task is not completed.</exception>
+        [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+        [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+        public Result<dynamic?> GetResult(TimeSpan timeout)
         {
-            if (!task.Wait(timeout))
-                throw new TimeoutException();
+            Result<dynamic?> result;
+            try
+            {
+                if (!task.Wait(timeout))
+                    throw new TimeoutException();
 
-            var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
-            result = new(awaiter.GetRawResult());
-        }
-        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
-        {
-            result = new(innerEx);
-        }
-        catch (Exception e)
-        {
-            result = new(e);
-        }
+                var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
+                result = new(awaiter.GetRawResult());
+            }
+            catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
+            {
+                result = new(innerEx);
+            }
+            catch (Exception e)
+            {
+                result = new(e);
+            }
 
-        return result;
-    }
-
-    /// <summary>
-    /// Creates a task that will complete when all the passed tasks have completed.
-    /// </summary>
-    /// <typeparam name="T1">The type of the first task.</typeparam>
-    /// <typeparam name="T2">The type of the second task.</typeparam>
-    /// <param name="task1">The first task to await.</param>
-    /// <param name="task2">The second task to await.</param>
-    /// <returns>The task containing results of both tasks.</returns>
-    public static async Task<(Result<T1>, Result<T2>)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2)
-    {
-        (Result<T1>, Result<T2>) result;
-
-        try
-        {
-            result.Item1 = await task1.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item1 = new(e);
+            return result;
         }
 
-        try
+        /// <summary>
+        /// Creates a task that will complete when all the passed tasks have completed.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first task.</typeparam>
+        /// <typeparam name="T2">The type of the second task.</typeparam>
+        /// <param name="task1">The first task to await.</param>
+        /// <param name="task2">The second task to await.</param>
+        /// <returns>The task containing results of both tasks.</returns>
+        public static async Task<(Result<T1>, Result<T2>)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2)
         {
-            result.Item2 = await task2.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item2 = new(e);
+            (Result<T1>, Result<T2>) result;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item1 = new(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item2 = new(e);
+            }
+
+            return result;
         }
 
-        return result;
-    }
+        /// <summary>
+        /// Creates a task that will complete when all the passed tasks have completed.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first task.</typeparam>
+        /// <typeparam name="T2">The type of the second task.</typeparam>
+        /// <typeparam name="T3">The type of the third task.</typeparam>
+        /// <param name="task1">The first task to await.</param>
+        /// <param name="task2">The second task to await.</param>
+        /// <param name="task3">The third task to await.</param>
+        /// <returns>The task containing results of all tasks.</returns>
+        public static async Task<(Result<T1>, Result<T2>, Result<T3>)> WhenAll<T1, T2, T3>(Task<T1> task1, Task<T2> task2, Task<T3> task3)
+        {
+            (Result<T1>, Result<T2>, Result<T3>) result;
 
-    /// <summary>
-    /// Creates a task that will complete when all the passed tasks have completed.
-    /// </summary>
-    /// <typeparam name="T1">The type of the first task.</typeparam>
-    /// <typeparam name="T2">The type of the second task.</typeparam>
-    /// <typeparam name="T3">The type of the third task.</typeparam>
-    /// <param name="task1">The first task to await.</param>
-    /// <param name="task2">The second task to await.</param>
-    /// <param name="task3">The third task to await.</param>
-    /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(Result<T1>, Result<T2>, Result<T3>)> WhenAll<T1, T2, T3>(Task<T1> task1, Task<T2> task2, Task<T3> task3)
-    {
-        (Result<T1>, Result<T2>, Result<T3>) result;
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item1 = new(e);
+            }
 
-        try
-        {
-            result.Item1 = await task1.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item1 = new(e);
-        }
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item2 = new(e);
+            }
 
-        try
-        {
-            result.Item2 = await task2.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item2 = new(e);
-        }
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item3 = new(e);
+            }
 
-        try
-        {
-            result.Item3 = await task3.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item3 = new(e);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Creates a task that will complete when all the passed tasks have completed.
-    /// </summary>
-    /// <typeparam name="T1">The type of the first task.</typeparam>
-    /// <typeparam name="T2">The type of the second task.</typeparam>
-    /// <typeparam name="T3">The type of the third task.</typeparam>
-    /// <typeparam name="T4">The type of the fourth task.</typeparam>
-    /// <param name="task1">The first task to await.</param>
-    /// <param name="task2">The second task to await.</param>
-    /// <param name="task3">The third task to await.</param>
-    /// <param name="task4">The fourth task to await.</param>
-    /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4)
-    {
-        (Result<T1>, Result<T2>, Result<T3>, Result<T4>) result;
-
-        try
-        {
-            result.Item1 = await task1.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item1 = new(e);
+            return result;
         }
 
-        try
+        /// <summary>
+        /// Creates a task that will complete when all the passed tasks have completed.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first task.</typeparam>
+        /// <typeparam name="T2">The type of the second task.</typeparam>
+        /// <typeparam name="T3">The type of the third task.</typeparam>
+        /// <typeparam name="T4">The type of the fourth task.</typeparam>
+        /// <param name="task1">The first task to await.</param>
+        /// <param name="task2">The second task to await.</param>
+        /// <param name="task3">The third task to await.</param>
+        /// <param name="task4">The fourth task to await.</param>
+        /// <returns>The task containing results of all tasks.</returns>
+        public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2,
+            Task<T3> task3, Task<T4> task4)
         {
-            result.Item2 = await task2.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item2 = new(e);
+            (Result<T1>, Result<T2>, Result<T3>, Result<T4>) result;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item1 = new(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item2 = new(e);
+            }
+
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item3 = new(e);
+            }
+
+            try
+            {
+                result.Item4 = await task4.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item4 = new(e);
+            }
+
+            return result;
         }
 
-        try
+        /// <summary>
+        /// Creates a task that will complete when all the passed tasks have completed.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first task.</typeparam>
+        /// <typeparam name="T2">The type of the second task.</typeparam>
+        /// <typeparam name="T3">The type of the third task.</typeparam>
+        /// <typeparam name="T4">The type of the fourth task.</typeparam>
+        /// <typeparam name="T5">The type of the fifth task.</typeparam>
+        /// <param name="task1">The first task to await.</param>
+        /// <param name="task2">The second task to await.</param>
+        /// <param name="task3">The third task to await.</param>
+        /// <param name="task4">The fourth task to await.</param>
+        /// <param name="task5">The fifth task to await.</param>
+        /// <returns>The task containing results of all tasks.</returns>
+        public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>)> WhenAll<T1, T2, T3, T4, T5>(Task<T1> task1,
+            Task<T2> task2, Task<T3> task3, Task<T4> task4, Task<T5> task5)
         {
-            result.Item3 = await task3.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item3 = new(e);
-        }
+            (Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>) result;
 
-        try
-        {
-            result.Item4 = await task4.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item4 = new(e);
-        }
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item1 = new(e);
+            }
 
-        return result;
-    }
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item2 = new(e);
+            }
 
-    /// <summary>
-    /// Creates a task that will complete when all the passed tasks have completed.
-    /// </summary>
-    /// <typeparam name="T1">The type of the first task.</typeparam>
-    /// <typeparam name="T2">The type of the second task.</typeparam>
-    /// <typeparam name="T3">The type of the third task.</typeparam>
-    /// <typeparam name="T4">The type of the fourth task.</typeparam>
-    /// <typeparam name="T5">The type of the fifth task.</typeparam>
-    /// <param name="task1">The first task to await.</param>
-    /// <param name="task2">The second task to await.</param>
-    /// <param name="task3">The third task to await.</param>
-    /// <param name="task4">The fourth task to await.</param>
-    /// <param name="task5">The fifth task to await.</param>
-    /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>)> WhenAll<T1, T2, T3, T4, T5>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4, Task<T5> task5)
-    {
-        (Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>) result;
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item3 = new(e);
+            }
 
-        try
-        {
-            result.Item1 = await task1.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item1 = new(e);
-        }
+            try
+            {
+                result.Item4 = await task4.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item4 = new(e);
+            }
 
-        try
-        {
-            result.Item2 = await task2.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item2 = new(e);
-        }
+            try
+            {
+                result.Item5 = await task5.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                result.Item5 = new(e);
+            }
 
-        try
-        {
-            result.Item3 = await task3.ConfigureAwait(false);
+            return result;
         }
-        catch (Exception e)
-        {
-            result.Item3 = new(e);
-        }
-
-        try
-        {
-            result.Item4 = await task4.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item4 = new(e);
-        }
-
-        try
-        {
-            result.Item5 = await task5.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            result.Item5 = new(e);
-        }
-
-        return result;
     }
 }

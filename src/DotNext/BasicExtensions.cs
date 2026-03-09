@@ -5,8 +5,6 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext;
 
-using Runtime.CompilerServices;
-
 /// <summary>
 /// Various extension methods for core data types.
 /// </summary>

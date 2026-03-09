@@ -2,8 +2,6 @@ using System.Diagnostics;
 
 namespace DotNext.IO;
 
-using Buffers;
-
 partial class PoolingBufferedStream : IAsyncBinaryWriter
 {
     /// <inheritdoc/>

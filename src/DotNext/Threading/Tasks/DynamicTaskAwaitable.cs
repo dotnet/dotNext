@@ -57,7 +57,6 @@ public readonly struct DynamicTaskAwaitable
             return IsTaskWithResult(task.GetType()) ? GetDynamicResult(task) : Missing.Value;
             
             [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
-            [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
             static object? GetDynamicResult(Task task)
             {
                 var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());

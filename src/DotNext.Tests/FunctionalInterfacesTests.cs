@@ -1,8 +1,4 @@
-using System.Runtime.CompilerServices;
-
 namespace DotNext;
-
-using Runtime.CompilerServices;
 
 public sealed class FunctionalInterfacesTests : Test
 {

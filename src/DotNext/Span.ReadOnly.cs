@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -27,22 +26,18 @@ partial class Span
         /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
         public unsafe bool BitwiseEquals(ReadOnlySpan<T> y)
         {
-            if (x.Length == y.Length)
-            {
-                for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
-                {
-                    size = Math.Min(maxSize, x.Length);
-                    var sizeInBytes = size * sizeof(T);
-                    var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
-                    var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                    if (partX.SequenceEqual(partY) is false)
-                        return false;
-                }
+            var result = x.Length == y.Length;
 
-                return true;
+            for (int maxSize = Array.MaxLength / sizeof(T), size; result && !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
+            {
+                size = int.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                result = partX.SequenceEqual(partY);
             }
 
-            return false;
+            return result;
         }
 
         /// <summary>
@@ -52,20 +47,14 @@ partial class Span
         /// <returns>Comparison result.</returns>
         public unsafe int BitwiseCompare(ReadOnlySpan<T> y)
         {
-            var result = x.Length;
-            result = result.CompareTo(y.Length);
-            if (result is 0)
+            var result = x.Length.CompareTo(y.Length);
+            for (int maxSize = Array.MaxLength / sizeof(T), size; result is 0 && !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
             {
-                for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
-                {
-                    size = Math.Min(maxSize, x.Length);
-                    var sizeInBytes = size * sizeof(T);
-                    var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
-                    var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                    result = partX.SequenceCompareTo(partY);
-                    if (result is not 0)
-                        break;
-                }
+                size = int.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                result = partX.SequenceCompareTo(partY);
             }
 
             return result;
@@ -129,15 +118,6 @@ partial class Span
         /// <returns><see langword="true"/> if <c>value &amp; mask != 0</c>; otherwise, <see langword="false"/>.</returns>
         public static bool operator &(ReadOnlySpan<T> value, ReadOnlySpan<T> mask)
             => value.IsBitwiseAndNonZero(mask);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ReadOnlySpan<T> ReinterpretCast<TInput>(ReadOnlySpan<TInput> input)
-            where TInput : unmanaged
-        {
-            Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<T>());
-
-            return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<TInput, T>(ref MemoryMarshal.GetReference(input)), input.Length);
-        }
     }
 
     /// <summary>
@@ -155,7 +135,18 @@ partial class Span
         /// <returns>Trimmed span.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public ReadOnlySpan<T> TrimLength(int maxLength)
-            => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
+            => Unsafe.BitCast<ReadOnlySpan<T>, Span<T>>(span).TrimLength(maxLength);
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="x">The span to trim.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public static ReadOnlySpan<T> operator %(ReadOnlySpan<T> x, int maxLength)
+            => x.TrimLength(maxLength);
         
         /// <summary>
         /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
@@ -188,18 +179,8 @@ partial class Span
         /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
         public static MemoryOwner<T> Concat(ReadOnlySpan<T> first, ReadOnlySpan<T> second, ReadOnlySpan<T> third, MemoryAllocator<T>? allocator = null)
         {
-            if (first.IsEmpty && second.IsEmpty && third.IsEmpty)
-                return default;
-
-            var length = checked(first.Length + second.Length + third.Length);
-            var result = allocator?.Invoke(length) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, length);
-
-            var output = result.Span;
-            first.CopyTo(output);
-            second.CopyTo(output = output.Slice(first.Length));
-            third.CopyTo(output.Slice(second.Length));
-
-            return result;
+            var list = new ReadOnlySpanList3<T> { [0] = first, [1] = second, [2] = third };
+            return list.Concat(allocator);
         }
         
         /// <summary>
@@ -211,26 +192,8 @@ partial class Span
         /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
         public static MemoryOwner<T> Concat(ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
         {
-            MemoryOwner<T> result;
-            var length = first.Length + second.Length;
-
-            switch (length)
-            {
-                case 0:
-                    result = default;
-                    break;
-                case < 0:
-                    throw new OutOfMemoryException();
-                default:
-                    result = allocator?.Invoke(length) ?? new(ArrayPool<T>.Shared, length);
-
-                    var output = result.Span;
-                    first.CopyTo(output);
-                    second.CopyTo(output.Slice(first.Length));
-                    break;
-            }
-
-            return result;
+            var list = new ReadOnlySpanList2<T> { [0] = first, [1] = second };
+            return list.Concat(allocator);
         }
 
         /// <summary>
@@ -251,18 +214,10 @@ partial class Span
         /// <summary>
         /// Copies the contents from the source span into a destination span.
         /// </summary>
-        /// <param name="destination">Destination memory.</param>
-        /// <param name="writtenCount">The number of copied elements.</param>
-        public void CopyTo(Span<T> destination, out int writtenCount)
-            => writtenCount = span >> destination;
-
-        /// <summary>
-        /// Copies the contents from the source span into a destination span.
-        /// </summary>
         /// <param name="source">Source memory.</param>
         /// <param name="destination">Destination memory.</param>
         /// <returns>The number of copied elements.</returns>
-        public static int operator >>(ReadOnlySpan<T> source, Span<T> destination)
+        public static int operator >>> (ReadOnlySpan<T> source, Span<T> destination)
         {
             int writtenCount;
             if (source.Length > destination.Length)
@@ -277,7 +232,7 @@ partial class Span
             source.CopyTo(destination);
             return writtenCount;
         }
-        
+
         /// <summary>
         /// Returns the first element in a span that satisfies a specified condition.
         /// </summary>
@@ -318,13 +273,7 @@ partial class Span
         /// <returns>The span containing <paramref name="count"/> elements.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of the source span.</exception>
         public ReadOnlySpan<T> Advance(int count)
-        {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
-
-            ref var ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
-            return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
-        }
+            => Unsafe.As<ReadOnlySpan<T>, Span<T>>(ref source).Advance(count);
 
         /// <summary>
         /// Takes the first element and adjusts the span.
@@ -332,13 +281,7 @@ partial class Span
         /// <returns>The reference to the first element in the span.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The source span is empty.</exception>
         public ref readonly T Advance()
-        {
-            ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
-
-            ref T ptr = ref MemoryMarshal.GetReference(source);
-            source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
-            return ref ptr;
-        }
+            => ref Unsafe.As<ReadOnlySpan<T>, Span<T>>(ref source).Advance();
     }
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
@@ -454,5 +397,33 @@ partial class Span
         }
 
         return false;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private ref struct ReadOnlySpanList2<T> : IReadOnlySpanList<T>
+    {
+        private ReadOnlySpan<T> span1, span2;
+
+        int IReadOnlySpanList<T>.Count => 2;
+
+        public ReadOnlySpan<T> this[int index]
+        {
+            get => Unsafe.Add(ref span1, index);
+            init => Unsafe.Add(ref span1, index) = value;
+        }
+    }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    private ref struct ReadOnlySpanList3<T> : IReadOnlySpanList<T>
+    {
+        private ReadOnlySpan<T> span1, span2, span3;
+
+        int IReadOnlySpanList<T>.Count => 3;
+
+        public ReadOnlySpan<T> this[int index]
+        {
+            get => Unsafe.Add(ref span1, index);
+            init => Unsafe.Add(ref span1, index) = value;
+        }
     }
 }

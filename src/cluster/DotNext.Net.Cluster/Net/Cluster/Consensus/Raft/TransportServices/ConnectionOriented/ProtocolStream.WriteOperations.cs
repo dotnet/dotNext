@@ -47,7 +47,7 @@ internal partial class ProtocolStream
 
     private int WriteToBuffer(ReadOnlySpan<byte> input)
     {
-        var writtenCount = input >> buffer.Span.Slice(bufferEnd);
+        var writtenCount = input >>> buffer.Span.Slice(bufferEnd);
         bufferEnd += writtenCount;
         return writtenCount;
     }

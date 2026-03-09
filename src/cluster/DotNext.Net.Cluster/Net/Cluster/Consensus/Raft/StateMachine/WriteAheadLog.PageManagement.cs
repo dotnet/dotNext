@@ -145,7 +145,7 @@ partial class WriteAheadLog
                     if (HasNext)
                     {
                         var page = pages[pageIndex++];
-                        current = page.Memory.Slice(offset).TrimLength(int.CreateSaturating(length));
+                        current = page.Memory.Slice(offset) % int.CreateSaturating(length);
                         length -= current.Length;
                         offset = 0;
                         return true;

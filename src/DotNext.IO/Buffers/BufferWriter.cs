@@ -7,7 +7,6 @@ namespace DotNext.Buffers;
 
 using IO;
 using EncodingContext = DotNext.Text.EncodingContext;
-using SevenBitEncodedInt = Binary.Leb128<uint>;
 
 /// <summary>
 /// Represents extension methods for writing typed data into buffer.

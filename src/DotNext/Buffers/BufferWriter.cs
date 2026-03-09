@@ -9,6 +9,7 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
@@ -115,7 +116,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
 
     /// <inheritdoc />
     int IGrowableBuffer<T>.CopyTo(Span<T> output)
-        => WrittenMemory.Span >> output;
+        => WrittenMemory.Span >>> output;
 
     /// <inheritdoc />
     bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
@@ -158,9 +159,9 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
         var span = GetSpan(items.Count);
         var count = items switch
         {
-            List<T> list => CollectionsMarshal.AsSpan(list) >> span,
-            T[] array => array.AsSpan() >> span,
-            ArraySegment<T> segment => segment.AsSpan() >> span,
+            List<T> list => CollectionsMarshal.AsSpan(list) >>> span,
+            T[] array => array.AsSpan() >>> span,
+            ArraySegment<T> segment => segment.AsSpan() >>> span,
             _ => CopyFromCollection(items, span)
         };
 

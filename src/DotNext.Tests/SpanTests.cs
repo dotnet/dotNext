@@ -12,10 +12,10 @@ public sealed class SpanTests : Test
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
         True(array1.SequenceEqual(array2));
-        True(Span.BitwiseEquals(array1, array2));
+        True(array1.BitwiseEquals(array2));
         array2[1] = Guid.Empty;
         False(array1.SequenceEqual(array2));
-        False(Span.BitwiseEquals(array1, array2));
+        False(array1.BitwiseEquals(array2));
     }
 
     [Fact]
@@ -23,9 +23,9 @@ public sealed class SpanTests : Test
     {
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
-        Equal(0, Span.BitwiseCompare(array1, array2));
+        Equal(0, array1.BitwiseCompare(array2));
         array2[1] = Guid.Empty;
-        True(Span.BitwiseCompare(array1, array2) > 0);
+        True(array1.BitwiseCompare(array2) > 0);
     }
 
     [Fact]
@@ -42,13 +42,16 @@ public sealed class SpanTests : Test
     }
 
     [Fact]
-    public static void IndexOf()
+    public static unsafe void IndexOf()
     {
         ReadOnlySpan<ulong> span = [3, 2, 6, 4];
         Equal(1, span.IndexOf(2UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3, span.IndexOf(4UL, 0, EqualityComparer<ulong>.Default.Equals));
+        Equal(2, span.IndexOf(6UL, 0, &AreEqual));
         Equal(3UL, span[0]);
         Equal(2UL, span[1]);
+
+        static bool AreEqual(ulong x, ulong y) => x == y;
     }
 
     [Fact]
@@ -66,7 +69,7 @@ public sealed class SpanTests : Test
     public static void TrimByLength1()
     {
         Span<int> span = [1, 2, 3];
-        span = span.TrimLength(4);
+        span %= 4;
         Equal(3, span.Length);
         span = span.TrimLength(2);
         Equal(2, span.Length);
@@ -78,7 +81,7 @@ public sealed class SpanTests : Test
     public static void TrimByLength2()
     {
         ReadOnlySpan<int> span = [1, 2, 3];
-        span = span.TrimLength(4);
+        span %= 4;
         Equal(3, span.Length);
         span = span.TrimLength(2);
         Equal(2, span.Length);
@@ -86,13 +89,13 @@ public sealed class SpanTests : Test
         Equal(2, span[1]);
     }
 
-    public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
-    {
+    public static TheoryData<MemoryAllocator<char>> TestAllocators =>
+    [
         null,
         MemoryAllocator<char>.Array,
         MemoryAllocator<char>.Pinned,
-        ArrayPool<char>.Shared.ToAllocator(),
-    };
+        ArrayPool<char>.Shared.ToAllocator()
+    ];
 
     [Theory]
     [MemberData(nameof(TestAllocators))]
@@ -124,7 +127,7 @@ public sealed class SpanTests : Test
     {
         ReadOnlySpan<int> src = source;
         Span<int> dst = destination;
-        src.CopyTo(dst, out var writtenCount);
+        var writtenCount = src >>> dst;
         Equal(Math.Min(src.Length, dst.Length), writtenCount);
 
         for (var i = 0; i < writtenCount; i++)
@@ -137,7 +140,7 @@ public sealed class SpanTests : Test
         var owner = ReadOnlySpan<byte>.Empty.Copy();
         True(owner.IsEmpty);
 
-        owner = new ReadOnlySpan<byte>(new byte[] { 10, 20, 30 }).Copy();
+        owner = new ReadOnlySpan<byte>([10, 20, 30]).Copy();
         Equal(3, owner.Length);
         Equal(10, owner[0]);
         Equal(20, owner[1]);
@@ -490,17 +493,17 @@ public sealed class SpanTests : Test
 
         // right is zero length
         input = [1, 2, 3, 4, 5, 6];
-        input.Swap(0..2, 3..3);
+        input.Swap(..2, 3..3);
         Equal(stackalloc int[] { 3, 1, 2, 4, 5, 6 }, input);
 
         // no space between ranges
         input = [1, 2, 3, 4, 5, 6];
-        input.Swap(0..2, 2..6);
+        input.Swap(..2, 2..6);
         Equal(stackalloc int[] { 3, 4, 5, 6, 1, 2 }, input);
 
         // left == right
         input = [1, 2, 3, 4, 5, 6];
-        input.Swap(0..3, 3..6);
+        input.Swap(..3, 3..6);
         Equal(stackalloc int[] { 4, 5, 6, 1, 2, 3 }, input);
 
         // left and right are empty
@@ -509,7 +512,7 @@ public sealed class SpanTests : Test
         Equal(stackalloc int[] { 1, 2, 3, 4, 5, 6 }, input);
 
         // overlapping
-        Throws<ArgumentException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Swap(0..2, 1..3));
+        Throws<ArgumentException>(() => new[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Swap(..2, 1..3));
     }
 
     [Fact]
@@ -517,7 +520,7 @@ public sealed class SpanTests : Test
     {
         // move from left to right
         Span<int> input = [1, 2, 3, 4, 5, 6];
-        input.Move(0..2, 3);
+        input.Move(..2, 3);
         Equal(stackalloc int[] { 3, 1, 2, 4, 5, 6 }, input);
 
         // move from left to right
@@ -530,15 +533,15 @@ public sealed class SpanTests : Test
         Equal(stackalloc int[] { 1, 2, 3, 4, 5, 6 }, input);
 
         // out of range
-        Throws<ArgumentOutOfRangeException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(0..2, 1));
+        Throws<ArgumentOutOfRangeException>(() => new[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(..2, 1));
     }
 
     [Fact]
     public static void AdvanceReadOnlySpan()
     {
-        ReadOnlySpan<int> array = new int[] { 10, 20, 30 };
+        ReadOnlySpan<int> array = [10, 20, 30];
         Equal(10, array.Advance());
-        Equal(new int[] { 20, 30 }, array.Advance(2));
+        Equal([20, 30], array.Advance(2));
     }
 
     [Fact]
