@@ -155,6 +155,7 @@ partial class Epoch
     private sealed class WorkItem<TWorkItem>(TWorkItem item) : Discardable
         where TWorkItem : struct, IThreadPoolWorkItem
     {
+        private TWorkItem item = item;
         protected override void Discard() => item.Execute();
     }
 
