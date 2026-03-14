@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -24,6 +25,8 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     internal T Data;
+
+    internal BoxedValue() => throw new UnreachableException();
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
