@@ -474,6 +474,23 @@ public sealed class RandomAccessCacheTests : Test
         False(lookup.TryRead(key.ToByteArray(), out readSession));
     }
 
+    [Fact]
+    public static async Task ImportPairs()
+    {
+        await using var cache = new RandomAccessCache<Guid, long>(15)
+        {
+            KeyComparer = BitwiseComparer<Guid>.Instance,
+        };
+
+        var key = Guid.NewGuid();
+        await cache.ImportAsync(new Dictionary<Guid, long> { { key, 42L }, { Guid.NewGuid(), 43L } }, TestToken);
+        True(cache.TryRead(key, out var session));
+        using (session)
+        {
+            Equal(42L, session.Value);
+        }
+    }
+
     private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
     {
         protected override void AddWeight(ref long total, string key, long value)

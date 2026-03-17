@@ -71,7 +71,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 var removedPair = sieveHand;
                 sieveHand = sieveHand.DetachAndMoveBackward(ref evictionHead, ref evictionTail) ?? evictionTail;
                 currentSize--;
-                if (!removed && removedPair.ReleaseCounter() is false)
+                if (!removed && !removedPair.ReleaseCounter())
                 {
                     OnRemoved(removedPair);
                     TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode));
@@ -213,7 +213,7 @@ public partial class RandomAccessCache<TKey, TValue>
             => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
 
         internal bool MarkAsDead()
-            => MarkAsEvicted() && ReleaseCounter() is false;
+            => MarkAsEvicted() && !ReleaseCounter();
 
         internal bool IsDead => cacheState < NotVisitedState;
         

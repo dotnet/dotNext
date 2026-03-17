@@ -208,11 +208,13 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void Add(KeyValuePair pair)
         {
             // possible contention with TryRemove private method that can be called without lock
-            KeyValuePair? current, tmp = first;
-            do
+            for (KeyValuePair? current = first, tmp;; current = tmp)
             {
-                pair.NextInBucket = current = tmp;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref first, pair, current), current));
+                pair.NextInBucket = current;
+                tmp = Interlocked.CompareExchange(ref first, pair, current);
+                if (ReferenceEquals(current, tmp))
+                    break;
+            }
 
             Interlocked.Increment(ref count);
         }
@@ -249,8 +251,8 @@ public partial class RandomAccessCache<TKey, TValue>
                 Interlocked.Decrement(ref count);
         }
 
-        internal KeyValuePair? TryRemove<TPredicate>(TPredicate predicate, int hashCode)
-            where TPredicate : struct, IEquatable<TKey>, allows ref struct
+        internal KeyValuePair? TryRemove<TSelector>(TSelector selector, int hashCode)
+            where TSelector : struct, IEquatable<TKey>, allows ref struct
         {
             var result = default(KeyValuePair?);
 
@@ -260,7 +262,7 @@ public partial class RandomAccessCache<TKey, TValue>
                  previous = current, current = current.NextInBucket)
             {
                 if (result is null && hashCode == current.KeyHashCode
-                                   && predicate.Equals(current.Key)
+                                   && selector.Equals(current.Key)
                                    && current.MarkAsEvicted())
                 {
                     result = current;
@@ -274,9 +276,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
             return result;
         }
-        
-        internal KeyValuePair? TryGet<TPredicate, TVisitor>(TPredicate comparer, int hashCode)
-            where TPredicate : struct, IEquatable<TKey>, allows ref struct
+
+        internal KeyValuePair? TryGet<TSelector, TVisitor>(TSelector selector, int hashCode)
+            where TSelector : struct, IEquatable<TKey>, allows ref struct
             where TVisitor : struct, IKeyValuePairVisitor, allows ref struct
         {
             var result = default(KeyValuePair?);
@@ -287,7 +289,7 @@ public partial class RandomAccessCache<TKey, TValue>
                  previous = current, current = current.NextInBucket)
             {
                 if (result is null && hashCode == current.KeyHashCode
-                                   && comparer.Equals(current.Key)
+                                   && selector.Equals(current.Key)
                                    && TVisitor.Visit(current))
                 {
                     result = current;
@@ -369,6 +371,8 @@ public partial class RandomAccessCache<TKey, TValue>
         bool IEquatable<TKey>.Equals(TKey? actual) => EqualityComparer<TKey>.Default.Equals(actual, expected);
 
         TKey ISupplier<TKey>.Invoke() => expected;
+
+        public override int GetHashCode() => EqualityComparer<TKey>.Default.GetHashCode(expected);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -383,6 +387,8 @@ public partial class RandomAccessCache<TKey, TValue>
         bool IEquatable<TKey>.Equals(TKey? actual) => comparer.Equals(actual, expected);
         
         TKey ISupplier<TKey>.Invoke() => expected;
+
+        public override int GetHashCode() => comparer.GetHashCode(expected);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -488,7 +494,7 @@ public partial class RandomAccessCache<TKey, TValue>
                         }
                         finally
                         {
-                            if (current.ReleaseCounter() is false)
+                            if (!current.ReleaseCounter())
                                 cleanup(current);
                         }
                     }
