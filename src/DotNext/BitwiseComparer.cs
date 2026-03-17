@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -6,14 +7,18 @@ namespace DotNext;
 using Patterns;
 using Runtime.InteropServices;
 using static Runtime.CompilerServices.AdvancedHelpers;
-using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
 /// Represents bitwise comparer for the arbitrary value type.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISingleton<BitwiseComparer<T>>
-    where T : unmanaged, allows ref struct
+public sealed class BitwiseComparer<T> :
+    IEqualityComparer<T>,
+    IComparer<T>,
+    ISingleton<BitwiseComparer<T>>,
+    IAlternateEqualityComparer<ReadOnlySpan<byte>, T>,
+    IAlternateEqualityComparer<ReadOnlyMemory<byte>, T>
+    where T : unmanaged
 {
     private BitwiseComparer()
     {
@@ -40,17 +45,9 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
     /// <param name="first">The first value to check.</param>
     /// <param name="second">The second value to check.</param>
     /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-    public static unsafe bool Equals<TOther>(in T first, in TOther second)
+    public static bool Equals<TOther>(in T first, in TOther second)
         where TOther : unmanaged, allows ref struct
-        => sizeof(T) == sizeof(TOther) && sizeof(T) switch
-        {
-            0 => true,
-            sizeof(byte) => InToRef<T, byte>(in first) == InToRef<TOther, byte>(in second),
-            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(in first)) == ReadUnaligned<ushort>(ref InToRef<TOther, byte>(in second)),
-            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(in first)) == ReadUnaligned<uint>(ref InToRef<TOther, byte>(in second)),
-            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(in first)) == ReadUnaligned<ulong>(ref InToRef<TOther, byte>(in second)),
-            _ => EqualsUnaligned(ref InToRef<T, byte>(in first), ref InToRef<TOther, byte>(in second), (nuint)SizeOf<T>()),
-        };
+        => MemoryMarshal.AsReadOnlyBytes(in first).SequenceEqual(MemoryMarshal.AsReadOnlyBytes(in second));
 
     /// <summary>
     /// Compares bits of two values of the different type.
@@ -59,27 +56,9 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
     /// <param name="first">The first value to compare.</param>
     /// <param name="second">The second value to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-    public static unsafe int Compare<TOther>(in T first, in TOther second)
+    public static int Compare<TOther>(in T first, in TOther second)
         where TOther : unmanaged, allows ref struct
-    {
-        var result = sizeof(T);
-        result = result.CompareTo(sizeof(TOther));
-
-        if (result is 0)
-        {
-            result = sizeof(T) switch
-            {
-                0 => 0,
-                sizeof(byte) => InToRef<T, byte>(in first).CompareTo(InToRef<TOther, byte>(in second)),
-                sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<short>(ref InToRef<TOther, byte>(in second))),
-                sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<uint>(ref InToRef<TOther, byte>(in second))),
-                sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<ulong>(ref InToRef<TOther, byte>(in second))),
-                _ => CompareUnaligned(ref InToRef<T, byte>(in first), ref InToRef<TOther, byte>(in second), (nuint)SizeOf<T>()),
-            };
-        }
-
-        return result;
-    }
+        => MemoryMarshal.AsReadOnlyBytes(in first).SequenceCompareTo(MemoryMarshal.AsReadOnlyBytes(in second));
 
     /// <summary>
     /// Computes hash code for the structure content.
@@ -93,7 +72,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
         switch (sizeof(T))
         {
             default:
-                return FNV1a32.Hash(MemoryMarshal.AsReadOnlyBytes(in value), salted);
+                return (int)XxHash32.HashToUInt32(MemoryMarshal.AsReadOnlyBytes(in value), salted ? RandomExtensions.BitwiseHashSalt : 0);
             case 0:
                 hash = 0;
                 break;
@@ -125,4 +104,36 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISi
 
     /// <inheritdoc/>
     int IComparer<T>.Compare(T x, T y) => Compare(in x, in y);
+
+    /// <inheritdoc/>
+    bool IAlternateEqualityComparer<ReadOnlySpan<byte>, T>.Equals(ReadOnlySpan<byte> alternate, T other)
+        => Equals(alternate, in other);
+    
+    private static bool Equals(ReadOnlySpan<byte> alternate, ref readonly T other)
+        => alternate.SequenceEqual(MemoryMarshal.AsReadOnlyBytes(in other));
+
+    /// <inheritdoc/>
+    int IAlternateEqualityComparer<ReadOnlySpan<byte>, T>.GetHashCode(ReadOnlySpan<byte> alternate)
+        => GetHashCode(alternate);
+
+    private static int GetHashCode(ReadOnlySpan<byte> alternate)
+        => (int)XxHash32.HashToUInt32(alternate, RandomExtensions.BitwiseHashSalt);
+
+    /// <inheritdoc/>
+    T IAlternateEqualityComparer<ReadOnlySpan<byte>, T>.Create(ReadOnlySpan<byte> alternate)
+        => Create(alternate);
+
+    private static T Create(ReadOnlySpan<byte> alternate) => MemoryMarshal.AsRef<T>(alternate);
+
+    /// <inheritdoc/>
+    bool IAlternateEqualityComparer<ReadOnlyMemory<byte>, T>.Equals(ReadOnlyMemory<byte> alternate, T other)
+        => Equals(alternate.Span, in other);
+
+    /// <inheritdoc/>
+    int IAlternateEqualityComparer<ReadOnlyMemory<byte>, T>.GetHashCode(ReadOnlyMemory<byte> alternate)
+        => GetHashCode(alternate.Span);
+
+    /// <inheritdoc/>
+    T IAlternateEqualityComparer<ReadOnlyMemory<byte>, T>.Create(ReadOnlyMemory<byte> alternate)
+        => Create(alternate.Span);
 }
