@@ -23,10 +23,12 @@ partial class RandomAccessCache<TKey, TValue>
     /// <exception cref="InvalidOperationException"><see cref="KeyComparer"/> doesn't implement <see cref="IAlternateEqualityComparer{TAlternate,T}"/>.</exception>
     public bool TryRead<TAlternate>(TAlternate key, out ReadSession session)
         where TAlternate : notnull, allows ref struct
-        => TryRead(keyComparer as IAlternateEqualityComparer<TAlternate, TKey> ??
-                   throw new InvalidOperationException(ExceptionMessages.UnsupportedAltCacheView),
-            key,
-            out session);
+        => typeof(TAlternate) == typeof(TKey)
+            ? TryRead(Unsafe.BitCast<TAlternate, TKey>(key), out session)
+            : TryRead(keyComparer as IAlternateEqualityComparer<TAlternate, TKey> ??
+                      throw new InvalidOperationException(ExceptionMessages.UnsupportedAltCacheView),
+                key,
+                out session);
     
     private bool TryRead<TAlternate>(IAlternateEqualityComparer<TAlternate, TKey> comparer, TAlternate key, out ReadSession session)
         where TAlternate : notnull, allows ref struct
