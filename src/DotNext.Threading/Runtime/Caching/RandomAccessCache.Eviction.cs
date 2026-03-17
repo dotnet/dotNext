@@ -118,15 +118,32 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void RebuildEvictionState(BucketList buckets)
     {
+        if (keyComparer is { } keyComparerCopy)
+        {
+            RebuildEvictionState<EqualityComparerSelector, EqualityComparerSelectorFactory>(new(keyComparerCopy), buckets);
+        }
+        else
+        {
+            RebuildEvictionState<DefaultSelector, DefaultSelectorFactory>(new(), buckets);
+        }
+    }
+
+    private void RebuildEvictionState<TPredicate, TFactory>(TFactory factory, BucketList buckets)
+        where TPredicate : struct, IEquatable<TKey>
+        where TFactory : struct, ISupplier<TKey, TPredicate>
+    {
         KeyValuePair? newHead = null, newTail = null;
+
         for (var current = evictionTail; current is { IsDead: false }; current = current.MoveBackward())
         {
-            buckets.FindPair(keyComparer, current.Key, current.KeyHashCode)?.Prepend(ref newHead, ref newTail);
+            buckets
+                .FindPair(factory.Invoke(current.Key), current.KeyHashCode)
+                ?.Prepend(ref newHead, ref newTail);
         }
 
         evictionHead = newHead;
         evictionTail = newTail;
-        sieveHand = sieveHand is not null ? buckets.FindPair(keyComparer, sieveHand.Key, sieveHand.KeyHashCode) ?? newTail : null;
+        sieveHand = sieveHand is not null ? buckets.FindPair(factory.Invoke(sieveHand.Key), sieveHand.KeyHashCode) ?? newTail : null;
     }
 
     internal partial class KeyValuePair

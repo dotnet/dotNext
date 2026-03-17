@@ -158,14 +158,14 @@ public partial class RandomAccessCache<TKey, TValue>
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct NotDeadFilter : IKeyValuePairVisitor
+    private readonly ref struct NotDeadFilter : IKeyValuePairVisitor
     {
         static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => !pair.IsDead;
     }
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal struct Bucket(AsyncExclusiveLock bucketLock)
+    internal partial struct Bucket(AsyncExclusiveLock bucketLock)
     {
         internal readonly AsyncExclusiveLock Lock = bucketLock;
         private KeyValuePair? addedPair;
@@ -249,95 +249,53 @@ public partial class RandomAccessCache<TKey, TValue>
                 Interlocked.Decrement(ref count);
         }
 
-        internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        internal KeyValuePair? TryRemove<TPredicate>(TPredicate predicate, int hashCode)
+            where TPredicate : struct, IEquatable<TKey>, allows ref struct
         {
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (result is null && hashCode == current.KeyHashCode
+                                   && predicate.Equals(current.Key)
+                                   && current.MarkAsEvicted())
                 {
-                    if (result is null && hashCode == current.KeyHashCode
-                                       && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && current.MarkAsEvicted())
-                    {
-                        result = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
+                    result = current;
                 }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    if (result is null && hashCode == current.KeyHashCode
-                                       && keyComparer.Equals(key, current.Key)
-                                       && current.MarkAsEvicted())
-                    {
-                        result = current;
-                    }
 
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
+                if (current.IsDead)
+                {
+                    TryRemove(previous, current);
                 }
             }
 
             return result;
         }
-
-        internal KeyValuePair? TryGet<TVisitor>(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-            where TVisitor : struct, IKeyValuePairVisitor
+        
+        internal KeyValuePair? TryGet<TPredicate, TVisitor>(TPredicate comparer, int hashCode)
+            where TPredicate : struct, IEquatable<TKey>, allows ref struct
+            where TVisitor : struct, IKeyValuePairVisitor, allows ref struct
         {
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (result is null && hashCode == current.KeyHashCode
+                                   && comparer.Equals(current.Key)
+                                   && TVisitor.Visit(current))
                 {
-                    if (result is null && hashCode == current.KeyHashCode
-                                       && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && TVisitor.Visit(current))
-                    {
-                        result = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
+                    result = current;
                 }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    if (result is null && hashCode == current.KeyHashCode
-                                       && keyComparer.Equals(key, current.Key)
-                                       && TVisitor.Visit(current))
-                    {
-                        result = current;
-                    }
 
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
+                if (current.IsDead)
+                {
+                    TryRemove(previous, current);
                 }
             }
 
@@ -405,6 +363,34 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct DefaultSelector(TKey expected) : IEquatable<TKey>, ISupplier<TKey>
+    {
+        bool IEquatable<TKey>.Equals(TKey? actual) => EqualityComparer<TKey>.Default.Equals(actual, expected);
+
+        TKey ISupplier<TKey>.Invoke() => expected;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct DefaultSelectorFactory : ISupplier<TKey, DefaultSelector>
+    {
+        DefaultSelector ISupplier<TKey, DefaultSelector>.Invoke(TKey key) => new(key);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct EqualityComparerSelector(TKey expected, IEqualityComparer<TKey> comparer) : IEquatable<TKey>, ISupplier<TKey>
+    {
+        bool IEquatable<TKey>.Equals(TKey? actual) => comparer.Equals(actual, expected);
+        
+        TKey ISupplier<TKey>.Invoke() => expected;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct EqualityComparerSelectorFactory(IEqualityComparer<TKey> comparer) : ISupplier<TKey, EqualityComparerSelector>
+    {
+        EqualityComparerSelector ISupplier<TKey, EqualityComparerSelector>.Invoke(TKey key) => new(key, comparer);
+    }
+
     [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     private sealed class BucketList
     {
@@ -465,8 +451,9 @@ public partial class RandomAccessCache<TKey, TValue>
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
-        internal KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
-            => GetByHash(keyHashCode).TryGet<NotDeadFilter>(keyComparer, key, keyHashCode);
+        internal KeyValuePair? FindPair<TPredicate>(TPredicate predicate, int keyHashCode)
+            where TPredicate : struct, IEquatable<TKey>, allows ref struct
+            => GetByHash(keyHashCode).TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
 
         internal void Release(int count)
         {
