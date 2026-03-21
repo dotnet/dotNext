@@ -334,14 +334,22 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     private ValueTask WriteAsync(ReadOnlyMemory<T> input, CancellationToken token)
     {
-        var task = ValueTask.CompletedTask;
-        try
+        ValueTask task;
+        if (token.IsCancellationRequested)
         {
-            Write(input.Span);
+            task = ValueTask.FromCanceled(token);
         }
-        catch (Exception e)
+        else
         {
-            task = ValueTask.FromException(e);
+            task = ValueTask.CompletedTask;
+            try
+            {
+                Write(input.Span);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
         }
 
         return task;
