@@ -96,7 +96,7 @@ public partial class RaftCluster<TMember>
     public event Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>> MemberAdded
     {
         add => memberAddedHandlers += value;
-        remove => memberRemovedHandlers -= value;
+        remove => memberAddedHandlers -= value;
     }
 
     /// <inheritdoc />
