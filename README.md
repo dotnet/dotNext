@@ -31,54 +31,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-09-2026
+Release Date: 03-27-2026
 
-.NEXT 6.0.0 has been released! Migration guide is [here](https://dotnet.github.io/dotNext/migration/4.html). All changes are mostly driven by [Extension Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14#extension-members) feature in C# 14. Most of the things in .NEXT now expressed naturally as extensions for existing .NET classes.
+<a href="https://www.nuget.org/packages/dotnext/6.1.0">DotNext 6.1.0</a>
+* Fixed cancellation support in `BufferWriterSlim<T>`
+* `BoxedValue<T>` cannot be derived anymore (which was a bug)
 
-<a href="https://www.nuget.org/packages/dotnext/6.0.0">DotNext 6.0.0</a>
-* Introduced convenient operators to work with spans: `>>>` for safe copying and `%` for trimming
-* `BufferWriterSlim<T>` now implements [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface which allows to use it in generic scenarios
-* Greatly improved performance of bit vector conversion methods exposed by `Number` class
-* Removed memory allocation caused by `Bind` extension methods
-* Added convenient static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
-* Improved AOT compatibility
-* Introduced `Variant` type that represents the functionality similar to [TypedReference](https://learn.microsoft.com/en-us/dotnet/api/system.typedreference) but without related compiler restrictions
-* Added **allows ref struct** anti-constraint to many parts of the library
-* Improved performance of `ConcurrentTypeMap` class
-* Built-in delegate types from .NET are extended with static extension methods
-* Added static extensions to [ArgumentOutOfRangeException](https://learn.microsoft.com/en-us/dotnet/api/system.argumentoutofrangeexception) class to cover more validation scenarios
-* Introduced `Enum<T>` to enable the power of the Generic Math when working with enums
-* All zero-alloc and encoding interpolation string handlers now in one place: `DotNext.Text` namespace
-* Added `+=` operator overloading to `SpanWriter<T>` and `BufferWriterSlim<T>` types
-* Added cancellation token support to [Lock](https://learn.microsoft.com/en-us/dotnet/api/system.threading.lock) and [Thread](https://learn.microsoft.com/en-us/dotnet/api/system.threading.thread) classes
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.1.0">DotNext.Metaprogramming 6.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.0.0">DotNext.Metaprogramming 6.0.0</a>
-* Expression nodes can be combined with built-in operators: `+`, `-`, `/`, etc.
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.1.0">DotNext.Unsafe 6.1.0</a>
+* Added cleanup callback for `OpaqueValue<T>` that can be passed to the unmanaged code
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.0.0">DotNext.Unsafe 6.0.0</a>
-* `OpaqueValue<T>` type is introduced to unify the way of passing value types and reference types to unmanaged code. It's especially useful for passing .NET data types to the unmanaged callbacks implemented in C#
-* Added static extension properties to `MemoryAllocator<T>` delegate to expose unmanaged memory allocators
+<a href="https://www.nuget.org/packages/dotnext.threading/6.1.0">DotNext.Threading 6.1.0</a>
+* Added alternate lookup to `RandomAccessCache<TKey, TValue>` class
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.0.0">DotNext.Threading 6.0.0</a>
-* `CancellationTokenMultiplexer` has improved CTS pooling mechanism
-* Introduced fast bounded object pool
-* Significantly reduced contention overhead in async locks
+<a href="https://www.nuget.org/packages/dotnext.io/6.1.0">DotNext.IO 6.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.26.0">DotNext.IO 5.26.0</a>
-* Added static extension methods to [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) class
-* Improved integration between `IJsonSerializable<T>` interface and JSON serialization infrastructure in .NET
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.1.0">DotNext.Net.Cluster 6.1.0</a>
+* Fixed memory leak [280](https://github.com/dotnet/dotNext/pull/280)
+* Refresh election timer when vote is granted [281](https://github.com/dotnet/dotNext/pull/281)
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.0.0">DotNext.Net.Cluster 6.0.0</a>
-* Old WAL implementation represented by `MemoryBasedStateMachine` and `DiskBasedStateMachine` classes is completely removed in favor of `WriteAheadLog` class
-* Improved performance of the log entry serialization
-* Improved AOT compatibility
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.0.0">DotNext.AspNetCore.Cluster 6.0.0</a>
-* Improved AOT compatibility
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.0.0">DotNext.MaintenanceServices 1.0.0</a>
-* Upgrade to `System.CommandLine` stable release
-* Stabilized public API surface
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.1.0">DotNext.AspNetCore.Cluster 6.1.0</a>
+* Updated dependencies
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).
