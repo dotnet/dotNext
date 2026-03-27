@@ -1046,7 +1046,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToFollowerStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            try
+            {
+                await MoveToStandbyState().ConfigureAwait(false);
+            }
+            catch (Exception fallbackEx)
+            {
+                Logger.TransitionToStandbyStateFailed(fallbackEx);
+            }
         }
         finally
         {
@@ -1119,7 +1126,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToCandidateStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            try
+            {
+                await MoveToStandbyState().ConfigureAwait(false);
+            }
+            catch (Exception fallbackEx)
+            {
+                Logger.TransitionToStandbyStateFailed(fallbackEx);
+            }
         }
         finally
         {
@@ -1176,7 +1190,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToLeaderStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            try
+            {
+                await MoveToStandbyState().ConfigureAwait(false);
+            }
+            catch (Exception fallbackEx)
+            {
+                Logger.TransitionToStandbyStateFailed(fallbackEx);
+            }
         }
         finally
         {

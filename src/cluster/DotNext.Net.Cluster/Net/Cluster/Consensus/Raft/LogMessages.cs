@@ -348,4 +348,12 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(StandbyStateExitedWithError)}"
     )]
     public static partial void StandbyStateExitedWithError(this ILogger logger, Exception e);
+
+    [LoggerMessage(
+        EventIdOffset + 43,
+        LogLevel.Critical,
+        "Transition to standby state has failed",
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToStandbyStateFailed)}"
+    )]
+    public static partial void TransitionToStandbyStateFailed(this ILogger logger, Exception e);
 }
