@@ -205,7 +205,7 @@ internal struct RingBuffer<T>
     private readonly nuint Consumer => Volatile.Read(in state.Consumer);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private readonly nuint ConsumerNextGen => Volatile.Read(in state.Consumer) + (uint)slots.Length;
+    private readonly nuint ConsumerNextGen => Volatile.Read(in state.Consumer) + Array.GetLength(slots);
     
     [StructLayout(LayoutKind.Auto)]
     public struct Slot
