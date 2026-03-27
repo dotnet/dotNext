@@ -813,18 +813,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
             result = result with { Term = Term };
 
-            if (result.Term > senderTerm)
+            switch (result.Term.CompareTo(senderTerm))
             {
-                goto exit;
-            }
-            else if (result.Term != senderTerm)
-            {
-                Leader = null;
-                await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
-            }
-            else if (state is not RefreshableState<TMember>)
-            {
-                goto exit;
+                case < 0:
+                    Leader = null;
+                    await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
+                    break;
+                case 0 when state is RefreshableState<TMember>:
+                    break;
+                default:
+                    // Local term is greater than candidate's term, or the local node is not Follower
+                    goto exit;
             }
 
             if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
@@ -832,8 +831,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await auditTrail.UpdateVotedForAsync(sender, tokenSource.Token).ConfigureAwait(false);
                 result = result with { Value = true };
 
-                if (state is RefreshableState<TMember> followerOrStandbyState)
-                    followerOrStandbyState.Refresh();
+                (state as RefreshableState<TMember>)?.Refresh();
             }
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
