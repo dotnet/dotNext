@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,41 +9,41 @@ namespace DotNext.Collections.Concurrent;
 using Threading;
 
 // Inspired by Dmitry Vyukov’s MPMC queue
-[StructLayout(LayoutKind.Auto)]
+[StructLayout(LayoutKind.Sequential)]
 internal struct RingBuffer<T>
 {
     private readonly Slot[] slots;
-    private readonly nuint indexMask;
-    private readonly int indexBits;
     private bool frozenForEnqueues;
-    private State state;
-    
+    private RingBuffer state;
+
     public RingBuffer(int maximumRetained)
     {
         Debug.Assert(maximumRetained > 0);
 
         var length = nuint.CreateChecked(BitOperations.RoundUpToPowerOf2((ulong)(uint)maximumRetained));
         slots = new Slot[length];
-        indexMask = length - 1U;
-        indexBits = int.CreateChecked(nuint.Log2(length));
+        state = new(length);
         frozenForEnqueues = false;
     }
 
     public readonly bool IsFrozen => Volatile.Read(in frozenForEnqueues);
 
-    public void Freeze()
+    public bool Freeze()
     {
-        if (Interlocked.FalseToTrue(ref frozenForEnqueues))
+        var frozen = Interlocked.FalseToTrue(ref frozenForEnqueues);
+        if (frozen)
             WaitForPendingEnqueues();
+
+        return frozen;
     }
-    
+
     private void WaitForPendingEnqueues()
     {
         Debug.Assert(frozenForEnqueues);
 
-        // the slots prior the frozen position can be still in progress by the enqueuer, so wait for it
+        // the slots prior to the frozen position can be still in progress by the enqueuer, so wait for it
         for (var position = FreezeProducer() - 1U;
-             this[position & indexMask].WaitForPendingEnqueue(position >> indexBits);
+             this[state.GetIndex(position)].WaitForPendingEnqueue(state.GetGeneration(position));
              position--) ;
     }
 
@@ -51,13 +52,13 @@ internal struct RingBuffer<T>
         Debug.Assert(frozenForEnqueues);
         
         const nuint shift = 2U;
-        var current = state.Producer;
+        var current = state.Positions.Producer;
         for (nuint tmp, offset = (uint)slots.Length * shift;; current = tmp)
         {
             // Advances the producer too far forward, so this position cannot be reached naturally even
             // if the buffer is full. 2 generations forward is enough, because the items in the buffer
             // can be in the current and the next generation.
-            tmp = Interlocked.CompareExchange(ref state.Producer, current + offset, current);
+            tmp = Interlocked.CompareExchange(ref state.Positions.Producer, current + offset, current);
             if (tmp == current)
                 break;
         }
@@ -66,8 +67,6 @@ internal struct RingBuffer<T>
     }
 
     public readonly int Length => slots.Length;
-    
-    private static nuint StateBit => (nuint)nint.MinValue;
     
     private readonly ref Slot this[nuint index]
     {
@@ -79,34 +78,35 @@ internal struct RingBuffer<T>
         }
     }
 
-    public ref Slot TryDequeue(out nuint sequence) => ref DoOperation<DequeueOperation>(ref state.Consumer, out sequence);
+    public ref Slot TryDequeue(out nuint sequence)
+        => ref DoOperation<RingBuffer.DequeueOperation>(ref state.Positions.Consumer, out sequence);
 
     public readonly bool IsEmpty
     {
         get
         {
-            var position = state.Consumer;
-            var generation = position >> indexBits;
+            var position = state.Positions.Consumer;
+            var generation = state.GetGeneration(position);
 
-            return this[position & indexMask].Sequence != (generation | StateBit);
+            return this[state.GetIndex(position)].Sequence != (generation | RingBuffer.StateBit);
         }
     }
 
-    public ref Slot TryEnqueue(out nuint sequence) => ref DoOperation<EnqueueOperation>(ref state.Producer, out sequence);
+    public ref Slot TryEnqueue(out nuint sequence)
+        => ref DoOperation<RingBuffer.EnqueueOperation>(ref state.Positions.Producer, out sequence);
 
     private readonly ref Slot DoOperation<TOperation>(scoped ref nuint position, out nuint newSeq)
-        where TOperation : struct, IOperation<TOperation>, allows ref struct
+        where TOperation : struct, RingBuffer.IOperation<TOperation>, allows ref struct
     {
         var spinner = new SpinWait();
         for (nuint positionCopy = Volatile.Read(in position), tmp; TOperation.Retry(in frozenForEnqueues); positionCopy = tmp)
         {
-            ref var slot = ref this[positionCopy & indexMask];
-            var context = TOperation.Create(positionCopy >>> indexBits);
-            var slotSeq = slot.Sequence;
+            ref var slot = ref this[state.GetIndex(positionCopy)];
+            var context = TOperation.Create(in state, positionCopy);
 
-            if (!context.IsValidSequence(slotSeq))
+            if (!context.IsValidSequence(slot.Sequence))
             {
-                if (!TOperation.CanRetry(in state, positionCopy))
+                if (!context.CanRetry(in state))
                     break;
 
                 tmp = positionCopy + 1U;
@@ -140,67 +140,89 @@ internal struct RingBuffer<T>
                  (sequence = Sequence) == frozenGen;
                  spinner.SpinOnce()) ;
 
-            return sequence == (frozenGen | StateBit);
+            return sequence == (frozenGen | RingBuffer.StateBit);
         }
     }
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct RingBuffer(nuint length)
+{
+    private readonly nuint indexMask = length - 1U;
+    private readonly int indexBits = int.CreateChecked(nuint.Log2(length));
+    public State Positions;
+
+    [Pure]
+    public readonly nuint GetGeneration(nuint position) => position >>> indexBits;
+
+    [Pure]
+    public readonly nuint GetIndex(nuint position) => position & indexMask;
     
-    private interface IOperation<out TSelf>
+    public static nuint StateBit => (nuint)nint.MinValue;
+
+    public interface IOperation<out TSelf>
         where TSelf : struct, IOperation<TSelf>, allows ref struct
     {
         static abstract bool Retry(ref readonly bool frozenForEnqueues);
 
-        static abstract bool CanRetry(ref readonly State state, nuint position);
+        bool CanRetry(scoped ref readonly RingBuffer state);
 
         nuint NextSequence { get; }
 
         bool IsValidSequence(nuint sequence);
 
-        public static abstract TSelf Create(nuint generation);
+        public static abstract TSelf Create(scoped ref readonly RingBuffer state, nuint position);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct EnqueueOperation : IOperation<EnqueueOperation>
+    public readonly ref struct EnqueueOperation : IOperation<EnqueueOperation>
     {
-        private readonly nuint generation;
+        private readonly nuint generation, position;
 
-        private EnqueueOperation(nuint generation) => this.generation = generation;
+        private EnqueueOperation(scoped ref readonly RingBuffer state, nuint producerPosition)
+            => generation = state.GetGeneration(position = producerPosition);
 
-        static bool IOperation<EnqueueOperation>.CanRetry(ref readonly State state, nuint position)
+        bool IOperation<EnqueueOperation>.CanRetry(ref readonly RingBuffer state)
         {
-            var consumerPos = Volatile.Read(in state.Consumer);
-            return consumerPos >= position;
+            var consumerPos = Volatile.Read(in state.Positions.Consumer);
+
+            // the consumer must be in the same generation as the producer, or producer position must be less than the consumer position
+            return state.GetGeneration(consumerPos) == generation || state.GetIndex(position) < state.GetIndex(consumerPos);
         }
-        
-        static bool IOperation<EnqueueOperation>.Retry(ref readonly bool frozenForEnqueues) => !frozenForEnqueues;
+
+        static bool IOperation<EnqueueOperation>.Retry(ref readonly bool frozenForEnqueues) => !Volatile.Read(in frozenForEnqueues);
 
         // the slot becomes available for consumption in the current generation
         nuint IOperation<EnqueueOperation>.NextSequence => generation | StateBit;
 
         bool IOperation<EnqueueOperation>.IsValidSequence(nuint sequence) => sequence == generation;
 
-        static EnqueueOperation IOperation<EnqueueOperation>.Create(nuint generation) => new(generation);
-        
+        static EnqueueOperation IOperation<EnqueueOperation>.Create(scoped ref readonly RingBuffer state, nuint producerPosition)
+            => new(in state, producerPosition);
+
         public override string ToString() => generation.ToString("X");
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct DequeueOperation : IOperation<DequeueOperation>
+    public readonly ref struct DequeueOperation : IOperation<DequeueOperation>
     {
-        private readonly nuint generation;
-        
-        private DequeueOperation(nuint generation) => this.generation = generation;
-        
+        private readonly nuint generation, position;
+
+        private DequeueOperation(scoped ref readonly RingBuffer state, nuint consumerPosition)
+            => generation = state.GetGeneration(position = consumerPosition);
+
         static bool IOperation<DequeueOperation>.Retry(ref readonly bool frozenForEnqueues) => true;
-        
-        static bool IOperation<DequeueOperation>.CanRetry(ref readonly State state, nuint position)
-            => position != Volatile.Read(in state.Producer);
+
+        bool IOperation<DequeueOperation>.CanRetry(ref readonly RingBuffer state)
+            => position != Volatile.Read(in state.Positions.Producer);
 
         // the slot can be occupied in the next generation only
         nuint IOperation<DequeueOperation>.NextSequence => (generation + 1U) & ~StateBit;
 
         bool IOperation<DequeueOperation>.IsValidSequence(nuint sequence) => sequence == (generation | StateBit);
 
-        static DequeueOperation IOperation<DequeueOperation>.Create(nuint generation) => new(generation);
+        static DequeueOperation IOperation<DequeueOperation>.Create(scoped ref readonly RingBuffer state, nuint consumerPosition)
+            => new(in state, consumerPosition);
 
         public override string ToString() => generation.ToString("X");
     }
