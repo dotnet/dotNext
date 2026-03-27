@@ -91,7 +91,7 @@ public sealed class BoundedObjectPoolTests : Test
         var task1 = Task.Run(RentReturn, TestToken);
         var task2 = Task.Run(RentReturn, TestToken);
         await Task.Delay(100, TestToken);
-        pool.Freeze();
+        True(pool.Freeze());
         await Task.WhenAll(task1, task2);
 
         async Task RentReturn()
@@ -102,5 +102,17 @@ public sealed class BoundedObjectPoolTests : Test
                 pool.TryReturn(str);
             }
         }
+    }
+
+    [Fact]
+    public static void Overflow()
+    {
+        var pool = new BoundedObjectPool<string>(4);
+        for (var i = 0; i < pool.Capacity; i++)
+        {
+            True(pool.TryReturn(string.Empty));
+        }
+        
+        False(pool.TryReturn(string.Empty));
     }
 }

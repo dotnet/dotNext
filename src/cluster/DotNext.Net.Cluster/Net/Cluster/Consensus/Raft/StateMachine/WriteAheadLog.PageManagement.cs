@@ -377,9 +377,8 @@ partial class WriteAheadLog
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && indices.Freeze())
             {
-                indices.Freeze();
                 cache.Clear(indices);
             }
 
