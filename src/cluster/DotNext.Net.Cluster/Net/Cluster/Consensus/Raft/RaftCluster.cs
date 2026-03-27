@@ -822,11 +822,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Leader = null;
                 await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
             }
-            else if (state is RefreshableState<TMember> followerOrStandbyState)
-            {
-                followerOrStandbyState.Refresh();
-            }
-            else
+            else if (state is not RefreshableState<TMember>)
             {
                 goto exit;
             }
@@ -835,6 +831,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 await auditTrail.UpdateVotedForAsync(sender, tokenSource.Token).ConfigureAwait(false);
                 result = result with { Value = true };
+
+                if (state is RefreshableState<TMember> followerOrStandbyState)
+                    followerOrStandbyState.Refresh();
             }
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
