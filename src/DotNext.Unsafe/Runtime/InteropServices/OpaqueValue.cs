@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -66,28 +67,76 @@ public readonly record struct OpaqueValue<T> : IDisposable
     internal OpaqueValue(nint handle) => this.handle = handle;
 
     /// <summary>
+    /// Returns the cleanup action of the <see cref="CallConvCdecl"/> calling convention that releases the opaque value.
+    /// </summary>
+    /// <param name="opaque">The opaque value.</param>
+    /// <returns>The cleanup action that can be called from the unmanaged code.</returns>
+    [CLSCompliant(false)]
+    public static unsafe explicit operator delegate*unmanaged[Cdecl]<nint, void>(OpaqueValue<T> opaque)
+        => (delegate*unmanaged[Cdecl]<nint, void>)opaque.GetCleaner<CallConvCdecl, OpaqueValueCleaner>();
+
+    /// <summary>
+    /// Returns the cleanup action of the <see cref="CallConvStdcall"/> calling convention that releases the opaque value.
+    /// </summary>
+    /// <param name="opaque">The opaque value.</param>
+    /// <returns>The cleanup action that can be called from the unmanaged code.</returns>
+    [CLSCompliant(false)]
+    public static unsafe explicit operator delegate*unmanaged[Stdcall]<nint, void>(OpaqueValue<T> opaque)
+        => (delegate*unmanaged[Stdcall]<nint, void>)opaque.GetCleaner<CallConvStdcall, OpaqueValueCleaner>();
+
+    /// <summary>
+    /// Returns the cleanup action of the native calling convention for the current platform that releases the opaque value.
+    /// </summary>
+    /// <remarks>
+    /// The returned callback has the same effect as <see cref="Dispose"/> method.
+    /// </remarks>
+    /// <param name="opaque">The opaque value.</param>
+    /// <returns>The cleanup action that can be called from the unmanaged code.</returns>
+    [CLSCompliant(false)]
+    public static unsafe explicit operator delegate*unmanaged<nint, void>(OpaqueValue<T> opaque)
+        => (delegate*unmanaged<nint, void>)opaque.GetCleaner<CallConvAuto, OpaqueValueCleaner>();
+
+    private bool IsNotAllocated => default(T) is IPointer || typeof(T) == typeof(GCHandle) || handle is 0;
+
+    private unsafe void* GetCleaner<TConvention, TCleaner>()
+        where TConvention : class, new()
+        where TCleaner : struct, ICleaner<TConvention>, allows ref struct
+    {
+        if (IsNotAllocated)
+            return null;
+
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            return TCleaner.FreeRef;
+
+        if (Unsafe.IsNaturallyAligned<T>())
+            return TCleaner.Free;
+
+        return TCleaner.FreeAligned;
+    }
+
+    /// <summary>
     /// Releases the underlying storage for the value.
     /// </summary>
     /// <remarks>
     /// This method is not idempotent and should not be called twice.
     /// </remarks>
-    public unsafe void Dispose()
+    public void Dispose()
     {
-        if (default(T) is IPointer || typeof(T) == typeof(GCHandle) || handle is 0)
+        if (IsNotAllocated)
         {
             // nothing to do
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            GCHandle<object>.FromIntPtr(handle).Dispose();
+            ICleaner.FreeRef(handle);
         }
         else if (Unsafe.IsNaturallyAligned<T>())
         {
-            NativeMemory.Free(handle.ToPointer());
+            ICleaner.Free(handle);
         }
         else
         {
-            NativeMemory.AlignedFree(handle.ToPointer());
+            ICleaner.FreeAligned(handle);
         }
     }
 
@@ -194,3 +243,141 @@ public static class OpaqueReferenceType
         private GCHandle AsHandle() => GCHandle.FromIntPtr(opaque.handle);
     }
 }
+
+internal interface ICleaner
+{
+    public static void FreeRef(nint handle)
+    {
+        Debug.Assert(handle is not 0);
+        
+        GCHandle<object>.FromIntPtr(handle).Dispose();
+    }
+
+    public static unsafe void Free(nint handle)
+    {
+        Debug.Assert(handle is not 0);
+        
+        NativeMemory.Free(handle.ToPointer());
+    }
+
+    public static unsafe void FreeAligned(nint handle)
+    {
+        Debug.Assert(handle is not 0);
+        
+        NativeMemory.AlignedFree(handle.ToPointer());
+    }
+}
+
+internal unsafe interface ICleaner<TConvention> : ICleaner
+    where TConvention : class, new()
+{
+    public new static abstract void* FreeRef { get; }
+    
+    public new static abstract void* Free { get; }
+    
+    public new static abstract void* FreeAligned { get; }
+}
+
+file readonly unsafe ref struct OpaqueValueCleaner : ICleaner<CallConvCdecl>, ICleaner<CallConvStdcall>, ICleaner<CallConvAuto>
+{
+    static void* ICleaner<CallConvCdecl>.FreeRef
+    {
+        get
+        {
+            return (delegate*unmanaged[Cdecl]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+            static void FreeCore(nint handle) => ICleaner.FreeRef(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvCdecl>.Free
+    {
+        get
+        {
+            return (delegate*unmanaged[Cdecl]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+            static void FreeCore(nint handle) => ICleaner.Free(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvCdecl>.FreeAligned
+    {
+        get
+        {
+            return (delegate*unmanaged[Cdecl]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+            static void FreeCore(nint handle) => ICleaner.FreeAligned(handle);
+        }
+    }
+    
+    static void* ICleaner<CallConvStdcall>.FreeRef
+    {
+        get
+        {
+            return (delegate*unmanaged[Stdcall]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+            static void FreeCore(nint handle) => ICleaner.FreeRef(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvStdcall>.Free
+    {
+        get
+        {
+            return (delegate*unmanaged[Stdcall]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+            static void FreeCore(nint handle) => ICleaner.Free(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvStdcall>.FreeAligned
+    {
+        get
+        {
+            return (delegate*unmanaged[Stdcall]<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+            static void FreeCore(nint handle) => ICleaner.FreeAligned(handle);
+        }
+    }
+    
+    static void* ICleaner<CallConvAuto>.FreeRef
+    {
+        get
+        {
+            return (delegate*unmanaged<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly]
+            static void FreeCore(nint handle) => ICleaner.FreeRef(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvAuto>.Free
+    {
+        get
+        {
+            return (delegate*unmanaged<nint, void>)&FreeCore;
+            
+            [UnmanagedCallersOnly]
+            static void FreeCore(nint handle) => ICleaner.Free(handle);
+        }
+    }
+
+    static void* ICleaner<CallConvAuto>.FreeAligned
+    {
+        get
+        {
+            return (delegate*unmanaged<nint, void>)&FreeCore;
+
+            [UnmanagedCallersOnly]
+            static void FreeCore(nint handle) => ICleaner.FreeAligned(handle);
+        }
+    }
+}
+
+file sealed class CallConvAuto;
