@@ -14,6 +14,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.threading/6.1.0">DotNext.Threading 6.1.0</a>
 * Added alternate lookup to `RandomAccessCache<TKey, TValue>` class
+* Fixed false positive when the object cannot be returned to the object pool even if there is a free space in it
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.1.0">DotNext.IO 6.1.0</a>
 * Updated dependencies
