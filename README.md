@@ -31,7 +31,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-27-2026
+Release Date: 03-29-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.1.0">DotNext 6.1.0</a>
 * Fixed cancellation support in `BufferWriterSlim<T>`

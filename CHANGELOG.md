@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 03-27-2026
+# 03-29-2026
 <a href="https://www.nuget.org/packages/dotnext/6.1.0">DotNext 6.1.0</a>
 * Fixed cancellation support in `BufferWriterSlim<T>`
 * `BoxedValue<T>` cannot be derived anymore (which was a bug)
