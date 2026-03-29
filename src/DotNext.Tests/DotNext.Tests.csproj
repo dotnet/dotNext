@@ -46,4 +46,8 @@
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
+    
+  <ItemGroup>
+    <CodeCoverageExclude Include="**/*.g.cs" />
+  </ItemGroup>
 </Project>

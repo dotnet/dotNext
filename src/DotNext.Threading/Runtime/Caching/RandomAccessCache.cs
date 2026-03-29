@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Threading.Tasks;
 
 namespace DotNext.Runtime.Caching;
 
 using Numerics;
 using Threading;
+using Threading.Tasks;
 
 /// <summary>
 /// Represents concurrent cache optimized for random access.
@@ -49,10 +49,16 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(dictionarySize, dictionarySizeName);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(collisionThreshold, thresholdName);
+        
+        if (typeof(string) == typeof(TKey))
+        {
+            keyComparer = (IEqualityComparer<TKey>)StringComparer.Ordinal;
+        }
 
         dictionarySize = PrimeNumber.GetPrime(dictionarySize);
         cancellationTokens = new() { MaximumRetained = 100 };
-        maxCacheCapacity = (growable = collisionThreshold is not int.MaxValue)
+        growable = collisionThreshold is not int.MaxValue;
+        maxCacheCapacity = growable
             ? collisionThreshold
             : dictionarySize;
 
@@ -87,10 +93,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public int Capacity => buckets.Count;
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession> ChangeAsync(TKey key, Timeout timeout, CancellationToken token)
+    private async ValueTask<ReadWriteSession> ChangeAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
+        where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
     {
-        var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-
         var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
@@ -114,13 +119,13 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucketLock = null;
                 }
 
-                if (bucket.Value.TryGet<AcquisitionVisitor>(keyComparer, key, hashCode) is { } valueHolder)
+                if (bucket.Value.TryGet<TSelector, AcquisitionVisitor>(selector, hashCode) is { } valueHolder)
                     return new(this, valueHolder);
 
                 var bucketLockCopy = bucketLock;
                 bucketLock = null;
                 if (!ResizeDesired(in bucket.Value))
-                    return new(this, in bucket, bucketLockCopy, key, hashCode);
+                    return new(this, in bucket, bucketLockCopy, selector.Invoke(), hashCode);
 
                 bucketLockCopy.Release();
             }
@@ -140,12 +145,17 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         }
     }
 
+    private ValueTask<ReadWriteSession> ChangeAsync(TKey key, Timeout timeout, CancellationToken token)
+        => keyComparer is { } keyComparerCopy
+            ? ChangeAsync<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key), timeout, token)
+            : ChangeAsync<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key), timeout, token);
+
     /// <summary>
     /// Opens a session that can be used to modify the value associated with the key.
     /// </summary>
     /// <remarks>
     /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
-    /// the value can be evicted immediately after. The caller must dispose session.
+    /// the value can be evicted immediately after. The caller must dispose the session.
     /// </remarks>
     /// <param name="key">The key of the cache record.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -160,7 +170,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// </summary>
     /// <remarks>
     /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
-    /// the value can be evicted immediately after. The caller must dispose session.
+    /// the value can be evicted immediately after. The caller must dispose the session.
     /// </remarks>
     /// <param name="key">The key of the cache record.</param>
     /// <param name="timeout">The time to wait for the cache lock.</param>
@@ -173,10 +183,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         => ChangeAsync(key, new(timeout), token).Wait();
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
+    private async ValueTask<ReadWriteSession> ReplaceAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
+        where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
     {
-        var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-
         var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
@@ -204,10 +213,10 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
                 if (!ResizeDesired(in bucket.Value))
                 {
-                    if (bucket.Value.TryRemove(keyComparer, key, hashCode) is { } removedPair && removedPair.ReleaseCounter() is false)
+                    if (bucket.Value.TryRemove(selector, hashCode) is { } removedPair && !removedPair.ReleaseCounter())
                         OnRemoved(removedPair);
 
-                    return new(this, in bucket, bucketLockCopy, key, hashCode);
+                    return new(this, in bucket, bucketLockCopy, selector.Invoke(), hashCode);
                 }
 
                 bucketLockCopy.Release();
@@ -227,6 +236,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    private ValueTask<ReadWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
+        => keyComparer is { } keyComparerCopy
+            ? ReplaceAsync<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key), timeout, token)
+            : ReplaceAsync<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key), timeout, token);
 
     /// <summary>
     /// Replaces the cache entry associated with the specified key.
@@ -263,11 +277,14 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <param name="session">A session that can be used to read the cached record.</param>
     /// <returns><see langword="true"/> if the record is available for reading and the session is active; otherwise, <see langword="false"/>.</returns>
     public bool TryRead(TKey key, out ReadSession session)
+        => keyComparer is { } keyComparerCopy
+            ? TryRead<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key), out session)
+            : TryRead<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key), out session);
+    
+    private bool TryRead<TSelector>(TSelector selector, int hashCode, out ReadSession session)
+        where TSelector : struct, IEquatable<TKey>, allows ref struct
     {
-        var keyComparerCopy = keyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-
-        if (buckets.GetByHash(hashCode).TryGet<AcquisitionVisitor>(keyComparerCopy, key, hashCode) is { } valueHolder)
+        if (buckets.GetByHash(hashCode).TryGet<TSelector, AcquisitionVisitor>(selector, hashCode) is { } valueHolder)
         {
             session = new(this, valueHolder);
             return true;
@@ -285,18 +302,17 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public bool Contains(TKey key)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        
-        var keyComparerCopy = keyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        return buckets.GetByHash(hashCode).TryGet<NotDeadFilter>(keyComparerCopy, key, hashCode) is not null;
+        return (keyComparer is { } keyComparerCopy
+                ? buckets.FindPair<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key))
+                : buckets.FindPair<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key)))
+            is not null;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadSession?> TryRemoveAsync(TKey key, TimeSpan timeout, CancellationToken token)
+    private async ValueTask<ReadSession?> TryRemoveAsync<TSelector>(TSelector selector, int hashCode, TimeSpan timeout, CancellationToken token)
+        where TSelector : struct, IEquatable<TKey>
     {
-        var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-
         var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
@@ -316,7 +332,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
 
-            return bucket.Value.TryRemove(keyComparer, key, hashCode) is { } removedPair
+            return bucket.Value.TryRemove(selector, hashCode) is { } removedPair
                 ? new ReadSession(this, removedPair)
                 : null;
         }
@@ -334,6 +350,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    private ValueTask<ReadSession?> TryRemoveAsync(TKey key, TimeSpan timeout, CancellationToken token)
+        => keyComparer is { } keyComparerCopy
+            ? TryRemoveAsync<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key), timeout, token)
+            : TryRemoveAsync<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key), timeout, token);
 
     /// <summary>
     /// Tries to invalidate cache record associated with the provided key.
@@ -367,10 +388,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<bool> InvalidateAsync(TKey key, TimeSpan timeout, CancellationToken token)
+    private async ValueTask<bool> InvalidateAsync<TSelector>(TSelector selector, int hashCode, TimeSpan timeout, CancellationToken token)
+        where TSelector : struct, IEquatable<TKey>
     {
-        var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-
         var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         KeyValuePair? removedPair;
@@ -391,7 +411,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
 
-            removedPair = bucket.Value.TryRemove(keyComparer, key, hashCode);
+            removedPair = bucket.Value.TryRemove(selector, hashCode);
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
@@ -412,13 +432,18 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             return false;
         }
 
-        if (removedPair.ReleaseCounter() is false)
+        if (!removedPair.ReleaseCounter())
         {
             OnRemoved(removedPair);
         }
 
         return true;
     }
+
+    private ValueTask<bool> InvalidateAsync(TKey key, TimeSpan timeout, CancellationToken token)
+        => keyComparer is { } keyComparerCopy
+            ? InvalidateAsync<EqualityComparerSelector>(new(key, keyComparerCopy), keyComparerCopy.GetHashCode(key), timeout, token)
+            : InvalidateAsync<DefaultSelector>(new(key), EqualityComparer<TKey>.Default.GetHashCode(key), timeout, token);
 
     /// <summary>
     /// Invalidates the cache record associated with the specified key.
@@ -445,12 +470,71 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         => InvalidateAsync(key, timeout, token).Wait();
 
     /// <summary>
+    /// Imports a collection of key-value pairs.
+    /// </summary>
+    /// <remarks>
+    /// If key already exists, the method behaves overwrites the value is this cache is not growable, and skips the pair
+    /// if this cache is growable. Moreover, the method blocks the whole cache.
+    /// </remarks>
+    /// <param name="pairs">A collection of key/value pairs to import.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The state of the asynchronous operation.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ValueTask ImportAsync(IEnumerable<KeyValuePair<TKey, TValue>> pairs, CancellationToken token = default)
+        => ProcessFullLockAsync(Import, pairs, token);
+
+    private void Import(BucketList bucketsCopy, IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    {
+        if (keyComparer is { } keyComparerCopy)
+        {
+            Import<EqualityComparerSelector, EqualityComparerSelectorFactory>(bucketsCopy, pairs, new(keyComparerCopy));
+        }
+        else
+        {
+            Import<DefaultSelector, DefaultSelectorFactory>(bucketsCopy, pairs, new());
+        }
+    }
+
+    private void Import<TSelector, TFactory>(BucketList bucketsCopy, IEnumerable<KeyValuePair<TKey, TValue>> pairs, TFactory factory)
+        where TSelector : struct, IEquatable<TKey>
+        where TFactory : struct, ISupplier<TKey, TSelector>
+    {
+        foreach (var (key, value) in pairs)
+        {
+            var selector = factory.Invoke(key);
+            var hashCode = selector.GetHashCode();
+            ref var bucket = ref bucketsCopy.GetByHash(hashCode);
+            if (bucket.TryGet<TSelector, AcquisitionVisitor>(selector, hashCode) is { } pair)
+            {
+                if (!growable)
+                {
+                    SetValue(pair, value);
+                }
+
+                if (!pair.ReleaseCounter())
+                    OnRemoved(pair);
+            }
+            else
+            {
+                pair = CreatePair(key, value, hashCode);
+                bucket.Add(pair);
+                Promote(pair);
+            }
+        }
+    }
+
+    /// <summary>
     /// Invalidates the entire cache.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The state of the asynchronous operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public async ValueTask InvalidateAsync(CancellationToken token = default)
+    public ValueTask InvalidateAsync(CancellationToken token = default)
+        => ProcessFullLockAsync<Action<KeyValuePair>>(static (b, a) => b.Invalidate(a), OnRemoved, token);
+    
+    private async ValueTask ProcessFullLockAsync<TArg>(Action<BucketList, TArg> action, TArg arg, CancellationToken token)
     {
         var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketsCopy = buckets;
@@ -479,8 +563,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 await bucketLock.AcquireAsync(cts.Token).ConfigureAwait(false);
             }
 
-            // invalidate all buckets
-            bucketsCopy.Invalidate(OnRemoved);
+            action(bucketsCopy, arg);
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
@@ -685,7 +768,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucket.Value.MarkAsReadyToAdd();
                     bucketLock.Release();
                     break;
-                case KeyValuePair pair when pair.ReleaseCounter() is false:
+                case KeyValuePair pair when !pair.ReleaseCounter():
                     cache.OnRemoved(pair);
                     break;
             }
@@ -715,7 +798,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                         task = cache.DisposedTask;
                     
                     break;
-                case KeyValuePair pair when pair.ReleaseCounter() is false:
+                case KeyValuePair pair when !pair.ReleaseCounter():
                     cache.OnRemoved(pair);
                     goto default;
                 default:
@@ -728,7 +811,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct AcquisitionVisitor : IKeyValuePairVisitor
+    private readonly ref struct AcquisitionVisitor : IKeyValuePairVisitor
     {
         static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => pair.Visit() && pair.TryAcquireCounter();
     }

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
@@ -98,5 +99,50 @@ public sealed class OpaqueValueTests : Test
     {
         Throws<NotSupportedException>(static () => OpaqueValueType.get_Value(default(OpaqueValue<GCHandle>)));
         Throws<NotSupportedException>(static () => OpaqueValueType.get_Value<Pointer<int>>(default(OpaqueValue<Pointer<int>>)));
+    }
+
+    [Fact]
+    public static unsafe void CleanUpValueType()
+    {
+        var opaque = new OpaqueValue<Guid>(Guid.Empty);
+        var cdeclPtr = (delegate*unmanaged[Cdecl]<nint, void>)opaque;
+        cdeclPtr(Unsafe.BitCast<OpaqueValue<Guid>, nint>(opaque));
+        
+        opaque = new OpaqueValue<Guid>(Guid.Empty);
+        var stdCallPtr = (delegate*unmanaged[Stdcall]<nint, void>)opaque;
+        stdCallPtr(Unsafe.BitCast<OpaqueValue<Guid>, nint>(opaque));
+        
+        opaque = new OpaqueValue<Guid>(Guid.Empty);
+        var cleanerPtr = (delegate*unmanaged<nint, void>)opaque;
+        cleanerPtr(Unsafe.BitCast<OpaqueValue<Guid>, nint>(opaque));
+    }
+    
+    [Fact]
+    public static unsafe void CleanUpRefType()
+    {
+        var opaque = new OpaqueValue<object>(new());
+        var cdeclPtr = (delegate*unmanaged[Cdecl]<nint, void>)opaque;
+        cdeclPtr(Unsafe.BitCast<OpaqueValue<object>, nint>(opaque));
+        
+        opaque = new OpaqueValue<object>(new());
+        var stdCallPtr = (delegate*unmanaged[Stdcall]<nint, void>)opaque;
+        stdCallPtr(Unsafe.BitCast<OpaqueValue<object>, nint>(opaque));
+        
+        opaque = new OpaqueValue<object>(new());
+        var cleanerPtr = (delegate*unmanaged<nint, void>)opaque;
+        cleanerPtr(Unsafe.BitCast<OpaqueValue<object>, nint>(opaque));
+    }
+    
+    [Fact]
+    public static unsafe void CleanUpEmpty()
+    {
+        var opaque = new OpaqueValue<object>();
+        Null((byte*)(delegate*unmanaged[Cdecl]<nint, void>)opaque);
+        
+        opaque = new OpaqueValue<object>();
+        Null((byte*)(delegate*unmanaged[Stdcall]<nint, void>)opaque);
+        
+        opaque = new OpaqueValue<object>();
+        Null((byte*)(delegate*unmanaged<nint, void>)opaque);
     }
 }

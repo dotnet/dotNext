@@ -15,7 +15,7 @@ using Runtime.CompilerServices;
 /// <remarks>
 /// This type is similar to <see cref="PoolingArrayBufferWriter{T}"/> and <see cref="PoolingBufferWriter{T}"/>
 /// classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
-/// memory as a initial buffer used for writing. If builder requires more space then pooled
+/// memory as an initial buffer used for writing. If builder requires more space then pooled
 /// memory used.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
@@ -334,14 +334,22 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     private ValueTask WriteAsync(ReadOnlyMemory<T> input, CancellationToken token)
     {
-        var task = ValueTask.CompletedTask;
-        try
+        ValueTask task;
+        if (token.IsCancellationRequested)
         {
-            Write(input.Span);
+            task = ValueTask.FromCanceled(token);
         }
-        catch (Exception e)
+        else
         {
-            task = ValueTask.FromException(e);
+            task = ValueTask.CompletedTask;
+            try
+            {
+                Write(input.Span);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
         }
 
         return task;

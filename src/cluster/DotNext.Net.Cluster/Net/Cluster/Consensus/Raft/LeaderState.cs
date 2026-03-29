@@ -125,7 +125,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IReadOnlyCollection<TMember> members)
     {
-        // cached enumerator allows to avoid memory allocation on every GetEnumerator call inside of the loop
+        // cached enumerator allows to avoid memory allocation on every GetEnumerator call inside the loop
         var enumerator = members.GetEnumerator();
         try
         {

@@ -76,7 +76,11 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// <remarks>
     /// Any subsequent call to the <see cref="TryReturn"/> method returns <see langword="false"/>.
     /// </remarks>
-    public void Freeze() => buffer.Freeze();
+    /// <returns>
+    /// <see langword="true"/> if this method is called for the first time;
+    /// <see langword="false"/> if the pool is already frozen.
+    /// </returns>
+    public bool Freeze() => buffer.Freeze();
 
     /// <summary>
     /// Gets a value indicating that the pool is frozen and the object cannot be returned back to the pool.

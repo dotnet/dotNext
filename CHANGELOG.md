@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 03-29-2026
+<a href="https://www.nuget.org/packages/dotnext/6.1.0">DotNext 6.1.0</a>
+* Fixed cancellation support in `BufferWriterSlim<T>`
+* `BoxedValue<T>` cannot be derived anymore (which was a bug)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.1.0">DotNext.Metaprogramming 6.1.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.1.0">DotNext.Unsafe 6.1.0</a>
+* Added cleanup callback for `OpaqueValue<T>` that can be passed to the unmanaged code
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.1.0">DotNext.Threading 6.1.0</a>
+* Added alternate lookup to `RandomAccessCache<TKey, TValue>` class
+* Fixed false positive when the object cannot be returned to the object pool even if there is a free space in it
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.1.0">DotNext.IO 6.1.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.1.0">DotNext.Net.Cluster 6.1.0</a>
+* Fixed memory leak [280](https://github.com/dotnet/dotNext/pull/280)
+* Refresh election timer when vote is granted [281](https://github.com/dotnet/dotNext/pull/281)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.1.0">DotNext.AspNetCore.Cluster 6.1.0</a>
+* Updated dependencies
+
 # 03-09-2026
 .NEXT 6.0.0 has been released! Migration guide is [here](https://dotnet.github.io/dotNext/migration/4.html). All changes are mostly driven by [Extension Members](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14#extension-members) feature in C# 14. Most of the things in .NEXT now expressed naturally as extensions for existing .NET classes.
 

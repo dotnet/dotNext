@@ -644,7 +644,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         // process configuration
                         var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
                         Logger.IncomingConfiguration(fingerprint, config.Fingerprint, applyConfig);
-                        switch ((config.Fingerprint == fingerprint, applyConfig))
+                        switch (config.Fingerprint == fingerprint, applyConfig)
                         {
                             case (true, true):
                                 // Perf: avoid calling ApplyAsync if configuration remains unchanged
@@ -813,28 +813,28 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
             result = result with { Term = Term };
 
-            if (result.Term > senderTerm)
+            RefreshableState<TMember>? refreshable;
+            switch (result.Term.CompareTo(senderTerm))
             {
-                goto exit;
-            }
-            else if (result.Term != senderTerm)
-            {
-                Leader = null;
-                await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
-            }
-            else if (state is RefreshableState<TMember> followerOrStandbyState)
-            {
-                followerOrStandbyState.Refresh();
-            }
-            else
-            {
-                goto exit;
+                case < 0:
+                    Leader = null;
+                    await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
+                    refreshable = null;
+                    break;
+                case 0 when state is RefreshableState<TMember> r:
+                    refreshable = r;
+                    break;
+                default:
+                    // Local term is greater than candidate's term, or the local node is not Follower
+                    goto exit;
             }
 
             if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
             {
                 await auditTrail.UpdateVotedForAsync(sender, tokenSource.Token).ConfigureAwait(false);
                 result = result with { Value = true };
+
+                refreshable?.Refresh();
             }
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)

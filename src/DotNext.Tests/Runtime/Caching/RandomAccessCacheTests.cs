@@ -399,6 +399,98 @@ public sealed class RandomAccessCacheTests : Test
         await CheckCapacity(2, int.MaxValue, static cache => Equal(3, cache.Capacity));
     }
 
+    [Fact]
+    public static async Task TryReadUsingAlternateKey()
+    {
+        await using var cache = new RandomAccessCache<string, long>(15);
+        await using (var handle = await cache.ChangeAsync("abc", TestToken))
+        {
+            False(handle.TryGetValue(out _));
+            handle.SetValue(42L);
+        }
+        
+        True(cache.TryRead<ReadOnlySpan<char>>("abc", out var readSession));
+        using (readSession)
+        {
+            Equal(42L, readSession.Value);
+        }
+    }
+
+    [Fact]
+    public static async Task TryRemoveUsingAlternateKey()
+    {
+        await using var cache = new RandomAccessCache<Guid, long>(15)
+        {
+            KeyComparer = BitwiseComparer<Guid>.Instance,
+        };
+
+        var lookup = cache.GetAlternateLookup<ReadOnlyMemory<byte>>();
+        var key = Guid.NewGuid();
+        await using (var handle = await lookup.ChangeAsync(key.ToByteArray(), TestToken))
+        {
+            False(handle.TryGetValue(out _));
+            handle.SetValue(42L);
+        }
+        
+        True(lookup.TryRead(key.ToByteArray(), out var readSession));
+        using (readSession)
+        {
+            Equal(42L, readSession.Value);
+        }
+
+        readSession = (await lookup.TryRemoveAsync(key.ToByteArray(), TestToken)).GetValueOrDefault();
+
+        using (readSession)
+        {
+            Equal(42L, readSession.Value);
+        }
+
+        False(lookup.TryRead(key.ToByteArray(), out readSession));
+    }
+    
+    [Fact]
+    public static async Task InvalidateUsingAlternateKey()
+    {
+        await using var cache = new RandomAccessCache<Guid, long>(15)
+        {
+            KeyComparer = BitwiseComparer<Guid>.Instance,
+        };
+
+        var lookup = cache.GetAlternateLookup<ReadOnlyMemory<byte>>();
+        var key = Guid.NewGuid();
+        await using (var handle = await lookup.ReplaceAsync(key.ToByteArray(), TestToken))
+        {
+            False(handle.TryGetValue(out _));
+            handle.SetValue(42L);
+        }
+        
+        True(lookup.TryRead(key.ToByteArray(), out var readSession));
+        using (readSession)
+        {
+            Equal(42L, readSession.Value);
+        }
+
+        True(await lookup.InvalidateAsync(key.ToByteArray(), TestToken));
+        False(lookup.TryRead(key.ToByteArray(), out readSession));
+    }
+
+    [Fact]
+    public static async Task ImportPairs()
+    {
+        await using var cache = new RandomAccessCache<Guid, long>(15)
+        {
+            KeyComparer = BitwiseComparer<Guid>.Instance,
+        };
+
+        var key = Guid.NewGuid();
+        await cache.ImportAsync(new Dictionary<Guid, long> { { key, 42L }, { Guid.NewGuid(), 43L } }, TestToken);
+        True(cache.TryRead(key, out var session));
+        using (session)
+        {
+            Equal(42L, session.Value);
+        }
+    }
+
     private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
     {
         protected override void AddWeight(ref long total, string key, long value)

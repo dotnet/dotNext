@@ -26,25 +26,13 @@ public sealed class IndexPool
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);
-        Populate();
+        buffer.Populate();
     }
 
     /// <summary>
     /// Gets a value indicating that the pool is empty.
     /// </summary>
     public bool IsEmpty => buffer.IsEmpty;
-
-    private void Populate()
-    {
-        for (var index = 0; index < buffer.Length; index++)
-        {
-            ref var slot = ref buffer.TryEnqueue(out var sequence);
-            Debug.Assert(!Unsafe.IsNullRef(in slot));
-            
-            slot.Item = index;
-            slot.Sequence = sequence;
-        }
-    }
 
     /// <summary>
     /// Gets the capacity of the pool.
@@ -116,5 +104,24 @@ public sealed class IndexPool
     /// <remarks>
     /// Any subsequent call to the <see cref="TryReturn"/> method returns <see langword="false"/>.
     /// </remarks>
-    public void Freeze() => buffer.Freeze();
+    /// <returns>
+    /// <see langword="true"/> if this method is called for the first time;
+    /// <see langword="false"/> if the pool is already frozen.
+    /// </returns>
+    public bool Freeze() => buffer.Freeze();
+}
+
+file static class RingBufferExtensions
+{
+    public static void Populate(this ref RingBuffer<int> buffer)
+    {
+        for (var index = 0; index < buffer.Length; index++)
+        {
+            ref var slot = ref buffer.TryEnqueue(out var sequence);
+            Debug.Assert(!Unsafe.IsNullRef(in slot));
+            
+            slot.Item = index;
+            slot.Sequence = sequence;
+        }
+    }
 }
