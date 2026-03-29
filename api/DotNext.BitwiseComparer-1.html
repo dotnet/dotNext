@@ -83,6 +83,8 @@
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icomparer-1">IComparer</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Patterns.ISingleton-1.html">ISingleton</a>&lt;<a class="xref" href="DotNext.BitwiseComparer-1.html">BitwiseComparer</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ialternateequalitycomparer-2">IAlternateEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ialternateequalitycomparer-2">IAlternateEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, T&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -109,7 +111,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_BitwiseComparer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class BitwiseComparer&lt;T&gt; : IEqualityComparer&lt;T&gt;, IComparer&lt;T&gt;, ISingleton&lt;BitwiseComparer&lt;T&gt;&gt; where T : unmanaged, allows ref struct</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class BitwiseComparer&lt;T&gt; : IEqualityComparer&lt;T&gt;, IComparer&lt;T&gt;, ISingleton&lt;BitwiseComparer&lt;T&gt;&gt;, IAlternateEqualityComparer&lt;ReadOnlySpan&lt;byte&gt;, T&gt;, IAlternateEqualityComparer&lt;ReadOnlyMemory&lt;byte&gt;, T&gt; where T : unmanaged</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -131,7 +133,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext/BitwiseComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext/BitwiseComparer.cs">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Compare_" data-uid="DotNext.BitwiseComparer`1.Compare*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Compare__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Compare``1(`0@,``0@)">Compare&lt;TOther&gt;(in T, in TOther)</h4>
@@ -200,7 +202,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext/BitwiseComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext/BitwiseComparer.cs">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Equals_" data-uid="DotNext.BitwiseComparer`1.Equals*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Equals__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Equals``1(`0@,``0@)">Equals&lt;TOther&gt;(in T, in TOther)</h4>
@@ -273,7 +275,7 @@ even if it is overridden by value type.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext/BitwiseComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext/BitwiseComparer.cs">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
   <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0@,System.Boolean)">GetHashCode(in T, bool)</h4>
@@ -328,7 +330,7 @@ even if it is overridden by value type.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext/BitwiseComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext/BitwiseComparer.cs">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Instance_" data-uid="DotNext.BitwiseComparer`1.Instance*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Instance" data-uid="DotNext.BitwiseComparer`1.Instance">Instance</h4>
@@ -369,6 +371,12 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
   <div>
       <a class="xref" href="DotNext.Patterns.ISingleton-1.html">ISingleton&lt;TSelf&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ialternateequalitycomparer-2">IAlternateEqualityComparer&lt;TAlternate, T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ialternateequalitycomparer-2">IAlternateEqualityComparer&lt;TAlternate, T&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
@@ -388,7 +396,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext/BitwiseComparer.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext/BitwiseComparer.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

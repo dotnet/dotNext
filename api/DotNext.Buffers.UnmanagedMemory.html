@@ -112,7 +112,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_AllocatePageAlignedMemory_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_AllocatePageAlignedMemory_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory(System.Int32,System.Boolean)">AllocatePageAlignedMemory(int, bool)</h4>
@@ -182,7 +182,7 @@ public static IMemoryOwner&lt;byte&gt; AllocatePageAlignedMemory(int size, bool 
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_AllocateSystemPages_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocateSystemPages*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_AllocateSystemPages_System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocateSystemPages(System.Int32)">AllocateSystemPages(int)</h4>
@@ -245,7 +245,7 @@ public static IMemoryOwner&lt;byte&gt; AllocatePageAlignedMemory(int size, bool 
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_AllocateZeroed_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocateZeroed*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_AllocateZeroed__1_System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.AllocateZeroed``1(System.Int32)">AllocateZeroed&lt;T&gt;(int)</h4>
@@ -324,7 +324,7 @@ public static IUnmanagedMemory&lt;T&gt; AllocateZeroed&lt;T&gt;(int length) wher
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_Allocate_" data-uid="DotNext.Buffers.UnmanagedMemory.Allocate*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_Allocate__1_System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.Allocate``1(System.Int32)">Allocate&lt;T&gt;(int)</h4>
@@ -403,7 +403,77 @@ public static IUnmanagedMemory&lt;T&gt; Allocate&lt;T&gt;(int length) where T : 
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_UnmanagedMemory_AsMemory_" data-uid="DotNext.Buffers.UnmanagedMemory.AsMemory*"></a>
+  <h4 id="DotNext_Buffers_UnmanagedMemory_AsMemory__1___0__System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.AsMemory``1(``0*,System.Int32)">AsMemory&lt;T&gt;(T*, int)</h4>
+  <div class="markdown level1 summary"><p>Wraps unmanaged pointer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static Memory&lt;T&gt; AsMemory&lt;T&gt;(T* pointer, int length) where T : unmanaged</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T*</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The pointer to a sequence of elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The number of elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</td>
+        <td><p>The memory block that represents the data located at the pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_Discard_" data-uid="DotNext.Buffers.UnmanagedMemory.Discard*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_Discard__1_System_Span___0__" data-uid="DotNext.Buffers.UnmanagedMemory.Discard``1(System.Span{``0})">Discard&lt;T&gt;(Span&lt;T&gt;)</h4>
@@ -469,76 +539,7 @@ public static IUnmanagedMemory&lt;T&gt; Allocate&lt;T&gt;(int length) where T : 
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_UnmanagedMemory_FromPointer_" data-uid="DotNext.Buffers.UnmanagedMemory.FromPointer*"></a>
-  <h4 id="DotNext_Buffers_UnmanagedMemory_FromPointer__1___0__System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.FromPointer``1(``0*,System.Int32)">FromPointer&lt;T&gt;(T*, int)</h4>
-  <div class="markdown level1 summary"><p>Wraps unmanaged pointer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static Memory&lt;T&gt; FromPointer&lt;T&gt;(T* pointer, int length) where T : unmanaged</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>T*</td>
-        <td><span class="parametername">pointer</span></td>
-        <td><p>The pointer to a sequence of elements.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The number of elements.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</td>
-        <td><p>The memory block that represents the data located at the pointer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_GetPageAlignedOffset_" data-uid="DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_GetPageAlignedOffset_System_ReadOnlySpan_System_Byte__System_Int32__" data-uid="DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset(System.ReadOnlySpan{System.Byte},System.Int32@)">GetPageAlignedOffset(ReadOnlySpan&lt;byte&gt;, out int)</h4>
@@ -591,11 +592,11 @@ public static Memory&lt;T&gt; FromPointer&lt;T&gt;(T* pointer, int length) where
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_get_UnmanagedZeroMem_" data-uid="DotNext.Buffers.UnmanagedMemory.get_UnmanagedZeroMem*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_get_UnmanagedZeroMem__1" data-uid="DotNext.Buffers.UnmanagedMemory.get_UnmanagedZeroMem``1">get_UnmanagedZeroMem&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Gets the unmanaged memoir</p>
+  <div class="markdown level1 summary"><p>Gets the unmanaged memory allocator that can be used to obtain a block of unmanaged memory filled with zeroes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -634,7 +635,7 @@ public static Memory&lt;T&gt; FromPointer&lt;T&gt;(T* pointer, int length) where
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemory_get_Unmanaged_" data-uid="DotNext.Buffers.UnmanagedMemory.get_Unmanaged*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemory_get_Unmanaged__1" data-uid="DotNext.Buffers.UnmanagedMemory.get_Unmanaged``1">get_Unmanaged&lt;T&gt;()</h4>
@@ -684,7 +685,7 @@ public static Memory&lt;T&gt; FromPointer&lt;T&gt;(T* pointer, int length) where
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

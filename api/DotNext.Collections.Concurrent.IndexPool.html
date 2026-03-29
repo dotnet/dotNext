@@ -114,7 +114,7 @@ know whether the particular object is taken from the pool or not.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool__ctor_" data-uid="DotNext.Collections.Concurrent.IndexPool.#ctor*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool__ctor_System_Int32_" data-uid="DotNext.Collections.Concurrent.IndexPool.#ctor(System.Int32)">IndexPool(int)</h4>
@@ -163,7 +163,7 @@ know whether the particular object is taken from the pool or not.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Capacity_" data-uid="DotNext.Collections.Concurrent.IndexPool.Capacity*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Capacity" data-uid="DotNext.Collections.Concurrent.IndexPool.Capacity">Capacity</h4>
@@ -191,7 +191,7 @@ know whether the particular object is taken from the pool or not.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_IsEmpty_" data-uid="DotNext.Collections.Concurrent.IndexPool.IsEmpty*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_IsEmpty" data-uid="DotNext.Collections.Concurrent.IndexPool.IsEmpty">IsEmpty</h4>
@@ -221,7 +221,7 @@ know whether the particular object is taken from the pool or not.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Freeze_" data-uid="DotNext.Collections.Concurrent.IndexPool.Freeze*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Freeze" data-uid="DotNext.Collections.Concurrent.IndexPool.Freeze">Freeze()</h4>
@@ -230,14 +230,31 @@ know whether the particular object is taken from the pool or not.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Freeze()</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Freeze()</code></pre>
   </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this method is called for the first time;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the pool is already frozen.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 id="DotNext_Collections_Concurrent_IndexPool_Freeze_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Any subsequent call to the <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_TryReturn_System_Int32_">TryReturn(int)</a> method returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Return_" data-uid="DotNext.Collections.Concurrent.IndexPool.Return*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Return_System_Int32_" data-uid="DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)">Return(int)</h4>
@@ -285,7 +302,7 @@ the value to this pool which is full.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_TryGet_" data-uid="DotNext.Collections.Concurrent.IndexPool.TryGet*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_TryGet_System_Int32__" data-uid="DotNext.Collections.Concurrent.IndexPool.TryGet(System.Int32@)">TryGet(out int)</h4>
@@ -332,7 +349,7 @@ the value to this pool which is full.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_TryReturn_" data-uid="DotNext.Collections.Concurrent.IndexPool.TryReturn*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_TryReturn_System_Int32_" data-uid="DotNext.Collections.Concurrent.IndexPool.TryReturn(System.Int32)">TryReturn(int)</h4>
@@ -397,7 +414,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

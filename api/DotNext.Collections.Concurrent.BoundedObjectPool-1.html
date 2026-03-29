@@ -125,7 +125,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1__ctor_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.#ctor*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1__ctor_System_Int32_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.#ctor(System.Int32)">BoundedObjectPool(int)</h4>
@@ -174,7 +174,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Capacity_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Capacity*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Capacity" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Capacity">Capacity</h4>
@@ -202,7 +202,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_IsFrozen_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.IsFrozen*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_IsFrozen" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.IsFrozen">IsFrozen</h4>
@@ -232,7 +232,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Freeze*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Freeze">Freeze()</h4>
@@ -241,14 +241,31 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Freeze()</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Freeze()</code></pre>
   </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this method is called for the first time;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the pool is already frozen.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Any subsequent call to the <a class="xref" href="DotNext.Collections.Concurrent.BoundedObjectPool-1.html#DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn__0_">TryReturn(T)</a> method returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryGet_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryGet*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryGet" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryGet">TryGet()</h4>
@@ -277,7 +294,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryReturn*"></a>
   <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn__0_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryReturn(`0)">TryReturn(T)</h4>
@@ -342,7 +359,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/ea6ff2f0e22c5b5bcf691c9df232178127105e8c/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
