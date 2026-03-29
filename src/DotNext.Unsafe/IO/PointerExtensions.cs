@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.IO;
 
 using Buffers;
@@ -170,7 +172,7 @@ public static class PointerExtensions
             Memory<byte> memory;
             unsafe
             {
-                memory = Memory<byte>.FromPointer(source, count);
+                memory = MemoryMarshal.AsMemory<byte>(source, count);
             }
             
             await destination.WriteAsync(memory, token).ConfigureAwait(false);
@@ -197,7 +199,7 @@ public static class PointerExtensions
             Memory<byte> memory;
             unsafe
             {
-                memory = Memory<byte>.FromPointer(destination, int.CreateSaturating(length));
+                memory = MemoryMarshal.AsMemory<byte>(destination, int.CreateSaturating(length));
             }
 
             if ((bytesRead = await source.ReadAsync(memory, token).ConfigureAwait(false)) is 0)

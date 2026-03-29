@@ -242,7 +242,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     public static unsafe void MarshalAsMemory()
     {
         var ptr = stackalloc int[] { 10, 20, 30 };
-        var memory = Memory<int>.FromPointer(ptr, 3);
+        var memory = MemoryMarshal.AsMemory(ptr, 3);
         False(memory.IsEmpty);
         Equal([10, 20, 30], memory.Span);
 
