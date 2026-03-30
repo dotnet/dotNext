@@ -30,6 +30,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
     private protected const string CommandIdHeader = "X-Raft-Command-Id";
+    private protected const string IsConfigurationHeader = "X-Raft-Configuration";
     private protected const string CountHeader = "X-Raft-Entries-Count";
     private const string ConfigurationLengthHeader = "X-Raft-Config-Length";
     private const string ConfigurationFingerprintHeader = "X-Raft-Config-Fingerprint";
@@ -42,11 +43,14 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         {
             Term = ParseHeader(section.Headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
             CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
+            IsConfiguration = ParseHeader(section.Headers, IsConfigurationHeader, BooleanParser);
         }
 
         public int? CommandId { get; }
 
         public long Term { get; }
+
+        public bool IsConfiguration { get; }
 
         bool ILogEntry.IsSnapshot => false;
     }
@@ -396,17 +400,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             this.configuration = configuration;
         }
 
-        private static void WriteHeader(BufferWriter<char> builder, string headerName, string headerValue)
-        {
-            builder.Write(headerName);
-            builder.Write(": ");
-            builder.Write(headerValue);
-            builder.Write(CrLf);
-        }
-
-        private static string GetCommandIdHeaderValue(int? id)
-            => id.HasValue ? Nullable.GetValueRefOrDefaultRef(in id).ToString(InvariantCulture) : string.Empty;
-
         private static ValueTask<long> EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
         {
             if (writeDivider)
@@ -417,12 +410,21 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             }
 
             // write headers
-            WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
-            WriteHeader(builder, CommandIdHeader, GetCommandIdHeaderValue(entry.CommandId));
+            WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term);
+            WriteHeader<NullableFormattable<int>>(builder, CommandIdHeader, entry.CommandId);
+            WriteHeader(builder, IsConfigurationHeader, entry.IsConfiguration);
 
             // Extra CRLF to end headers (even if there are no headers)
             builder.Write(CrLf);
             return output.EncodeAsync(builder.WrittenMemory, context, lengthFormat: null, buffer, token);
+            
+            static void WriteHeader<T>(BufferWriter<char> builder, ReadOnlySpan<char> headerName, T headerValue)
+            {
+                builder.Write(headerName);
+                builder.Write(": ");
+                builder.Format(headerValue, format: null, provider: InvariantCulture);
+                builder.Write(CrLf);
+            }
         }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)

@@ -19,15 +19,12 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private readonly LogEntryFlags flags;
     private readonly int identifier;
 
-    private LogEntryMetadata(long term, ulong offset, long length, int? id = null)
+    private LogEntryMetadata(long term, ulong offset, long length)
     {
         Term = term;
         Length = length;
         Offset = offset;
         flags = LogEntryFlags.None;
-        if (id.HasValue)
-            flags |= LogEntryFlags.HasIdentifier;
-        identifier = id.GetValueOrDefault();
     }
 
     // slow version if target architecture has BE byte order or pointer is not aligned
@@ -96,7 +93,21 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         }
     }
 
-    internal int? Id => HasIdentifier ? identifier : null;
+    internal int? Id
+    {
+        get => HasIdentifier ? identifier : null;
+        private init
+        {
+            flags |= value.HasValue ? LogEntryFlags.HasIdentifier : LogEntryFlags.None;
+            identifier = value.GetValueOrDefault();
+        }
+    }
+
+    internal bool IsConfiguration
+    {
+        get => (flags & LogEntryFlags.Configuration) is not 0;
+        private init => flags |= value ? LogEntryFlags.Configuration : LogEntryFlags.None;
+    }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private bool HasIdentifier => (flags & LogEntryFlags.HasIdentifier) is not 0U;
@@ -106,7 +117,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, ulong offset, long length)
         where TLogEntry : IRaftLogEntry
-        => new(entry.Term, offset, length, entry.CommandId);
+        => new(entry.Term, offset, length) { Id = entry.CommandId, IsConfiguration = entry.IsConfiguration };
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void FormatSlow(Span<byte> output)
@@ -155,6 +166,8 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         None = 0,
 
         HasIdentifier = 0x01,
+        
+        Configuration = 0x02,
     }
 }
 

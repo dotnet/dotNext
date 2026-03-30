@@ -15,4 +15,9 @@ public interface IRaftLogEntry : IO.Log.ILogEntry
     /// by this log entry.
     /// </summary>
     int? CommandId => null;
+
+    /// <summary>
+    /// Gets a value indicating that the log entry represents the cluster membership configuration.
+    /// </summary>
+    bool IsConfiguration => false;
 }
