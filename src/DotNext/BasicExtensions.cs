@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 
@@ -197,4 +198,32 @@ public static class BasicExtensions
             }
         }
     }
+
+    /// <summary>
+    /// Extends numeric types.
+    /// </summary>
+    /// <typeparam name="T">The numeric type.</typeparam>
+    extension<T>(T)
+        where T : unmanaged, IBinaryNumber<T>
+    {
+        /// <summary>
+        /// Gets the bytes representing <see cref="INumber{TSelf}.Zero"/> value.
+        /// </summary>
+        public static unsafe ReadOnlyMemory<byte> ZeroBytes
+        {
+            get
+            {
+                var size = sizeof(T);
+                return size <= sizeof(Int128)
+                    ? new(ZeroBytes<Int128>.Value, 0, size)
+                    : new(ZeroBytes<T>.Value);
+            }
+        }
+    }
+}
+
+file static class ZeroBytes<T>
+    where T : unmanaged, IBinaryNumber<T>
+{
+    public static readonly byte[] Value = GC.AllocateArray<byte>(Unsafe.SizeOf<T>(), pinned: true);
 }
