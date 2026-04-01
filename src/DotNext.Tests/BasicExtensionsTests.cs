@@ -1,4 +1,9 @@
+using System.Numerics;
+using System.Runtime.InteropServices;
+
 namespace DotNext;
+
+using Runtime.InteropServices;
 
 public sealed class BasicExtensionsTests : Test
 {
@@ -219,5 +224,36 @@ public sealed class BasicExtensionsTests : Test
         False(10L.IsBetween(10L.Disclosed, long.Unbounded));
 
         True(long.MinValue.IsBetween(long.Unbounded, long.Unbounded));
+    }
+
+    private static void CheckZeroBytes<T>()
+        where T : unmanaged, IBinaryNumber<T>
+    {
+        var zero = T.Zero;
+
+        Equal(BasicExtensions.get_ZeroBytes<T>().Span, MemoryMarshal.AsReadOnlyBytes(in zero));
+    }
+
+    [Fact]
+    public static void ZeroBytes()
+    {
+        CheckZeroBytes<byte>();
+        CheckZeroBytes<sbyte>();
+        
+        CheckZeroBytes<ushort>();
+        CheckZeroBytes<short>();
+        
+        CheckZeroBytes<uint>();
+        CheckZeroBytes<int>();
+        
+        CheckZeroBytes<ulong>();
+        CheckZeroBytes<long>();
+        
+        CheckZeroBytes<Half>();
+        CheckZeroBytes<float>();
+        CheckZeroBytes<double>();
+        
+        CheckZeroBytes<UInt128>();
+        CheckZeroBytes<Int128>();
     }
 }
