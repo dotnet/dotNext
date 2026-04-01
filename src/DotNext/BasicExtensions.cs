@@ -207,7 +207,7 @@ public static class BasicExtensions
         where T : unmanaged, IBinaryNumber<T>
     {
         /// <summary>
-        /// Gets the bytes representing <see cref="INumber{TSelf}.Zero"/> value.
+        /// Gets the bytes representing <see cref="INumberBase{TSelf}.Zero"/> value.
         /// </summary>
         public static unsafe ReadOnlyMemory<byte> ZeroBytes
         {
