@@ -1,73 +1,29 @@
-using System.Buffers;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
-using Buffers;
 using IO;
 using IO.Log;
-using Runtime.InteropServices;
 
 internal partial class Server
 {
-    private sealed class ReceivedLogEntries : MemoryManager<byte>, ILogEntryProducer<ReceivedLogEntries>, IRaftLogEntry
+    private sealed class ReceivedLogEntries : ILogEntryProducer<ReceivedLogEntries>, IRaftLogEntry
     {
         private readonly ProtocolStream stream;
         private readonly CancellationToken token;
-        internal readonly InMemoryClusterConfiguration Configuration;
         private int entriesCount;
         private LogEntryMetadata metadata;
         private bool consumed;
-        private Buffer buffer;
-        private Buffer[]? pinnedBuffer;
+        private byte[]? buffer;
 
-        internal ReceivedLogEntries(ProtocolStream stream, MemoryAllocator<byte> allocator, out bool applyConfig, CancellationToken token)
+        public ReceivedLogEntries(ProtocolStream stream, int entriesCount, CancellationToken token)
         {
+            Debug.Assert(entriesCount > 0);
+            
             this.stream = stream;
             this.token = token;
+            this.entriesCount = entriesCount;
             consumed = true;
-
-            var reader = new SpanReader<byte>(stream.WrittenBufferSpan);
-            (buffer.Id, buffer.Term, buffer.PrevLogIndex, buffer.PrevLogTerm, buffer.CommitIndex, entriesCount) = reader.Read<AppendEntriesMessage>();
-            applyConfig = Unsafe.BitCast<byte, bool>(reader.Read());
-
-            var (fingerprint, configLength) = reader.Read<ConfigurationMessage>();
-            stream.AdvanceReadCursor(reader.ConsumedCount);
-
-            Configuration = configLength > 0L
-                ? new(allocator(int.CreateChecked(configLength)), fingerprint)
-                : new(fingerprint);
-        }
-
-        internal ClusterMemberId Id => buffer.Id;
-
-        internal long Term => buffer.Term;
-
-        internal long PrevLogIndex => buffer.PrevLogIndex;
-
-        internal long PrevLogTerm => buffer.PrevLogTerm;
-
-        internal long CommitIndex => buffer.CommitIndex;
-
-        public override Span<byte> GetSpan()
-        {
-            ref var buffer = ref pinnedBuffer is null
-                ? ref this.buffer
-                : ref MemoryMarshal.GetArrayDataReference(pinnedBuffer);
-
-            return MemoryMarshal.AsBytes(ref buffer);
-        }
-
-        public override unsafe MemoryHandle Pin(int elementIndex = 0)
-        {
-            pinnedBuffer ??= GC.AllocateUninitializedArray<Buffer>(length: 1, pinned: true);
-            return new(Unsafe.AsPointer(ref pinnedBuffer[elementIndex]));
-        }
-
-        public override void Unpin()
-        {
         }
 
         public async ValueTask<bool> MoveNextAsync()
@@ -108,6 +64,8 @@ internal partial class Server
 
         bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
 
+        bool IRaftLogEntry.IsConfiguration => metadata.IsConfiguration;
+
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             Debug.Assert(!consumed);
@@ -121,41 +79,10 @@ internal partial class Server
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
             consumed = true;
-            return IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, Memory, token);
+            buffer ??= new byte[128];
+            return IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer, token);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Configuration.Dispose();
-            }
-        }
-
-        ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            var result = ValueTask.CompletedTask;
-            try
-            {
-                Dispose(disposing: true);
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException(e);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
-
-            return result;
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private struct Buffer
-    {
-        internal ClusterMemberId Id;
-        internal long Term, PrevLogIndex, PrevLogTerm, CommitIndex;
+        ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
     }
 }

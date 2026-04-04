@@ -1,6 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Membership;
 using Replication;
 
 /// <summary>
@@ -31,7 +32,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Defines persistent state for the Raft-based cluster.
     /// </summary>
-    new IPersistentState AuditTrail { get; set; }
+    new IPersistentState AuditTrail { get; }
 
     /// <summary>
     /// Tries to get the lease that can be used to perform the read with linearizability guarantees.
@@ -85,4 +86,12 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
     /// <seealso cref="LeadershipToken"/>
     ValueTask<CancellationToken> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default);
+
+    /// <summary>
+    /// Associates the configuration storage with the WAL.
+    /// </summary>
+    /// <param name="auditTrail">The WAL implementation.</param>
+    /// <param name="configurationStorage">The configuration storage.</param>
+    protected static void SetConfigurationStorage(IPersistentState auditTrail, IClusterConfigurationStorage configurationStorage)
+        => auditTrail.ConfigurationStorage = configurationStorage;
 }

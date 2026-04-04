@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using IO;
 using Membership;
 
 public sealed class LeaderStateContextTests : Test
@@ -12,10 +13,11 @@ public sealed class LeaderStateContextTests : Test
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => Task.FromException<Result<bool>>(new NotImplementedException());
 
-        Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => Task.FromException<Result<HeartbeatResult>>(new NotImplementedException());
 
-        Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+        Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+            IDataTransferObject configuration, long configurationVersion, CancellationToken token)
             => Task.FromException<Result<HeartbeatResult>>(new NotImplementedException());
 
         Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
@@ -53,13 +55,13 @@ public sealed class LeaderStateContextTests : Test
         var key1 = new DummyRaftClusterMember();
         var key2 = new DummyRaftClusterMember();
 
-        var ctx1 = context.GetOrCreate(key1, CreateReplicator, TestToken);
-        var ctx2 = context.GetOrCreate(key2, CreateReplicator, TestToken);
+        var ctx1 = context.GetOrCreate(key1, CreateReplicator, null, TestToken);
+        var ctx2 = context.GetOrCreate(key2, CreateReplicator, null, TestToken);
 
         NotSame(ctx1, ctx2);
 
-        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, TestToken));
-        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, TestToken));
+        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, null, TestToken));
+        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, null, TestToken));
 
         GC.KeepAlive(key1);
         GC.KeepAlive(key2);
@@ -75,17 +77,17 @@ public sealed class LeaderStateContextTests : Test
         var key4 = new DummyRaftClusterMember();
         var key5 = new DummyRaftClusterMember();
 
-        var ctx1 = context.GetOrCreate(key1, CreateReplicator, TestToken);
-        var ctx2 = context.GetOrCreate(key2, CreateReplicator, TestToken);
-        var ctx3 = context.GetOrCreate(key3, CreateReplicator, TestToken);
-        var ctx4 = context.GetOrCreate(key4, CreateReplicator, TestToken);
-        var ctx5 = context.GetOrCreate(key5, CreateReplicator, TestToken);
+        var ctx1 = context.GetOrCreate(key1, CreateReplicator, null, TestToken);
+        var ctx2 = context.GetOrCreate(key2, CreateReplicator, null, TestToken);
+        var ctx3 = context.GetOrCreate(key3, CreateReplicator, null, TestToken);
+        var ctx4 = context.GetOrCreate(key4, CreateReplicator, null, TestToken);
+        var ctx5 = context.GetOrCreate(key5, CreateReplicator, null, TestToken);
 
-        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, TestToken));
-        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, TestToken));
-        Same(ctx3, context.GetOrCreate(key3, CreateReplicator, TestToken));
-        Same(ctx4, context.GetOrCreate(key4, CreateReplicator, TestToken));
-        Same(ctx5, context.GetOrCreate(key5, CreateReplicator, TestToken));
+        Same(ctx1, context.GetOrCreate(key1, CreateReplicator, null, TestToken));
+        Same(ctx2, context.GetOrCreate(key2, CreateReplicator, null, TestToken));
+        Same(ctx3, context.GetOrCreate(key3, CreateReplicator, null, TestToken));
+        Same(ctx4, context.GetOrCreate(key4, CreateReplicator, null, TestToken));
+        Same(ctx5, context.GetOrCreate(key5, CreateReplicator, null, TestToken));
 
         GC.KeepAlive(key1);
         GC.KeepAlive(key2);
@@ -94,8 +96,9 @@ public sealed class LeaderStateContextTests : Test
         GC.KeepAlive(key5);
     }
 
-    private static LeaderState<DummyRaftClusterMember>.Replicator CreateReplicator(DummyRaftClusterMember member)
-        => new(member, NullLogger.Instance);
+    private static LeaderState<DummyRaftClusterMember>.Replicator CreateReplicator(DummyRaftClusterMember member,
+        IClusterConfigurationStorage storage)
+        => new(member, storage, NullLogger.Instance);
 
     [Fact]
     public static void RegressionIssue221()
@@ -108,7 +111,7 @@ public sealed class LeaderStateContextTests : Test
 
         for (var i = 0; i < length; i++)
         {
-            var ctx = context.GetOrCreate(keys[i], CreateReplicator, TestToken);
+            var ctx = context.GetOrCreate(keys[i], CreateReplicator, null, TestToken);
         }
     }
 }

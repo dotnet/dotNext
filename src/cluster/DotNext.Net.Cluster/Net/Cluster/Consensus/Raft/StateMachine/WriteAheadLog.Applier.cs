@@ -76,6 +76,14 @@ partial class WriteAheadLog
                     Context = context.Remove(index, out var ctx) ? ctx : null,
                 };
 
+                // If configuration storage is provided, pass the entry to it.
+                // Otherwise, pass it to the state machine.
+                if (metadata.IsConfiguration && ConfigurationStorage is { } storage)
+                {
+                    await storage.SaveConfigurationAsync(entry, index, token).ConfigureAwait(false);
+                    entry = new(metadata.Term, index);
+                }
+
                 appliedIndex = await stateMachine.ApplyAsync(entry, token).ConfigureAwait(false);
             }
             else

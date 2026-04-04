@@ -83,4 +83,13 @@ public abstract class Test : Assert
 
         internal void Invoke() => Result = func();
     }
+
+    public static string GetTempPath()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "dotnext.test");
+        if (!Directory.Exists(root))
+            Directory.CreateDirectory(root);
+
+        return Path.Combine(root, Path.GetRandomFileName());
+    }
 }

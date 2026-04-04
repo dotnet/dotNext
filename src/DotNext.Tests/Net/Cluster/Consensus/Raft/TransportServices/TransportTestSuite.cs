@@ -7,23 +7,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 using Buffers;
 using IO;
 using IO.Log;
-using IClusterConfiguration = Membership.IClusterConfiguration;
+using StateMachine;
 
 public abstract class TransportTestSuite : RaftTest
 {
-    private sealed class BufferedClusterConfiguration : BinaryTransferObject, IClusterConfiguration
-    {
-        internal BufferedClusterConfiguration(ReadOnlyMemory<byte> memory)
-            : base(memory)
-        {
-        }
-
-        public long Fingerprint { get; init; }
-
-        long IClusterConfiguration.Length => Content.Length;
-    }
-
-    private sealed class BufferedEntry : BinaryTransferObject, IRaftLogEntry
+    private sealed class BufferedEntry : TestTransferObject, IRaftLogEntry
     {
         internal BufferedEntry(long term, bool isSnapshot, byte[] content)
             : base(content)
@@ -51,6 +39,7 @@ public abstract class TransportTestSuite : RaftTest
         internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
         internal ReceiveEntriesBehavior Behavior;
         internal byte[] ReceivedConfiguration = [];
+        internal long ReceivedConfigurationVersion = -1L;
         private readonly ClusterMemberId localId = Random.Shared.Next<ClusterMemberId>();
 
         internal LocalMember(bool smallAmountOfMetadata = false)
@@ -73,29 +62,12 @@ public abstract class TransportTestSuite : RaftTest
 
         ValueTask<bool> ILocalMember.ResignAsync(CancellationToken token) => ValueTask.FromResult(true);
 
-        async ValueTask ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
-        {
-            using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(int.CreateSaturating(configurationLength));
-            await configurationReader(buffer.Memory, token).ConfigureAwait(false);
-            Equal(42L, fingerprint);
-            ReceivedConfiguration = buffer.Memory.ToArray();
-        }
-
-        private async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
-            where TEntry : IRaftLogEntry
+        async ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             Equal(42L, senderTerm);
             Equal(1, prevLogIndex);
             Equal(56L, prevLogTerm);
             Equal(10, commitIndex);
-
-            if (fingerprint.HasValue)
-                Equal(42L, fingerprint.GetValueOrDefault());
-
-            if (applyConfig)
-                Empty(ReceivedConfiguration);
-            else
-                NotEmpty(ReceivedConfiguration);
 
             byte[] buffer;
             switch (Behavior)
@@ -130,29 +102,29 @@ public abstract class TransportTestSuite : RaftTest
             };
         }
 
-        ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
-            => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, fingerprint, applyConfig, token);
-
-        async ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        {
-            if (config.Length > 0L)
-                ReceivedConfiguration = await config.ToByteArrayAsync(token: token);
-
-            return await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config.Fingerprint, applyConfig, token);
-        }
-
-        async ValueTask<Result<HeartbeatResult>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        async ValueTask<Result<HeartbeatResult>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot,
+            long snapshotIndex, CancellationToken token)
         {
             Equal(42L, senderTerm);
             Equal(10, snapshotIndex);
             True(snapshot.IsSnapshot);
+            
             var buffer = await snapshot.ToByteArrayAsync(null, token);
             ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.IsSnapshot, buffer));
+            
             return new()
             {
                 Term = 43L,
                 Value = HeartbeatResult.ReplicatedWithLeaderTerm,
             };
+        }
+
+        async ValueTask<bool> ILocalMember.InstallConfigurationAsync<TConfiguration>(long senderTerm, TConfiguration configuration,
+            long configurationVersion, CancellationToken token)
+        {
+            ReceivedConfigurationVersion = configurationVersion;
+            ReceivedConfiguration = await configuration.ToByteArrayAsync(token: token).ConfigureAwait(false);
+            return true;
         }
 
         ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -189,50 +161,49 @@ public abstract class TransportTestSuite : RaftTest
 
     private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         var member = new LocalMember();
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
 
         //Vote request
-        var result = await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
+        var result = await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, TestToken);
         True(result.Value);
         Equal(43L, result.Term);
 
         // PreVote request
-        var preVote = await client.As<IRaftClusterMember>().PreVoteAsync(10L, 2L, 99L, CancellationToken.None);
+        var preVote = await client.As<IRaftClusterMember>().PreVoteAsync(10L, 2L, 99L, TestToken);
         Equal(PreVoteResult.Accepted, preVote.Value);
         Equal(44L, preVote.Term);
 
         //Resign request
-        True(await client.As<IRaftClusterMember>().ResignAsync(CancellationToken.None));
+        True(await client.As<IRaftClusterMember>().ResignAsync(TestToken));
 
         //Heartbeat request
-        var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
-        var appendEntries = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, true, CancellationToken.None);
+        var appendEntries = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, TestToken);
         Equal(HeartbeatResult.ReplicatedWithLeaderTerm, appendEntries.Value);
         Equal(43L, appendEntries.Term);
     }
 
     private protected async Task StressTestCore(ServerFactory serverFactory, ClientFactory clientFactory)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         var member = new LocalMember();
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
         ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
         for (var i = 0; i < 100; i++)
         {
-            var task = client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
+            var task = client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, TestToken);
             tasks.Add(task);
         }
 
@@ -247,34 +218,34 @@ public abstract class TransportTestSuite : RaftTest
 
     private protected async Task MetadataRequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory, bool smallAmountOfMetadata)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         //prepare server
         var member = new LocalMember(smallAmountOfMetadata);
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
-        Equal(member.Metadata, await client.As<IRaftClusterMember>().GetMetadataAsync(refresh: true, CancellationToken.None));
+        Equal(member.Metadata, await client.As<IRaftClusterMember>().GetMetadataAsync(refresh: true, TestToken));
     }
 
     private static void Equal(in BufferedEntry x, in BufferedEntry y)
     {
         Equal(x.Term, y.Term);
         Equal(x.IsSnapshot, y.IsSnapshot);
-        True(x.Content.Span.SequenceEqual(y.Content.Span));
+        Equal(x.Content.Span, y.Content.Span);
     }
 
     private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         var member = new LocalMember(false) { Behavior = behavior };
 
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
@@ -293,8 +264,7 @@ public abstract class TransportTestSuite : RaftTest
         Random.Shared.NextBytes(buffer);
         var entry2 = new BufferedEntry(11L, true, buffer);
 
-        var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
-        var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, true, CancellationToken.None);
+        var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
         Equal(43L, result.Term);
         Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
         switch (behavior)
@@ -320,54 +290,62 @@ public abstract class TransportTestSuite : RaftTest
 
     private protected async Task SendingSnapshotTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         var member = new LocalMember(false);
 
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
 
-        var buffer = new byte[payloadSize];
-        Random.Shared.NextBytes(buffer);
-        var snapshot = new BufferedEntry(10L, true, buffer);
-        var result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
+        var payload = new byte[payloadSize];
+        Random.Shared.NextBytes(payload);
+        var snapshot = new BufferedEntry(10L, true, payload);
+
+        var configuration = new BinaryTransferObject(ReadOnlyMemory<byte>.Empty);
+        
+        var result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, configuration, 1L, TestToken);
         Equal(43L, result.Term);
         Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
         NotEmpty(member.ReceivedEntries);
         Equal(snapshot, member.ReceivedEntries[0]);
+
+        Equal(1L, member.ReceivedConfigurationVersion);
+        Equal(configuration.Content, member.ReceivedConfiguration);
     }
 
     private protected async Task SendingSnapshotAndEntriesAndConfiguration(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         var member = new LocalMember(false) { Behavior = behavior };
 
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
-        var buffer = new byte[payloadSize];
-        Random.Shared.NextBytes(buffer);
-        var entry1 = new BufferedEntry(10L, false, buffer);
-        buffer = new byte[payloadSize];
-        Random.Shared.NextBytes(buffer);
-        var entry2 = new BufferedEntry(11L, false, buffer);
-        var config = new BufferedClusterConfiguration(RandomBytes(312)) { Fingerprint = 42L };
+        var payload = new byte[payloadSize];
+        Random.Shared.NextBytes(payload);
+        var entry1 = new BufferedEntry(10L, false, payload);
+        payload = new byte[payloadSize];
+        Random.Shared.NextBytes(payload);
+        var entry2 = new BufferedEntry(11L, false, payload);
 
-        var snapshot = new BufferedEntry(10L, true, buffer);
+        var snapshot = new BufferedEntry(10L, true, payload);
+        payload = new byte[payloadSize];
+        Random.Shared.NextBytes(payload);
+        var configuration = new BinaryTransferObject(payload);
 
         Result<HeartbeatResult> result;
         for (var i = 0; i < 100; i++)
         {
             // process snapshot
-            result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
+            result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, configuration, 2L, TestToken);
             Equal(43L, result.Term);
             Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
             NotEmpty(member.ReceivedEntries);
@@ -375,7 +353,7 @@ public abstract class TransportTestSuite : RaftTest
             member.ReceivedEntries.Clear();
 
             // process entries
-            result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, false, CancellationToken.None);
+            result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
             Equal(43L, result.Term);
             Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
             switch (behavior)
@@ -398,54 +376,41 @@ public abstract class TransportTestSuite : RaftTest
                     break;
             }
 
-            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.Span));
+            Equal(configuration.Content, member.ReceivedConfiguration);
+            Equal(2L, member.ReceivedConfigurationVersion);
             member.ReceivedEntries.Clear();
             member.ReceivedConfiguration = [];
+            member.ReceivedConfigurationVersion = -1L;
         }
-    }
-
-    private protected async Task SendingConfigurationTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
-    {
-        var timeout = TimeSpan.FromSeconds(20);
-        var member = new LocalMember(false);
-
-        //prepare server
-        var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-        await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
-
-        //prepare client
-        using var client = clientFactory(serverAddr, member, timeout);
-
-        var config = new BufferedClusterConfiguration(RandomBytes(payloadSize)) { Fingerprint = 42L };
-        var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, payloadSize is 0, CancellationToken.None);
-
-        True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.Span));
     }
 
     private protected async Task SendingSynchronizationRequestTest(ServerFactory serverFactory, ClientFactory clientFactory)
     {
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = DefaultTimeout;
         var member = new LocalMember(false);
 
         //prepare server
         var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
         await using var server = serverFactory(member, serverAddr, timeout);
-        await server.StartAsync(CancellationToken.None);
+        await server.StartAsync(TestToken);
 
         //prepare client
         using var client = clientFactory(serverAddr, member, timeout);
-        Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(long.MaxValue, CancellationToken.None));
+        Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(long.MaxValue, TestToken));
     }
 
-    private protected async Task ClusterRecoveryCore(Func<int, bool, RaftCluster> clusterFactory)
+    private protected async Task ClusterRecoveryCore(Func<int, bool, IPersistentState, RaftCluster> clusterFactory)
     {
-        await using var host2 = clusterFactory(3271, false);
-        await using var host3 = clusterFactory(3272, false);
+        await using var wal2 = CreateWal();
+        await using var host2 = clusterFactory(3271, false, wal2);
+        
+        await using var wal3 = CreateWal();
+        await using var host3 = clusterFactory(3272, false, wal3);
 
         IClusterMember leader2, leader3;
         EndPoint oldLeader;
-        await using (var host1 = clusterFactory(3270, true))
+        await using (var wal1 = CreateWal())
+        await using (var host1 = clusterFactory(3270, true, wal1))
         {
             await host1.StartAsync();
             True(host1.Readiness.IsCompletedSuccessfully);
@@ -480,20 +445,23 @@ public abstract class TransportTestSuite : RaftTest
         await host3.StopAsync();
     }
 
-    private protected async Task LeadershipCore(Func<int, bool, RaftCluster> clusterFactory)
+    private protected async Task LeadershipCore(Func<int, bool, IPersistentState, RaftCluster> clusterFactory)
     {
         // first node - cold start
-        await using var host1 = clusterFactory(3267, true);
+        await using var wal1 = CreateWal();
+        await using var host1 = clusterFactory(3267, true, wal1);
         var listener1 = new LeaderChangedEvent();
         host1.LeaderChanged += listener1.OnLeaderChanged;
         await host1.StartAsync();
         True(host1.Readiness.IsCompletedSuccessfully);
 
         // two nodes in frozen state
-        await using var host2 = clusterFactory(3268, false);
+        await using var wal2 = CreateWal();
+        await using var host2 = clusterFactory(3268, false, wal2);
         await host2.StartAsync();
-
-        await using var host3 = clusterFactory(3269, false);
+        
+        await using var wal3 = CreateWal();
+        await using var host3 = clusterFactory(3269, false, wal3);
         await host3.StartAsync();
 
         await listener1.Task.WaitAsync(DefaultTimeout);
@@ -527,4 +495,7 @@ public abstract class TransportTestSuite : RaftTest
         await host2.StopAsync();
         await host1.StopAsync();
     }
+
+    private static WriteAheadLog CreateWal()
+        => new(new() { Location = GetTempPath() }, IStateMachine.CreateNoOpStateMachine());
 }

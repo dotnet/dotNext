@@ -5,17 +5,22 @@ using IO.Log;
 
 internal partial class Server
 {
-    private sealed class ReceivedSnapshot(ProtocolStream stream) : StreamTransferObject(stream, leaveOpen:true), IRaftLogEntry
+    private sealed class ReceivedSnapshot: ProtocolStreamSegment, IRaftLogEntry
     {
-        internal readonly SnapshotMessage Message = SnapshotMessage.Parse(stream.WrittenBufferSpan);
+        internal readonly SnapshotMessage Message;
+
+        public ReceivedSnapshot(ProtocolStream protocol)
+            : base(protocol)
+        {
+            Message = SnapshotMessage.Parse(protocol.WrittenBufferSpan);
+            protocol.AdvanceReadCursor(SnapshotMessage.Size);
+        }
 
         long? IDataTransferObject.Length => Message.Metadata.Length;
 
         int? IRaftLogEntry.CommandId => Message.Metadata.CommandId;
 
         long IRaftLogEntry.Term => Message.Metadata.Term;
-
-        public override bool IsReusable => false;
 
         bool ILogEntry.IsSnapshot => Message.Metadata.IsSnapshot;
     }

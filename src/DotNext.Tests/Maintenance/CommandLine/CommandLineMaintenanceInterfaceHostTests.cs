@@ -32,7 +32,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     [InlineData("gc loh-compaction-mode CompactOnce", "")]
     public static async Task DefaultCommandsAsync(string request, string response)
     {
-        var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var unixDomainSocketPath = GetTempPath();
         using var host = new HostBuilder()
             .ConfigureServices(services =>
             {
@@ -59,7 +59,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     [PlatformSpecificFact("linux")]
     public static async Task UdsEndpointAuthentication()
     {
-        var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var unixDomainSocketPath = GetTempPath();
         using var host = new HostBuilder()
             .ConfigureServices(services =>
             {
@@ -100,7 +100,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     [InlineData("add 10 20 --login test2 --secret pwd", "30")]
     public static async Task PasswordAuthentication(string request, string response)
     {
-        var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var unixDomainSocketPath = GetTempPath();
         using var host = new HostBuilder()
             .ConfigureServices(services =>
             {

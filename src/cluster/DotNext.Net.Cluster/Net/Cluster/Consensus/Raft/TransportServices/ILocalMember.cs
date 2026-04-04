@@ -3,6 +3,7 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
+using IO;
 using IO.Log;
 
 internal interface ILocalMember
@@ -13,12 +14,7 @@ internal interface ILocalMember
 
     bool IsLeader(IRaftClusterMember member);
 
-    ValueTask ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token);
-
-    ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
-        where TEntry : IRaftLogEntry;
-
-    ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, Membership.IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         where TEntry : IRaftLogEntry;
 
     ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
@@ -27,8 +23,13 @@ internal interface ILocalMember
 
     ValueTask<bool> ResignAsync(CancellationToken token);
 
-    ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+    ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot,
+        long snapshotIndex, CancellationToken token)
         where TSnapshot : IRaftLogEntry;
+
+    ValueTask<bool> InstallConfigurationAsync<TConfiguration>(long senderTerm, TConfiguration configuration,
+        long configurationVersion, CancellationToken token)
+        where TConfiguration : IDataTransferObject;
 
     ValueTask<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 

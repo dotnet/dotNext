@@ -1,6 +1,6 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-internal sealed class NoOpStateMachine : NoOpSnapshotManager, IStateMachine
+internal sealed class ContextAwareStateMachine : NoOpSnapshotManager, IStateMachine
 {
     public readonly Dictionary<long, object> Context = new();
     

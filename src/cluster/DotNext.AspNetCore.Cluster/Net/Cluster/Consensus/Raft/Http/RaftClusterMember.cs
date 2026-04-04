@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Connections;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Collections.Specialized;
-using Membership;
+using IO;
 using Messaging;
 using Net.Http;
 using Runtime.Serialization;
@@ -28,6 +28,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private IRaftClusterMember.ReplicationState state;
+    internal bool IsUnavailable;
 
     static RaftClusterMember()
     {
@@ -122,7 +123,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         finally
         {
             timeoutControl?.Dispose();
-            response?.Content?.Dispose();
+            response?.Content.Dispose();
             response?.Dispose();
             request.Dispose();
 
@@ -187,52 +188,49 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         long prevLogIndex,
         long prevLogTerm,
         long commitIndex,
-        IClusterConfiguration configuration,
-        bool applyConfig,
         CancellationToken token)
     {
-        Task<Result<HeartbeatResult>> result;
-
         if (token.IsCancellationRequested)
-        {
-            result = Task.FromCanceled<Result<HeartbeatResult>>(token);
-        }
-        else if (IsRemote)
-        {
-            AppendEntriesMessage<TEntry, TList> message;
+            return Task.FromCanceled<Result<HeartbeatResult>>(token);
 
-            // See bug https://github.com/dotnet/dotNext/issues/155
-            try
+        if (!IsRemote)
+            return Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+
+        return SendAsync<Result<HeartbeatResult>, AppendEntriesMessage<TEntry, TList>>(
+            new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries)
             {
-                message = new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig)
-                {
-                    UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries,
-                };
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException<Result<HeartbeatResult>>(e);
-                goto exit;
-            }
-
-            result = SendAsync<Result<HeartbeatResult>, AppendEntriesMessage<TEntry, TList>>(message, token);
-        }
-        else
-        {
-            result = Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
-        }
-
-    exit:
-        return result;
+                UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries,
+            },
+            token);
     }
 
-    Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+    Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+        IDataTransferObject configuration, long configurationVersion, CancellationToken token)
     {
-        return token.IsCancellationRequested
-            ? Task.FromCanceled<Result<HeartbeatResult>>(token)
-            : IsRemote
-            ? SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
-            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+        if (token.IsCancellationRequested)
+            return Task.FromCanceled<Result<HeartbeatResult>>(token);
+
+        if (!IsRemote)
+            return Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+
+        if (configuration.Length is not null)
+            return SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(
+                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configuration, configurationVersion), token);
+        
+        // configuration doesn't support Length property, use slow path
+        return InstallSnapshotSlowAsync(term, snapshot, snapshotIndex, configuration, configurationVersion, token);
+    }
+
+    private async Task<Result<HeartbeatResult>> InstallSnapshotSlowAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+        IDataTransferObject configuration, long configurationVersion, CancellationToken token)
+    {
+        using var configCopy = await MemoryTransferObject
+            .TransformAsync(configuration, allocator: null, token)
+            .ConfigureAwait(false);
+
+        return await SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(
+                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configCopy, configurationVersion), token)
+            .ConfigureAwait(false);
     }
 
     async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)

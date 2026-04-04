@@ -6,6 +6,7 @@ using DotNext.Hosting;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 using FASTER.core;
+using NoOpStateMachine = DotNext.Benchmarks.WAL.NoOpStateMachine;
 
 const int count = 2000;
 const int entrySize = 1024;

@@ -5,20 +5,23 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Membership;
 using Numerics;
 
 internal partial class LeaderState<TMember>
 {
     private sealed class ContextEntry : Disposable
     {
+        private readonly IClusterConfigurationStorage? storage;
         private int hashCode;
         internal ContextEntry? Next;
         private DependentHandle handle;
 
-        internal ContextEntry(TMember member, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
+        internal ContextEntry(TMember member, int hashCode, Func<TMember, IClusterConfigurationStorage?, Replicator> factory, IClusterConfigurationStorage? storage, out Replicator result)
         {
-            handle = new(member, result = factory.Invoke(member));
+            handle = new(member, result = factory.Invoke(member, storage));
             this.hashCode = hashCode;
+            this.storage = storage;
         }
 
         internal int HashCode => hashCode;
@@ -27,11 +30,12 @@ internal partial class LeaderState<TMember>
 
         internal Replicator? Value => Unsafe.As<Replicator>(handle.Dependent);
 
-        internal void Reuse(TMember key, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
+        internal void Reuse(TMember key, int hashCode, Func<TMember, IClusterConfigurationStorage?, Replicator> factory, out Replicator result)
         {
             handle.Target = key;
-            handle.Dependent = result = factory.Invoke(key);
+            handle.Dependent = result = factory.Invoke(key, storage);
             this.hashCode = hashCode;
+            GC.KeepAlive(key);
         }
 
         protected override void Dispose(bool disposing)
@@ -140,7 +144,7 @@ internal partial class LeaderState<TMember>
             return collisions <= maxCollisions;
         }
 
-        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory, CancellationToken token = default)
+        public Replicator GetOrCreate(TMember key, Func<TMember, IClusterConfigurationStorage?, Replicator> factory, IClusterConfigurationStorage? storage, CancellationToken token = default)
         {
             Debug.Assert(key is not null);
 
@@ -150,7 +154,7 @@ internal partial class LeaderState<TMember>
             if (entry is null)
             {
                 // add a new element
-                entry = new(key, hashCode, factory, out result);
+                entry = new(key, hashCode, factory, storage, out result);
             }
             else
             {
@@ -179,7 +183,7 @@ internal partial class LeaderState<TMember>
                 {
                     entryToReuse.Reuse(key, hashCode, factory, out result);
                 }
-                else if (!Insert(new(key, hashCode, factory, out result)))
+                else if (!Insert(new(key, hashCode, factory, storage, out result)))
                 {
                     // too many collisions, resize
                     ResizeAndRemoveDeadEntries(token);

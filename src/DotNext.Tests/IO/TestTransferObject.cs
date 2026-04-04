@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNext.IO;
 
 [ExcludeFromCodeCoverage]
-internal class BinaryTransferObject(ReadOnlyMemory<byte> content) : IDataTransferObject
+internal class TestTransferObject(ReadOnlyMemory<byte> content) : IDataTransferObject
 {
     internal ReadOnlyMemory<byte> Content => content;
 

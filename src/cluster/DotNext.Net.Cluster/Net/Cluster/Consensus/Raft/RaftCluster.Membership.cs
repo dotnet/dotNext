@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
@@ -8,6 +10,8 @@ public partial class RaftCluster<TMember>
 {
     private interface IMemberList : IReadOnlyDictionary<ClusterMemberId, TMember>
     {
+        TMember? LocalMember { get; }
+        
         new IReadOnlyCollection<TMember> Values { get; }
 
         bool TryAdd(TMember member, out IMemberList list);
@@ -19,6 +23,8 @@ public partial class RaftCluster<TMember>
 
     private sealed class MemberList : Dictionary<ClusterMemberId, TMember>, IMemberList
     {
+        private TMember? localMember;
+        
         internal MemberList()
             : base(10)
         {
@@ -26,8 +32,9 @@ public partial class RaftCluster<TMember>
 
         private MemberList(MemberList origin)
             : base(origin)
-        {
-        }
+            => localMember = origin.localMember;
+
+        TMember? IMemberList.LocalMember => localMember;
 
         IReadOnlyCollection<TMember> IMemberList.Values => Values;
 
@@ -45,11 +52,22 @@ public partial class RaftCluster<TMember>
             return false;
         }
 
+        private new bool TryAdd(ClusterMemberId id, TMember member)
+        {
+            if (!base.TryAdd(id, member))
+                return false;
+            
+            if (!member.IsRemote)
+                localMember = member;
+
+            return true;
+        }
+
         TMember? IMemberList.TryRemove(ClusterMemberId id, out IMemberList list)
         {
             MemberList tmp;
 
-            if (ContainsKey(id) && (tmp = new(this)).Remove(id, out var result))
+            if (ContainsKey(id) && (tmp = new(this)).TryRemove(id) is { } result)
             {
                 list = tmp;
             }
@@ -58,6 +76,17 @@ public partial class RaftCluster<TMember>
                 result = null;
                 list = this;
             }
+
+            return result;
+        }
+
+        private TMember? TryRemove(ClusterMemberId id)
+        {
+            if (!Remove(id, out var result))
+                return null;
+
+            if (ReferenceEquals(result, localMember))
+                localMember = null;
 
             return result;
         }
@@ -88,7 +117,7 @@ public partial class RaftCluster<TMember>
     /// <param name="id">The identifier of the cluster member.</param>
     /// <returns><see langword="true"/> if member found; otherwise, <see langword="false"/>.</returns>
     protected TMember? TryGetMember(ClusterMemberId id)
-        => members.TryGetValue(id, out var result) ? result : null;
+        => members.GetValueOrDefault(id);
 
     /// <summary>
     /// An event raised when new cluster member is detected.
@@ -109,7 +138,16 @@ public partial class RaftCluster<TMember>
     private void OnMemberAdded(TMember member)
     {
         if (!memberAddedHandlers.IsEmpty)
-            memberAddedHandlers.Invoke(this, new(member));
+        {
+            try
+            {
+                memberAddedHandlers.Invoke(this, new(member));
+            }
+            catch (Exception e)
+            {
+                Logger.UnhandledException(e);
+            }
+        }
     }
 
     /// <summary>
@@ -131,104 +169,16 @@ public partial class RaftCluster<TMember>
     private void OnMemberRemoved(TMember member)
     {
         if (!memberRemovedHandlers.IsEmpty)
-            memberRemovedHandlers.Invoke(this, new(member));
-    }
-
-    /// <summary>
-    /// Adds a new member to the collection of members visible by the current node.
-    /// </summary>
-    /// <remarks>
-    /// This method is exposed to be called by <see cref="IClusterConfigurationStorage{TAddress}.ActiveConfigurationChanged"/>
-    /// handler.
-    /// </remarks>
-    /// <param name="member">The member to add.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if the member is added successfully; <see langword="false"/> if the member is already in the list.</returns>
-    public async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
-    {
-        var tokenHolder = CombineTokens([token, LifecycleToken]);
-        var lockTaken = false;
-        try
         {
-            await transitionLock.AcquireAsync(tokenHolder.Token).ConfigureAwait(false);
-            lockTaken = true;
-
-            // assuming that the member is in sync with the leader
-            member.State.NextIndex = auditTrail.LastEntryIndex + 1L;
-
-            if (!members.TryAdd(member, out members))
-                return false;
-
-            // synchronize with reader thread
-            Interlocked.MemoryBarrierProcessWide();
-        }
-        catch (OperationCanceledException e) when (tokenHolder.Token == e.CancellationToken)
-        {
-            throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
-        }
-        finally
-        {
-            if (lockTaken)
-                transitionLock.Release();
-
-            await tokenHolder.DisposeAsync().ConfigureAwait(false);
-        }
-
-        OnMemberAdded(member);
-        return true;
-    }
-
-    /// <summary>
-    /// Removes the member from the collection of members visible by the current node.
-    /// </summary>
-    /// <remarks>
-    /// This method is exposed to be called by <see cref="IClusterConfigurationStorage{TAddress}.ActiveConfigurationChanged"/>
-    /// handler.
-    /// </remarks>
-    /// <param name="id">The identifier of the member.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The removed member.</returns>
-    public async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
-    {
-        TMember? result;
-        var tokenHolder = CombineTokens([token, LifecycleToken]);
-        var lockTaken = false;
-        try
-        {
-            await transitionLock.AcquireAsync(tokenHolder.Token).ConfigureAwait(false);
-            lockTaken = true;
-
-            if ((result = members.TryRemove(id, out members)) is not null)
+            try
             {
-                // synchronize with reader thread
-                Interlocked.MemoryBarrierProcessWide();
-
-                if (result is { IsRemote: false } && state is not StandbyState<TMember>)
-                {
-                    // local member is removed, downgrade it
-                    await MoveToStandbyState(resumable: false).ConfigureAwait(false);
-                }
-
-                if (ReferenceEquals(result, Leader))
-                    Leader = null;
+                memberRemovedHandlers.Invoke(this, new(member));
+            }
+            catch (Exception e)
+            {
+                Logger.UnhandledException(e);
             }
         }
-        catch (OperationCanceledException e) when (tokenHolder.Token == e.CancellationToken)
-        {
-            throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
-        }
-        finally
-        {
-            if (lockTaken)
-                transitionLock.Release();
-
-            await tokenHolder.DisposeAsync().ConfigureAwait(false);
-        }
-
-        if (result is not null)
-            OnMemberRemoved(result);
-
-        return result;
     }
 
     /// <summary>
@@ -257,39 +207,44 @@ public partial class RaftCluster<TMember>
             throw new ConcurrentMembershipModificationException();
 
         var leaderState = LeaderStateOrException;
-        var tokenSource = CombineTokens([token, leaderState.Token]);
+        var tokenSource = CombineTokens(token, leaderState.Token);
         try
         {
+            var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
+            if (!IClusterConfiguration<TAddress>.TryAdd(ref config, addressProvider(member)))
+                return false;
+
             // catch up node
-            member.State.NextIndex = auditTrail.LastEntryIndex + 1;
-            long currentIndex;
+            member.State.NextIndex = AuditTrail.LastEntryIndex + 1;
+            long currentIndex, commitIndex;
             do
             {
-                var commitIndex = auditTrail.LastCommittedEntryIndex;
-                currentIndex = auditTrail.LastEntryIndex;
+                commitIndex = AuditTrail.LastCommittedEntryIndex;
+                currentIndex = AuditTrail.LastEntryIndex;
                 var precedingIndex = member.State.PrecedingIndex;
-                var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, tokenSource.Token).ConfigureAwait(false);
+                var precedingTerm = await AuditTrail.GetTermAsync(precedingIndex, tokenSource.Token).ConfigureAwait(false);
                 var term = Term;
 
                 // do replication
-                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, tokenSource.Token).ConfigureAwait(false);
+                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, tokenSource.Token)
+                    .ConfigureAwait(false);
 
                 if (!result.Value && result.Term > term)
                     return false;
             } while (--rounds > 0 && currentIndex >= member.State.NextIndex);
+            
+            // make sure that the previous configuration is committed
+            commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+            leaderState.ForceReplication();
+            await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
-            // ensure that previous configuration has been committed
-            await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
-
-            // proposes a new member
-            if (await configurationStorage.AddMemberAsync(addressProvider(member), tokenSource.Token).ConfigureAwait(false))
-            {
-                await ReplicateAsync(leaderState, tokenSource.Token).ConfigureAwait(false);
-
-                // ensure that the newly added member has been committed
-                await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
-                return true;
-            }
+            // Append new config to the log (extra empty log entry is required to be sure that other cluster members committed
+            // the configuration
+            commitIndex = await AuditTrail.AppendAsync(config, tokenSource.Token).ConfigureAwait(false);
+            leaderState.ForceReplication();
+            
+            // ensure that the configuration is committed
+            await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
         {
@@ -305,14 +260,15 @@ public partial class RaftCluster<TMember>
             Volatile.Write(ref membershipState, false);
         }
 
-        return false;
+        return true;
     }
 
-    private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm, long currentIndex, CancellationToken token)
+    private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm,
+        long currentIndex, CancellationToken token)
     {
-        var replicator = new LeaderState<TMember>.Replicator(member, Logger);
-        replicator.Initialize(ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, commitIndex, term, precedingIndex, precedingTerm);
-        return replicator.ReplicateAsync(auditTrail, currentIndex, token);
+        var replicator = new LeaderState<TMember>.Replicator(member, AuditTrail.ConfigurationStorage, Logger);
+        replicator.Initialize(commitIndex, term, precedingIndex, precedingTerm);
+        return replicator.ReplicateAsync(AuditTrail, currentIndex, token);
     }
 
     /// <summary>
@@ -339,19 +295,21 @@ public partial class RaftCluster<TMember>
         if (members.TryGetValue(id, out var member))
         {
             var leaderState = LeaderStateOrException;
-            var tokenSource = CombineTokens([token, leaderState.Token]);
+            var tokenSource = CombineTokens(token, leaderState.Token);
             try
             {
-                // ensure that previous configuration has been committed
-                await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
-
-                // remove the existing member
-                if (await configurationStorage.RemoveMemberAsync(addressProvider(member), tokenSource.Token).ConfigureAwait(false))
+                var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
+                if (IClusterConfiguration<TAddress>.TryRemove(ref config, addressProvider(member)))
                 {
-                    await ReplicateAsync(leaderState, tokenSource.Token).ConfigureAwait(false);
+                    // make sure that the previous configuration is committed
+                    var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+                    leaderState.ForceReplication();
+                    await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
-                    // ensure that the removed member has been committed
-                    await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
+                    // append new config to the log
+                    commitIndex = await AuditTrail.AppendAsync(config, tokenSource.Token).ConfigureAwait(false);
+                    leaderState.ForceReplication();
+                    await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
                     return true;
                 }
             }
@@ -371,5 +329,117 @@ public partial class RaftCluster<TMember>
         }
 
         return false;
+    }
+
+    private async ValueTask ProcessMembershipChangesAsync(IReadOnlySet<TMember> added, IReadOnlySet<TMember> removed)
+    {
+        var membersCopy = members;
+        try
+        {
+            // remove nodes
+            foreach (var member in removed)
+            {
+                if (ReferenceEquals(member, membersCopy.TryRemove(member.Id, out membersCopy)))
+                {
+                    OnMemberRemoved(member);
+                }
+            }
+            
+            // add nodes
+            foreach (var member in added)
+            {
+                if (membersCopy.TryAdd(member, out membersCopy))
+                {
+                    // assuming that the member is in sync with the leader
+                    member.State.NextIndex = AuditTrail.LastEntryIndex + 1L;
+                    OnMemberAdded(member);
+                }
+            }
+
+            switch (membersCopy.LocalMember)
+            {
+                case null when members.LocalMember is not null:
+                    // local member is removed
+                    await MoveToStandbyState(resumable: false).ConfigureAwait(false);
+                    break;
+                case not null when state is not UnstartedState && members.LocalMember is null:
+                    // local member is added
+                    await UnfreezeAsync().ConfigureAwait(false);
+                    break;
+            }
+
+            // rewrite the list of members
+            members = membersCopy;
+            Interlocked.MemoryBarrierProcessWide();
+        }
+        finally
+        {
+            transitionLock.Release();
+        }
+        
+        // stop clients
+        foreach (var member in removed)
+        {
+            try
+            {
+                await member.CancelPendingRequestsAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                member.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initiates configuration change.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The scope that can be used to report the configuration changes.</returns>
+    protected async ValueTask<ConfigurationChangeScope> ChangeConfigurationAsync(CancellationToken token)
+    {
+        await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+        return new(this);
+    }
+
+    /// <summary>
+    /// Represents configuration change scope.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    protected readonly struct ConfigurationChangeScope : IAsyncDisposable
+    {
+        private readonly RaftCluster<TMember> cluster;
+        private readonly HashSet<TMember> added, removed;
+
+        internal ConfigurationChangeScope(RaftCluster<TMember> cluster)
+        {
+            this.cluster = cluster;
+            added = new();
+            removed = new();
+        }
+
+        /// <summary>
+        /// Marks the member as removed from the configuration.
+        /// </summary>
+        /// <param name="member">The cluster member marked as removed.</param>
+        public void MarkAsRemoved(TMember member)
+            => removed.Add(member);
+
+        /// <summary>
+        /// Marks the member as added to the configuration.
+        /// </summary>
+        /// <param name="member">The cluster member marked as added.</param>
+        public void MarkAsAdded(TMember member)
+            => added.Add(member);
+
+        /// <summary>
+        /// Gets a collection of existing members.
+        /// </summary>
+        public IReadOnlyDictionary<ClusterMemberId, TMember> Members => cluster.members;
+
+        /// <summary>
+        /// Closes the scope.
+        /// </summary>
+        public ValueTask DisposeAsync() => cluster.ProcessMembershipChangesAsync(added, removed);
     }
 }

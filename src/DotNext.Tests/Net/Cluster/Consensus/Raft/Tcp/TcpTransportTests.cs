@@ -8,6 +8,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
+using Membership;
 using TransportServices;
 using static DotNext.Extensions.Logging.TestLoggers;
 
@@ -203,38 +204,23 @@ public sealed class TcpTransportTests : TransportTestSuite
         return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
     }
 
-    [Theory]
-    [InlineData(512)]
-    [InlineData(50)]
-    [InlineData(0)]
-    public Task SendingConfiguration(int payloadSize)
-    {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
-        {
-            TransmissionBlockSize = 350,
-            ReceiveTimeout = timeout,
-            GracefulShutdownTimeout = 2000
-        };
-
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
-        {
-            RequestTimeout = timeout,
-            ConnectTimeout = timeout,
-            TransmissionBlockSize = 350,
-        };
-
-        return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
-    }
-
     [Fact]
     public Task Leadership()
     {
         return LeadershipCore(CreateCluster);
 
-        static RaftCluster CreateCluster(int port, bool coldStart)
+        static RaftCluster CreateCluster(int port, bool coldStart,  IPersistentState wal)
         {
-            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port)) { ColdStart = coldStart };
-            return new(config);
+            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                ColdStart = coldStart,
+                ConfigurationStorage = null,
+            };
+
+            return new(config)
+            {
+                AuditTrail = wal,
+            };
         }
     }
 
@@ -243,10 +229,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     {
         return ClusterRecoveryCore(CreateCluster);
 
-        static RaftCluster CreateCluster(int port, bool coldStart)
+        static RaftCluster CreateCluster(int port, bool coldStart, IPersistentState log)
         {
-            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port)) { ColdStart = coldStart };
-            return new(config);
+            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                ColdStart = coldStart,
+                ConfigurationStorage = null,
+            };
+            return new(config)
+            {
+                AuditTrail = log,
+            };
         }
     }
 
@@ -276,10 +269,10 @@ public sealed class TcpTransportTests : TransportTestSuite
         const int host1Port = 3362;
         const int host2Port = 3363;
         const int host3Port = 3364;
-
-        await using var host1 = new RaftCluster(CreateConfiguration(host1Port));
-        await using var host2 = new RaftCluster(CreateConfiguration(host2Port));
-        await using var host3 = new RaftCluster(CreateConfiguration(host3Port));
+        
+        await using var host1 = new RaftCluster(CreateConfiguration(host1Port)) { AuditTrail = new ConsensusOnlyState() };
+        await using var host2 = new RaftCluster(CreateConfiguration(host2Port)) { AuditTrail = new ConsensusOnlyState() };
+        await using var host3 = new RaftCluster(CreateConfiguration(host3Port)) { AuditTrail = new ConsensusOnlyState() };
 
         // start in parallel
         await Task.WhenAll(
@@ -318,9 +311,12 @@ public sealed class TcpTransportTests : TransportTestSuite
                 // UpperElectionTimeout = 2000,
                 ColdStart = false,
                 LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
+                ConfigurationStorage = null,
             };
 
-            var builder = result.UseInMemoryConfigurationStorage().CreateActiveConfigurationBuilder();
+            var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
+            NotNull(configuration);
+            var builder = configuration.CreateInitialConfigurationBuilder();
 
             builder.Add(new IPEndPoint(IPAddress.Loopback, host1Port));
             builder.Add(new IPEndPoint(IPAddress.Loopback, host2Port));

@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Runtime.CompilerServices;
+using DotNext.IO.Log;
 using Microsoft.Extensions.Logging;
 using Debug = System.Diagnostics.Debug;
 
@@ -103,51 +104,77 @@ internal abstract partial class Server : Disposable, IServer
 
     private async ValueTask InstallSnapshotAsync(ProtocolStream protocol, CancellationToken token)
     {
-        Result<HeartbeatResult> response;
         await protocol.ReadAsync(SnapshotMessage.Size, token).ConfigureAwait(false);
-        using (var snapshot = new ReceivedSnapshot(protocol))
-        {
-            protocol.AdvanceReadCursor(SnapshotMessage.Size);
-            response = await localMember.InstallSnapshotAsync(snapshot.Message.Id, snapshot.Message.Term, snapshot, snapshot.Message.SnapshotIndex, token).ConfigureAwait(false);
-        }
 
-        if (response.Value is HeartbeatResult.Rejected)
+        var snapshot = new ReceivedSnapshot(protocol);
+        
+        // read configuration first
+        var configuration = new ProtocolStreamSegment(protocol);
+        await localMember
+            .InstallConfigurationAsync(
+                snapshot.Message.Term,
+                configuration,
+                snapshot.Message.ConfigurationVersion,
+                token)
+            .ConfigureAwait(false);
+
+        // skip contents of the configuration if it wasn't consumed
+        await configuration.EnsureConsumedAsync(token).ConfigureAwait(false);
+        
+        protocol.ResetReadState();
+        var response = await localMember.InstallSnapshotAsync(
+            snapshot.Message.Id,
+            snapshot.Message.Term,
+            snapshot,
+            snapshot.Message.SnapshotIndex,
+            token).ConfigureAwait(false);
+
+        // skip contents of the snapshot if it wasn't consumed
+        await snapshot.EnsureConsumedAsync(token).ConfigureAwait(false);
+        protocol.Reset();
+        
+        await protocol.WriteHeartbeatResultAsync(in response, token).ConfigureAwait(false);
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask AppendEntriesAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        await protocol.ReadAsync(AppendEntriesMessage.Size, token).ConfigureAwait(false);
+        var response = await AppendEntriesAsync(localMember, out var enumerator, protocol, token).ConfigureAwait(false);
+        try
         {
-            // skip contents of snapshot
-            await protocol.SkipAsync(token).ConfigureAwait(false);
+            // skip remaining log entries
+            while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                await protocol.SkipAsync(token).ConfigureAwait(false);
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
         }
 
         protocol.Reset();
         await protocol.WriteHeartbeatResultAsync(in response, token).ConfigureAwait(false);
     }
-
-    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
-
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask AppendEntriesAsync(ProtocolStream protocol, CancellationToken token)
+    
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static ValueTask<Result<HeartbeatResult>> AppendEntriesAsync(ILocalMember localMember, out IAsyncEnumerator<IRaftLogEntry> enumerator, ProtocolStream protocol,
+        CancellationToken token)
     {
-        Result<HeartbeatResult> response;
+        var reader = new SpanReader<byte>(protocol.WrittenBufferSpan);
+        var message = reader.Read<AppendEntriesMessage>();
+        protocol.AdvanceReadCursor(reader.ConsumedCount);
 
-        await protocol.ReadAsync(AppendEntriesHeadersSize, token).ConfigureAwait(false);
-        using (var entries = new ReceivedLogEntries(protocol, BufferAllocator, out var applyConfig, token))
-        {
-            // read configuration
-            var configuration = entries.Configuration.Content;
-            if (!configuration.IsEmpty)
-            {
-                await protocol.ReadExactlyAsync(configuration, token).ConfigureAwait(false);
-            }
+        var entries = message.EntriesCount > 0
+            ? new ReceivedLogEntries(protocol, message.EntriesCount, token)
+            : ILogEntryProducer<IRaftLogEntry>.Empty;
 
-            protocol.ResetReadState();
-            response = await localMember.AppendEntriesAsync(entries.Id, entries.Term, entries, entries.PrevLogIndex, entries.PrevLogTerm, entries.CommitIndex, entries.Configuration, applyConfig, token).ConfigureAwait(false);
-
-            // skip remaining log entries
-            while (await entries.MoveNextAsync().ConfigureAwait(false))
-                await protocol.SkipAsync(token).ConfigureAwait(false);
-        }
-
-        protocol.Reset();
-        await protocol.WriteHeartbeatResultAsync(in response, token).ConfigureAwait(false);
+        enumerator = entries;
+        return localMember.AppendEntriesAsync(message.Id,
+            message.Term,
+            entries,
+            message.PrevLogIndex,
+            message.PrevLogTerm, message.CommitIndex,
+            token);
     }
 
     public new ValueTask DisposeAsync() => base.DisposeAsync();

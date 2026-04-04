@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Diagnostics;
-using IO.Log;
-using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 using static Runtime.GCLatencyModeExtensions;
@@ -39,7 +37,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
-    private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members)
+    private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IPersistentState auditTrail, IEnumerator<TMember> members)
     {
         Replicator replicator;
         Task<Result<bool>> response;
@@ -49,21 +47,21 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         var majority = 0;
 
         // send heartbeat in parallel
-        for (IClusterConfiguration? activeConfig = configurationStorage.ActiveConfiguration, proposedConfig = configurationStorage.ProposedConfiguration; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
+        for (TMember member; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
         {
-            var member = members.Current;
+            member = members.Current;
             if (member.IsRemote)
             {
                 var precedingIndex = member.State.PrecedingIndex;
 
                 // fork replication procedure
-                replicator = context.GetOrCreate(member, replicatorFactory, Token);
-                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
+                replicator = context.GetOrCreate(member, replicatorFactory, auditTrail.ConfigurationStorage, Token);
+                replicator.Initialize(commitIndex, currentTerm, precedingIndex);
                 response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, Token);
             }
             else
             {
-                replicator = context.GetOrCreate(member, localReplicatorFactory, Token);
+                replicator = context.GetOrCreate(member, localReplicatorFactory, auditTrail.ConfigurationStorage, Token);
                 response = localMemberResponse;
             }
         }
@@ -123,7 +121,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IReadOnlyCollection<TMember> members)
+    private async Task DoHeartbeats(TimeSpan period, IPersistentState auditTrail, IReadOnlyCollection<TMember> members)
     {
         // cached enumerator allows to avoid memory allocation on every GetEnumerator call inside the loop
         var enumerator = members.GetEnumerator();
@@ -147,7 +145,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                     // Perf: the code in this block is inlined instead of moved to separated method because
                     // we want to prevent allocation of state machine on every call
                     int quorum = 0, commitQuorum = 0;
-                    (long currentIndex, long commitIndex, var majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator);
+                    (long currentIndex, long commitIndex, var majority) = ForkHeartbeats(responsePipe, auditTrail, enumerator);
 
                     while (await responsePipe.WaitToReadAsync().ConfigureAwait(false))
                     {
@@ -186,11 +184,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                         Logger.CommitFailed(quorum, commitIndex);
                     }
 
-                    if (quorum >= majority)
-                    {
-                        await configurationStorage.ApplyAsync(Token).ConfigureAwait(false);
-                    }
-                    else
+                    if (quorum < majority)
                     {
                         MoveToFollowerState(randomizeTimeout: false);
                         return;
@@ -236,8 +230,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     /// </summary>
     /// <param name="period">Time period of Heartbeats.</param>
     /// <param name="transactionLog">Transaction log.</param>
-    /// <param name="configurationStorage">Cluster configuration storage.</param>
-    internal void StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage)
+    internal void StartLeading(TimeSpan period, IPersistentState transactionLog)
     {
         var members = Members;
         context = new(members.Count);
@@ -251,7 +244,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             member.State = state;
         }
 
-        heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members);
+        heartbeatTask = DoHeartbeats(period, transactionLog, members);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 

@@ -17,14 +17,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using Buffers;
 using IO;
 using IO.Log;
-using Membership;
 using static IO.Pipelines.PipeExtensions;
 using EncodingContext = Text.EncodingContext;
 using LogEntryMetadata = TransportServices.LogEntryMetadata;
 
 internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 {
-    private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
     internal const string MessageType = "AppendEntries";
     private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
     private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
@@ -32,9 +30,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     private protected const string CommandIdHeader = "X-Raft-Command-Id";
     private protected const string IsConfigurationHeader = "X-Raft-Configuration";
     private protected const string CountHeader = "X-Raft-Entries-Count";
-    private const string ConfigurationLengthHeader = "X-Raft-Config-Length";
-    private const string ConfigurationFingerprintHeader = "X-Raft-Config-Fingerprint";
-    private const string ConfigurationCommitHeader = "X-Raft-Config-Commit";
 
     private sealed class MultipartLogEntry : StreamTransferObject, IRaftLogEntry
     {
@@ -60,19 +55,18 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         private readonly PipeReader reader;
         private Memory<byte> metadataBuffer;
         private LogEntryMetadata metadata;
-        private bool consumed;
 
         private protected OctetStreamLogEntry(PipeReader reader)
         {
             this.reader = reader;
-            consumed = true;
+            IsConsumed = true;
         }
 
-        private protected bool Consumed => consumed;
+        private protected bool IsConsumed { get; private set; }
 
         private protected ValueTask SkipAsync()
         {
-            consumed = true;
+            IsConsumed = true;
             return metadata.Length > 0L
                 ? reader.SkipAsync(metadata.Length)
                 : ValueTask.CompletedTask;
@@ -86,7 +80,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 
             metadata = new(result.Buffer, out var metadataEnd);
             reader.AdvanceTo(metadataEnd);
-            consumed = false;
+            IsConsumed = false;
             return true;
         }
 
@@ -98,7 +92,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 
             await reader.ReadExactlyAsync(metadataBuffer).ConfigureAwait(false);
             metadata = new(metadataBuffer);
-            consumed = false;
+            IsConsumed = false;
         }
 
         private protected ValueTask ConsumeAsync()
@@ -114,16 +108,18 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 
         int? IRaftLogEntry.CommandId => metadata.CommandId;
 
+        bool IRaftLogEntry.IsConfiguration => metadata.IsConfiguration;
+
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             ValueTask result;
-            if (consumed)
+            if (IsConsumed)
             {
                 result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
             }
             else
             {
-                consumed = true;
+                IsConsumed = true;
                 result = metadata.Length > 0L
                     ? reader.CopyToAsync(writer, metadata.Length, token)
                     : ValueTask.CompletedTask;
@@ -214,7 +210,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 
             // Consumed == true if the previous log entry has been consumed completely
             // Consumed == false if the previous log entry was not consumed completely, only metadata
-            if (!Consumed)
+            if (!IsConsumed)
                 await SkipAsync().ConfigureAwait(false);
 
             await ConsumeAsync().ConfigureAwait(false);
@@ -232,19 +228,13 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     internal readonly long PrevLogIndex;
     internal readonly long PrevLogTerm;
     internal readonly long CommitIndex;
-    internal readonly long ConfigurationFingerprint;
-    internal readonly long ConfigurationLength;
-    internal readonly bool ApplyConfiguration;
 
-    private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, long fingerprint, long configurationLength, bool applyConfig)
+    private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
         : base(sender, term)
     {
         PrevLogIndex = prevLogIndex;
         PrevLogTerm = prevLogTerm;
         CommitIndex = commitIndex;
-        ConfigurationFingerprint = fingerprint;
-        ConfigurationLength = configurationLength;
-        ApplyConfiguration = applyConfig;
     }
 
     private AppendEntriesMessage(IDictionary<string, StringValues> headers, out long entriesCount)
@@ -254,21 +244,15 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         PrevLogTerm = ParseHeader(headers, PrecedingRecordTermHeader, Int64Parser);
         CommitIndex = ParseHeader(headers, CommitIndexHeader, Int64Parser);
         entriesCount = ParseHeader(headers, CountHeader, Int64Parser);
-        ConfigurationFingerprint = ParseHeader(headers, ConfigurationFingerprintHeader, Int64Parser);
-        ConfigurationLength = ParseHeader(headers, ConfigurationLengthHeader, Int64Parser);
-        ApplyConfiguration = ParseHeader(headers, ConfigurationCommitHeader, BooleanParser);
     }
 
-    internal AppendEntriesMessage(HttpRequest request, out Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, out ILogEntryProducer<IRaftLogEntry> entries)
+    internal AppendEntriesMessage(HttpRequest request, out ILogEntryProducer<IRaftLogEntry> entries)
         : this(request.Headers, out var entriesCount)
-    {
-        entries = CreateReader(request, entriesCount);
-        configurationReader = request.BodyReader.ReadExactlyAsync;
-    }
+        => entries = CreateReader(request, entriesCount);
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
-        var result = EmptyProducer;
+        var result = ILogEntryProducer<IRaftLogEntry>.Empty;
 
         if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
@@ -292,9 +276,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
         request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
         request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
-        request.Headers.Add(ConfigurationFingerprintHeader, ConfigurationFingerprint.ToString(InvariantCulture));
-        request.Headers.Add(ConfigurationLengthHeader, ConfigurationLength.ToString(InvariantCulture));
-        request.Headers.Add(ConfigurationCommitHeader, ApplyConfiguration.ToString(InvariantCulture));
         base.PrepareRequest(request);
     }
 
@@ -320,13 +301,11 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
     // <payload> - octet string
     private sealed class OctetStreamLogEntriesWriter : HttpContent
     {
-        private readonly IDataTransferObject configuration;
         private TList entries; // not readonly to avoid defensive copies
 
-        internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration)
+        internal OctetStreamLogEntriesWriter(in TList entries)
         {
             Headers.ContentType = new(MediaTypeNames.Application.Octet);
-            this.configuration = configuration;
             this.entries = entries;
         }
 
@@ -336,7 +315,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
         {
             using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
-            await configuration.WriteToAsync(stream, buffer.Memory, token).ConfigureAwait(false);
 
             for (var i = 0; i < entries.Count; i++)
             {
@@ -360,7 +338,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
         protected override bool TryComputeLength(out long length)
         {
-            length = configuration.Length.GetValueOrDefault();
+            length = 0L;
             foreach (var entry in entries)
             {
                 Debug.Assert(entry.Length.HasValue);
@@ -387,17 +365,15 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         private const char Quote = '\"';
 
         private readonly string boundary;
-        private readonly IDataTransferObject configuration;
         private TList entries; // not readonly to avoid defensive copies
 
-        internal MultipartLogEntriesWriter(in TList entries, IDataTransferObject configuration)
+        internal MultipartLogEntriesWriter(in TList entries)
         {
             boundary = Guid.NewGuid().ToString();
             this.entries = entries;
             var contentType = new MediaTypeHeaderValue(ContentType);
             contentType.Parameters.Add(new(nameof(boundary), Quote + boundary + Quote));
             Headers.ContentType = contentType;
-            this.configuration = configuration;
         }
 
         private static ValueTask<long> EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
@@ -437,9 +413,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             using var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars));
             using var builder = new PoolingArrayBufferWriter<char> { Capacity = maxChars };
 
-            // encode configuration in raw format without boundaries
-            await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);
-
             // write
             builder.Write(DoubleDash);
             builder.Write(boundary);
@@ -478,34 +451,12 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         }
     }
 
-    /*
-     * Used only for transfer non-empty configuration and empty set of log entries
-     */
-    private sealed class ConfigurationWriter : HttpContent
-    {
-        private readonly IDataTransferObject configuration;
-
-        internal ConfigurationWriter(IDataTransferObject configuration)
-            => this.configuration = configuration;
-
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
-            => SerializeToStreamAsync(stream, context, CancellationToken.None);
-
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
-            => configuration.WriteToAsync(stream, token: token).AsTask();
-
-        protected override bool TryComputeLength(out long length)
-            => configuration.Length.TryGetValue(out length);
-    }
-
-    private readonly IDataTransferObject configuration;
     private TList entries;  // not readonly to avoid hidden copies
 
-    internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries, IClusterConfiguration configuration, bool applyConfig)
-        : base(sender, term, prevLogIndex, prevLogTerm, commitIndex, configuration.Fingerprint, configuration.Length, applyConfig)
+    internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
+        : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
     {
         this.entries = entries;
-        this.configuration = configuration;
     }
 
     internal bool UseOptimizedTransfer { private get; init; }
@@ -517,13 +468,8 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         base.PrepareRequest(request);
     }
 
-    private HttpContent? CreateContentProvider()
-    {
-        if (entries.Count > 0)
-            return UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries, configuration) : new MultipartLogEntriesWriter(in entries, configuration);
-
-        return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
-    }
+    private HttpContent CreateContentProvider()
+        => UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries) : new MultipartLogEntriesWriter(in entries);
 
     Task<Result<HeartbeatResult>> IHttpMessage<Result<HeartbeatResult>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => ParseEnumResponseAsync<HeartbeatResult>(response, token);

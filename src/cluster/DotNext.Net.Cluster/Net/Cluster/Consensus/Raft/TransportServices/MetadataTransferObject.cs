@@ -12,16 +12,13 @@ using Runtime.Serialization;
 using Text;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct MetadataTransferObject : ISerializable<MetadataTransferObject>
+internal readonly struct MetadataTransferObject(IReadOnlyDictionary<string, string> metadata) : ISerializable<MetadataTransferObject>
 {
     private const LengthFormat LengthEncoding = LengthFormat.Compressed;
 
-    internal MetadataTransferObject(IReadOnlyDictionary<string, string> metadata)
-        => Metadata = metadata;
-
     private static Encoding Encoding => Encoding.UTF8;
 
-    internal IReadOnlyDictionary<string, string> Metadata => field ?? IReadOnlyDictionary<string, string>.Empty;
+    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? IReadOnlyDictionary<string, string>.Empty;
 
     long? IDataTransferObject.Length => null;
 

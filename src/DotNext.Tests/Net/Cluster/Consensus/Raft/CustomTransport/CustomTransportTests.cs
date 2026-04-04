@@ -74,13 +74,6 @@ public sealed class CustomTransportTests : TransportTestSuite
     public Task SendingSnapshot(int payloadSize)
         => SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
 
-    [Theory]
-    [InlineData(512)]
-    [InlineData(50)]
-    [InlineData(0)]
-    public Task SendingConfiguration(int payloadSize)
-        => SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
-
     [Fact]
     public Task RequestSynchronization()
         => SendingSynchronizationRequestTest(CreateServer, CreateClient);
@@ -111,14 +104,15 @@ public sealed class CustomTransportTests : TransportTestSuite
     {
         return LeadershipCore(CreateCluster);
 
-        static RaftCluster CreateCluster(int port, bool coldStart)
+        static RaftCluster CreateCluster(int port, bool coldStart, IPersistentState wal)
         {
             var config = new RaftCluster.CustomTransportConfiguration(new IPEndPoint(IPAddress.Loopback, port), CreateServerFactory(), CreateClientFactory())
             {
-                ColdStart = coldStart
+                ColdStart = coldStart,
+                ConfigurationStorage = null,
             };
 
-            return new(config);
+            return new(config) { AuditTrail = wal };
         }
     }
 }

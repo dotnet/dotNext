@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Messaging;
 using IO;
 
 [ExcludeFromCodeCoverage]
-internal sealed class BinaryMessage(ReadOnlyMemory<byte> content, string name) : BinaryTransferObject(content), IMessage
+internal sealed class BinaryMessage(ReadOnlyMemory<byte> content, string name) : TestTransferObject(content), IMessage
 {
     string IMessage.Name => name;
 

@@ -7,6 +7,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers.Binary;
+using Membership;
 using Text.Json;
 using static IO.DataTransferObject;
 using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
@@ -35,10 +36,10 @@ public sealed class WriteAheadLogTests : Test
 
         var options = new WriteAheadLog.Options
         {
-            Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+            Location = GetTempPath(),
         };
         
-        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOpStateMachine()))
         {
             state = wal;
             Equal(0, state.Term);
@@ -50,7 +51,7 @@ public sealed class WriteAheadLogTests : Test
         }
 
         //now open state again to check persistence
-        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOpStateMachine()))
         {
             state = wal;
             Equal(1, state.Term);
@@ -62,8 +63,8 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task EmptyLogEntry()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var auditTrail = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
+        var dir = GetTempPath();
+        await using var auditTrail = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOpStateMachine());
         await auditTrail.AppendAsync(new EmptyLogEntry { Term = 10 }, TestToken);
 
         Equal(1, auditTrail.LastEntryIndex);
@@ -84,8 +85,8 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task ContextFlow()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        var stateMachine = new NoOpStateMachine();
+        var dir = GetTempPath();
+        var stateMachine = new ContextAwareStateMachine();
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
 
         const string context = "Context";
@@ -103,9 +104,9 @@ public sealed class WriteAheadLogTests : Test
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
-        
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
+
+        var dir = GetTempPath();
+        await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOpStateMachine());
 
         // entry 1
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, _) =>
@@ -149,8 +150,8 @@ public sealed class WriteAheadLogTests : Test
     public static async Task ParallelReads()
     {
         ReadOnlyMemory<byte> payload = RandomBytes(64);
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
+        var dir = GetTempPath();
+        await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOpStateMachine());
 
         Equal(1L, await wal.AppendAsync(payload, token: TestToken));
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker2 = async (entries, snapshotIndex, token) =>
@@ -178,8 +179,8 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task AppendWhileReading()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
+        var dir = GetTempPath();
+        await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOpStateMachine());
 
         ReadOnlyMemory<byte> payload = RandomBytes(64);
         await wal.AppendAsync(payload, token: TestToken);
@@ -203,10 +204,10 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task AppendLargeEntry()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var dir = GetTempPath();
 
         var options = new WriteAheadLog.Options { Location = dir };
-        await using var wal = new WriteAheadLog(options, new NoOpStateMachine());
+        await using var wal = new WriteAheadLog(options, IStateMachine.CreateNoOpStateMachine());
 
         var payload = new TestLogEntry(Random.Shared.GetString(Alphabet, options.ChunkSize * 2));
         Equal(1L, await wal.AppendAsync(payload, token: TestToken));
@@ -232,8 +233,8 @@ public sealed class WriteAheadLogTests : Test
         var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
         var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var wal = new WriteAheadLog(new() { Location = dir, MemoryManagement = strategy }, new NoOpStateMachine());
+        var dir = GetTempPath();
+        await using var wal = new WriteAheadLog(new() { Location = dir, MemoryManagement = strategy }, IStateMachine.CreateNoOpStateMachine());
 
         await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 1L, token: TestToken);
         Equal(4L, wal.LastEntryIndex);
@@ -268,12 +269,12 @@ public sealed class WriteAheadLogTests : Test
 
         var options = new WriteAheadLog.Options
         {
-            Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+            Location = GetTempPath(),
             FlushInterval = InfiniteTimeSpan,
             MemoryManagement = strategy,
         };
 
-        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOpStateMachine()))
         {
             Equal(1L, await wal.AppendAsync(entry1, TestToken));
             await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L, token: TestToken);
@@ -289,7 +290,7 @@ public sealed class WriteAheadLogTests : Test
         }
 
         //read again
-        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, new ContextAwareStateMachine()))
         {
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(3L, wal.LastEntryIndex);
@@ -305,7 +306,7 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task IncrementalState()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var dir = GetTempPath();
         await using var stateMachine = new SumStateMachine(new(dir));
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
 
@@ -333,8 +334,9 @@ public sealed class WriteAheadLogTests : Test
     public static async Task StateRecovery(WriteAheadLog.IntegrityHashAlgorithm hashAlg)
     {
         const long count = 1000L;
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using (var wal = new WriteAheadLog(new() { Location = dir, HashAlgorithm = hashAlg }, new NoOpStateMachine()))
+        var dir = GetTempPath();
+        await using (var wal = new WriteAheadLog(new() { Location = dir, HashAlgorithm = hashAlg },
+                         IStateMachine.CreateNoOpStateMachine(snapshotThreshold: count * 2)))
         {
             Memory<byte> buffer = new byte[sizeof(long)];
             var index = 0L;
@@ -369,7 +371,7 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task JsonSerialization()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var dir = GetTempPath();
         await using var stateMachine = new JsonStateMachine(new(dir));
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
         
@@ -391,7 +393,7 @@ public sealed class WriteAheadLogTests : Test
     {
         const long count = 1000L;
         await using var source = new WriteAheadLog(new()
-            { Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }, new NoOpStateMachine());
+            { Location = GetTempPath() }, IStateMachine.CreateNoOpStateMachine(count * 2));
         
         {
             Memory<byte> buffer = new byte[sizeof(long)];
@@ -407,7 +409,7 @@ public sealed class WriteAheadLogTests : Test
             await source.FlushAsync(TestToken);
         }
 
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var dir = GetTempPath();
         await using var stateMachine = new SumStateMachine(new(dir));
         await using var destination = new WriteAheadLog(new() { Location = dir, ChunkSize = Environment.SystemPageSize * 2 }, stateMachine);
         
@@ -417,5 +419,34 @@ public sealed class WriteAheadLogTests : Test
 
             Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
         }
+    }
+
+    [Fact]
+    public static async Task CaptureConfiguration()
+    {
+        var dir = GetTempPath();
+        await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOpStateMachine(2));
+        IClusterConfigurationStorage<EndPoint> storage = new InMemoryClusterConfigurationStorage(EqualityComparer<EndPoint>.Default);
+        wal.ConfigurationStorage = storage;
+
+        var config = await storage.LoadConfigurationAsync(TestToken);
+        var address = new IPEndPoint(IPAddress.Loopback, 9141);
+        config = config.Add(address);
+        await wal.AppendAsync(config, TestToken);
+
+        Empty((await storage.LoadConfigurationAsync(TestToken)).Members);
+
+        var configEvent = new TaskCompletionSource<IClusterConfiguration<EndPoint>>();
+        storage.ConfigurationChanged += DelegateHelpers.ToAsync<IClusterConfiguration<EndPoint>>(configEvent.SetResult);
+        await wal.CommitAsync(1L, TestToken);
+        
+        config = await configEvent.Task.WaitAsync(TestToken);
+        Contains(address, config.Members);
+        
+        var (_, version) = await storage.As<IClusterConfigurationStorage>().LoadConfigurationAsync(TestToken);
+        Equal(1, version);
+        
+        config = await storage.LoadConfigurationAsync(TestToken);
+        Contains(address, config.Members);
     }
 }

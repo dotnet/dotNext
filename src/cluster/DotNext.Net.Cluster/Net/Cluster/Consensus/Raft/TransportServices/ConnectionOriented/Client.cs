@@ -5,7 +5,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Threading;
-using ConcurrentTypeMap = Collections.Specialized.ConcurrentTypeMap;
 using Timestamp = Diagnostics.Timestamp;
 
 internal abstract partial class Client : RaftClusterMember
@@ -29,7 +28,6 @@ internal abstract partial class Client : RaftClusterMember
 
     private readonly AsyncExclusiveLock accessLock;
     private readonly TimeSpan connectTimeout;
-    private readonly ConcurrentTypeMap exchangeCache;
 
     // connection context and its devirtualized members
     private IConnectionContext? context;
@@ -48,7 +46,6 @@ internal abstract partial class Client : RaftClusterMember
         };
 
         connectTimeout = TimeSpan.FromSeconds(1);
-        exchangeCache = new();
     }
 
     internal TimeSpan ConnectTimeout
@@ -118,12 +115,6 @@ internal abstract partial class Client : RaftClusterMember
                 cachedRemoteAddressAttribute);
 
             requestDurationTracker.Dispose();
-
-            if (exchange is IResettable)
-            {
-                ((IResettable)exchange).Reset();
-                exchangeCache.TryAdd(exchange);
-            }
         }
     }
 

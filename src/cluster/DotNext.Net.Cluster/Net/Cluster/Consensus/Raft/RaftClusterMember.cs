@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
-using Membership;
+using IO;
 using TransportServices;
 
 /// <summary>
@@ -24,6 +24,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     private volatile ClusterMemberStatus status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
     private IRaftClusterMember.ReplicationState state;
+    internal bool IsUnavailable;
 
     private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint)
     {
@@ -115,19 +116,26 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
 
-    private protected abstract Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    private protected abstract Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 
     /// <inheritdoc/>
-    Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token) : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+    Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm,
+        long commitIndex, CancellationToken token)
+        => IsRemote
+            ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token)
+            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
 
-    private protected abstract Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
+    private protected abstract Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+        IDataTransferObject configuration, long configurationVersion, CancellationToken token);
 
     /// <inheritdoc/>
-    Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => IsRemote ? InstallSnapshotAsync(term, snapshot, snapshotIndex, token) : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+    Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+        IDataTransferObject configuration, long configurationVersion, CancellationToken token)
+        => IsRemote
+            ? InstallSnapshotAsync(term, snapshot, snapshotIndex, configuration, configurationVersion, token)
+            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
 
     private protected abstract Task<bool> ResignAsync(CancellationToken token);
 

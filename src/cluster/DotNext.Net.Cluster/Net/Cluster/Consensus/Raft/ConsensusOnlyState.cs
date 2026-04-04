@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Membership;
 using Threading;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
@@ -12,8 +13,8 @@ using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 /// Represents lightweight Raft node state that is suitable for distributed consensus only.
 /// </summary>
 /// <remarks>
-/// The actual state doesn't persist on disk and exists only in memory. Moreover, this implementation
-/// cannot append non-empty log entries.
+/// The actual state doesn't persist on disk and exists only in memory, cannot append non-empty log entries
+/// and skips any configuration log entries.
 /// </remarks>
 public sealed class ConsensusOnlyState : Disposable, IPersistentState
 {
@@ -370,6 +371,9 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         lastVote = BoxedClusterMemberId.Box(id);
         return token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
     }
+    
+    /// <inheritdoc/>
+    public IClusterConfigurationStorage? ConfigurationStorage { get; set; }
 
     /// <inheritdoc/>
     ValueTask IAuditTrail.WaitForApplyAsync(CancellationToken token)

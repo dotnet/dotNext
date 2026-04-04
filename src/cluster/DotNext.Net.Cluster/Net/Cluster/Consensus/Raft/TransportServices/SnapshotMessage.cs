@@ -6,12 +6,13 @@ using Buffers;
 using Buffers.Binary;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly record struct SnapshotMessage(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata Metadata) : IBinaryFormattable<SnapshotMessage>
+internal readonly record struct SnapshotMessage(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata Metadata,
+    long ConfigurationVersion) : IBinaryFormattable<SnapshotMessage>
 {
-    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + LogEntryMetadata.Size;
+    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + LogEntryMetadata.Size + sizeof(long);
 
-    internal SnapshotMessage(ClusterMemberId id, long term, long snapshotIndex, IRaftLogEntry snapshot)
-        : this(id, term, snapshotIndex, LogEntryMetadata.Create(snapshot))
+    internal SnapshotMessage(ClusterMemberId id, long term, long snapshotIndex, IRaftLogEntry snapshot, long configurationVersion)
+        : this(id, term, snapshotIndex, LogEntryMetadata.Create(snapshot), configurationVersion)
     {
     }
 
@@ -22,6 +23,7 @@ internal readonly record struct SnapshotMessage(ClusterMemberId Id, long Term, l
         writer.WriteLittleEndian(Term);
         writer.WriteLittleEndian(SnapshotIndex);
         writer.Write(Metadata);
+        writer.WriteLittleEndian(ConfigurationVersion);
     }
 
     public static SnapshotMessage Parse(ReadOnlySpan<byte> input)
@@ -31,6 +33,7 @@ internal readonly record struct SnapshotMessage(ClusterMemberId Id, long Term, l
             reader.Read<ClusterMemberId>(),
             reader.ReadLittleEndian<long>(),
             reader.ReadLittleEndian<long>(),
-            reader.Read<LogEntryMetadata>());
+            reader.Read<LogEntryMetadata>(),
+            reader.ReadLittleEndian<long>());
     }
 }

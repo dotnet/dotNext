@@ -2,7 +2,7 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Membership;
+using IO;
 
 /// <summary>
 /// Represents cluster member accessible through Raft protocol.
@@ -56,15 +56,10 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
     /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
     /// <param name="commitIndex">Last entry known to be committed by the local node.</param>
-    /// <param name="config">The list of cluster members.</param>
-    /// <param name="applyConfig">
-    /// <see langword="true"/> to inform that the receiver must apply previously proposed configuration;
-    /// <see langword="false"/> to propose a new configuration.
-    /// </param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 
@@ -74,10 +69,13 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="term">Leader's term.</param>
     /// <param name="snapshot">The log entry representing the snapshot.</param>
     /// <param name="snapshotIndex">The index of the last included log entry in the snapshot.</param>
+    /// <param name="configuration">The cluster configuration.</param>
+    /// <param name="configurationVersion">The configuration version.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
+    Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
+        IDataTransferObject configuration, long configurationVersion, CancellationToken token);
 
     /// <summary>
     /// Starts a new round of heartbeats.
@@ -115,11 +113,6 @@ public interface IRaftClusterMember : IClusterMember
         /// Gets or sets replication index of the member.
         /// </summary>
         public long NextIndex;
-
-        /// <summary>
-        /// Gets or sets configuration fingerprint associated with the member.
-        /// </summary>
-        public long ConfigurationFingerprint;
 
         internal readonly long PrecedingIndex
         {

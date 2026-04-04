@@ -1,10 +1,11 @@
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Diagnostics;
+using Membership;
 
 internal partial class LeaderState<TMember>
 {
-    private readonly Func<TMember, Replicator> replicatorFactory, localReplicatorFactory;
+    private readonly Func<TMember, IClusterConfigurationStorage?, Replicator> replicatorFactory, localReplicatorFactory;
 
     internal Func<TimeSpan, TMember, IFailureDetector>? FailureDetectorFactory
     {
@@ -12,10 +13,10 @@ internal partial class LeaderState<TMember>
         {
             if (value is not null)
             {
-                replicatorFactory = member => new(member, Logger) { FailureDetector = value.Invoke(maxLease, member) };
+                replicatorFactory = (member, storage) => new(member, storage, Logger) { FailureDetector = value.Invoke(maxLease, member) };
             }
         }
     }
 
-    private Replicator CreateDefaultReplicator(TMember member) => new(member, Logger);
+    private Replicator CreateDefaultReplicator(TMember member, IClusterConfigurationStorage? storage) => new(member, storage, Logger);
 }

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
+﻿using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using DotNext;
@@ -13,8 +12,6 @@ using Microsoft.AspNetCore.Connections;
 using RaftNode;
 using static System.Globalization.CultureInfo;
 using SslOptions = DotNext.Net.Security.SslOptions;
-
-[assembly: Experimental("DOTNEXT001")]
 
 using var cts = new ConsoleLifetimeTokenSource();
 switch (args.LongLength)
@@ -62,8 +59,14 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage, Cancell
 
     if (persistentStorage is { Length: > 0 })
     {
-        builder.Services.AddSingleton(new WriteAheadLog.Options { Location = persistentStorage });
-        builder.Services.UseStateMachine<StateMachine>();
+        builder
+            .Services
+            .UseStateMachine<StateMachine>(new() { Location = persistentStorage })
+            .AddHostedService<DataModifier>();
+    }
+    else
+    {
+        builder.Services.UseConsensusOnlyLog();
     }
 
     ConfigureLogging(builder.Logging);
@@ -110,22 +113,27 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage, Cancell
 
 static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage, CancellationToken token)
 {
-    AddMembersToCluster(config.UseInMemoryConfigurationStorage());
-    var loggerFactory = LoggerFactory.Create(ConfigureLogging);
-    config.LoggerFactory = loggerFactory;
-    await using var cluster = new RaftCluster(config);
-    cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
-    var modifier = default(DataModifier?);
+    AddMembersToCluster((InMemoryClusterConfigurationStorage<EndPoint>)config.ConfigurationStorage);
+    Func<IRaftCluster, DataModifier?> factory;
+    IPersistentState wal;
     if (persistentStorage is { Length: > 0 })
     {
         var stateMachine = new StateMachine(persistentStorage);
         await stateMachine.RestoreAsync(token);
-        var state = new WriteAheadLog(new WriteAheadLog.Options { Location = persistentStorage }, stateMachine);
-        cluster.AuditTrail = state;
-        modifier = new DataModifier(cluster, stateMachine);
+        wal = new WriteAheadLog(new WriteAheadLog.Options { Location = persistentStorage }, stateMachine);
+        factory = cluster => new(cluster, stateMachine);
     }
-    
+    else
+    {
+        wal = new ConsensusOnlyState();
+        factory = Func<IRaftCluster, DataModifier?>.Constant(null);
+    }
+
+    await using var cluster = new RaftCluster(config) { AuditTrail = wal };
+    var modifier = factory.Invoke(cluster);
+    cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
     await cluster.StartAsync(token);
+    
     await (modifier?.StartAsync(token) ?? Task.CompletedTask);
     await token.WaitAsync();
 
@@ -135,7 +143,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     // NOTE: this way of adding members to the cluster is not recommended in production code
     static void AddMembersToCluster(InMemoryClusterConfigurationStorage<EndPoint> storage)
     {
-        var builder = storage.CreateActiveConfigurationBuilder();
+        var builder = storage.CreateInitialConfigurationBuilder();
 
         builder.Add(new IPEndPoint(IPAddress.Loopback, 3262));
         builder.Add(new IPEndPoint(IPAddress.Loopback, 3263));
@@ -157,7 +165,9 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl, Ca
         UpperElectionTimeout = 300,
         TransmissionBlockSize = 4096,
         ColdStart = false,
-        SslOptions = useSsl ? CreateSslOptions() : null
+        SslOptions = useSsl ? CreateSslOptions() : null,
+        ConfigurationStorage = null, // use in-memory static config
+        LoggerFactory = LoggerFactory.Create(ConfigureLogging),
     };
 
     return UseConfiguration(configuration, persistentStorage, token);
