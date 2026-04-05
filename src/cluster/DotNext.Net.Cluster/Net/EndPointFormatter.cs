@@ -7,6 +7,7 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
+using Patterns;
 using HttpEndPoint = Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
@@ -34,7 +35,7 @@ public static class EndPointFormatter
     /// Gets comparer for <see cref="UriEndPoint"/>.
     /// </summary>
     [CLSCompliant(false)]
-    public static IEqualityComparer<EndPoint> UriEndPointComparer { get; } = new UriEndPointComparer();
+    public static IEqualityComparer<EndPoint> UriEndPointComparer => Net.UriEndPointComparer.Instance;
 
     /// <summary>
     /// Serializes endpoint address to the buffer.
@@ -224,4 +225,20 @@ public static class EndPointFormatter
         DeserializeHost(ref reader, out var hostName, out var port, out var family);
         return new(hostName, port, secure, family);
     }
+}
+
+file sealed class UriEndPointComparer : IEqualityComparer<EndPoint>, ISingleton<UriEndPointComparer>
+{
+    public static UriEndPointComparer Instance { get; } = new();
+
+    private UriEndPointComparer()
+    {
+    }
+
+    /// <inheritdoc />
+    bool IEqualityComparer<EndPoint>.Equals(EndPoint? x, EndPoint? y)
+        => Equals((x as UriEndPoint)?.Uri, (y as UriEndPoint)?.Uri);
+
+    int IEqualityComparer<EndPoint>.GetHashCode(EndPoint ep)
+        => ep is UriEndPoint uri ? uri.Uri.GetHashCode() : ep.GetHashCode();
 }
