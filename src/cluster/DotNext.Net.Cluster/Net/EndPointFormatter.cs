@@ -7,6 +7,7 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
+using Numerics;
 using Patterns;
 using HttpEndPoint = Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
@@ -93,7 +94,7 @@ public static class EndPointFormatter
                 writer += HttpEndPointPrefix;
                 writer += Unsafe.BitCast<bool, byte>(http.IsSecure);
                 writer.WriteLittleEndian(http.Port);
-                writer.WriteLittleEndian((int)http.AddressFamily);
+                writer.WriteLittleEndian<Enum<AddressFamily>>(new(http.AddressFamily));
                 Serialize(http.Host, ref writer);
                 break;
             case DnsEndPoint dns:
@@ -105,7 +106,7 @@ public static class EndPointFormatter
                 // host name = N bytes
                 writer += DnsEndPointPrefix;
                 writer.WriteLittleEndian(dns.Port);
-                writer.WriteLittleEndian((int)dns.AddressFamily);
+                writer.WriteLittleEndian<Enum<AddressFamily>>(new(dns.AddressFamily));
                 Serialize(dns.Host, ref writer);
                 break;
             case UnixDomainSocketEndPoint domainSocket:
@@ -203,7 +204,7 @@ public static class EndPointFormatter
     private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
     {
         port = reader.ReadLittleEndian<int>();
-        family = (AddressFamily)reader.ReadLittleEndian<int>();
+        family = reader.ReadLittleEndian<Enum<AddressFamily>>();
         var length = reader.ReadLittleEndian<int>();
 
         using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
@@ -240,5 +241,5 @@ file sealed class UriEndPointComparer : IEqualityComparer<EndPoint>, ISingleton<
         => Equals((x as UriEndPoint)?.Uri, (y as UriEndPoint)?.Uri);
 
     int IEqualityComparer<EndPoint>.GetHashCode(EndPoint ep)
-        => ep is UriEndPoint uri ? uri.Uri.GetHashCode() : ep.GetHashCode();
+        => (ep as UriEndPoint)?.Uri.GetHashCode() ?? ep.GetHashCode();
 }
