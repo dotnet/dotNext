@@ -39,7 +39,6 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IPersistentState auditTrail, IEnumerator<TMember> members)
     {
-        Replicator replicator;
         Task<Result<bool>> response;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastEntryIndex;
@@ -47,9 +46,9 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         var majority = 0;
 
         // send heartbeat in parallel
-        for (TMember member; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
+        for (Replicator replicator; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
         {
-            member = members.Current;
+            var member = members.Current;
             if (member.IsRemote)
             {
                 var precedingIndex = member.State.PrecedingIndex;
@@ -145,7 +144,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                     // Perf: the code in this block is inlined instead of moved to separated method because
                     // we want to prevent allocation of state machine on every call
                     int quorum = 0, commitQuorum = 0;
-                    (long currentIndex, long commitIndex, var majority) = ForkHeartbeats(responsePipe, auditTrail, enumerator);
+                    var (currentIndex, commitIndex, majority) = ForkHeartbeats(responsePipe, auditTrail, enumerator);
 
                     while (await responsePipe.WaitToReadAsync().ConfigureAwait(false))
                     {
