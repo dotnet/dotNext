@@ -3,15 +3,13 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using InlinedTokenList = ValueTuple<CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration>;
-
 partial struct CancellationTokenMultiplexer
 {
     private sealed partial class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {
-        private static readonly int InlinedListCapacity = GetCapacity<InlinedTokenList>();
-        
-        private InlinedTokenList inlinedList;
+        private const int InlinedListCapacity = 3;
+
+        private InlineArray3<CancellationTokenRegistration> inlinedList;
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
 
@@ -26,12 +24,11 @@ partial struct CancellationTokenMultiplexer
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
             // register inlined tokens
-            var inlinedRegistrations = inlinedList.AsSpan();
-            var inlinedCount = int.Min(inlinedRegistrations.Length, tokens.Length);
+            var inlinedCount = int.Min(InlinedListCapacity, tokens.Length);
 
             for (var i = 0; i < inlinedCount; i++)
             {
-                inlinedRegistrations[i] = Attach(tokens[i]);
+                inlinedList[i] = Attach(tokens[i]);
             }
 
             // register extra tokens
@@ -62,7 +59,7 @@ partial struct CancellationTokenMultiplexer
                 Span<CancellationTokenRegistration> registrations;
                 if (index < InlinedListCapacity)
                 {
-                    registrations = inlinedList.AsSpan();
+                    registrations = inlinedList;
                 }
                 else
                 {
