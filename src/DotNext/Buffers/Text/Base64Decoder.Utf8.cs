@@ -67,7 +67,7 @@ public partial struct Base64Decoder
     {
         ArgumentNullException.ThrowIfNull(bytes);
 
-        DecodeFromUtf8<BufferWriterReference<byte>>(chars, new(bytes));
+        DecodeFromUtf8<IBufferWriter<byte>>(chars, bytes);
     }
 
     /// <summary>

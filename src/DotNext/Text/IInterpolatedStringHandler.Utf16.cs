@@ -10,7 +10,7 @@ partial interface IInterpolatedStringHandler
     private const char WhitespaceUtf16 = ' ';
     
     internal static int AppendFormatted<T, TWriter>(TWriter writer, T value, string? format, IFormatProvider? provider)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         int charsWritten;
 
@@ -51,7 +51,7 @@ partial interface IInterpolatedStringHandler
     }
 
     protected static int AppendFormatted<TWriter>(TWriter writer, scoped ReadOnlySpan<char> value, int alignment)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         bool leftAlign;
 
@@ -62,7 +62,7 @@ partial interface IInterpolatedStringHandler
     }
 
     private static int AppendFormatted<TWriter>(TWriter writer, scoped ReadOnlySpan<char> value, int alignment, bool leftAlign)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         Debug.Assert(alignment >= 0);
 
@@ -91,7 +91,7 @@ partial interface IInterpolatedStringHandler
     }
     
     internal static int AppendFormatted<T, TWriter>(TWriter writer, T value, int alignment, string? format, IFormatProvider? provider)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         bool leftAlign;
 

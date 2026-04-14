@@ -6,8 +6,6 @@ using System.Text;
 
 namespace DotNext.Text;
 
-using Buffers;
-
 /// <summary>
 /// Represents converter of interpolated string directly to a sequence of bytes
 /// using the specified encoding.
@@ -20,7 +18,7 @@ public ref struct BufferWriterEncodingInterpolatedStringHandler : IInterpolatedS
     private readonly Span<char> buffer;
     private readonly Encoder encoder;
     private readonly IFormatProvider? provider;
-    private readonly BufferWriterReference<byte> writer;
+    private readonly IBufferWriter<byte> writer;
     private int count;
     
     /// <summary>
@@ -40,7 +38,7 @@ public ref struct BufferWriterEncodingInterpolatedStringHandler : IInterpolatedS
         Span<char> buffer = default,
         IFormatProvider? provider = null)
     {
-        this.writer = new(writer ?? throw new ArgumentNullException(nameof(writer)));
+        this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         this.encoder = encoder ?? throw new ArgumentNullException(nameof(encoder));
         this.buffer = buffer;
         this.provider = provider;

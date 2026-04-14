@@ -11,7 +11,7 @@ using IInterpolatedStringHandler = DotNext.Text.IInterpolatedStringHandler;
 public static class CharBuffer
 {
     private static void Write<TWriter>(TWriter writer, StringBuilder input)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         foreach (var chunk in input.GetChunks())
             Memory.Write(writer, chunk.Span);
@@ -23,7 +23,7 @@ public static class CharBuffer
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
     public static void Write(this IBufferWriter<char> writer, StringBuilder input)
-        => Write<BufferWriterReference<char>>(new(writer), input);
+        => Write<IBufferWriter<char>>(writer, input);
 
     /// <summary>
     /// Writes the value as a string.
@@ -35,10 +35,10 @@ public static class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
     public static int Format<T>(this IBufferWriter<char> writer, T value, string? format = null, IFormatProvider? provider = null)
-        => IInterpolatedStringHandler.AppendFormatted<T, BufferWriterReference<char>>(new(writer), value, format, provider);
+        => IInterpolatedStringHandler.AppendFormatted(writer, value, format, provider);
     
     private static int Format<TWriter>(TWriter writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider)
-        where TWriter : struct, IBufferWriter<char>, allows ref struct
+        where TWriter : IBufferWriter<char>, allows ref struct
     {
         const int maxBufferSize = int.MaxValue / 2;
 
@@ -66,7 +66,7 @@ public static class CharBuffer
     /// <returns>The number of written characters.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
     public static int Format(this IBufferWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
-        => Format<BufferWriterReference<char>>(new(writer), format, args, provider);
+        => Format<IBufferWriter<char>>(writer, format, args, provider);
 
     /// <summary>
     /// Writes line termination symbols to the buffer.
@@ -87,7 +87,7 @@ public static class CharBuffer
     }
     
     private static void Concat<TWriter>(TWriter writer, scoped ReadOnlySpan<string?> values)
-        where  TWriter : struct, IBufferWriter<char>, allows ref struct
+        where  TWriter : IBufferWriter<char>, allows ref struct
     {
         switch (values.Length)
         {
@@ -139,7 +139,7 @@ public static class CharBuffer
     /// <param name="values">An array of strings.</param>
     /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
     public static void Concat(this IBufferWriter<char> writer, params ReadOnlySpan<string?> values)
-        => Concat<BufferWriterReference<char>>(new(writer), values);
+        => Concat<IBufferWriter<char>>(writer, values);
 
     /// <summary>
     /// Writes the contents of string builder to the buffer.

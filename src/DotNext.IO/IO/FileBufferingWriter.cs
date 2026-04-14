@@ -628,7 +628,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyToAsync(new BufferWriterReference<byte>(destination), bufferSize, token);
+        => CopyToAsync(new BufferConsumer<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content to the buffer synchronously.
@@ -638,7 +638,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyTo(new BufferWriterReference<byte>(destination), bufferSize, token);
+        => CopyTo(new BufferConsumer<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content synchronously.
