@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
@@ -7,7 +8,8 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
-using HttpEndPoint = Net.Http.HttpEndPoint;
+using Numerics;
+using HttpEndPoint = Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
 /// <summary>
@@ -68,85 +70,139 @@ public static class EndPointFormatter
     /// <param name="endPoint">The value to be serialized.</param>
     /// <exception cref="ArgumentOutOfRangeException">Unsupported type of <paramref name="endPoint"/>.</exception>
     public static void WriteEndPoint(this ref BufferWriterSlim<byte> writer, EndPoint endPoint)
+        => WriteEndPoint<BufferWriterSlim<byte>.Ref>(new(ref writer), endPoint);
+
+    /// <summary>
+    /// Serializes endpoint address to the buffer.
+    /// </summary>
+    /// <param name="writer">The output buffer.</param>
+    /// <param name="endPoint">The value to be serialized.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Unsupported type of <paramref name="endPoint"/>.</exception>
+    public static void WriteEndPoint(this IBufferWriter<byte> writer, EndPoint endPoint)
+        => WriteEndPoint<IBufferWriter<byte>>(writer, endPoint);
+    
+    private static void WriteEndPoint<TWriter>(TWriter bufferWriter, EndPoint endPoint)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
+        const int prefixSize = sizeof(byte);
         switch (endPoint)
         {
             case IPEndPoint ip:
-                // the format is:
-                // IP endpoint type = 1 byte
-                // port = 4 bytes
-                // number of address bytes, N = 1 byte
-                // address bytes = N bytes
-                writer += IPEndPointPrefix;
-                writer.WriteLittleEndian(ip.Port);
-                Serialize(ip.Address, ref writer);
+                WriteIP(bufferWriter, ip);
                 break;
             case HttpEndPoint http:
-                // the format is:
-                // DNS endpoint type = 1 byte
-                // HTTPS (true/false) = 1 byte
-                // port = 4 bytes
-                // address family = 4 bytes
-                // host name length, N = 4 bytes
-                // host name = N bytes
-                writer += HttpEndPointPrefix;
-                writer += Unsafe.BitCast<bool, byte>(http.IsSecure);
-                writer.WriteLittleEndian(http.Port);
-                writer.WriteLittleEndian((int)http.AddressFamily);
-                Serialize(http.Host, ref writer);
+                WriteHttp(bufferWriter, http);
                 break;
             case DnsEndPoint dns:
-                // the format is:
-                // DNS endpoint type = 1 byte
-                // port = 4 bytes
-                // address family = 4 bytes
-                // host name length, N = 4 bytes
-                // host name = N bytes
-                writer += DnsEndPointPrefix;
-                writer.WriteLittleEndian(dns.Port);
-                writer.WriteLittleEndian((int)dns.AddressFamily);
-                Serialize(dns.Host, ref writer);
+                WriteDns(bufferWriter, dns);
                 break;
             case UnixDomainSocketEndPoint domainSocket:
-                // the format is:
-                // UDS endpoint type = 1 byte
-                // path name length, N = 4 bytes
-                // path name = N bytes
-                writer += DomainSocketEndPointPrefix;
-                Serialize(domainSocket.ToString(), ref writer);
+                WriteUds(bufferWriter, domainSocket);
                 break;
             case UriEndPoint uri:
-                // the format is:
-                // URI endpoint type = 1 byte
-                // URI length, N = 4 bytes
-                // URI = N bytes
-                writer += UriEndPointPrefix;
-                Serialize(uri.ToString(), ref writer);
+                WriteUri(bufferWriter, uri);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(endPoint));
         }
+
+        static void WriteIP(TWriter bufferWriter, IPEndPoint ip)
+        {
+            // the format is:
+            // IP endpoint type = 1 byte
+            // port = 4 bytes
+            // number of address bytes, N = 1 byte
+            // address bytes = N bytes
+            var writer = new SpanWriter<byte>(bufferWriter.GetSpan(prefixSize + sizeof(int)));
+            writer += IPEndPointPrefix;
+            writer.WriteLittleEndian(ip.Port);
+            bufferWriter.Advance(writer.WrittenCount);
+            
+            Serialize(bufferWriter, ip.Address);
+        }
+
+        static void WriteHttp(TWriter bufferWriter, HttpEndPoint endPoint)
+        {
+            // the format is:
+            // DNS endpoint type = 1 byte
+            // HTTPS (true/false) = 1 byte
+            // port = 4 bytes
+            // address family = 4 bytes
+            // host name length, N = 4 bytes
+            // host name = N bytes
+            var writer = new SpanWriter<byte>(bufferWriter.GetSpan(prefixSize + sizeof(byte) + sizeof(int) + sizeof(AddressFamily)));
+            writer += HttpEndPointPrefix;
+            writer += Unsafe.BitCast<bool, byte>(endPoint.IsSecure);
+            writer.WriteLittleEndian(endPoint.Port);
+            writer.WriteLittleEndian<Enum<AddressFamily>>(new(endPoint.AddressFamily));
+            bufferWriter.Advance(writer.WrittenCount);
+            
+            Serialize(bufferWriter, endPoint.Host);
+        }
+
+        static void WriteDns(TWriter bufferWriter, DnsEndPoint endPoint)
+        {
+            // the format is:
+            // DNS endpoint type = 1 byte
+            // port = 4 bytes
+            // address family = 4 bytes
+            // host name length, N = 4 bytes
+            // host name = N bytes
+            var writer = new SpanWriter<byte>(bufferWriter.GetSpan(prefixSize + sizeof(int) + sizeof(AddressFamily)));
+            writer += DnsEndPointPrefix;
+            writer.WriteLittleEndian(endPoint.Port);
+            writer.WriteLittleEndian<Enum<AddressFamily>>(new(endPoint.AddressFamily));
+            bufferWriter.Advance(writer.WrittenCount);
+
+            Serialize(bufferWriter, endPoint.Host);
+        }
+
+        static void WriteUds(TWriter bufferWriter, UnixDomainSocketEndPoint endPoint)
+        {
+            // the format is:
+            // UDS endpoint type = 1 byte
+            // path name length, N = 4 bytes
+            // path name = N bytes
+            bufferWriter.GetSpan()[0] = DomainSocketEndPointPrefix;
+            bufferWriter.Advance(prefixSize);
+
+            Serialize(bufferWriter, endPoint.ToString());
+        }
+
+        static void WriteUri(TWriter bufferWriter, UriEndPoint endPoint)
+        {
+            // the format is:
+            // URI endpoint type = 1 byte
+            // URI length, N = 4 bytes
+            // URI = N bytes
+            bufferWriter.GetSpan()[0] = UriEndPointPrefix;
+            bufferWriter.Advance(prefixSize);
+
+            Serialize(bufferWriter, endPoint.Uri.ToString());
+        }
     }
 
-    private static void Serialize(IPAddress address, ref BufferWriterSlim<byte> writer)
+    private static void Serialize<TWriter>(TWriter bufferWriter, IPAddress address)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        Span<byte> addressBytes = stackalloc byte[IPv6AddressSize];
+        var buffer = bufferWriter.GetSpan(IPv6AddressSize + 1);
 
-        if (!address.TryWriteBytes(addressBytes, out var bytesWritten) || bytesWritten > byte.MaxValue)
+        if (!address.TryWriteBytes(buffer[1..], out var bytesWritten))
             throw new NotSupportedException();
 
-        writer.Add((byte)bytesWritten);
-        addressBytes.Slice(0, bytesWritten).CopyTo(writer.GetSpan(bytesWritten));
-        writer.Advance(bytesWritten);
+        buffer[0] = (byte)bytesWritten;
+        bufferWriter.Advance(bytesWritten + 1);
     }
 
-    private static void Serialize(ReadOnlySpan<char> hostName, ref BufferWriterSlim<byte> writer)
+    private static void Serialize<TWriter>(TWriter bufferWriter, ReadOnlySpan<char> hostName)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         var count = HostNameEncoding.GetByteCount(hostName);
+        var writer = new SpanWriter<byte>(bufferWriter.GetSpan(sizeof(int) + count));
         writer.WriteLittleEndian(count);
+        writer.Advance(HostNameEncoding.GetBytes(hostName, writer.RemainingSpan));
 
-        HostNameEncoding.GetBytes(hostName, writer.GetSpan(count));
-        writer.Advance(count);
+        bufferWriter.Advance(writer.WrittenCount);
     }
 
     /// <summary>

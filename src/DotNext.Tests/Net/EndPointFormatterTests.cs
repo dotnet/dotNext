@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Connections;
@@ -53,6 +54,17 @@ public sealed class EndPointFormatterTests : Test
         }
 
         var reader = new SequenceReader(data);
+        Equal(expected, reader.ReadEndPoint(), comparer);
+    }
+    
+    [Theory]
+    [MemberData(nameof(GetTestEndPoints))]
+    public static void SerializeDeserializeEndPointUsingBufferWriter(EndPoint expected, IEqualityComparer<EndPoint> comparer)
+    {
+        var writer = new ArrayBufferWriter<byte>();
+        writer.WriteEndPoint(expected);
+
+        var reader = new SequenceReader(writer.WrittenMemory);
         Equal(expected, reader.ReadEndPoint(), comparer);
     }
 
