@@ -3,7 +3,7 @@ namespace DotNext.Threading;
 /// <summary>
 /// Represents multiplexed cancellation token source.
 /// </summary>
-public interface IMultiplexedCancellationTokenSource
+public interface IMultiplexedCancellationTokenSource : IDisposable
 {
     /// <summary>
     /// Gets the multiplexed token.
@@ -14,6 +14,53 @@ public interface IMultiplexedCancellationTokenSource
     /// Gets the cancellation origin.
     /// </summary>
     CancellationToken CancellationOrigin { get; }
+
+    /// <summary>
+    /// Creates a token source for the specified cancellation token state.
+    /// </summary>
+    /// <param name="canceled">The canceled state for the token.</param>
+    /// <returns>The token source that represents the specific cancellation token state.</returns>
+    public static IMultiplexedCancellationTokenSource Create(bool canceled)
+        => canceled ? CancellationTokenWrapper.Canceled : CancellationTokenWrapper.NonCanceled;
+
+    internal static IMultiplexedCancellationTokenSource Create(CancellationToken token)
+    {
+        CancellationTokenWrapper result;
+        if (CancellationTokenWrapper.Canceled.Token == token)
+        {
+            result = CancellationTokenWrapper.Canceled;
+        }
+        else if (CancellationTokenWrapper.NonCanceled.Token == token)
+        {
+            result = CancellationTokenWrapper.NonCanceled;
+        }
+        else
+        {
+            result = new(token);
+        }
+
+        return result;
+    }
+}
+
+file sealed class CancellationTokenWrapper(CancellationToken token) : IMultiplexedCancellationTokenSource
+{
+    public static readonly CancellationTokenWrapper Canceled = new(canceled: true);
+    public static readonly CancellationTokenWrapper NonCanceled = new(canceled: false);
+
+    private CancellationTokenWrapper(bool canceled)
+        : this(new CancellationToken(canceled))
+    {
+    }
+    
+    void IDisposable.Dispose()
+    {
+        // nothing to do
+    }
+
+    public CancellationToken Token => token;
+
+    CancellationToken IMultiplexedCancellationTokenSource.CancellationOrigin => token;
 }
 
 internal interface IMultiplexedCancellationTokenSourceWithTimeout : IMultiplexedCancellationTokenSource
@@ -60,4 +107,18 @@ public static class MultiplexedCancellationTokenSource
     /// associated with <paramref name="scope"/>; otherwise, <see langword="false"/>.</returns>
     public static bool CausedByTimeout(this OperationCanceledException e, CancellationTokenMultiplexer.ScopeWithTimeout scope)
         => CausedByTimeout<CancellationTokenMultiplexer.ScopeWithTimeout>(e, scope);
+
+    /// <summary>
+    /// Extends <see cref="CancellationToken"/> type.
+    /// </summary>
+    extension(CancellationToken)
+    {
+        /// <summary>
+        /// Combines multiple cancellation tokens.
+        /// </summary>
+        /// <param name="tokens">The tokens that can be combined.</param>
+        /// <returns>The multiplexed cancellation token source.</returns>
+        public static IMultiplexedCancellationTokenSource Combine(params ReadOnlySpan<CancellationToken> tokens)
+            => CancellationTokenMultiplexer.Create(tokens);
+    }
 }

@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
+
+using Patterns;
 
 partial struct CancellationTokenMultiplexer
 {
@@ -96,5 +99,17 @@ partial struct CancellationTokenMultiplexer
 
             base.Dispose(disposing);
         }
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct MultiplexedCancellationTokenSourceFactory(CancellationTokenMultiplexer multiplexer) : IMultiplexedCancellationTokenSourceFactory<Scope>
+    {
+        static Scope IMultiplexedCancellationTokenSourceFactory<Scope>.Create(CancellationToken token)
+            => new(token);
+
+        static Scope IMultiplexedCancellationTokenSourceFactory<Scope>.Empty => default;
+
+        Scope IMultiplexedCancellationTokenSourceFactory<Scope>.Create(scoped ReadOnlySpan<CancellationToken> tokens)
+            => new(multiplexer, tokens);
     }
 }

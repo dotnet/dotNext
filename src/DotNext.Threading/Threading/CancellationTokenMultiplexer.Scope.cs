@@ -11,7 +11,7 @@ using MultiplexerOrToken = ValueTuple<object>;
 
 partial struct CancellationTokenMultiplexer
 {
-    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSourceWithTimeout, IDisposable, IAsyncDisposable;
+    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSourceWithTimeout, IAsyncDisposable;
     
     /// <summary>
     /// Represents a scope that controls the lifetime of the multiplexed cancellation token.
