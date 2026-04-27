@@ -81,7 +81,7 @@ public static class MultiplexedCancellationTokenSource
     /// <param name="token">The token to check</param>
     /// <returns><see langword="true"/> indicates that the cancellation caused by <paramref name="source"/> and <see cref="IMultiplexedCancellationTokenSource.CancellationOrigin"/> is <paramref name="token"/>.</returns>
     public static bool CausedBy<TSource>(this OperationCanceledException e, TSource source, CancellationToken token)
-        where TSource : struct, IMultiplexedCancellationTokenSource
+        where TSource : IMultiplexedCancellationTokenSource
         => e.CancellationToken == source.Token && source.CancellationOrigin == token;
 
     private static bool CausedByTimeout<TSource>(OperationCanceledException e, TSource scope)
