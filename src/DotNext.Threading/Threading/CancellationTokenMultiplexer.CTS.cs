@@ -87,10 +87,6 @@ partial struct CancellationTokenMultiplexer
             pool = null;
         }
 
-        private static int GetCapacity<T>()
-            where T : struct, ITuple
-            => default(T).Length;
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
