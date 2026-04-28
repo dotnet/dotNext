@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport;
 
 using Buffers;
 

@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
-using TransportServices;
+using NetworkTransport;
 
 /// <summary>
 /// Represents default implementation of Raft-based cluster.

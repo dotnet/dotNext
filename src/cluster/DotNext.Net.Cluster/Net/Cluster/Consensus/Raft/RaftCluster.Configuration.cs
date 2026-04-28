@@ -9,11 +9,11 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using CustomTransport;
 using Membership;
 using Security;
-using Tcp;
-using TransportServices;
+using NetworkTransport;
+using NetworkTransport.ConnectionOriented.Custom;
+using NetworkTransport.ConnectionOriented.Tcp;
 
 public partial class RaftCluster
 {

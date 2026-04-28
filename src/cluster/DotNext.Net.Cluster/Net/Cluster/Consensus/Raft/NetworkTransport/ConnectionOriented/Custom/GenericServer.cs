@@ -1,0 +1,185 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
+
+namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Custom;
+
+using Buffers;
+using Threading;
+
+internal sealed class GenericServer : Server
+{
+    private readonly IConnectionListenerFactory factory;
+    private readonly CancellationToken lifecycleToken;
+    private readonly CancellationTokenMultiplexer multiplexer;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private volatile CancellationTokenSource? transmissionState;
+    private volatile Task? listenerTask;
+
+    internal GenericServer(EndPoint address, IConnectionListenerFactory listenerFactory, ILocalMember localMember, MemoryAllocator<byte> defaultAllocator, ILoggerFactory loggerFactory)
+        : base(address, localMember, loggerFactory)
+    {
+        Debug.Assert(listenerFactory is not null);
+        Debug.Assert(defaultAllocator is not null);
+
+        transmissionState = new();
+        lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
+        factory = listenerFactory;
+        BufferAllocator = defaultAllocator;
+
+        multiplexer = new() { MaximumRetained = 100 };
+    }
+
+    public override TimeSpan ReceiveTimeout
+    {
+        get;
+        init;
+    }
+
+    private protected override MemoryAllocator<byte> BufferAllocator { get; }
+
+    private async void HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
+    {
+        var protocol = new ProtocolPipeStream(connection.Transport, allocator, transmissionSize)
+        {
+            WriteTimeout = (int)ReceiveTimeout.TotalMilliseconds,
+            ReadTimeout = (int)ReceiveTimeout.TotalMilliseconds,
+        };
+
+        var cts = default(CancellationTokenMultiplexer.ScopeWithTimeout);
+        try
+        {
+            while (!IsDisposingOrDisposed && !lifecycleToken.IsCancellationRequested)
+            {
+                cts = multiplexer.CombineAndSetTimeoutLater(lifecycleToken, connection.ConnectionClosed);
+                var messageType = await protocol.ReadMessageTypeAsync(cts.Token).ConfigureAwait(false);
+                if (messageType is MessageType.None)
+                    break;
+
+                cts.Timeout = ReceiveTimeout;
+                await ProcessRequestAsync(messageType, protocol, cts.Token).ConfigureAwait(false);
+                protocol.Reset();
+
+                // reset cancellation token
+                await cts.DisposeAsync().ConfigureAwait(false);
+                cts = default; // to avoid duplicate call in finally block
+            }
+        }
+        catch (ConnectionResetException)
+        {
+            // reset by client
+            logger.ConnectionWasResetByClient(clientAddress);
+        }
+        catch (OperationCanceledException e) when (e.CausedBy(cts, connection.ConnectionClosed))
+        {
+            // closed by client
+            logger.ConnectionWasResetByClient(clientAddress);
+        }
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifecycleToken))
+        {
+            // server stopped, suppress exception
+        }
+        catch (OperationCanceledException e) when (e.CausedByTimeout(cts))
+        {
+            // timeout
+            logger.RequestTimedOut(clientAddress, e);
+        }
+        catch (Exception e)
+        {
+            logger.FailedToProcessRequest(clientAddress, e);
+        }
+        finally
+        {
+            await connection.DisposeAsync().ConfigureAwait(false);
+            await protocol.DisposeAsync().ConfigureAwait(false);
+            await cts.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async Task Listen(IConnectionListener listener)
+    {
+        try
+        {
+            while (!lifecycleToken.IsCancellationRequested && !IsDisposingOrDisposed)
+            {
+                try
+                {
+                    var connection = await listener.AcceptAsync(lifecycleToken).ConfigureAwait(false);
+                    if (connection is null)
+                        break;
+
+                    ThreadPool.UnsafeQueueUserWorkItem(new ConnectionHandler(this, connection), preferLocal: false);
+                }
+                catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
+                {
+                    break;
+                }
+                catch (Exception e)
+                {
+                    logger.SocketAcceptLoopTerminated(e);
+                    break;
+                }
+            }
+
+            await listener.UnbindAsync(lifecycleToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            await listener.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    public override async ValueTask StartAsync(CancellationToken token)
+        => listenerTask = Listen(await factory.BindAsync(Address, token).ConfigureAwait(false));
+
+    private void CleanUp()
+    {
+        using var tokenSource = Interlocked.Exchange(ref transmissionState, null);
+        tokenSource?.Cancel(false);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            CleanUp();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore()
+    {
+        CleanUp();
+        return new(listenerTask ?? Task.CompletedTask);
+    }
+
+    private sealed class ConnectionHandler : Tuple<ConnectionContext, int, EndPoint?, MemoryAllocator<byte>>, IThreadPoolWorkItem
+    {
+        private readonly WeakReference<GenericServer> server;
+
+        internal ConnectionHandler(GenericServer server, ConnectionContext connection)
+            : base(connection, GetTransmissionSize(connection), connection.RemoteEndPoint, GetMemoryAllocator(server, connection))
+            => this.server = new(server, trackResurrection: false);
+
+        private static int GetTransmissionSize(ConnectionContext connection)
+            => connection.Transport.Output.GetSpan().Length;
+
+        private static MemoryAllocator<byte> GetMemoryAllocator(GenericServer server, BaseConnectionContext connection)
+        {
+            return connection.Features.Get<MemoryAllocator<byte>>()
+                ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
+                ?? server.BufferAllocator;
+        }
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            if (this.server.TryGetTarget(out var server))
+                server.HandleConnection(Item1, Item2, Item3, Item4);
+        }
+    }
+}

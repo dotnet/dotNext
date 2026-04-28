@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
 using IO;
-using TransportServices;
+using NetworkTransport;
 
 /// <summary>
 /// Represents Raft cluster member that is accessible through the network.

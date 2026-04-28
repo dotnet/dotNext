@@ -19,7 +19,7 @@ using IO;
 using IO.Log;
 using static IO.Pipelines.PipeExtensions;
 using EncodingContext = Text.EncodingContext;
-using LogEntryMetadata = TransportServices.LogEntryMetadata;
+using LogEntryMetadata = NetworkTransport.LogEntryMetadata;
 
 internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 {
