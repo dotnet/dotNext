@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
+using ReplicationUtils;
 using Membership;
 using Threading;
 
@@ -98,7 +99,6 @@ public partial class RaftCluster<TMember>
     /// <remarks>
     /// The current implementation of Raft doesn't support adding or removing multiple cluster members at a time.
     /// </remarks>
-    [Serializable]
     public sealed class ConcurrentMembershipModificationException : RaftProtocolException
     {
         internal ConcurrentMembershipModificationException()
@@ -208,33 +208,27 @@ public partial class RaftCluster<TMember>
 
         var leaderState = LeaderStateOrException;
         var tokenSource = CombineTokens(token, leaderState.Token);
+        var process = new ReplicationProcess<TMember>(member, replicationLag)
+        {
+            Logger = Logger,
+            Term = AuditTrail.Term,
+            AuditTrail = AuditTrail,
+        };
         try
         {
             var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
             if (!IClusterConfiguration<TAddress>.TryAdd(ref config, addressProvider(member)))
                 return false;
-
+            
+            // assume that the member is up-to-date with the leader
+            member.State.Initialize(AuditTrail);
+            
             // catch up node
-            member.State.NextIndex = AuditTrail.LastEntryIndex + 1;
-            long currentIndex, commitIndex;
-            do
-            {
-                commitIndex = AuditTrail.LastCommittedEntryIndex;
-                currentIndex = AuditTrail.LastEntryIndex;
-                var precedingIndex = member.State.PrecedingIndex;
-                var precedingTerm = await AuditTrail.GetTermAsync(precedingIndex, tokenSource.Token).ConfigureAwait(false);
-                var term = Term;
-
-                // do replication
-                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, tokenSource.Token)
-                    .ConfigureAwait(false);
-
-                if (!result.Value && result.Term > term)
-                    return false;
-            } while (--rounds > 0 && currentIndex >= member.State.NextIndex);
+            if (!await process.CatchUpAsync(rounds, tokenSource.Token).ConfigureAwait(false))
+                return false;
             
             // make sure that the previous configuration is committed
-            commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+            var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
             leaderState.ForceReplication();
             await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
@@ -256,19 +250,12 @@ public partial class RaftCluster<TMember>
         }
         finally
         {
+            process.Dispose();
             await tokenSource.DisposeAsync().ConfigureAwait(false);
             Volatile.Write(ref membershipState, false);
         }
 
         return true;
-    }
-
-    private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm,
-        long currentIndex, CancellationToken token)
-    {
-        var replicator = new LeaderState<TMember>.Replicator(member, AuditTrail.ConfigurationStorage, Logger);
-        replicator.Initialize(commitIndex, term, precedingIndex, precedingTerm);
-        return replicator.ReplicateAsync(AuditTrail, currentIndex, token);
     }
 
     /// <summary>
@@ -350,8 +337,6 @@ public partial class RaftCluster<TMember>
             {
                 if (membersCopy.TryAdd(member, out membersCopy))
                 {
-                    // assuming that the member is in sync with the leader
-                    member.State.NextIndex = AuditTrail.LastEntryIndex + 1L;
                     OnMemberAdded(member);
                 }
             }

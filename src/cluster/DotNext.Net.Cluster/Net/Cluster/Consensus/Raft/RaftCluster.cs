@@ -32,6 +32,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
     private readonly TagList measurementTags;
     private readonly CancellationTokenMultiplexer cancellationTokens;
+    private readonly int replicationLag;
 
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -61,6 +62,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ArgumentNullException.ThrowIfNull(config);
 
         electionTimeoutProvider = config.ElectionTimeout;
+        replicationLag = config.MaxReplicationLag;
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         members = IMemberList.Empty;
@@ -294,7 +296,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UnfreezeCoreAsync()
         {
-            var newState = new FollowerState<TMember>(this, consensusReached: true);
+            var newState = new FollowerState<TMember>(this) { ConsensusReached = true };
             await UpdateStateAsync(newState).ConfigureAwait(false);
             newState.StartServing(ElectionTimeout);
             readinessProbe.TrySetResult();
@@ -315,15 +317,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             // local member is known then turn readiness probe into signaled state and start serving the messages from the cluster
             state = standbyNode
-                ? new StandbyState<TMember>(this, LeaderLeaseDuration)
-                : new FollowerState<TMember>(this, consensusReached: false);
+                ? new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration }
+                : new FollowerState<TMember>(this);
             readinessProbe.TrySetResult();
             Logger.StartedAsFollower(member.EndPoint);
         }
         else
         {
             // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-            state = new StandbyState<TMember>(this, LeaderLeaseDuration);
+            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
             Logger.StartedAsFrozen();
         }
     }
@@ -350,7 +352,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we're trying to update the same state
                 if (members.LocalMember is not null && ReferenceEquals(state, standbyState))
                 {
-                    var newState = new FollowerState<TMember>(this, consensusReached: standbyState.Token is { IsCancellationRequested: false });
+                    var newState = new FollowerState<TMember>(this)
+                    {
+                        ConsensusReached = standbyState is { Token.IsCancellationRequested: false }
+                    };
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     newState.StartServing(ElectionTimeout);
                     return true;
@@ -390,7 +395,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we're trying to update the same state
                 if (ReferenceEquals(state, currentState))
                 {
-                    await UpdateStateAsync(new StandbyState<TMember>(this, LeaderLeaseDuration)).ConfigureAwait(false);
+                    await UpdateStateAsync(new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration }).ConfigureAwait(false);
                     return true;
                 }
             }
@@ -497,7 +502,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 followerOrStandbyState.Refresh();
                 break;
             case LeaderState<TMember> or CandidateState<TMember>:
-                var newState = new FollowerState<TMember>(this, consensusReached);
+                var newState = new FollowerState<TMember>(this) { ConsensusReached = consensusReached };
                 await UpdateStateAsync(newState).ConfigureAwait(false);
                 newState.StartServing(ElectionTimeout);
                 break;
@@ -827,7 +832,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (ReferenceEquals(state, leaderState))
                 {
-                    var newState = new FollowerState<TMember>(this, consensusReached: false);
+                    var newState = new FollowerState<TMember>(this);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
                     newState.StartServing(ElectionTimeout);
@@ -932,7 +937,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private ValueTask MoveToStandbyState(bool resumable = true)
     {
         Leader = null;
-        return UpdateStateAsync(new StandbyState<TMember>(this, LeaderLeaseDuration) { Resumable = resumable });
+        return UpdateStateAsync(new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration, Resumable = resumable });
     }
 
     async void IRaftStateMachine<TMember>.IncomingHeartbeatTimedOut(IRaftStateMachine.IWeakCallerStateIdentity callerState)
@@ -1049,7 +1054,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (readyForTransition && members.LocalMember?.Id is { } localMemberId)
                 {
-                    var newState = new CandidateState<TMember>(this, await AuditTrail.IncrementTermAsync(localMemberId, LifecycleToken).ConfigureAwait(false));
+                    var newState = new CandidateState<TMember>(this)
+                    {
+                        Term = await AuditTrail.IncrementTermAsync(localMemberId, LifecycleToken).ConfigureAwait(false),
+                    };
                     await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
@@ -1105,8 +1113,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             long currentTerm;
             if (state is CandidateState<TMember> candidateState && callerState.IsValid(candidateState) && candidateState.Term == (currentTerm = Term))
             {
-                var newState = new LeaderState<TMember>(this, currentTerm, LeaderLeaseDuration)
+                var newState = new LeaderState<TMember>(this, replicationLag)
                 {
+                    MaxLease = LeaderLeaseDuration,
+                    Term = currentTerm,
                     FailureDetectorFactory = FailureDetectorFactory,
                 };
 
@@ -1160,7 +1170,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     async void IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
     {
         // check state to drop old notifications (double-check pattern)
-        if (callerState.IsValid(state) && Interlocked.FalseToTrue(ref membershipState))
+        if (callerState.IsValid(state))
         {
             try
             {
@@ -1170,10 +1180,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             catch (Exception e)
             {
                 Logger.FailedToProcessUnresponsiveMember(member.EndPoint, e);
-            }
-            finally
-            {
-                Volatile.Write(ref membershipState, false);
             }
         }
 

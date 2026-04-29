@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Consensus;
+namespace DotNext.Net.Cluster.Consensus.Raft.ReplicationUtils;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct MemberResult
+internal readonly record struct MemberResult
 {
     // 0 - touched
     // > 0 - replicated with the current term
@@ -44,7 +44,9 @@ internal readonly struct MemberResult
 
     public static MemberResult Touched => default;
 
-    internal bool Analyze(ref ReplicationState state)
+    public static MemberResult? Unavailable => null;
+
+    internal bool Apply(ref ReplicationState state)
     {
         // canceled
         if (indexOrTerm is long.MinValue)

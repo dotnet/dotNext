@@ -24,7 +24,6 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     private volatile ClusterMemberStatus status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
     private IRaftClusterMember.ReplicationState state;
-    internal bool IsUnavailable;
 
     private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint)
     {

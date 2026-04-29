@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft.Consensus;
+namespace DotNext.Net.Cluster.Consensus.Raft.ReplicationUtils;
 
 public class ReplicationBarrierTests : Test
 {

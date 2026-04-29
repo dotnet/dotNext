@@ -12,15 +12,19 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
 {
     private readonly CancellationTokenSource votingCancellation;
     private readonly CancellationToken votingCancellationToken; // cached to prevent ObjectDisposedException
-    internal readonly long Term;
     private Task? votingTask;
 
-    public CandidateState(IRaftStateMachine<TMember> stateMachine, long term)
+    public CandidateState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
-        Term = term;
         votingCancellation = new();
         votingCancellationToken = votingCancellation.Token;
+    }
+
+    internal required long Term
+    {
+        get;
+        init;
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]

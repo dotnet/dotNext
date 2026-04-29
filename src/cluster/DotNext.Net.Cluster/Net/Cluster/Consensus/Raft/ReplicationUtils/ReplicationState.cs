@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Consensus;
+namespace DotNext.Net.Cluster.Consensus.Raft.ReplicationUtils;
 
 [StructLayout(LayoutKind.Auto)]
 internal struct ReplicationState(int majority)

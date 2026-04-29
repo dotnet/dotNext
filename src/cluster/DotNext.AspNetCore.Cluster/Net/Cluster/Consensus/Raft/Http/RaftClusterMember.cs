@@ -28,7 +28,6 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private IRaftClusterMember.ReplicationState state;
-    internal bool IsUnavailable;
 
     static RaftClusterMember()
     {

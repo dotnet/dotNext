@@ -2,19 +2,21 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Sources;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Consensus;
+namespace DotNext.Net.Cluster.Consensus.Raft.ReplicationUtils;
 
 /// <summary>
 /// Represents the replication barrier that collects the replication results
 /// from the individual cluster members.
 /// </summary>
-internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>, IReplicationCommand
+internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
 {
     private const byte ActiveState = 0;
     private const byte CompletedState = 1;
     private const byte ConsumedState = 2;
     private const byte CompletedAndConsumedState = CompletedState | ConsumedState;
 
+    // This number must be reasonable to hold realistic number of cluster member responses.
+    // For Raft, the typical number of nodes is 3, 5 or 7.
     private const int InlineBufferSize = 9;
 
     private readonly Lock syncRoot = new();
@@ -23,14 +25,14 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>, IReplic
     private int count, writePos;
     private ReplicationState counters;
     private byte state;
-    private ManualResetValueTaskSourceCore<ReplicationResult> completion = new() { RunContinuationsAsynchronously = false };
+    private ManualResetValueTaskSourceCore<ReplicationResult> completion = new() { RunContinuationsAsynchronously = true };
 
     public ValueTask<ReplicationResult> WaitAsync(int memberCount)
     {
         Debug.Assert(memberCount > 0);
 
         count = memberCount;
-        counters = new((memberCount >> 1) + 1);
+        counters = new((memberCount >>> 1) + 1);
         writePos = 0;
 
         if (memberCount > InlineBufferSize)
@@ -47,7 +49,7 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>, IReplic
     public bool IsCompleted => Volatile.Read(in state) > 0;
 
     // null if member is not available
-    public void SetResult(in MemberResult? result)
+    public void SetResult(MemberResult? result)
     {
         bool hasConsensus;
         int writtenCount;
@@ -72,51 +74,73 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>, IReplic
                     }
                     else
                     {
-                        break;
+                        goto default;
                     }
 
                     state = CompletedState;
                     writtenCount = writePos;
-                    goto completed;
+                    break;
                 case CompletedAndConsumedState when writePos == count:
                     Reset();
-                    break;
+                    goto reused;
+                default:
+                    return;
             }
         }
 
+        completion.SetResult(new(writtenCount, hasConsensus));
         return;
 
-        completed:
-        completion.SetResult(new(writtenCount, hasConsensus));
+        reused:
+        ReuseCore();
     }
 
-    bool IReplicationCommand.SetResult(MemberResult? result)
+    private void Reset()
     {
-        SetResult(in result);
-        return true;
-    }
-
-    protected virtual void Reset()
-    {
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
+        
         completion.Reset();
         state = ActiveState;
-        Span<MemberResult> results = inlineResults;
-        results.Clear();
+        ClearResults();
+    }
 
-        results = extraResults;
+    private void ClearResults()
+    {
+        Span<MemberResult> results = inlineResults;
+        Span<MemberResult> extra;
+        if (count <= InlineBufferSize)
+        {
+            results = results.Slice(0, count);
+            extra = default;
+        }
+        else
+        {
+            extra = extraResults.AsSpan(0, count - InlineBufferSize);
+        }
+
         results.Clear();
+        extra.Clear();
+    }
+
+    protected virtual void ReuseCore()
+    {
     }
 
     public void Reuse()
     {
+        bool canBeReused;
         lock (syncRoot)
         {
             state = CompletedAndConsumedState;
-            if (writePos == count)
+            canBeReused = writePos == count;
+            if (canBeReused)
             {
                 Reset();
             }
         }
+
+        if (canBeReused)
+            ReuseCore();
     }
 
     private ref MemberResult GetResultSlot(int index)
@@ -154,7 +178,7 @@ file static class MemberResultExtensions
     public static bool Analyze(this in MemberResult? result, ref ReplicationState state)
     {
         if (result.HasValue)
-            return Nullable.GetValueRefOrDefaultRef(in result).Analyze(ref state);
+            return Nullable.GetValueRefOrDefaultRef(in result).Apply(ref state);
 
         state.Available--;
         return true;

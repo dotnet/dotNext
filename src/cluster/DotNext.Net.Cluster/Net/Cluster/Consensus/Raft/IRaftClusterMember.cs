@@ -114,6 +114,11 @@ public interface IRaftClusterMember : IClusterMember
         /// </summary>
         public long NextIndex;
 
+        /// <summary>
+        /// Gets or sets a value indicating that the member is available.
+        /// </summary>
+        public bool IsAvailable;
+
         internal readonly long PrecedingIndex
         {
             get

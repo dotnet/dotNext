@@ -208,13 +208,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <inheritdoc />
     protected sealed override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
     {
-        if (member.IsUnavailable)
-            return;
-        
         var config = await configurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
         if (IClusterConfiguration<EndPoint>.TryRemove(ref config, GetAddress(member)))
         {
-            member.IsUnavailable = true;
             await AuditTrail.AppendAsync(config, token).ConfigureAwait(false);
         }
     }

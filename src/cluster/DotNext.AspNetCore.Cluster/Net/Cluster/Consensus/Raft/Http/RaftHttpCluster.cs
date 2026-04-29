@@ -233,13 +233,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     protected override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
     {
-        if (member.IsUnavailable)
-            return;
-        
         var config = await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
         if (IClusterConfiguration<UriEndPoint>.TryRemove(ref config, GetAddress(member)))
         {
-            member.IsUnavailable = true;
             await AuditTrail.AppendAsync(config, token).ConfigureAwait(false);
         }
     }

@@ -143,7 +143,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 16,
         LogLevel.Debug,
-        "Local changes are not committed. Quorum is {Quorum}, last committed entry is {CommitIndex}",
+        "Local changes are not committed. Quorum is {Quorum}, calculated commit index is {CommitIndex}",
         EventName = $"{EventIdPrefix}.{nameof(CommitFailed)}"
     )]
     public static partial void CommitFailed(this ILogger logger, int quorum, long commitIndex);
@@ -348,4 +348,11 @@ internal static partial class LogMessages
         "User-defined exception within {MemberName} is suspended",
         EventName = $"{EventIdPrefix}.{nameof(UnhandledException)}")]
     public static partial void UnhandledException(this ILogger logger, Exception e, [CallerMemberName] string? memberName = null);
+
+    [LoggerMessage(
+        EventIdOffset + 44,
+        LogLevel.Warning,
+        "Cluster member {Member} is too far behind the leader",
+        EventName = $"{EventIdPrefix}.{nameof(SlowMember)}")]
+    public static partial void SlowMember(this ILogger logger, EndPoint member);
 }
