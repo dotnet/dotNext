@@ -229,7 +229,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 case { Term: not null }:
                     rounds = 0;
                     break;
-                case { CommitIndex: { } commitIndex } when result.HasConsensus && commitIndex >= watermarkIndex:
+                case var memberResult when result.HasConsensus && memberResult.CommitIndex.GetValueOrDefault() >= watermarkIndex:
                     writer.Complete();
                     return true;
             }
