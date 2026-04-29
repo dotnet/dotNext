@@ -18,7 +18,7 @@ internal readonly record struct MemberResult
         get
         {
             var term = indexOrTerm & long.MaxValue;
-            return indexOrTerm == term && term is not 0L ? term : null;
+            return indexOrTerm == term || term is 0L ? null : term;
         }
     }
 
