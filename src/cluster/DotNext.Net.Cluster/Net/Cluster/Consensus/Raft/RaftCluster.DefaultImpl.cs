@@ -206,14 +206,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    protected sealed override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-    {
-        var config = await configurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
-        if (IClusterConfiguration<EndPoint>.TryRemove(ref config, GetAddress(member)))
-        {
-            await AuditTrail.AppendAsync(config, token).ConfigureAwait(false);
-        }
-    }
+    protected sealed override ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
+        => UnavailableMemberDetected(configurationStorage, GetAddress(member), token);
 
     /// <inheritdoc />
     bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);

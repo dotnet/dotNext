@@ -1153,19 +1153,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
     }
 
-    /// <summary>
-    /// Notifies that the member is unavailable.
-    /// </summary>
-    /// <remarks>
-    /// It's an infrastructure method that can be used to remove unavailable member from the cluster configuration
-    /// at the leader side.
-    /// </remarks>
-    /// <param name="member">The member that is considered as unavailable.</param>
-    /// <param name="token">The token associated with <see cref="LeadershipToken"/> that identifies the leader state at the time of detection.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    protected virtual ValueTask UnavailableMemberDetected(TMember member, CancellationToken token)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
-
     /// <inheritdoc />
     async void IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
     {
