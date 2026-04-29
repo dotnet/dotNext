@@ -37,7 +37,7 @@ internal readonly record struct MemberResult
 
     public static MemberResult Committed(long index)
     {
-        Debug.Assert(index > 0L);
+        Debug.Assert(index >= 0L);
 
         return new(index);
     }
