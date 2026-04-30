@@ -6,7 +6,7 @@ Concurrent Cache
 > Time-based eviction policy is not supported.
 
 # Capacity-based cache
-[RandomAccessCache&lt;TKey,TValue&gt;](xref:DotNext.Runtime.Caching.RandomAccessCache`2) is capacity-based cache. The cache can keep the specified maximum amount of items. When the capacity exceeds, the eldest item is evicted. The eviction process doesn't interfere with writers or readers, it runs in the background.
+[RandomAccessCache&lt;TKey,TValue&gt;](xref:DotNext.Runtime.Caching.RandomAccessCache`2) is capacity-based cache. The cache can keep the specified maximum amount of items. When the capacity is exceeded, an item is evicted. The eviction process doesn't interfere with writers or readers, it runs in the background.
 
 All methods of the cache are asynchronous except `TryRead` that is designed to be extremely fast in case of cache hit. `ChangeAsync` is designed to be asynchronous because in case of cache miss the application needs to load the resource asynchronously. In the same time, multiple callers of cache trying to cache the same resource. This is a waste of resources because at least one caller is already in the process of resource loading. For other callers, it's better to wait. The following example demonstrates this pattern:
 ```csharp
