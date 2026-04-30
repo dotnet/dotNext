@@ -22,7 +22,7 @@ internal readonly record struct MemberResult
         }
     }
 
-    public long? CommitIndex => indexOrTerm > 0L ? indexOrTerm : null;
+    public long CommitIndex => indexOrTerm > 0L ? indexOrTerm : 0L;
 
     public bool IsCanceled => indexOrTerm is long.MinValue;
 

@@ -7,7 +7,7 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.HigherTermDetected(20L);
         Equal(20L, result.Term);
-        Null(result.CommitIndex);
+        Equal(0L, result.CommitIndex);
         False(result.IsCanceled);
     }
 
@@ -16,7 +16,7 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.Canceled;
         Null(result.Term);
-        Null(result.CommitIndex);
+        Equal(0L, result.CommitIndex);
         True(result.IsCanceled);
     }
 
@@ -34,7 +34,7 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.Touched;
         Null(result.Term);
-        Null(result.CommitIndex);
+        Equal(0L, result.CommitIndex);
         False(result.IsCanceled);
     }
 }

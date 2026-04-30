@@ -233,7 +233,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                     MoveToFollowerState(randomizeTimeout: false, higherTerm);
                     return null;
                 case var result:
-                    indexBuffer[i] = result.CommitIndex.GetValueOrDefault();
+                    indexBuffer[i] = result.CommitIndex;
                     break;
             }
         }
