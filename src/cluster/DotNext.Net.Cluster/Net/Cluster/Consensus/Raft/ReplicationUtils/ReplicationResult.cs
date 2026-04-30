@@ -21,6 +21,6 @@ internal readonly record struct ReplicationResult
     public void Deconstruct(out int quorum, out bool consensus)
     {
         var count = replicatedCount;
-        consensus = (quorum = count & int.MaxValue) == count;
+        consensus = (quorum = count & int.MaxValue) != count;
     }
 }

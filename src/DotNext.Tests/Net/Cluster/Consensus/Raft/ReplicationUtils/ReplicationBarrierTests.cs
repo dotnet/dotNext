@@ -51,4 +51,22 @@ public class ReplicationBarrierTests : Test
 
         Equal(new(4, false), await task.WaitAsync(TestToken));
     }
+
+    [Theory]
+    [InlineData(10)]
+    [InlineData(100)]
+    public static async Task Overflow(int expectedCount)
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(expectedCount).AsTask();
+
+        for (var i = 0; i < expectedCount; i++)
+        {
+            barrier.SetResult(MemberResult.Touched);
+        }
+
+        var (quorum, hasConsensus) = await task.WaitAsync(TestToken);
+        Equal(expectedCount / 2 + 1, quorum);
+        True(hasConsensus);
+    }
 }
