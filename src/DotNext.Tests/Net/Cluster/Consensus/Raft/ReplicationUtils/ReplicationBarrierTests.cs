@@ -69,4 +69,42 @@ public class ReplicationBarrierTests : Test
         Equal(expectedCount / 2 + 1, quorum);
         True(hasConsensus);
     }
+
+    [Fact]
+    public static async Task ConsensusFor3()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 3).AsTask();
+        barrier.SetResult(MemberResult.Unavailable);
+        barrier.SetResult(MemberResult.Touched);
+        barrier.SetResult(MemberResult.Committed(2L));
+
+        var result = await task.WaitAsync(TestToken);
+        True(result.HasConsensus);
+    }
+    
+    [Fact]
+    public static async Task NoConsensusFor3()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 3).AsTask();
+        barrier.SetResult(MemberResult.Unavailable);
+        barrier.SetResult(MemberResult.Committed(2L));
+        barrier.SetResult(MemberResult.Unavailable);
+
+        var result = await task.WaitAsync(TestToken);
+        False(result.HasConsensus);
+    }
+    
+    [Fact]
+    public static async Task ConsensusFor2()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 2).AsTask();
+        barrier.SetResult(MemberResult.Touched);
+        barrier.SetResult(MemberResult.Committed(2L));
+
+        var result = await task.WaitAsync(TestToken);
+        True(result.HasConsensus);
+    }
 }
