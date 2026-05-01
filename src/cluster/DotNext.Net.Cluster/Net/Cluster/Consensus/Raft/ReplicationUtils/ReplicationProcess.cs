@@ -41,7 +41,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
     {
         this.member = member;
 
-        var commands = Channel.CreateBounded<ReplicationBarrier>(new BoundedChannelOptions(queueSize)
+        var channel = Channel.CreateBounded<ReplicationBarrier>(new BoundedChannelOptions(queueSize)
         {
             FullMode = BoundedChannelFullMode.Wait,
             AllowSynchronousContinuations = false,
@@ -49,8 +49,8 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
             SingleWriter = true,
         });
 
-        reader = commands.Reader;
-        writer = commands.Writer;
+        reader = channel.Reader;
+        writer = channel.Writer;
         interruption = new();
     }
 
