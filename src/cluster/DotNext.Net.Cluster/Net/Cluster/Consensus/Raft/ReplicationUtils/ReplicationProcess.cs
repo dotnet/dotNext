@@ -43,7 +43,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
         var channel = Channel.CreateBounded<ReplicationBarrier>(new BoundedChannelOptions(queueSize)
         {
-            FullMode = BoundedChannelFullMode.Wait,
+            FullMode = BoundedChannelFullMode.DropWrite,
             AllowSynchronousContinuations = false,
             SingleReader = true,
             SingleWriter = true,
