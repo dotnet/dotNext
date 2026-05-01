@@ -193,16 +193,20 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         {
             process.Replicate(barrier);
             
-            if (!process.IsAvailable && unresponsiveMember is null && member.State.IsAvailable)
+            if (!process.IsAvailable && unresponsiveMember is null)
             {
-                member.State.IsAvailable = false;
                 unresponsiveMember = member;
             }
         }
 
-        // process 1 unavailable member at a time
+        // Process 1 unavailable member at a time.
+        // UnavailableMemberDetected call doesn't remove the member immediately, it will happen eventually.
+        // The removal will be processed eventually in the main loop of the leader state.
         if (unresponsiveMember is not null)
+        {
+            unresponsiveMember.State.IsAvailable = false;
             UnavailableMemberDetected(unresponsiveMember, Token);
+        }
     }
     
     private async Task StopReplicationAsync()

@@ -66,7 +66,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         members = IMemberList.Empty;
-        transitionLock = new() { MeasurementTags = measurementTags };
+        transitionLock = new TransitionLock { MeasurementTags = measurementTags };
+        membershipLock = new MembershipLock { MeasurementTags = measurementTags };
         transitionCancellation = new();
         LifecycleToken = transitionCancellation.Token;
         heartbeatThreshold = config.HeartbeatThreshold;
@@ -1156,21 +1157,30 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc />
     async void IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
     {
-        // check state to drop old notifications (double-check pattern)
-        if (callerState.IsValid(state))
+        var lockTaken = false;
+        try
         {
-            try
+            await membershipLock.AcquireAsync(token).ConfigureAwait(false);
+            lockTaken = true;
+
+            if (callerState.IsValid(state))
             {
                 Logger.UnresponsiveMemberDetected(member.EndPoint);
                 await UnavailableMemberDetected(member, token).ConfigureAwait(false);
             }
-            catch (Exception e)
-            {
-                Logger.FailedToProcessUnresponsiveMember(member.EndPoint, e);
-            }
         }
-
-        callerState.Clear();
+        catch (OperationCanceledException) when (lockTaken is false)
+        {
+            // ignore cancellation of lock acquisition
+        }
+        catch (Exception e)
+        {
+            Logger.FailedToProcessUnresponsiveMember(member.EndPoint, e);
+        }
+        finally
+        {
+            callerState.Clear();
+        }
     }
 
     /// <summary>
@@ -1287,3 +1297,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private sealed class UnstartedState(RaftCluster<TMember> cluster) : RaftState<TMember>(cluster);
 }
+
+// The name of this class is correctly reflected in the metrics
+file sealed class TransitionLock : AsyncExclusiveLock;
+
+file sealed class MembershipLock : AsyncExclusiveLock;

@@ -107,9 +107,9 @@ public partial class RaftCluster<TMember>
         }
     }
 
+    private readonly AsyncExclusiveLock membershipLock;
     private IMemberList members;
     private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
-    private bool membershipState;
 
     /// <summary>
     /// Gets the member by its identifier.
@@ -203,9 +203,6 @@ public partial class RaftCluster<TMember>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rounds);
 
-        if (!Interlocked.FalseToTrue(ref membershipState))
-            throw new ConcurrentMembershipModificationException();
-
         var leaderState = LeaderStateOrException;
         var tokenSource = CombineTokens(token, leaderState.Token);
         var process = new ReplicationProcess<TMember>(member, replicationLag)
@@ -214,19 +211,24 @@ public partial class RaftCluster<TMember>
             Term = AuditTrail.Term,
             AuditTrail = AuditTrail,
         };
+        var lockTaken = false;
         try
         {
+            lockTaken = membershipLock.TryAcquire();
+            if (!lockTaken)
+                throw new ConcurrentMembershipModificationException();
+
             var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
             if (!IClusterConfiguration<TAddress>.TryAdd(ref config, addressProvider(member)))
                 return false;
-            
+
             // assume that the member is up-to-date with the leader
             member.State.Initialize(AuditTrail);
-            
+
             // catch up node
             if (!await process.CatchUpAsync(rounds, tokenSource.Token).ConfigureAwait(false))
                 return false;
-            
+
             // make sure that the previous configuration is committed
             var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
             leaderState.ForceReplication();
@@ -236,7 +238,7 @@ public partial class RaftCluster<TMember>
             // the configuration
             commitIndex = await AuditTrail.AppendAsync(config, tokenSource.Token).ConfigureAwait(false);
             leaderState.ForceReplication();
-            
+
             // ensure that the configuration is committed
             await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
         }
@@ -250,9 +252,11 @@ public partial class RaftCluster<TMember>
         }
         finally
         {
-            process.Dispose();
             await tokenSource.DisposeAsync().ConfigureAwait(false);
-            Volatile.Write(ref membershipState, false);
+            process.Dispose();
+            
+            if (lockTaken)
+                membershipLock.Release();
         }
 
         return true;
@@ -276,14 +280,17 @@ public partial class RaftCluster<TMember>
     protected async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
     {
-        if (!Interlocked.FalseToTrue(ref membershipState))
-            throw new ConcurrentMembershipModificationException();
+        var leaderState = LeaderStateOrException;
+        var lockTaken = false;
+        var tokenSource = CombineTokens(token, leaderState.Token);
 
-        if (members.TryGetValue(id, out var member))
+        try
         {
-            var leaderState = LeaderStateOrException;
-            var tokenSource = CombineTokens(token, leaderState.Token);
-            try
+            lockTaken = membershipLock.TryAcquire();
+            if (!lockTaken)
+                throw new ConcurrentMembershipModificationException();
+            
+            if (members.TryGetValue(id, out var member))
             {
                 var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
                 if (IClusterConfiguration<TAddress>.TryRemove(ref config, addressProvider(member)))
@@ -300,19 +307,21 @@ public partial class RaftCluster<TMember>
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
-            {
-                throw new NotLeaderException(e);
-            }
-            catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
-            {
-                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
-            }
-            finally
-            {
-                await tokenSource.DisposeAsync().ConfigureAwait(false);
-                Volatile.Write(ref membershipState, false);
-            }
+        }
+        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
+        {
+            throw new NotLeaderException(e);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
+            
+            if (lockTaken)
+                membershipLock.Release();
         }
 
         return false;
