@@ -28,8 +28,6 @@ internal struct RingBuffer<T>
         frozenForEnqueues = false;
     }
 
-    public readonly bool IsFrozen => Volatile.Read(in frozenForEnqueues);
-
     public void Freeze()
     {
         if (Interlocked.FalseToTrue(ref frozenForEnqueues))

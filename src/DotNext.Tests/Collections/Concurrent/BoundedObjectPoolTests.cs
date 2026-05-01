@@ -8,14 +8,17 @@ public sealed class BoundedObjectPoolTests : Test
         var pool = new BoundedObjectPool<string>(2);
         True(pool.TryReturn("0"));
         True(pool.TryReturn("1"));
-        False(pool.TryReturn("2"));
+        True(pool.TryReturn("2"));
+        False(pool.TryReturn("3"));
 
         Same("0", pool.TryGet());
         Same("1", pool.TryGet());
+        Same("2", pool.TryGet());
         
         True(pool.TryReturn("0"));
         True(pool.TryReturn("1"));
-        False(pool.TryReturn("2"));
+        True(pool.TryReturn("2"));
+        False(pool.TryReturn("3"));
     }
 
     [Fact]
@@ -23,9 +26,10 @@ public sealed class BoundedObjectPoolTests : Test
     {
         const int capacity = 2;
         var pool = new BoundedObjectPool<string>(capacity);
-        Equal(capacity, pool.Capacity);
+        Equal(capacity + 1, pool.Capacity);
         True(pool.TryReturn("0"));
         True(pool.TryReturn("1"));
+        True(pool.TryReturn("2"));
 
         using var barrier = new Barrier(capacity);
         var task1 = Task.Factory.StartNew(RentReturn, TestToken);
@@ -84,9 +88,10 @@ public sealed class BoundedObjectPoolTests : Test
     {
         const int capacity = 2;
         var pool = new BoundedObjectPool<string>(capacity);
-        Equal(capacity, pool.Capacity);
+        Equal(capacity + 1, pool.Capacity);
         True(pool.TryReturn("0"));
         True(pool.TryReturn("1"));
+        True(pool.TryReturn("2"));
 
         var task1 = Task.Run(RentReturn, TestToken);
         var task2 = Task.Run(RentReturn, TestToken);
