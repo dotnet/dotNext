@@ -57,11 +57,11 @@ internal readonly record struct MemberResult
         // touched
         if (term is 0L)
         {
-            state.Replicated--;
+            state.OnReplicated();
         }
         else if (indexOrTerm == term)
         {
-            state.Committed--;
+            state.OnCommitted();
         }
         else
         {

@@ -219,8 +219,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
         for (var barrier = new ReplicationBarrier(); rounds > 0; rounds--, barrier.Reuse())
         {
-            Replicate(barrier);
-            var result = await barrier.WaitAsync(memberCount: 1).ConfigureAwait(false);
+            var result = await ReplicateSingleAsync(barrier).ConfigureAwait(false);
 
             switch (barrier[0])
             {
@@ -237,6 +236,13 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
         writer.Complete();
         return false;
+    }
+
+    private ValueTask<ReplicationResult> ReplicateSingleAsync(ReplicationBarrier barrier)
+    {
+        var task = barrier.WaitAsync(memberCount: 1);
+        Replicate(barrier);
+        return task;
     }
 
     protected override void Dispose(bool disposing)

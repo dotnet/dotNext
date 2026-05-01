@@ -180,14 +180,15 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     private ValueTask<ReplicationResult> ReplicateAsync(out ReplicationBarrier barrier)
     {
-        barrier = StartReplication();
-        return barrier.WaitAsync(runningReplications.Count);
+        barrier = RentBarrier();
+        var task = barrier.WaitAsync(runningReplications.Count);
+        StartReplication(barrier);
+        return task;
     }
 
-    private ReplicationBarrier StartReplication()
+    private void StartReplication(ReplicationBarrier barrier)
     {
         var unresponsiveMember = default(TMember);
-        var barrier = RentBarrier();
         foreach (var (member, process) in runningReplications)
         {
             process.Replicate(barrier);
@@ -202,8 +203,6 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         // process 1 unavailable member at a time
         if (unresponsiveMember is not null)
             UnavailableMemberDetected(unresponsiveMember, Token);
-
-        return barrier;
     }
     
     private async Task StopReplicationAsync()

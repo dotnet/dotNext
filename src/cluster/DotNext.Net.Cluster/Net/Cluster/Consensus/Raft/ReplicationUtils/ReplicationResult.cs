@@ -16,7 +16,7 @@ internal readonly record struct ReplicationResult
         replicatedCount = count | Unsafe.BitCast<bool, byte>(hasConsensus) << 31;
     }
 
-    public bool HasConsensus => replicatedCount >= 0;
+    public bool HasConsensus => replicatedCount < 0;
 
     public void Deconstruct(out int quorum, out bool consensus)
     {
