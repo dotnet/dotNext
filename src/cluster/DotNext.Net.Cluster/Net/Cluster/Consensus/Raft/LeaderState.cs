@@ -138,24 +138,15 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     {
         var state = new IRaftClusterMember.ReplicationState();
         state.Initialize(auditTrail);
-
+        
         foreach (var member in members)
         {
             if (!runningReplications.ContainsKey(member))
             {
+                Debug.Assert(member.IsRemote);
+                
                 member.State = state;
-                var process = member.IsRemote
-                    ? new ReplicationProcess<TMember>(member, barriers.Capacity)
-                    {
-                        Term = currentTerm,
-                        Logger = Logger,
-                        AuditTrail = auditTrail,
-                        FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member)
-                    }
-                    : new ReplicationProcess { AuditTrail = auditTrail };
-
-                process.Start(Token);
-                runningReplications.Add(member, process);
+                runningReplications.Add(member, StartReplication(member, auditTrail));
             }
         }
     }
@@ -184,6 +175,20 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         var task = barrier.WaitAsync(runningReplications.Count);
         StartReplication(barrier);
         return task;
+    }
+    
+    private ReplicationProcess<TMember> StartReplication(TMember member, IPersistentState auditTrail)
+    {
+        var process = new ReplicationProcess<TMember>(member, barriers.Capacity)
+        {
+            Term = currentTerm,
+            Logger = Logger,
+            AuditTrail = auditTrail,
+            FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member)
+        };
+
+        process.Start(Token);
+        return process;
     }
 
     private void StartReplication(ReplicationBarrier barrier)
@@ -258,11 +263,13 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     /// <summary>
     /// Starts cluster synchronization.
     /// </summary>
+    /// <param name="leaderNode">The leader node.</param>
     /// <param name="period">Time period of Heartbeats.</param>
-    /// <param name="transactionLog">Transaction log.</param>
-    internal void StartLeading(TimeSpan period, IPersistentState transactionLog)
+    /// <param name="auditTrail">Transaction log.</param>
+    internal void StartLeading(TMember leaderNode, TimeSpan period, IPersistentState auditTrail)
     {
-        heartbeatTask = DoHeartbeats(period, transactionLog);
+        runningReplications.Add(leaderNode, new() { AuditTrail = auditTrail });
+        heartbeatTask = DoHeartbeats(period, auditTrail);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 

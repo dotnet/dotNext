@@ -1128,7 +1128,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Leader = newLeader;
                 leadershipEvent.TrySetResult(newState.Token);
 
-                newState.StartLeading(HeartbeatTimeout, AuditTrail);
+                newState.StartLeading(newLeader, HeartbeatTimeout, AuditTrail);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }
         }
