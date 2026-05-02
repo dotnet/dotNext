@@ -5,7 +5,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
-using Threading.Tasks;
 
 internal sealed class CandidateState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
@@ -35,50 +34,39 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellationToken).ConfigureAwait(false);
 
         // start voting in parallel
-        var voters = StartVoting(Members, Term, lastIndex, lastTerm, votingCancellationToken);
+        var voters = Task.WhenEach(Members
+            .TakeWhile(NotCanceled)
+            .Select(member => VoteAsync(member, lastIndex, lastTerm))
+        );
         votingCancellation.CancelAfter(timeout);
 
         // finish voting
-        await EndVoting(voters.Consume(), votingCancellation.Token).ConfigureAwait(false);
-
-        static TaskCompletionPipe<Task<(TMember, long, bool?)>> StartVoting(IReadOnlyCollection<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
-        {
-            var voters = new TaskCompletionPipe<Task<(TMember, long, bool?)>>();
-
-            // start voting in parallel
-            using (var enumerator = members.GetEnumerator())
-            {
-                while (enumerator.MoveNext() && !token.IsCancellationRequested)
-                {
-                    voters.Add(VoteAsync(enumerator.Current, currentTerm, lastIndex, lastTerm, token));
-                }
-            }
-
-            voters.Complete();
-            return voters;
-        }
-
-        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
-        static async Task<(TMember, long, bool?)> VoteAsync(TMember voter, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
-        {
-            bool? result;
-            try
-            {
-                var response = await voter.VoteAsync(currentTerm, lastIndex, lastTerm, token).ConfigureAwait(false);
-                currentTerm = response.Term;
-                result = response.Value;
-            }
-            catch (MemberUnavailableException)
-            {
-                result = null;
-                currentTerm = -1L;
-            }
-
-            return (voter, currentTerm, result);
-        }
+        await EndVoting(voters, votingCancellation.Token).ConfigureAwait(false);
     }
 
-    private async Task EndVoting(TaskCompletionPipe.Consumer<(TMember, long, bool?)> voters, CancellationToken token)
+    private bool NotCanceled(TMember _) => !votingCancellation.IsCancellationRequested;
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<(TMember, long, bool?)> VoteAsync(TMember voter, long lastIndex, long lastTerm)
+    {
+        bool? result;
+        long currentTerm;
+        try
+        {
+            var response = await voter.VoteAsync(Term, lastIndex, lastTerm, votingCancellationToken).ConfigureAwait(false);
+            currentTerm = response.Term;
+            result = response.Value;
+        }
+        catch (MemberUnavailableException)
+        {
+            result = null;
+            currentTerm = -1L;
+        }
+
+        return (voter, currentTerm, result);
+    }
+
+    private async Task EndVoting(IAsyncEnumerable<Task<(TMember, long, bool?)>> voters, CancellationToken token)
     {
         var votes = 0;
         var localMember = default(TMember);
@@ -88,7 +76,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         {
             while (await enumerator.MoveNextAsync().ConfigureAwait(false))
             {
-                var (member, term, result) = enumerator.Current;
+                var (member, term, result) = await enumerator.Current.ConfigureAwait(false);
 
                 if (IsDisposingOrDisposed)
                     return;
