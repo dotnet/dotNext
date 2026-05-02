@@ -28,7 +28,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     {
         timerCancellation = new();
         Token = timerCancellation.Token;
-        runningReplications = new(ReferenceEqualityComparer.Instance);
+        runningReplications = new(9, ReferenceEqualityComparer.Instance);
         lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
