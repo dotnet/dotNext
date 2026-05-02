@@ -47,8 +47,8 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
         {
             var result = status;
             Volatile.ReadBarrier();
-            
-            return (result & Status.Completed) is not 0;
+
+            return result >= Status.Completed;
         }
     }
 
@@ -168,13 +168,11 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
         ValueTaskSourceOnCompletedFlags flags)
         => completion.OnCompleted(continuation, obj, token, flags);
     
-    [Flags]
     private enum Status : byte
     {
         Active = 0,
         Completed = 1,
-        Consumed = 2,
-        CompletedAndConsumed = Completed | Consumed,
+        CompletedAndConsumed = 2,
     }
 }
 
