@@ -15,7 +15,6 @@ using static Runtime.GCLatencyModeExtensions;
 internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private readonly long currentTerm;
     private readonly Dictionary<TMember, ReplicationProcess> runningReplications;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
@@ -42,7 +41,8 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     public required long Term
     {
-        init => currentTerm = value;
+        get;
+        init;
     }
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
@@ -181,7 +181,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     {
         var process = new ReplicationProcess<TMember>(member, barriers.Capacity)
         {
-            Term = currentTerm,
+            Term = Term,
             Logger = Logger,
             AuditTrail = auditTrail,
             FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member)
