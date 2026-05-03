@@ -45,9 +45,12 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="provider">The time provider.</param>
     public Timestamp(TimeProvider provider)
-        : this(long.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
+        : this(GetCurrentTicks(provider))
     {
     }
+
+    private static long GetCurrentTicks(TimeProvider provider)
+        => long.Max(provider.GetTimestamp(), 1L); // ensure that timestamp is not empty
 
     /// <summary>
     /// Gets a value indicating that the timestamp is zero.
@@ -122,8 +125,11 @@ public readonly record struct Timestamp :
     /// <returns>The elapsed time, in ticks, between the starting timestamp and the time of this call.</returns>
     public long GetElapsedTicks(TimeProvider provider, out Timestamp currentTs)
     {
-        currentTs = new(provider);
-        return long.Max(1L, currentTs.ticks - ticks);
+        // currentTs may point to 'this', we can't rewrite it in-place
+        var currentTicks = provider.GetTimestamp();
+        var result = long.Max(1L, currentTicks - ticks);
+        currentTs = new(currentTicks);
+        return result;
     }
 
     /// <summary>
@@ -298,7 +304,7 @@ public readonly record struct Timestamp :
     /// <param name="location">The location of the timestamp to update.</param>
     /// <param name="provider">Time provider.</param>
     public static void Refresh(ref Timestamp location, TimeProvider provider)
-        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), long.Max(1L, provider.GetTimestamp()));
+        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), GetCurrentTicks(provider));
 
     /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
