@@ -16,11 +16,6 @@ internal class ReplicationProcess : Disposable
     public virtual void Replicate(ReplicationBarrier barrier)
         => barrier.SetResult(MemberResult.Committed(AuditTrail.LastEntryIndex));
 
-    public virtual void Start(CancellationToken token)
-    {
-        // nothing to do
-    }
-
     public virtual Task StopAsync(bool interrupt = false) => Task.CompletedTask;
 
     public virtual bool IsAvailable => true;
@@ -75,7 +70,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         }
     }
 
-    public override void Start(CancellationToken token) => _ = ReplicateAsync(token);
+    public void Start(CancellationToken token) => _ = ReplicateAsync(token);
 
     public override Task StopAsync(bool interrupt = false)
     {
