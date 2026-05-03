@@ -25,7 +25,7 @@ public interface IStateMachine : ISnapshotManager
     /// </summary>
     /// <param name="snapshotThreshold">The number of log entries to be squashed as a snapshot.</param>
     /// <returns>A new instance of the state machine.</returns>
-    public static IStateMachine CreateNoOpStateMachine(long snapshotThreshold = 10L)
+    public static IStateMachine CreateNoOp(long snapshotThreshold = 10L)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(snapshotThreshold, 2L);
 

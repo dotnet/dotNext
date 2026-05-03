@@ -7,7 +7,7 @@ public sealed class NoOpStateMachineTests : Test
     public static async Task MakeSnapshot()
     {
         const int threshold = 4;
-        var machine = IStateMachine.CreateNoOpStateMachine(threshold);
+        var machine = IStateMachine.CreateNoOp(threshold);
 
         Equal(0L, await machine.ApplyAsync(new LogEntry(0L, 0L), TestToken));
         Equal(1L, await machine.ApplyAsync(new LogEntry(0L, 1L), TestToken));

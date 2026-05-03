@@ -21,7 +21,7 @@ internal sealed class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddOptions()
-            .AddSingleton(IStateMachine.CreateNoOpStateMachine())
+            .AddSingleton(IStateMachine.CreateNoOp())
             .UsePersistentLog(new() { Location = Test.GetTempPath() })
             .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
             .AddSingleton<IInputChannel, TestMessageHandler>()

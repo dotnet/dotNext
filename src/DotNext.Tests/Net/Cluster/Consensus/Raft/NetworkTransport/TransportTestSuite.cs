@@ -497,5 +497,5 @@ public abstract class TransportTestSuite : RaftTest
     }
 
     private static WriteAheadLog CreateWal()
-        => new(new() { Location = GetTempPath() }, IStateMachine.CreateNoOpStateMachine());
+        => new(new() { Location = GetTempPath() }, IStateMachine.CreateNoOp());
 }
