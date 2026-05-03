@@ -34,15 +34,18 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellationToken).ConfigureAwait(false);
 
         // start voting in parallel
-        var voters = Task.WhenEach(Members
-            .TakeWhile(NotCanceled)
-            .Select(member => VoteAsync(member, lastIndex, lastTerm))
-        );
+        var voters = StartVoting(lastIndex, lastTerm);
         votingCancellation.CancelAfter(timeout);
 
         // finish voting
-        await EndVoting(voters, votingCancellation.Token).ConfigureAwait(false);
+        await EndVoting(voters).ConfigureAwait(false);
     }
+    
+    private IAsyncEnumerable<Task<(TMember, long, bool?)>> StartVoting(long lastIndex, long lastTerm)
+        => Task.WhenEach(Members
+            .TakeWhile(NotCanceled)
+            .Select(member => VoteAsync(member, lastIndex, lastTerm))
+        );
 
     private bool NotCanceled(TMember _) => !votingCancellation.IsCancellationRequested;
 
@@ -66,12 +69,12 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         return (voter, currentTerm, result);
     }
 
-    private async Task EndVoting(IAsyncEnumerable<Task<(TMember, long, bool?)>> voters, CancellationToken token)
+    private async Task EndVoting(IAsyncEnumerable<Task<(TMember, long, bool?)>> voters)
     {
         var votes = 0;
         var localMember = default(TMember);
 
-        var enumerator = voters.GetAsyncEnumerator(token);
+        var enumerator = voters.GetAsyncEnumerator(votingCancellationToken);
         try
         {
             while (await enumerator.MoveNextAsync().ConfigureAwait(false))
@@ -120,7 +123,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         }
 
         Logger.VotingCompleted(votes, Term);
-        if (token.IsCancellationRequested || votes <= 0 || localMember is null)
+        if (votingCancellationToken.IsCancellationRequested || votes <= 0 || localMember is null)
         {
             MoveToFollowerState(randomizeTimeout: true); // no clear consensus
         }
