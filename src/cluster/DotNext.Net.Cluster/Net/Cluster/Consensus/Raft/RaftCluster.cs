@@ -121,7 +121,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     ILogger IRaftStateMachine.Logger => Logger;
 
     /// <inheritdoc />
-    void IRaftStateMachine.UpdateLeaderStickiness() => Timestamp.Refresh(ref lastUpdated);
+    void IRaftStateMachine.UpdateLeaderStickiness(Timestamp refreshedAt)
+        => Timestamp.VolatileWrite(ref lastUpdated, refreshedAt);
 
     /// <inheritdoc />
     ref readonly TagList IRaftStateMachine.MeasurementTags => ref measurementTags;

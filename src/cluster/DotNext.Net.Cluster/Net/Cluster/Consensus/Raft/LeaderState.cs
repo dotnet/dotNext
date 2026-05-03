@@ -74,10 +74,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             
             // in case of forced (initiated programmatically, not by timeout) replication
             // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
-            var latencyScope = forced
-                ? default
-                : GCLatencyMode.SustainedLowLatency.Enable();
-            try
+            using (forced ? default : GCLatencyMode.SustainedLowLatency.Enable())
             {
                 // process responses
                 var (quorum, hasConsensus) = await ReplicateAsync(out var barrier).ConfigureAwait(false);
@@ -85,8 +82,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                     break;
 
                 Debug.Assert(hasConsensus);
-                RenewLease(startTime.Elapsed);
-                UpdateLeaderStickiness();
+                LeaderState.BroadcastTimeMeter.Record(RenewLease(startTime));
                 if (commitIndex > auditTrail.LastCommittedEntryIndex)
                 {
                     // majority of nodes accept entries with at least one entry from the current term
@@ -102,12 +98,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
                 barrier.Reuse();
             }
-            finally
-            {
-                latencyScope.Dispose();
-                LeaderState.BroadcastTimeMeter.Record(startTime.ElapsedMilliseconds);
-            }
-            
+
             // resume all suspended callers added to the queue concurrently before SwitchValve()
             replicationQueue.Drain();
             forced = await WaitForReplicationAsync(startTime, period, Token).ConfigureAwait(false);

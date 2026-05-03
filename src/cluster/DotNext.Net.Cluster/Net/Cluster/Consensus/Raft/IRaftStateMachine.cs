@@ -3,13 +3,15 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Diagnostics;
+
 internal interface IRaftStateMachine
 {
     ILogger Logger { get; }
 
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
-    void UpdateLeaderStickiness();
+    void UpdateLeaderStickiness(Timestamp refreshedAt);
 
     internal interface IWeakCallerStateIdentity
     {

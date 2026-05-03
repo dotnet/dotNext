@@ -112,7 +112,19 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="provider">Time provider.</param>
     /// <returns>The elapsed time, in ticks, between the starting timestamp and the time of this call.</returns>
-    public long GetElapsedTicks(TimeProvider provider) => Math.Max(1L, provider.GetTimestamp() - ticks);
+    public long GetElapsedTicks(TimeProvider provider) => long.Max(1L, provider.GetTimestamp() - ticks);
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in timer ticks.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <param name="currentTs">The current point in time.</param>
+    /// <returns>The elapsed time, in ticks, between the starting timestamp and the time of this call.</returns>
+    public long GetElapsedTicks(TimeProvider provider, out Timestamp currentTs)
+    {
+        currentTs = new(provider);
+        return long.Max(1L, currentTs.ticks - ticks);
+    }
 
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in milliseconds.
@@ -126,6 +138,15 @@ public readonly record struct Timestamp :
     /// <returns>The elapsed time, in ms, between the starting timestamp and the time of this call.</returns>
     public double GetElapsedMilliseconds(TimeProvider provider)
         => (double)GetElapsedTicks(provider) / provider.TimestampFrequency * 1_000D;
+    
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in milliseconds.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <param name="currentTs">The current point in time.</param>
+    /// <returns>The elapsed time, in ms, between the starting timestamp and the time of this call.</returns>
+    public double GetElapsedMilliseconds(TimeProvider provider, out Timestamp currentTs)
+        => (double)GetElapsedTicks(provider, out currentTs) / provider.TimestampFrequency * 1_000D;
 
     /// <summary>
     /// Gets a difference between two timestamps, in milliseconds.
@@ -277,7 +298,7 @@ public readonly record struct Timestamp :
     /// <param name="location">The location of the timestamp to update.</param>
     /// <param name="provider">Time provider.</param>
     public static void Refresh(ref Timestamp location, TimeProvider provider)
-        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
+        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), long.Max(1L, provider.GetTimestamp()));
 
     /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)

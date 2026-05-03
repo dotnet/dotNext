@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Diagnostics;
+
 internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     where TMember : class, IRaftClusterMember
 {
@@ -17,7 +19,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
     private protected IReadOnlyCollection<TMember> Members => stateMachine.Members;
 
-    private protected void UpdateLeaderStickiness() => stateMachine.UpdateLeaderStickiness();
+    private protected void UpdateLeaderStickiness(Timestamp refreshedAt) => stateMachine.UpdateLeaderStickiness(refreshedAt);
 
     private protected void MoveToCandidateState()
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToCandidateState(this), preferLocal: true);
