@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -124,10 +125,7 @@ public interface IRaftClusterMember : IClusterMember
             get
             {
                 var result = NextIndex;
-                if (result > 0L)
-                    result -= 1L;
-
-                return result;
+                return result - Unsafe.BitCast<bool, byte>(result > 0L);
             }
         }
     }
