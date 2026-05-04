@@ -1272,6 +1272,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
             Dispose(Interlocked.Exchange(ref members, IMemberList.Empty).Values);
             transitionCancellation.Dispose();
+            membershipLock.Dispose();
             transitionLock.Dispose();
             state.Dispose();
             TrySetDisposedException(readinessProbe);
