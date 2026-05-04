@@ -56,9 +56,7 @@ partial class WriteAheadLog
         
         private set
         {
-            // Full memory barrier to ensure that the index cannot be changed later, somewhere
-            // within Signal due to inlining
-            Interlocked.Exchange(ref appliedIndex, value);
+            Atomic.Write(ref appliedIndex, value);
             appliedEvent.Signal(resumeAll: true);
         }
     }
