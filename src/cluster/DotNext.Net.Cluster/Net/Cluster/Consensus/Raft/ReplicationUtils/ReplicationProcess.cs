@@ -15,11 +15,9 @@ internal class ReplicationProcess : Disposable
 {
     private protected static readonly Counter<int> LateResponsesMeter = Instrumentation.ServerSide.CreateCounter<int>(
         "post-quorum-responses", description: "Number of replication acknowledgments discarded because the leader had already reached majority consensus");
-    
-    public required IPersistentState AuditTrail { get; init; }
 
     public virtual void Replicate(ReplicationBarrier barrier)
-        => barrier.SetResult(MemberResult.Replicated(AuditTrail.LastEntryIndex));
+        => barrier.SetResult(MemberResult.Replicated(barrier.Checkpoint));
 
     public virtual Task StopAsync(bool interrupt = false) => Task.CompletedTask;
 
@@ -54,6 +52,8 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         writer = channel.Writer;
         interruption = new();
     }
+    
+    public required IPersistentState AuditTrail { get; init; }
 
     public TagList MeasurementTags
     {
@@ -116,7 +116,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                     precedingTerm = await AuditTrail.GetTermAsync(replicationIndex, source.Token).ConfigureAwait(false);
                     var response = available
                         ? await AuditTrail
-                            .ReadAsync(this, replicationIndex + 1L, AuditTrail.LastEntryIndex, source.Token)
+                            .ReadAsync(this, replicationIndex + 1L, barrier.Checkpoint, source.Token)
                             .ConfigureAwait(false)
                         : throw new MemberUnavailableException(member);
 
@@ -256,7 +256,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
     private ValueTask<ReplicationResult> ReplicateSingleAsync(ReplicationBarrier barrier)
     {
-        var task = barrier.WaitAsync(memberCount: 1);
+        var task = barrier.WaitAsync(memberCount: 1, AuditTrail.LastEntryIndex);
         Replicate(barrier);
         return task;
     }

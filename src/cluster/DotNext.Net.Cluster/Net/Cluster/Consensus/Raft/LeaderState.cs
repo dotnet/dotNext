@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Diagnostics;
+using IO.Log;
 using ReplicationUtils;
 using Runtime.CompilerServices;
 using static Runtime.GCLatencyModeExtensions;
@@ -77,7 +78,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             using (forced ? default : GCLatencyMode.SustainedLowLatency.Enable())
             {
                 // process responses
-                var (quorum, hasConsensus) = await ReplicateAsync(out var barrier).ConfigureAwait(false);
+                var (quorum, hasConsensus) = await ReplicateAsync(auditTrail, out var barrier).ConfigureAwait(false);
                 if (GetCommitIndex(barrier, quorum, hasConsensus) is not { } commitIndex)
                     break;
 
@@ -160,10 +161,10 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         removedMembers.Clear(); // help GC
     }
 
-    private ValueTask<ReplicationResult> ReplicateAsync(out ReplicationBarrier barrier)
+    private ValueTask<ReplicationResult> ReplicateAsync(IAuditTrail auditTrail, out ReplicationBarrier barrier)
     {
         barrier = RentBarrier();
-        var task = barrier.WaitAsync(runningReplications.Count);
+        var task = barrier.WaitAsync(runningReplications.Count, auditTrail.LastEntryIndex);
         StartReplication(barrier);
         return task;
     }
@@ -260,7 +261,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     /// <param name="auditTrail">Transaction log.</param>
     internal void StartLeading(TMember leaderNode, TimeSpan period, IPersistentState auditTrail)
     {
-        runningReplications.Add(leaderNode, new() { AuditTrail = auditTrail });
+        runningReplications.Add(leaderNode, new());
         heartbeatTask = DoHeartbeats(period, auditTrail);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }

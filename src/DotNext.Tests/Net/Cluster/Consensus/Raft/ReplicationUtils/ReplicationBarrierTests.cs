@@ -6,14 +6,14 @@ public class ReplicationBarrierTests : Test
     public static async Task CheckMixedResponses()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(7).AsTask();
-        
+        var task = barrier.WaitAsync(7, 0L).AsTask();
+
         True(barrier.SetResult(MemberResult.Replicated(10)));
         True(barrier.SetResult(MemberResult.Replicated(10)));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         False(barrier.IsCompleted);
-        
+
         True(barrier.SetResult(MemberResult.Replicated(10)));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
@@ -21,30 +21,30 @@ public class ReplicationBarrierTests : Test
 
         Equal(new(7, true), await task.WaitAsync(TestToken));
     }
-    
+
     [Fact]
     public static async Task CheckReplicatedMajority()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(7).AsTask();
-        
+        var task = barrier.WaitAsync(7, 0L).AsTask();
+
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.IsCompleted);
-        
+
         False(barrier.SetResult(MemberResult.Touched));
 
         Equal(new(4, true), await task.WaitAsync(TestToken));
     }
-    
+
     [Fact]
     public static async Task CheckNoResponseMajority()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(7).AsTask();
-        
+        var task = barrier.WaitAsync(7, 0L).AsTask();
+
         True(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.SetResult(MemberResult.Unavailable));
@@ -61,7 +61,7 @@ public class ReplicationBarrierTests : Test
     public static async Task Overflow(int expectedCount)
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(expectedCount).AsTask();
+        var task = barrier.WaitAsync(expectedCount, 0L).AsTask();
 
         for (var i = 0; i < expectedCount; i++)
         {
@@ -77,7 +77,7 @@ public class ReplicationBarrierTests : Test
     public static async Task ConsensusFor3()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(memberCount: 3).AsTask();
+        var task = barrier.WaitAsync(memberCount: 3, 0L).AsTask();
         True(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Replicated(2L)));
@@ -85,12 +85,12 @@ public class ReplicationBarrierTests : Test
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);
     }
-    
+
     [Fact]
     public static async Task NoConsensusFor3()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(memberCount: 3).AsTask();
+        var task = barrier.WaitAsync(memberCount: 3, 0L).AsTask();
         True(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.SetResult(MemberResult.Replicated(2L)));
         True(barrier.SetResult(MemberResult.Unavailable));
@@ -98,12 +98,12 @@ public class ReplicationBarrierTests : Test
         var result = await task.WaitAsync(TestToken);
         False(result.HasConsensus);
     }
-    
+
     [Fact]
     public static async Task ConsensusFor2()
     {
         var barrier = new ReplicationBarrier();
-        var task = barrier.WaitAsync(memberCount: 2).AsTask();
+        var task = barrier.WaitAsync(memberCount: 2, 0L).AsTask();
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Replicated(2L)));
 

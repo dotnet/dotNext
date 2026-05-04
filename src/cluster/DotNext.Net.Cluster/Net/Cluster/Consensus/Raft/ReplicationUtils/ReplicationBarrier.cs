@@ -22,13 +22,14 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
     private Status status;
     private ManualResetValueTaskSourceCore<ReplicationResult> completion = new() { RunContinuationsAsynchronously = true };
 
-    public ValueTask<ReplicationResult> WaitAsync(int memberCount)
+    public ValueTask<ReplicationResult> WaitAsync(int memberCount, long checkpointIndex)
     {
         Debug.Assert(memberCount > 0);
 
         count = memberCount;
         counters = new(memberCount);
         writePos = 0;
+        Checkpoint = checkpointIndex;
 
         if (memberCount > InlineBufferSize)
         {
@@ -40,6 +41,8 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
 
         return new(this, completion.Version);
     }
+    
+    public long Checkpoint { get; private set; }
 
     public bool IsCompleted
     {
