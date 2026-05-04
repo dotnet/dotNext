@@ -100,19 +100,8 @@ partial class WriteAheadLog
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct CommitChecker : ISupplier<bool>
+    private readonly struct CommitChecker(WriteAheadLog log, long index) : ISupplier<bool>
     {
-        private readonly WriteAheadLog log;
-        private readonly long index;
-
-        internal CommitChecker(WriteAheadLog log, long index)
-        {
-            Debug.Assert(log is not null);
-
-            this.log = log;
-            this.index = index;
-        }
-
         bool ISupplier<bool>.Invoke() => index <= log.LastAppliedIndex;
     }
 }

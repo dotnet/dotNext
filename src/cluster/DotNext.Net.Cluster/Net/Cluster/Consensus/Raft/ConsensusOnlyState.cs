@@ -75,28 +75,16 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct CommitChecker : ISupplier<bool>
+    private readonly struct CommitChecker(ConsensusOnlyState state, long index) : ISupplier<bool>
     {
-        private readonly ConsensusOnlyState state;
-        private readonly long index;
-
-        internal CommitChecker(ConsensusOnlyState state, long index)
-        {
-            Debug.Assert(state is not null);
-
-            this.state = state;
-            this.index = index;
-        }
-
-        bool ISupplier<bool>.Invoke()
-            => index <= Atomic.Read(in state.commitIndex);
+        bool ISupplier<bool>.Invoke() => index <= Atomic.Read(in state.commitIndex);
     }
 
     private readonly AsyncReaderWriterLock syncRoot = new();
     private readonly AsyncTrigger commitEvent = new();
     private long term, commitIndex, lastTerm, index;
 
-    // boxed ClusterMemberId or null if there is not last vote stored
+    // boxed ClusterMemberId or null if there is no last vote stored
     private volatile BoxedClusterMemberId? lastVote;
     private volatile long[] log = [];    // log of uncommitted entries
 
