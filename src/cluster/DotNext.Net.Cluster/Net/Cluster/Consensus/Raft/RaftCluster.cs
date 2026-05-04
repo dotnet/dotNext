@@ -66,8 +66,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         members = IMemberList.Empty;
-        transitionLock = new TransitionLock { MeasurementTags = measurementTags };
-        membershipLock = new MembershipLock { MeasurementTags = measurementTags };
+        transitionLock = new LockTypes.TransitionLock { MeasurementTags = measurementTags };
+        membershipLock = new LockTypes.MembershipLock { MeasurementTags = measurementTags };
         transitionCancellation = new();
         LifecycleToken = transitionCancellation.Token;
         heartbeatThreshold = config.HeartbeatThreshold;
@@ -1300,7 +1300,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private sealed class UnstartedState(RaftCluster<TMember> cluster) : RaftState<TMember>(cluster);
 }
 
-// The name of this class is correctly reflected in the metrics
-file sealed class TransitionLock : AsyncExclusiveLock;
+file static class LockTypes
+{
+    // The name of this class is correctly reflected in the metrics.
+    // Inner class is not a subject of name mangling.
+    public sealed class TransitionLock : AsyncExclusiveLock;
 
-file sealed class MembershipLock : AsyncExclusiveLock;
+    public sealed class MembershipLock : AsyncExclusiveLock;
+}
