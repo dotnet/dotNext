@@ -181,7 +181,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Atomic.Read(ref field);
+        get => Atomic.Read(in field);
         private set => Atomic.Write(ref field, value);
     }
 
