@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 
@@ -7,10 +8,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.ReplicationUtils;
 using Diagnostics;
 using IO;
 using IO.Log;
+using Metrics;
 using Threading;
 
 internal class ReplicationProcess : Disposable
 {
+    private protected static readonly Counter<int> LateResponsesMeter = Instrumentation.ServerSide.CreateCounter<int>(
+        "post-quorum-responses", description: "Number of replication acknowledgments discarded because the leader had already reached majority consensus");
+    
     public required IPersistentState AuditTrail { get; init; }
 
     public virtual void Replicate(ReplicationBarrier barrier)
@@ -28,6 +33,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
     private readonly ChannelReader<ReplicationBarrier> reader;
     private readonly ChannelWriter<ReplicationBarrier> writer;
     private readonly CancellationTokenSource interruption;
+    private readonly TagList measurementTags;
     private long replicationIndex, precedingTerm;
     private bool available = true;
     private IFailureDetector? detector;
@@ -47,6 +53,15 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         reader = channel.Reader;
         writer = channel.Writer;
         interruption = new();
+    }
+
+    public TagList MeasurementTags
+    {
+        init
+        {
+            value.Add(IRaftClusterMember.RemoteAddressMeterAttributeName, member.EndPoint.ToString());
+            measurementTags = value;
+        }
     }
 
     public override bool IsAvailable => Volatile.Read(ref available);
@@ -93,7 +108,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         // even in case of cancellation
         while (await reader.WaitToReadAsync(CancellationToken.None).ConfigureAwait(false))
         {
-            for (MemberResult? result; reader.TryRead(out var barrier); barrier.SetResult(result))
+            for (MemberResult? result; reader.TryRead(out var barrier); SetResult(barrier, in result))
             {
                 replicationIndex = member.State.PrecedingIndex;
                 try
@@ -133,6 +148,12 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 CheckHealthStatus();
             }
         }
+    }
+
+    private void SetResult(ReplicationBarrier barrier, in MemberResult? result)
+    {
+        if (!barrier.SetResult(in result))
+            LateResponsesMeter.Add(1, measurementTags);
     }
 
     private void CheckHealthStatus()

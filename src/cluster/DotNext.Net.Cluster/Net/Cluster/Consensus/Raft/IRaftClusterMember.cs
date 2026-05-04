@@ -13,7 +13,7 @@ public interface IRaftClusterMember : IClusterMember
     /// <summary>
     /// Represents metrics attribute containing the address of the local node.
     /// </summary>
-    protected const string RemoteAddressMeterAttributeName = "dotnext.raft.client.address";
+    protected internal const string RemoteAddressMeterAttributeName = "dotnext.raft.client.address";
 
     /// <summary>
     /// Represents metrics attribute containing Raft message type.

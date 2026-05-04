@@ -8,15 +8,15 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(7).AsTask();
         
-        barrier.SetResult(MemberResult.Committed(10));
-        barrier.SetResult(MemberResult.Committed(10));
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Touched);
+        True(barrier.SetResult(MemberResult.Committed(10)));
+        True(barrier.SetResult(MemberResult.Committed(10)));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Touched));
         False(barrier.IsCompleted);
         
-        barrier.SetResult(MemberResult.Committed(10));
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Touched);
+        True(barrier.SetResult(MemberResult.Committed(10)));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Touched));
         True(barrier.IsCompleted);
 
         Equal(new(7, true), await task.WaitAsync(TestToken));
@@ -28,11 +28,13 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(7).AsTask();
         
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Touched);
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Touched));
         True(barrier.IsCompleted);
+        
+        False(barrier.SetResult(MemberResult.Touched));
 
         Equal(new(4, true), await task.WaitAsync(TestToken));
     }
@@ -43,10 +45,11 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(7).AsTask();
         
-        barrier.SetResult(null);
-        barrier.SetResult(null);
-        barrier.SetResult(null);
-        barrier.SetResult(null);
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Unavailable));
+        False(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.IsCompleted);
 
         Equal(new(4, false), await task.WaitAsync(TestToken));
@@ -75,9 +78,9 @@ public class ReplicationBarrierTests : Test
     {
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(memberCount: 3).AsTask();
-        barrier.SetResult(MemberResult.Unavailable);
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Committed(2L));
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Committed(2L)));
 
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);
@@ -88,9 +91,9 @@ public class ReplicationBarrierTests : Test
     {
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(memberCount: 3).AsTask();
-        barrier.SetResult(MemberResult.Unavailable);
-        barrier.SetResult(MemberResult.Committed(2L));
-        barrier.SetResult(MemberResult.Unavailable);
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Committed(2L)));
+        True(barrier.SetResult(MemberResult.Unavailable));
 
         var result = await task.WaitAsync(TestToken);
         False(result.HasConsensus);
@@ -101,8 +104,8 @@ public class ReplicationBarrierTests : Test
     {
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(memberCount: 2).AsTask();
-        barrier.SetResult(MemberResult.Touched);
-        barrier.SetResult(MemberResult.Committed(2L));
+        True(barrier.SetResult(MemberResult.Touched));
+        True(barrier.SetResult(MemberResult.Committed(2L)));
 
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);

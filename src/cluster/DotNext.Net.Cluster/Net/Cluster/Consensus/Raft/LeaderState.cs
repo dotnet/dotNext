@@ -175,7 +175,8 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             Term = Term,
             Logger = Logger,
             AuditTrail = auditTrail,
-            FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member)
+            FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member),
+            MeasurementTags = MeasurementTags,
         };
 
         process.Start(Token);

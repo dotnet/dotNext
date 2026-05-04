@@ -51,9 +51,16 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
             return result >= Status.Completed;
         }
     }
-
-    // null if member is not available
-    public void SetResult(MemberResult? result)
+    
+    /// <summary>
+    /// Contributes the member response to the quorum.
+    /// </summary>
+    /// <param name="result">The member result; or <see cref="MemberResult.Unavailable"/> if the member is not available.</param>
+    /// <returns>
+    /// <see langword="true"/> if a response is a contribution to the quorum;
+    /// <see langword="false"/> if the response is discarded.
+    /// </returns>
+    public bool SetResult(in MemberResult? result)
     {
         bool consensusReached;
         int writtenCount;
@@ -70,7 +77,7 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
                     }
                     else if (!counters.TryGetConsensus(out consensusReached))
                     {
-                        goto default;
+                        return true;
                     }
 
                     status = Status.Completed;
@@ -80,15 +87,16 @@ internal class ReplicationBarrier : IValueTaskSource<ReplicationResult>
                     Reset();
                     goto reused;
                 default:
-                    return;
+                    return false;
             }
         }
 
         completion.SetResult(new(writtenCount, consensusReached));
-        return;
+        return true;
 
         reused:
         ReuseCore();
+        return false;
     }
 
     private void Reset()
