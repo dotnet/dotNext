@@ -19,7 +19,7 @@ internal class ReplicationProcess : Disposable
     public required IPersistentState AuditTrail { get; init; }
 
     public virtual void Replicate(ReplicationBarrier barrier)
-        => barrier.SetResult(MemberResult.Committed(AuditTrail.LastEntryIndex));
+        => barrier.SetResult(MemberResult.Replicated(AuditTrail.LastEntryIndex));
 
     public virtual Task StopAsync(bool interrupt = false) => Task.CompletedTask;
 
@@ -176,7 +176,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         {
             case HeartbeatResult.ReplicatedWithLeaderTerm:
                 OnReplicated();
-                return MemberResult.Committed(replicationIndex);
+                return MemberResult.Replicated(replicationIndex);
             case HeartbeatResult.Replicated:
                 OnReplicated();
                 return MemberResult.Touched;
@@ -244,7 +244,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 case { Term: not null }:
                     rounds = 0;
                     break;
-                case var memberResult when result.HasConsensus && memberResult.CommitIndex >= watermarkIndex:
+                case var memberResult when result.HasConsensus && memberResult.ReplicatedIndex >= watermarkIndex:
                     writer.Complete();
                     return true;
             }

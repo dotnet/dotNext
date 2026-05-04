@@ -22,7 +22,7 @@ internal readonly record struct MemberResult
         }
     }
 
-    public long CommitIndex => indexOrTerm > 0L ? indexOrTerm : 0L;
+    public long ReplicatedIndex => indexOrTerm > 0L ? indexOrTerm : 0L;
 
     public bool IsCanceled => indexOrTerm is long.MinValue;
 
@@ -35,7 +35,7 @@ internal readonly record struct MemberResult
         return new(term | long.MinValue);
     }
 
-    public static MemberResult Committed(long index)
+    public static MemberResult Replicated(long index)
     {
         Debug.Assert(index >= 0L);
 

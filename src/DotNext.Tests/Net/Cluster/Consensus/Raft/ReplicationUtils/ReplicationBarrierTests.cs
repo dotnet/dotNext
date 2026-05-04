@@ -8,13 +8,13 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(7).AsTask();
         
-        True(barrier.SetResult(MemberResult.Committed(10)));
-        True(barrier.SetResult(MemberResult.Committed(10)));
+        True(barrier.SetResult(MemberResult.Replicated(10)));
+        True(barrier.SetResult(MemberResult.Replicated(10)));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         False(barrier.IsCompleted);
         
-        True(barrier.SetResult(MemberResult.Committed(10)));
+        True(barrier.SetResult(MemberResult.Replicated(10)));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.SetResult(MemberResult.Touched));
         True(barrier.IsCompleted);
@@ -80,7 +80,7 @@ public class ReplicationBarrierTests : Test
         var task = barrier.WaitAsync(memberCount: 3).AsTask();
         True(barrier.SetResult(MemberResult.Unavailable));
         True(barrier.SetResult(MemberResult.Touched));
-        True(barrier.SetResult(MemberResult.Committed(2L)));
+        True(barrier.SetResult(MemberResult.Replicated(2L)));
 
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);
@@ -92,7 +92,7 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(memberCount: 3).AsTask();
         True(barrier.SetResult(MemberResult.Unavailable));
-        True(barrier.SetResult(MemberResult.Committed(2L)));
+        True(barrier.SetResult(MemberResult.Replicated(2L)));
         True(barrier.SetResult(MemberResult.Unavailable));
 
         var result = await task.WaitAsync(TestToken);
@@ -105,7 +105,7 @@ public class ReplicationBarrierTests : Test
         var barrier = new ReplicationBarrier();
         var task = barrier.WaitAsync(memberCount: 2).AsTask();
         True(barrier.SetResult(MemberResult.Touched));
-        True(barrier.SetResult(MemberResult.Committed(2L)));
+        True(barrier.SetResult(MemberResult.Replicated(2L)));
 
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);

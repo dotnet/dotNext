@@ -7,7 +7,7 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.HigherTermDetected(20L);
         Equal(20L, result.Term);
-        Equal(0L, result.CommitIndex);
+        Equal(0L, result.ReplicatedIndex);
         False(result.IsCanceled);
     }
 
@@ -16,16 +16,16 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.Canceled;
         Null(result.Term);
-        Equal(0L, result.CommitIndex);
+        Equal(0L, result.ReplicatedIndex);
         True(result.IsCanceled);
     }
 
     [Fact]
     public static void CommitIndexResult()
     {
-        var result = MemberResult.Committed(20L);
+        var result = MemberResult.Replicated(20L);
         Null(result.Term);
-        Equal(20L, result.CommitIndex);
+        Equal(20L, result.ReplicatedIndex);
         False(result.IsCanceled);
     }
 
@@ -34,7 +34,7 @@ public sealed class MemberResultTests : Test
     {
         var result = MemberResult.Touched;
         Null(result.Term);
-        Equal(0L, result.CommitIndex);
+        Equal(0L, result.ReplicatedIndex);
         False(result.IsCanceled);
     }
 }
