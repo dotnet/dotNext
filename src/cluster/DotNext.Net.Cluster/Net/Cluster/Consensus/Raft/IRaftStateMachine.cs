@@ -30,13 +30,13 @@ internal interface IRaftStateMachine<TMember> : IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
-    void MoveToFollowerState(IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm);
+    Task MoveToFollowerState(IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm);
 
-    void MoveToCandidateState(IWeakCallerStateIdentity callerState);
+    Task MoveToCandidateState(IWeakCallerStateIdentity callerState);
 
-    void MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
+    Task MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
 
-    void UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
+    Task UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
 
-    void IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
+    Task IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
 }

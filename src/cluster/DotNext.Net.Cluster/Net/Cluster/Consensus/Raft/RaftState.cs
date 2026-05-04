@@ -98,7 +98,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => stateMachine.MoveToCandidateState(this);
+            => _ = stateMachine.MoveToCandidateState(this);
     }
 
     private sealed class TransitionToFollowerState : StateTransitionWorkItem
@@ -114,7 +114,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
+            => _ = stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
     }
 
     private sealed class TransitionToLeaderState : StateTransitionWorkItem
@@ -126,7 +126,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             => this.leader = leader;
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => stateMachine.MoveToLeaderState(this, leader);
+            => _ = stateMachine.MoveToLeaderState(this, leader);
     }
 
     private sealed class UnavailableMemberNotification : StateTransitionWorkItem
@@ -142,12 +142,12 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => stateMachine.UnavailableMemberDetected(this, member, token);
+            => _ = stateMachine.UnavailableMemberDetected(this, member, token);
     }
 
     private sealed class IncomingHeartbeatTimedOutNotification(RaftState<TMember> currentState) : StateTransitionWorkItem(currentState)
     {
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => stateMachine.IncomingHeartbeatTimedOut(this);
+            => _ = stateMachine.IncomingHeartbeatTimedOut(this);
     }
 }
