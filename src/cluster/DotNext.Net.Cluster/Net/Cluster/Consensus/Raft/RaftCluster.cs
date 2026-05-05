@@ -871,7 +871,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         // do not execute the next round of heartbeats if the sender is already in sync with the leader
         if (state is LeaderState<TMember> leaderState)
         {
-            if (commitIndex < AuditTrail.LastCommittedEntryIndex)
+            var lastCommittedEntryIndex = AuditTrail.LastCommittedEntryIndex;
+            if (commitIndex < lastCommittedEntryIndex)
             {
                 try
                 {
@@ -888,10 +889,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 }
             }
 
-            result = AuditTrail.LastCommittedEntryIndex;
+            result = lastCommittedEntryIndex;
         }
 
-    exit:
+        exit:
         return new(result);
     }
 
@@ -899,10 +900,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
     {
-        for (; ; token.ThrowIfCancellationRequested())
+        for (long commitIndex; ; token.ThrowIfCancellationRequested())
         {
             if (state is LeaderState<TMember> leaderState)
             {
+                // on leader node, we want to be sure that everything is committed and applied
+                commitIndex = AuditTrail.LastEntryIndex;
                 try
                 {
                     await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
@@ -912,10 +915,35 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     // local node is not a leader, retry
                     continue;
                 }
+                
+                var tokenSource = CombineTokens(token, LifecycleToken, leaderState.Token);
+                try
+                {
+                    await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException e) when (e.CausedBy(tokenSource, LifecycleToken))
+                {
+                    throw CreateException();
+                }
+                catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
+                {
+                    // local node is not a leader, retry
+                    continue;
+                }
+                catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+                {
+                    // user-triggered cancellation
+                    throw new OperationCanceledException(e.Message, tokenSource.CancellationOrigin);
+                }
+                finally
+                {
+                    await tokenSource.DisposeAsync().ConfigureAwait(false);
+                }
             }
             else if (Leader is { } leader)
             {
-                if (await leader.SynchronizeAsync(AuditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false) is not { } commitIndex)
+                if (!leader.IsRemote
+                    || !(await leader.SynchronizeAsync(AuditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false)).TryGetValue(out commitIndex))
                     continue;
 
                 await AuditTrail.WaitForApplyAsync(commitIndex, token).ConfigureAwait(false);
