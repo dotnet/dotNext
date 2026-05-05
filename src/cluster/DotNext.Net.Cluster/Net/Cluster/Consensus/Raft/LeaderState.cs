@@ -85,7 +85,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                     break;
 
                 Debug.Assert(hasConsensus);
-                LeaderState.BroadcastTimeMeter.Record(RenewLease(startTime));
+                LeaderState.BroadcastTimeMeter.Record(RenewLease(startTime), in MeasurementTags);
                 if (commitIndex > auditTrail.LastCommittedEntryIndex)
                 {
                     // majority of nodes accept entries with at least one entry from the current term
