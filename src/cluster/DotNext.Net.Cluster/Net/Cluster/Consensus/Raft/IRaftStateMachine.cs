@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -15,7 +16,7 @@ internal interface IRaftStateMachine
 
     internal interface IWeakCallerStateIdentity
     {
-        bool IsValid(object? state);
+        bool IsValid([NotNullWhen(true)] object? state);
 
         void Clear();
     }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
@@ -59,7 +60,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             }
         }
 
-        public bool IsValid(object? state) => ReferenceEquals(Target, state);
+        public bool IsValid([NotNullWhen(true)] object? state)
+            => Target is { } target && ReferenceEquals(target, state);
 
         private void ClearCore()
         {
