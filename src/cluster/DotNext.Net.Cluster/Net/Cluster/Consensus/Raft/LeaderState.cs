@@ -45,6 +45,8 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         get;
         init;
     }
+    
+    public required long WriteBarrier { get; init; }
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 

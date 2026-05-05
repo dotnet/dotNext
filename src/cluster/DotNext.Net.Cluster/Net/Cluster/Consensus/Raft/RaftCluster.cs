@@ -36,7 +36,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
-    private volatile TaskCompletionSource<CancellationToken> leadershipEvent;
+    private volatile TaskCompletionSource<LeaderState<TMember>> leadershipEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
@@ -152,7 +152,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.Token ?? new(canceled: true);
+    public CancellationToken LeadershipToken => state is LeaderState<TMember> leaderState
+                                                && AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier
+        ? leaderState.Token
+        : new(canceled: true);
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
     public CancellationToken ConsensusToken => (state as ConsensusState<TMember>)?.Token ?? new(canceled: true);
@@ -271,9 +274,22 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     ValueTask<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
         => new(WaitForLeaderAsync(timeout, token).Convert<TMember, IClusterMember>());
 
-    /// <inheritdoc cref="IRaftCluster.WaitForLeadershipAsync(TimeSpan, CancellationToken)"/>
-    public ValueTask<CancellationToken> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default)
-        => new(leadershipEvent.Task.WaitAsync(timeout, token));
+    /// <inheritdoc cref="IRaftCluster.WaitForLeadershipAsync(CancellationToken)"/>
+    public async Task<CancellationToken> WaitForLeadershipAsync(CancellationToken token = default)
+    {
+        var leaderState = await leadershipEvent.Task.WaitAsync(token).ConfigureAwait(false);
+
+        // The write barrier is passed, it's safe to inform the API clients about a new leader.
+        // If we inform the client before the barrier, we could have duplicate writes, which is not acceptable:
+        // We have two nodes A and B. A is a leader. Client performs write to A. Node A replicates the uncommitted
+        // write to B, and gets the successful response from it. Now A can mark the write as committed. But it's committed
+        // locally. Now election is triggered, and B becomes a new leader. The client didn't receive ACK. The client
+        // reads the value from B. On B, its write is not yet committed, but the node is already elected as a leader.
+        // Thus, the client performs duplicate write. The client should not see B as a leader while it's not committed no-op
+        // log entry as write barrier.
+        await AuditTrail.WaitForApplyAsync(leaderState.WriteBarrier, token).ConfigureAwait(false);
+        return leaderState.Token;
+    }
 
     private ValueTask UnfreezeAsync()
     {
@@ -1148,14 +1164,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     MaxLease = LeaderLeaseDuration,
                     Term = currentTerm,
                     FailureDetectorFactory = FailureDetectorFactory,
+                    WriteBarrier = await AuditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false),
                 };
 
                 await UpdateStateAsync(newState).ConfigureAwait(false);
-                await AuditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
 
                 // ensure that the leader is visible to the consumers after no-op entry is added to the log (which acts as a write barrier)
                 Leader = newLeader;
-                leadershipEvent.TrySetResult(newState.Token);
+                leadershipEvent.TrySetResult(newState);
 
                 newState.StartLeading(newLeader, HeartbeatTimeout, AuditTrail);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
