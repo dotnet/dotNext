@@ -92,30 +92,10 @@ public static class EndPointFormatter
                 WriteIP(bufferWriter, ip);
                 break;
             case HttpEndPoint http:
-                // the format is:
-                // DNS endpoint type = 1 byte
-                // HTTPS (true/false) = 1 byte
-                // port = 4 bytes
-                // address family = 4 bytes
-                // host name length, N = 4 bytes
-                // host name = N bytes
-                writer += HttpEndPointPrefix;
-                writer += Unsafe.BitCast<bool, byte>(http.IsSecure);
-                writer.WriteLittleEndian(http.Port);
-                writer.WriteLittleEndian<Enum<AddressFamily>>(new(http.AddressFamily));
-                Serialize(http.Host, ref writer);
+                WriteHttp(bufferWriter, http);
                 break;
             case DnsEndPoint dns:
-                // the format is:
-                // DNS endpoint type = 1 byte
-                // port = 4 bytes
-                // address family = 4 bytes
-                // host name length, N = 4 bytes
-                // host name = N bytes
-                writer += DnsEndPointPrefix;
-                writer.WriteLittleEndian(dns.Port);
-                writer.WriteLittleEndian<Enum<AddressFamily>>(new(dns.AddressFamily));
-                Serialize(dns.Host, ref writer);
+                WriteDns(bufferWriter, dns);
                 break;
             case UnixDomainSocketEndPoint domainSocket:
                 WriteUds(bufferWriter, domainSocket);
@@ -279,7 +259,7 @@ public static class EndPointFormatter
     private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
     {
         port = reader.ReadLittleEndian<int>();
-        family = reader.ReadLittleEndian<Enum<AddressFamily>>();
+        family = (AddressFamily)reader.ReadLittleEndian<int>();
         var length = reader.ReadLittleEndian<int>();
 
         using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
