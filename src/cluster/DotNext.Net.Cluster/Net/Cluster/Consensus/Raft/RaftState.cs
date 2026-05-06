@@ -25,8 +25,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private protected void MoveToCandidateState()
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToCandidateState(this), preferLocal: true);
 
-    private protected void MoveToLeaderState(TMember member)
-        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToLeaderState(this, member), preferLocal: true);
+    private protected void MoveToLeaderState(TMember member, long writeBarrier)
+        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToLeaderState(this, member, writeBarrier), preferLocal: true);
 
     private protected void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToFollowerState(this, randomizeTimeout, newTerm), preferLocal: true);
@@ -122,13 +122,17 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private sealed class TransitionToLeaderState : StateTransitionWorkItem
     {
         private readonly TMember leader;
+        private readonly long writeBarrier;
 
-        internal TransitionToLeaderState(RaftState<TMember> currentState, TMember leader)
+        internal TransitionToLeaderState(RaftState<TMember> currentState, TMember leader, long writeBarrier)
             : base(currentState)
-            => this.leader = leader;
+        {
+            this.leader = leader;
+            this.writeBarrier = writeBarrier;
+        }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => _ = stateMachine.MoveToLeaderState(this, leader);
+            => _ = stateMachine.MoveToLeaderState(this, leader, writeBarrier);
     }
 
     private sealed class UnavailableMemberNotification : StateTransitionWorkItem

@@ -1146,7 +1146,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc />
-    async Task IRaftStateMachine<TMember>.MoveToLeaderState(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember newLeader)
+    async Task IRaftStateMachine<TMember>.MoveToLeaderState(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember newLeader, long writeBarrier)
     {
         var lockTaken = false;
 
@@ -1164,7 +1164,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     MaxLease = LeaderLeaseDuration,
                     Term = currentTerm,
                     FailureDetectorFactory = FailureDetectorFactory,
-                    WriteBarrier = await AuditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false),
+                    WriteBarrier = writeBarrier,
                 };
 
                 await UpdateStateAsync(newState).ConfigureAwait(false);

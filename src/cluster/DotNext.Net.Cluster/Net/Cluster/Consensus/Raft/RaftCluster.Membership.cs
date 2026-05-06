@@ -208,7 +208,7 @@ public partial class RaftCluster<TMember>
         var process = new ReplicationProcess<TMember>(member, replicationLag)
         {
             Logger = Logger,
-            Term = AuditTrail.Term,
+            Term = leaderState.Term,
             AuditTrail = AuditTrail,
         };
         var lockTaken = false;
@@ -230,7 +230,9 @@ public partial class RaftCluster<TMember>
                 return false;
 
             // make sure that the previous configuration is committed
-            var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+            var commitIndex = await AuditTrail
+                .AppendAsync(new EmptyLogEntry { Term = leaderState.Term }, tokenSource.Token)
+                .ConfigureAwait(false);
             leaderState.ForceReplication();
             await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
@@ -289,14 +291,16 @@ public partial class RaftCluster<TMember>
             lockTaken = membershipLock.TryAcquire();
             if (!lockTaken)
                 throw new ConcurrentMembershipModificationException();
-            
+
             if (members.TryGetValue(id, out var member))
             {
                 var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
                 if (IClusterConfiguration<TAddress>.TryRemove(ref config, addressProvider(member)))
                 {
                     // make sure that the previous configuration is committed
-                    var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+                    var commitIndex = await AuditTrail
+                        .AppendAsync(new EmptyLogEntry { Term = leaderState.Term }, tokenSource.Token)
+                        .ConfigureAwait(false);
                     leaderState.ForceReplication();
                     await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
