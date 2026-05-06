@@ -5,7 +5,7 @@ public sealed class UnbufferedFileStreamTests : Test
     [Fact]
     public static void ReadWriteSynchronously()
     {
-        var fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var fileName = GetTempPath();
         using var handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var stream = handle.AsUnbufferedStream(FileAccess.ReadWrite);
         True(stream.CanRead);
@@ -39,7 +39,7 @@ public sealed class UnbufferedFileStreamTests : Test
     [Fact]
     public static async Task ReadWriteAsynchronously()
     {
-        var fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var fileName = GetTempPath();
         using var handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         await using var stream = handle.AsUnbufferedStream(FileAccess.ReadWrite);
         True(stream.CanRead);

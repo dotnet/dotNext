@@ -16,7 +16,7 @@ public static class ByteBuffer
     private const int MaxBufferSize = int.MaxValue / 2;
 
     private static void Write<T, TWriter>(TWriter writer, T value)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
         where T : IBinaryFormattable<T>
     {
         value.Format(writer.GetSpan(T.Size));
@@ -31,10 +31,10 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     public static void Write<T>(this IBufferWriter<byte> writer, T value)
         where T : IBinaryFormattable<T>
-        => Write<T, BufferWriterReference<byte>>(new(writer), value);
+        => Write<T, IBufferWriter<byte>>(writer, value);
     
     private static int WriteLittleEndian<T, TWriter>(TWriter writer, T value)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
         where T : IBinaryInteger<T>
     {
         int length;
@@ -58,11 +58,11 @@ public static class ByteBuffer
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int WriteLittleEndian<T>(this IBufferWriter<byte> writer, T value)
         where T : IBinaryInteger<T>
-        => WriteLittleEndian<T, BufferWriterReference<byte>>(new(writer), value);
+        => WriteLittleEndian<T, IBufferWriter<byte>>(writer, value);
 
     private static int WriteBigEndian<T, TWriter>(TWriter writer, T value)
         where T : IBinaryInteger<T>
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         int length;
         for (var destination = writer.GetSpan(); !value.TryWriteBigEndian(destination, out length); destination = writer.GetSpan(length))
@@ -85,10 +85,10 @@ public static class ByteBuffer
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int WriteBigEndian<T>(this IBufferWriter<byte> writer, T value)
         where T : IBinaryInteger<T>
-        => WriteBigEndian<T, BufferWriterReference<byte>>(new(writer), value);
+        => WriteBigEndian<T, IBufferWriter<byte>>(writer, value);
     
     private static int Write<TWriter>(TWriter writer, in BigInteger value, bool isBigEndian, bool isUnsigned)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         var buffer = writer.GetSpan(value.GetByteCount(isUnsigned));
         if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
@@ -108,11 +108,11 @@ public static class ByteBuffer
     /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int Write(this IBufferWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
-        => Write<BufferWriterReference<byte>>(new(writer), value, isBigEndian, isUnsigned);
+        => Write<IBufferWriter<byte>>(writer, value, isBigEndian, isUnsigned);
     
     private static int Format<T, TWriter>(TWriter writer, T value, ReadOnlySpan<char> format, IFormatProvider? provider)
         where T : IUtf8SpanFormattable
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         var buffer = writer.GetSpan();
         int bytesWritten;
@@ -138,7 +138,7 @@ public static class ByteBuffer
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int Format<T>(this IBufferWriter<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : IUtf8SpanFormattable
-        => Format<T, BufferWriterReference<byte>>(new(writer), value, format, provider);
+        => Format<T, IBufferWriter<byte>>(writer, value, format, provider);
 
     /// <summary>
     /// Writes the value as a sequence of bytes to the buffer.

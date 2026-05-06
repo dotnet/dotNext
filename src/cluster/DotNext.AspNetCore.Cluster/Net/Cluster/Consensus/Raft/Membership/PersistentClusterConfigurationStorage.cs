@@ -4,15 +4,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
 
-internal sealed class PersistentClusterConfigurationStorage : PersistentClusterConfigurationStorage<UriEndPoint>
+internal sealed class PersistentClusterConfigurationStorage(string fileName) : PersistentClusterConfigurationStorage<UriEndPoint>(fileName)
 {
-    internal PersistentClusterConfigurationStorage(string path)
-        : base(path, comparer: EndPointFormatter.UriEndPointComparer)
-    {
-    }
+    protected override IEqualityComparer<UriEndPoint> Comparer => EndPointFormatter.UriEndPointComparer;
 
-    protected override void Encode(UriEndPoint address, ref BufferWriterSlim<byte> output)
-        => output.WriteEndPoint(address);
+    protected override void Encode(UriEndPoint address, ref BufferWriterSlim<byte> writer)
+        => writer.WriteEndPoint(address);
 
     protected override UriEndPoint Decode(ref SequenceReader reader)
         => (UriEndPoint)reader.ReadEndPoint();

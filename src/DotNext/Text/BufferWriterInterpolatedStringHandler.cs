@@ -5,8 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Text;
 
-using Buffers;
-
 /// <summary>
 /// Represents handler of the interpolated string
 /// that can be written to <see cref="IBufferWriter{T}"/> without temporary allocations.
@@ -16,7 +14,7 @@ using Buffers;
 [StructLayout(LayoutKind.Auto)]
 public struct BufferWriterInterpolatedStringHandler : IInterpolatedStringHandler
 {
-    private readonly BufferWriterReference<char> writer;
+    private readonly IBufferWriter<char> writer;
     private readonly IFormatProvider? provider;
     private int count;
 
@@ -29,7 +27,7 @@ public struct BufferWriterInterpolatedStringHandler : IInterpolatedStringHandler
     /// <param name="provider">Optional formatting provider.</param>
     public BufferWriterInterpolatedStringHandler(int literalLength, int formattedCount, IBufferWriter<char> writer, IFormatProvider? provider = null)
     {
-        this.writer = new(writer ?? throw new ArgumentNullException(nameof(writer)));
+        this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         this.provider = provider;
 
         writer.GetSpan(IInterpolatedStringHandler.EstimateUtf16BufferSize(literalLength, formattedCount));

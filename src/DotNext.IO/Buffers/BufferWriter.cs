@@ -57,7 +57,7 @@ public static class BufferWriter
     }
 
     private static int WriteLength<TWriter>(TWriter writer, int length, LengthFormat lengthFormat)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         var bytesWritten = WriteLength(writer.GetSpan(lengthFormat.MaxByteCount), length, lengthFormat);
         writer.Advance(bytesWritten);
@@ -65,7 +65,7 @@ public static class BufferWriter
     }
 
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
-        => WriteLength<BufferWriterReference<byte>>(new(buffer), length, lengthFormat);
+        => WriteLength<IBufferWriter<byte>>(buffer, length, lengthFormat);
 
     internal static int WriteLength(Span<byte> buffer, int length, LengthFormat lengthFormat)
     {
@@ -74,7 +74,7 @@ public static class BufferWriter
     }
 
     private static int Encode<TWriter>(TWriter writer, ReadOnlySpan<char> chars, in EncodingContext context, LengthFormat? lengthFormat)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         Span<byte> buffer;
         int byteCount, result;
@@ -118,7 +118,7 @@ public static class BufferWriter
     /// <returns>The number of written bytes.</returns>
     public static int Encode(this IBufferWriter<byte> writer, ReadOnlySpan<char> chars, in EncodingContext context,
         LengthFormat? lengthFormat = null)
-        => Encode<BufferWriterReference<byte>>(new(writer), chars, in context, lengthFormat);
+        => Encode<IBufferWriter<byte>>(writer, chars, in context, lengthFormat);
 
     /// <summary>
     /// Encodes string using the specified encoding.

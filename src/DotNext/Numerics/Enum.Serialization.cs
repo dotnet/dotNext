@@ -27,7 +27,7 @@ partial struct Enum<T>
         {
             AssertUnderlyingType<TValue>();
 
-            return Unsafe.BitCast<T, TValue>(value).GetByteCount();
+            return Unsafe.As<T, TValue>(ref value).GetByteCount();
         }
     }
 

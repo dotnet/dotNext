@@ -5,11 +5,22 @@ using Buffers;
 /// <summary>
 /// Represents data transfer object holding the content of the predefined size in the memory.
 /// </summary>
-/// <param name="length">The length, in bytes, of the content.</param>
-/// <param name="allocator">The memory allocator.</param>
-public class MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null) : Disposable, IDataTransferObject
+public class MemoryTransferObject : Disposable, IDataTransferObject
 {
-    private MemoryOwner<byte> owner = length > 0 ? allocator.DefaultIfNull.AllocateExactly(length) : default;
+    private MemoryOwner<byte> owner;
+
+    /// <summary>
+    /// Initializes a new memory DTO.
+    /// </summary>
+    /// <param name="length">The length, in bytes, of the content.</param>
+    /// <param name="allocator">The memory allocator.</param>
+    public MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null)
+        : this(length > 0 ? allocator.DefaultIfNull.AllocateExactly(length) : default)
+    {
+    }
+
+    private MemoryTransferObject(MemoryOwner<byte> owner)
+        => this.owner = owner;
 
     /// <summary>
     /// Transforms this object to serialized form.
@@ -53,6 +64,19 @@ public class MemoryTransferObject(int length, MemoryAllocator<byte>? allocator =
         memory = Content;
         return true;
     }
+
+    /// <summary>
+    /// Transforms the Data Transfer Object to <see cref="MemoryTransferObject"/> instance.
+    /// </summary>
+    /// <param name="obj">The object to transform.</param>
+    /// <param name="allocator">The memory allocator.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TObject">The type of the object to transform.</typeparam>
+    /// <returns>The transformed object.</returns>
+    public static async ValueTask<MemoryTransferObject> TransformAsync<TObject>(TObject obj, MemoryAllocator<byte>? allocator = null,
+        CancellationToken token = default)
+        where TObject : IDataTransferObject
+        => new(await obj.ToMemoryAsync(allocator, token).ConfigureAwait(false));
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)

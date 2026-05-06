@@ -9,8 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct ElectionTimeout
 {
-    private readonly int lowerValue, upperValue;
-
     /// <summary>
     /// Gets recommended election timeout.
     /// </summary>
@@ -26,19 +24,19 @@ public readonly struct ElectionTimeout
     /// <summary>
     /// Gets lower possible value of leader election timeout, in milliseconds.
     /// </summary>
-    required public int LowerValue
+    public required int LowerValue
     {
-        get => lowerValue;
-        init => lowerValue = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        get;
+        init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
     /// Gets upper possible value of leader election timeout, in milliseconds.
     /// </summary>
-    required public int UpperValue
+    public required int UpperValue
     {
-        get => upperValue;
-        init => upperValue = value is > 0 and < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        get;
+        init => field = value is > 0 and < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -49,7 +47,7 @@ public readonly struct ElectionTimeout
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out int lowerValue, out int upperValue)
     {
-        lowerValue = this.lowerValue;
-        upperValue = this.upperValue;
+        lowerValue = LowerValue;
+        upperValue = UpperValue;
     }
 }

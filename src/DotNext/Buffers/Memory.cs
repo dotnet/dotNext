@@ -83,7 +83,7 @@ public static partial class Memory
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
-        where TWriter : struct, IBufferWriter<T>, allows ref struct
+        where TWriter : IBufferWriter<T>, allows ref struct
     {
         var destination = GetSpan(writer);
 

@@ -5,7 +5,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static async Task SimpleReadAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
@@ -33,7 +33,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static async Task ReadBufferTwiceAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
@@ -61,7 +61,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static async Task ReadLargeDataAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
@@ -81,7 +81,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static void SimpleRead()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
@@ -101,7 +101,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static void ReadBufferTwice()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
@@ -129,7 +129,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static void ReadLargeData()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
@@ -151,7 +151,7 @@ public sealed class FileReaderTests : Test
     [Fact]
     public static async Task ReadSequentially()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(fs) { MaxBufferSize = 32 };

@@ -14,6 +14,9 @@ public readonly struct EmptyLogEntry : IBufferedLogEntry
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
 
+    /// <inheritdoc/>
+    bool IRaftLogEntry.IsConfiguration => false;
+
     /// <inheritdoc cref="ILogEntry.IsSnapshot"/>
     public bool IsSnapshot { get; internal init; }
 

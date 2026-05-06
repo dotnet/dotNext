@@ -35,7 +35,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(responseReader);
 
-        var tokenSource = CombineTokens([LifecycleToken, token]);
+        var tokenSource = CombineTokens(LifecycleToken, token);
         try
         {
             do
@@ -81,7 +81,7 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        var tokenSource = CombineTokens([token, LifecycleToken]);
+        var tokenSource = CombineTokens(token, LifecycleToken);
         try
         {
             do
@@ -129,7 +129,7 @@ internal partial class RaftHttpCluster : IOutputChannel
 
         // keep the same message between retries for correct identification of duplicate messages
         var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
-        var tokenSource = CombineTokens([token, LifecycleToken]);
+        var tokenSource = CombineTokens(token, LifecycleToken);
         try
         {
             do
@@ -263,7 +263,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         CancellationToken leadershipToken,
         CancellationToken token)
     {
-        var tokenSource = CombineTokens([token, leadershipToken]);
+        var tokenSource = CombineTokens(token, leadershipToken);
         try
         {
             await ReceiveMessageAsync(sender, message, response, tokenSource.Token).ConfigureAwait(false);
@@ -333,35 +333,41 @@ internal partial class RaftHttpCluster : IOutputChannel
 
     private async Task AppendEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
     {
-        var message = new AppendEntriesMessage(request, out var configurationReader, out var entries);
+        var message = new AppendEntriesMessage(request, out var entries);
         TryGetMember(message.Sender)?.Touch();
 
-        if (message.ConfigurationLength > int.MaxValue)
-        {
-            response.StatusCode = StatusCodes.Status413RequestEntityTooLarge;
-            return;
-        }
-
-        var configuration = new ReceivedClusterConfiguration((int)message.ConfigurationLength) { Fingerprint = message.ConfigurationFingerprint };
         try
         {
-            await configurationReader(configuration.Content, token).ConfigureAwait(false);
             var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm,
-                message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
+                message.CommitIndex, token).ConfigureAwait(false);
             await AppendEntriesMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
         }
         finally
         {
             await entries.DisposeAsync().ConfigureAwait(false);
-            configuration.Dispose();
         }
     }
 
     private async Task InstallSnapshotAsync(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
     {
         TryGetMember(message.Sender)?.Touch();
+        
+        await InstallConfigurationAsync(
+            message.ConsensusTerm,
+            message.Configuration,
+            message.ConfigurationVersion,
+            token).ConfigureAwait(false);
+            
+        // make sure that the configuration is consumed
+        await message.EnsureConfigurationConsumedAsync(token).ConfigureAwait(false);
 
-        var result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
+        // install snapshot
+        var result = await InstallSnapshotAsync(
+            message.Sender,
+            message.ConsensusTerm,
+            message.Snapshot,
+            message.Index,
+            token).ConfigureAwait(false);
         await InstallSnapshotMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }
 

@@ -87,6 +87,11 @@ public readonly struct BinaryLogEntry : IBufferedLogEntry
         get;
         init;
     }
+    
+    internal bool IsConfiguration { get; init; }
+    
+    /// <inheritdoc />
+    bool IRaftLogEntry.IsConfiguration => IsConfiguration;
 
     /// <inheritdoc />
     bool ILogEntry.IsSnapshot => false;

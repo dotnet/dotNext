@@ -8,6 +8,11 @@
 public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, IDataTransferObject, IAsyncDisposable
 {
     /// <summary>
+    /// Represents the underlying stream.
+    /// </summary>
+    protected readonly Stream content = content;
+    
+    /// <summary>
     /// Loads the content from another data transfer object.
     /// </summary>
     /// <param name="source">The content source.</param>

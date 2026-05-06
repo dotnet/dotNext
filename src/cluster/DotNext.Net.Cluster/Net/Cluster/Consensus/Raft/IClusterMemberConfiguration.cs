@@ -42,6 +42,11 @@ public interface IClusterMemberConfiguration
     bool AggressiveLeaderStickiness => false;
 
     /// <summary>
+    /// Gets a value representing the maximum number of replication steps allowed for the follower to be behind the leader.
+    /// </summary>
+    int MaxReplicationLag => 16;
+
+    /// <summary>
     /// Gets comparer for endpoint address.
     /// </summary>
     IEqualityComparer<EndPoint> EndPointComparer => EqualityComparer<EndPoint>.Default;

@@ -7,7 +7,6 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
 {
     private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
     private TimeSpan? rpcTimeout;
-    private int warmupRounds = 10;
 
     /// <summary>
     /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -70,24 +69,25 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     /// </summary>
     public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
-    /// <summary>
-    /// Gets or sets a value indicating that the cluster member
-    /// represents standby node which is never become a leader.
-    /// </summary>
+    /// <inheritdoc cref="IClusterMemberConfiguration.Standby"/>
     public bool Standby { get; set; }
 
     /// <summary>
-    /// Gets or sets the numbers of rounds used to warmup a fresh node which wants to join the cluster.
+    /// Gets or sets the numbers of rounds used to warm up a fresh node which wants to join the cluster.
     /// </summary>
     public int WarmupRounds
     {
-        get => warmupRounds;
-        set => warmupRounds = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(warmupRounds));
-    }
+        get;
+        set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 10;
 
-    /// <summary>
-    /// Gets a value indicating that the follower node should not try to upgrade
-    /// to the candidate state if the leader is reachable via the network.
-    /// </summary>
+    /// <inheritdoc cref="IClusterMemberConfiguration.MaxReplicationLag"/>
+    public int MaxReplicationLag
+    {
+        get;
+        set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 16;
+
+    /// <inheritdoc cref="IClusterMemberConfiguration.AggressiveLeaderStickiness"/>
     public bool AggressiveLeaderStickiness { get; set; }
 }

@@ -19,4 +19,16 @@ public interface IStateMachine : ISnapshotManager
     /// <returns>The index of the last applied log entry. It should be greater than or equal to <see cref="LogEntry.Index"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> ApplyAsync(LogEntry entry, CancellationToken token);
+
+    /// <summary>
+    /// Creates no-op state machine.
+    /// </summary>
+    /// <param name="snapshotThreshold">The number of log entries to be squashed as a snapshot.</param>
+    /// <returns>A new instance of the state machine.</returns>
+    public static IStateMachine CreateNoOp(long snapshotThreshold = 10L)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(snapshotThreshold, 2L);
+
+        return new NoOpStateMachine(snapshotThreshold);
+    }
 }

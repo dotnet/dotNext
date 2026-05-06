@@ -1,257 +1,270 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Buffers;
 using Diagnostics;
 using IO.Log;
-using Membership;
+using ReplicationUtils;
 using Runtime.CompilerServices;
-using Threading.Tasks;
 using static Runtime.GCLatencyModeExtensions;
 
 internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private readonly long currentTerm;
-    private readonly CancellationTokenSource timerCancellation;
-    private readonly Task<Result<bool>> localMemberResponse;
+    private readonly Dictionary<TMember, ReplicationProcess> runningReplications;
+    
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
+    private volatile CancellationTokenSource? timerCancellation;
 
     private Task? heartbeatTask;
 
-    internal LeaderState(IRaftStateMachine<TMember> stateMachine, long term, TimeSpan maxLease)
+    internal LeaderState(IRaftStateMachine<TMember> stateMachine, int replicationLag)
         : base(stateMachine)
     {
-        currentTerm = term;
-        localMemberResponse = Task.FromResult(new Result<bool> { Term = term, Value = true });
         timerCancellation = new();
         Token = timerCancellation.Token;
-        this.maxLease = maxLease;
+        runningReplications = new(9, ReferenceEqualityComparer.Instance);
         lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
-        context = new();
-        replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
+        barriers = new(replicationLag);
     }
+
+    public required TimeSpan MaxLease
+    {
+        init => maxLease = value;
+    }
+
+    public required long Term
+    {
+        get;
+        init;
+    }
+    
+    public required long WriteBarrier { get; init; }
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
-    private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members)
+    private void Cancel()
     {
-        Replicator replicator;
-        Task<Result<bool>> response;
-        long commitIndex = auditTrail.LastCommittedEntryIndex,
-            currentIndex = auditTrail.LastEntryIndex;
-
-        var majority = 0;
-
-        // send heartbeat in parallel
-        for (IClusterConfiguration? activeConfig = configurationStorage.ActiveConfiguration, proposedConfig = configurationStorage.ProposedConfiguration; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
+        if (Interlocked.Exchange(ref timerCancellation, null) is { } cts)
         {
-            var member = members.Current;
-            if (member.IsRemote)
+            using (cts)
             {
-                var precedingIndex = member.State.PrecedingIndex;
-
-                // fork replication procedure
-                replicator = context.GetOrCreate(member, replicatorFactory, Token);
-                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
-                response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, Token);
+                cts.Cancel(throwOnFirstException: false);
             }
-            else
-            {
-                replicator = context.GetOrCreate(member, localReplicatorFactory, Token);
-                response = localMemberResponse;
-            }
-        }
-
-        responsePipe.Complete();
-        majority = (majority >> 1) + 1;
-
-        return (currentIndex, commitIndex, majority);
-    }
-
-    private MemberResponse ProcessMemberResponse(Task<Result<bool>> response, Replicator replicator, out Result<bool> result)
-    {
-        var detector = replicator.FailureDetector;
-        try
-        {
-            result = response.GetAwaiter().GetResult();
-            detector?.ReportHeartbeat();
-            return currentTerm >= result.Term
-                ? MemberResponse.Successful
-                : MemberResponse.HigherTermDetected;
-        }
-        catch (MemberUnavailableException)
-        {
-            // goto method epilogue
-        }
-        catch (OperationCanceledException)
-        {
-            Unsafe.SkipInit(out result);
-            return MemberResponse.Canceled;
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, ExceptionMessages.UnexpectedError);
-        }
-        finally
-        {
-            response.Dispose();
-            replicator.Reset();
-        }
-
-        Unsafe.SkipInit(out result);
-        CheckMemberHealthStatus(detector, replicator.Member);
-        return MemberResponse.Exception;
-    }
-
-    private void CheckMemberHealthStatus(IFailureDetector? detector, TMember member)
-    {
-        switch (detector)
-        {
-            case { IsMonitoring: false }:
-                Logger.UnknownHealthStatus(member.EndPoint);
-                break;
-            case { IsHealthy: false }:
-                UnavailableMemberDetected(member, Token);
-                break;
         }
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IReadOnlyCollection<TMember> members)
+    private async Task DoHeartbeats(TimeSpan period, IPersistentState auditTrail)
     {
-        // cached enumerator allows to avoid memory allocation on every GetEnumerator call inside the loop
-        var enumerator = members.GetEnumerator();
-        try
+        IReadOnlyCollection<TMember> membersCopy = [];
+
+        for (var forced = false;;)
         {
-            var forced = false;
-            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !Token.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
+            // populates running replications on first iteration
+            membersCopy = await HandleMembershipChangesAsync(membersCopy, Members, auditTrail).ConfigureAwait(false);
+            
+            // do not resume suspended callers that came after the barrier, resume them in the next iteration
+            replicationQueue.SwitchValve();
+            var startTime = new Timestamp();
+            
+            // in case of forced (initiated programmatically, not by timeout) replication
+            // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
+            using (forced ? default : GCLatencyMode.SustainedLowLatency.Enable())
             {
-                var startTime = new Timestamp();
+                // process responses
+                var (quorum, hasConsensus) = await ReplicateAsync(auditTrail, out var barrier).ConfigureAwait(false);
+                if (GetCommitIndex(barrier, quorum, hasConsensus) is not { } commitIndex)
+                    break;
 
-                // do not resume suspended callers that came after the barrier, resume them in the next iteration
-                replicationQueue.SwitchValve();
-
-                // in case of forced (initiated programmatically, not by timeout) replication
-                // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
-                var latencyScope = forced
-                    ? default
-                    : GCLatencyMode.SustainedLowLatency.Enable();
-                try
+                Debug.Assert(hasConsensus);
+                LeaderState.BroadcastTimeMeter.Record(RenewLease(startTime), in MeasurementTags);
+                if (commitIndex > auditTrail.LastCommittedEntryIndex)
                 {
-                    // Perf: the code in this block is inlined instead of moved to separated method because
-                    // we want to prevent allocation of state machine on every call
-                    int quorum = 0, commitQuorum = 0;
-                    (long currentIndex, long commitIndex, var majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator);
-
-                    while (await responsePipe.WaitToReadAsync().ConfigureAwait(false))
-                    {
-                        while (responsePipe.TryRead(out var response, out var replicator))
-                        {
-                            Debug.Assert(replicator is Replicator);
-
-                            switch (ProcessMemberResponse(response, Unsafe.As<Replicator>(replicator), out var result))
-                            {
-                                case MemberResponse.Exception:
-                                    continue;
-                                case MemberResponse.HigherTermDetected:
-                                    MoveToFollowerState(randomizeTimeout: false, result.Term);
-                                    goto case MemberResponse.Canceled;
-                                case MemberResponse.Canceled:
-                                    return;
-                                case MemberResponse.Successful when ++quorum == majority:
-                                    RenewLease(startTime.Elapsed);
-                                    UpdateLeaderStickiness();
-                                    goto default;
-                                default:
-                                    commitQuorum += Unsafe.BitCast<bool, byte>(result.Value);
-                                    continue;
-                            }
-                        }
-                    }
-
-                    if (commitQuorum >= majority)
-                    {
-                        // majority of nodes accept entries with at least one entry from the current term
-                        var count = await auditTrail.CommitAsync(currentIndex, Token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                        Logger.CommitSuccessful(currentIndex, count);
-                    }
-                    else
-                    {
-                        Logger.CommitFailed(quorum, commitIndex);
-                    }
-
-                    if (quorum >= majority)
-                    {
-                        await configurationStorage.ApplyAsync(Token).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        MoveToFollowerState(randomizeTimeout: false);
-                        return;
-                    }
+                    // majority of nodes accept entries with at least one entry from the current term
+                    var count = await auditTrail
+                        .CommitAsync(commitIndex, Token)
+                        .ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                    Logger.CommitSuccessful(commitIndex, count);
                 }
-                finally
+                else
                 {
-                    var broadcastTime = startTime.ElapsedMilliseconds;
-                    latencyScope.Dispose();
-                    LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
+                    Logger.CommitFailed(quorum, commitIndex);
                 }
 
-                // resume all suspended callers added to the queue concurrently before SwitchValve()
-                replicationQueue.Drain();
-
-                // wait for heartbeat timeout or forced replication
-                forced = await WaitForReplicationAsync(startTime, period, Token).ConfigureAwait(false);
+                barrier.Reuse();
             }
-        }
-        finally
-        {
-            enumerator.Dispose();
+
+            // resume all suspended callers added to the queue concurrently before SwitchValve()
+            replicationQueue.Drain();
+            forced = await WaitForReplicationAsync(startTime, period, Token).ConfigureAwait(false);
         }
     }
 
-    private void ReuseEnumerator(ref IReadOnlyCollection<TMember> currentList, ref IEnumerator<TMember> enumerator)
+    // When a new member is added or removed, the simplest way to detect this fact is just to compare
+    // two collections by reference. If the collections are not equal, perform heavyweight analysis to spawn
+    // or stop replication processes.
+    private ValueTask<IReadOnlyCollection<TMember>> HandleMembershipChangesAsync(IReadOnlyCollection<TMember> oldMembership,
+        IReadOnlyCollection<TMember> newMembership,
+        IPersistentState auditTrail)
+        => ReferenceEquals(oldMembership, newMembership)
+            ? ValueTask.FromResult(oldMembership)
+            : HandleMembershipChangesCoreAsync(newMembership, auditTrail);
+
+    private async ValueTask<IReadOnlyCollection<TMember>> HandleMembershipChangesCoreAsync(
+        IReadOnlyCollection<TMember> members,
+        IPersistentState auditTrail)
     {
-        var freshList = Members;
-        if (ReferenceEquals(currentList, freshList))
+        IReadOnlySet<TMember> membersCopy = new HashSet<TMember>(members, ReferenceEqualityComparer.Instance);
+        await RemoveMembers(membersCopy).ConfigureAwait(false);
+        AddMembers(membersCopy, auditTrail);
+        return members;
+    }
+
+    private void AddMembers(IReadOnlySet<TMember> members, IPersistentState auditTrail)
+    {
+        var state = new IRaftClusterMember.ReplicationState();
+        state.Initialize(auditTrail);
+        
+        foreach (var member in members)
         {
-            enumerator.Reset();
+            if (!runningReplications.ContainsKey(member))
+            {
+                Debug.Assert(member.IsRemote);
+                
+                member.State = state;
+                runningReplications.Add(member, StartReplication(member, auditTrail));
+            }
         }
-        else
+    }
+
+    private async ValueTask RemoveMembers(IReadOnlySet<TMember> members)
+    {
+        var removedMembers = runningReplications.Keys
+            .Where(members.DoesntContain)
+            .ToHashSet<TMember>(ReferenceEqualityComparer.Instance);
+
+        foreach (var member in removedMembers)
         {
-            enumerator.Dispose();
-            currentList = freshList;
-            enumerator = freshList.GetEnumerator();
+            if (runningReplications.Remove(member, out var process))
+            {
+                await process.StopAsync(interrupt: true).ConfigureAwait(false);
+                process.Dispose();
+            }
         }
+        
+        removedMembers.Clear(); // help GC
+    }
+
+    private ValueTask<ReplicationResult> ReplicateAsync(IAuditTrail auditTrail, out ReplicationBarrier barrier)
+    {
+        barrier = RentBarrier();
+        var task = barrier.WaitAsync(runningReplications.Count, auditTrail.LastEntryIndex);
+        StartReplication(barrier);
+        return task;
+    }
+    
+    private ReplicationProcess<TMember> StartReplication(TMember member, IPersistentState auditTrail)
+    {
+        var process = new ReplicationProcess<TMember>(member, barriers.Capacity)
+        {
+            Term = Term,
+            Logger = Logger,
+            AuditTrail = auditTrail,
+            FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member),
+            MeasurementTags = MeasurementTags,
+        };
+
+        process.Start(Token);
+        return process;
+    }
+
+    private void StartReplication(ReplicationBarrier barrier)
+    {
+        var unresponsiveMember = default(TMember);
+        foreach (var (member, process) in runningReplications)
+        {
+            process.Replicate(barrier);
+            
+            if (!process.IsAvailable && unresponsiveMember is null)
+            {
+                unresponsiveMember = member;
+            }
+        }
+
+        // Process 1 unavailable member at a time.
+        // UnavailableMemberDetected call doesn't remove the member immediately, it will happen eventually.
+        // The removal will be processed eventually in the main loop of the leader state.
+        if (unresponsiveMember is not null)
+        {
+            unresponsiveMember.State.IsAvailable = false;
+            UnavailableMemberDetected(unresponsiveMember, Token);
+        }
+    }
+    
+    private async Task StopReplicationAsync()
+    {
+        Debug.Assert(Token.IsCancellationRequested);
+        
+        foreach (var process in runningReplications.Values)
+        {
+            await process.StopAsync().ConfigureAwait(false);
+            process.Dispose();
+        }
+    }
+
+    private long? GetCommitIndex(ReplicationBarrier barrier, int quorum, bool hasConsensus)
+    {
+        using var indexBuffer = (uint)quorum < (uint)SpanOwner<byte>.StackallocThreshold
+            ? stackalloc long[quorum]
+            : new SpanOwner<long>(quorum);
+        
+        for (var i = 0; i < quorum; i++)
+        {
+            switch (barrier[i])
+            {
+                case { IsCanceled: true }:
+                    throw new OperationCanceledException(Token);
+                case { Term: { } higherTerm }:
+                    MoveToFollowerState(randomizeTimeout: false, higherTerm);
+                    return null;
+                case var result:
+                    indexBuffer[i] = result.ReplicatedIndex;
+                    break;
+            }
+        }
+
+        if (hasConsensus)
+            return GetCommitIndex(indexBuffer.Span);
+        
+        MoveToFollowerState(randomizeTimeout: false);
+        return null;
+    }
+
+    private static long GetCommitIndex(Span<long> indices)
+    {
+        indices.Sort();
+        var median = (indices.Length - 1) / 2;
+        return indices[median];
     }
 
     /// <summary>
     /// Starts cluster synchronization.
     /// </summary>
+    /// <param name="leaderNode">The leader node.</param>
     /// <param name="period">Time period of Heartbeats.</param>
-    /// <param name="transactionLog">Transaction log.</param>
-    /// <param name="configurationStorage">Cluster configuration storage.</param>
-    internal void StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage)
+    /// <param name="auditTrail">Transaction log.</param>
+    internal void StartLeading(TMember leaderNode, TimeSpan period, IPersistentState auditTrail)
     {
-        var members = Members;
-        context = new(members.Count);
-        var state = new IRaftClusterMember.ReplicationState
-        {
-            NextIndex = transactionLog.LastEntryIndex + 1L,
-        };
-
-        foreach (var member in members)
-        {
-            member.State = state;
-        }
-
-        heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members);
+        runningReplications.Add(leaderNode, new());
+        heartbeatTask = DoHeartbeats(period, auditTrail);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 
@@ -259,13 +272,13 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     {
         try
         {
-            timerCancellation.Cancel(throwOnFirstException: false);
+            Cancel();
             replicationEvent.CancelSuspendedCallers(Token);
-            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false); // may throw OperationCanceledException
-        }
-        catch (Exception e)
-        {
-            Logger.LeaderStateExitedWithError(e);
+            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            
+            // heartbeat task is the only background task that can modify the dictionary concurrently
+            await StopReplicationAsync().ConfigureAwait(false);
+            runningReplications.Clear(); // help GC
         }
         finally
         {
@@ -277,7 +290,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     {
         if (disposing)
         {
-            timerCancellation.Dispose();
+            Cancel();
             heartbeatTask = null;
 
             DestroyLease();
@@ -286,19 +299,10 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             replicationQueue.Dispose(new NotLeaderException());
             replicationEvent.Dispose();
 
-            context.Dispose();
             heartbeatTask = null;
         }
 
         base.Dispose(disposing);
-    }
-
-    private enum MemberResponse
-    {
-        Successful = 0,
-        HigherTermDetected,
-        Exception,
-        Canceled,
     }
 }
 
@@ -306,4 +310,9 @@ file static class LeaderState
 {
     internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcast-time", unit: "ms", description: "Heartbeat Broadcasting Time");
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-leader-count", description: "Number of Transitions of Leader State");
+}
+
+file static class ReadOnlySetExtensions
+{
+    public static bool DoesntContain<T>(this IReadOnlySet<T> set, T item) => !set.Contains(item);
 }

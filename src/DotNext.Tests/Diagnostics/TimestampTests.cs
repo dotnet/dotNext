@@ -126,4 +126,13 @@ public sealed class TimestampTests : Test
         Equal(default, Timestamp.CompareExchange(ref value, current, default));
         Equal(current, value);
     }
+
+    [Fact]
+    public static void EnsureStructCopied()
+    {
+        var ts = new Timestamp();
+        Thread.Sleep(10);
+        var elapsed = ts.GetElapsedTicks(TimeProvider.System, out ts);
+        Equal(elapsed > 1L);
+    }
 }

@@ -56,9 +56,7 @@ partial class WriteAheadLog
         
         private set
         {
-            // Full memory barrier to ensure that the index cannot be changed later, somewhere
-            // within Signal due to inlining
-            Interlocked.Exchange(ref appliedIndex, value);
+            Atomic.Write(ref appliedIndex, value);
             appliedEvent.Signal(resumeAll: true);
         }
     }
@@ -76,6 +74,14 @@ partial class WriteAheadLog
                     Context = context.Remove(index, out var ctx) ? ctx : null,
                 };
 
+                // If configuration storage is provided, pass the entry to it.
+                // Otherwise, pass it to the state machine.
+                if (metadata.IsConfiguration && ConfigurationStorage is { } storage)
+                {
+                    await storage.SaveConfigurationAsync(entry, index, token).ConfigureAwait(false);
+                    entry = new(metadata.Term, index);
+                }
+
                 appliedIndex = await stateMachine.ApplyAsync(entry, token).ConfigureAwait(false);
             }
             else
@@ -92,19 +98,8 @@ partial class WriteAheadLog
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct CommitChecker : ISupplier<bool>
+    private readonly struct CommitChecker(WriteAheadLog log, long index) : ISupplier<bool>
     {
-        private readonly WriteAheadLog log;
-        private readonly long index;
-
-        internal CommitChecker(WriteAheadLog log, long index)
-        {
-            Debug.Assert(log is not null);
-
-            this.log = log;
-            this.index = index;
-        }
-
         bool ISupplier<bool>.Invoke() => index <= log.LastAppliedIndex;
     }
 }

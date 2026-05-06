@@ -110,7 +110,7 @@ public partial struct Base64Encoder
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
 
-        EncodeToUtf16Buffered<BufferWriterReference<char>>(bytes, new(chars), flush);
+        EncodeToUtf16Buffered(bytes, chars, flush);
     }
 
     /// <summary>

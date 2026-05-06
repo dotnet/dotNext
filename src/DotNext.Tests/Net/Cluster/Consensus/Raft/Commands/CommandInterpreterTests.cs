@@ -253,7 +253,7 @@ public sealed class CommandInterpreterTests : Test
     public static async Task InterpreterWithPersistentState()
     {
         var stateMachine = new SimpleStateMachine();
-        await using var wal = new WriteAheadLog(new() { Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }, stateMachine);
+        await using var wal = new WriteAheadLog(new() { Location = GetTempPath() }, stateMachine);
         var index = await wal.AppendAsync(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract }, token: TestToken);
         Equal(0, stateMachine.Value);
         await wal.CommitAsync(index, TestToken);

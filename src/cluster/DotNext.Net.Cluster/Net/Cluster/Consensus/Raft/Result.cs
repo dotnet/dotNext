@@ -12,12 +12,10 @@ public readonly struct Result<T>
     /// <summary>
     /// Gets term of the remote member.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets RPC response.
     /// </summary>
     public T Value { get; init; }
-
-    internal Result<TOther> SetValue<TOther>(TOther value) => new() { Term = Term, Value = value };
 }

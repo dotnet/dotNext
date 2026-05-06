@@ -12,7 +12,7 @@ partial interface IInterpolatedStringHandler
     private const byte WhitespaceUtf8 = (byte)' ';
     
     protected static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, ReadOnlySpan<char> value)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         if (value.IsEmpty)
             return 0;
@@ -24,7 +24,7 @@ partial interface IInterpolatedStringHandler
     }
 
     protected static int AppendFormatted<T, TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, T value, string? format, IFormatProvider? provider)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         int bufferSize, charsWritten = 0;
         switch (value)
@@ -71,7 +71,7 @@ partial interface IInterpolatedStringHandler
     }
 
     protected static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, scoped ReadOnlySpan<char> value, int alignment)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         bool leftAlign;
 
@@ -83,7 +83,7 @@ partial interface IInterpolatedStringHandler
 
     private static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, scoped ReadOnlySpan<char> value, int alignment,
         bool leftAlign)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         Debug.Assert(alignment >= 0);
 
@@ -109,7 +109,7 @@ partial interface IInterpolatedStringHandler
     }
 
     protected static int AppendFormatted<T, TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, T value, int alignment, string? format, IFormatProvider? provider)
-        where TWriter : struct, IBufferWriter<byte>, allows ref struct
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         int bufferSize, charsWritten = 0;
         bool leftAlign;

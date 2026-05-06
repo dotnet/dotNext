@@ -1,47 +1,51 @@
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-using IO;
 using Membership;
 
 internal partial class RaftHttpCluster
 {
-    private sealed class ReceivedClusterConfiguration : MemoryTransferObject, IClusterConfiguration
-    {
-        internal ReceivedClusterConfiguration(int length)
-            : base(length)
-        {
-        }
-
-        public long Fingerprint { get; init; }
-
-        long IClusterConfiguration.Length => Content.Length;
-    }
-
     private readonly ClusterMemberAnnouncer<UriEndPoint>? announcer;
     private Task pollingLoopTask = Task.CompletedTask;
 
     private async Task ConfigurationPollingLoop()
     {
-        await foreach (var eventInfo in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
+        await foreach (var configuration in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
         {
-            RaftClusterMember? member;
-            if (eventInfo.Item2)
+            await ApplyConfigurationAsync(configuration, LifecycleToken).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask ApplyConfigurationAsync(IClusterConfiguration<UriEndPoint> configuration, CancellationToken token)
+    {
+        var scope = await ChangeConfigurationAsync(token).ConfigureAwait(false);
+        try
+        {
+            // detect deleted members
+            foreach (var member in scope.Members.Values)
             {
-                member = CreateMember(eventInfo.Item1);
-                if (!await AddMemberAsync(member, CancellationToken.None).ConfigureAwait(false))
-                    member.Dispose();
-            }
-            else
-            {
-                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), CancellationToken.None).ConfigureAwait(false);
-                if (member is not null)
+                var address = GetAddress(member);
+                if (!configuration.Members.Contains(address))
                 {
-                    member.CancelPendingRequests();
-                    member.Dispose();
+                    scope.MarkAsRemoved(member);
                 }
             }
+                
+            // detect added members
+            var addresses = ImmutableHashSet.CreateRange(EndPointComparer, scope.Members.Values.Select(GetAddress));
+            foreach (var address in configuration.Members)
+            {
+                if (!addresses.Contains(address))
+                {
+                    scope.MarkAsAdded(CreateMember(address));
+                }
+            }
+        }
+        finally
+        {
+            await scope.DisposeAsync().ConfigureAwait(false);
         }
     }
 

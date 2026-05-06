@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using IO.Log;
 using Membership;
 using StateMachine;
 
@@ -26,21 +27,51 @@ public static class RaftClusterConfiguration
         => services.AddSingleton<IClusterMemberLifetime, TConfig>();
 
     /// <summary>
+    /// Registers <see cref="WriteAheadLog"/>.
+    /// </summary>
+    /// <param name="services">A collection of services provided by DI container.</param>
+    /// <param name="options">The WAL configuration.</param>
+    /// <returns>A modified collection of services.</returns>
+    public static IServiceCollection UsePersistentLog(this IServiceCollection services, WriteAheadLog.Options options)
+        => services.UseWriteAheadLog(options.CreateWriteAheadLog);
+
+    private static IServiceCollection UseWriteAheadLog(this IServiceCollection services, Func<IServiceProvider, IPersistentState> factory)
+    {
+        Func<IServiceProvider, IPersistentState> engineCast = ServiceProviderServiceExtensions.GetRequiredService<IPersistentState>;
+
+        return services.AddSingleton(factory)
+            .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
+    }
+
+    private static IPersistentState CreateWriteAheadLog(this WriteAheadLog.Options options, IServiceProvider provider)
+        => new WriteAheadLog(options, provider.GetRequiredService<IStateMachine>());
+
+    /// <summary>
     /// Registers the state machine and the write-ahead log for it.
     /// </summary>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
+    /// <param name="options">The WAL configuration.</param>
     /// <returns>A modified collection of services.</returns>
     public static IServiceCollection UseStateMachine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TStateMachine>(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        WriteAheadLog.Options options)
         where TStateMachine : class, IStateMachine
     {
         Func<IServiceProvider, TStateMachine> stateMachineCast = ServiceProviderServiceExtensions.GetRequiredService<TStateMachine>;
-        
+
         return services.AddSingleton<TStateMachine>()
             .AddSingleton<IStateMachine, TStateMachine>(stateMachineCast)
-            .AddSingleton<IPersistentState, WriteAheadLog>();
+            .UsePersistentLog(options);
     }
+
+    /// <summary>
+    /// Registers <see cref="ConsensusOnlyState"/> as a Write-Ahead Log implementation.
+    /// </summary>
+    /// <param name="services">A collection of services provided by DI container.</param>
+    /// <returns>A modified collection of services.</returns>
+    public static IServiceCollection UseConsensusOnlyLog(this IServiceCollection services)
+        => services.UseWriteAheadLog(static _ => new ConsensusOnlyState());
 
     /// <summary>
     /// Restores the state machine.
@@ -76,17 +107,22 @@ public static class RaftClusterConfiguration
     /// Registers persistent storage service for maintaining a list of cluster members.
     /// </summary>
     /// <param name="services">A collection of services.</param>
-    /// <param name="path">The absolute path to the folder on the local machine to store the list.</param>
+    /// <param name="fileName">The absolute path to the folder on the local machine to store the list.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)
-        => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(path.CreatePersistentStorageFromPath);
+    public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string fileName)
+        => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(fileName.CreatePersistentStorageFromPath);
 
-    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<ICollection<UriEndPoint>> configuration, IServiceProvider services)
+    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<ICollection<UriEndPoint>>? configuration, IServiceProvider services)
     {
         var storage = new InMemoryClusterConfigurationStorage();
-        var builder = storage.CreateActiveConfigurationBuilder();
-        configuration(builder);
-        builder.Build();
+
+        if (configuration is not null)
+        {
+            var builder = storage.CreateInitialConfigurationBuilder();
+            configuration(builder);
+            builder.Build();
+        }
+
         return storage;
     }
 
@@ -99,6 +135,6 @@ public static class RaftClusterConfiguration
     /// <param name="services">A collection of services.</param>
     /// <param name="configuration">The delegate that allows to configure a list of cluster members at startup.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<ICollection<UriEndPoint>> configuration)
+    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<ICollection<UriEndPoint>>? configuration = null)
         => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(configuration.CreateInMemoryStorage);
 }

@@ -78,6 +78,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 throw new UnsupportedCheckpointVersionException(checkpoint.Version);
         }
         
+        (stateMachine as NoOpStateMachine)?.SetLastCommittedIndex(lastReliablyWrittenEntryIndex);
+        
         // page management
         {
             var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
@@ -179,7 +181,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Atomic.Read(ref field);
+        get => Atomic.Read(in field);
         private set => Atomic.Write(ref field, value);
     }
 
@@ -256,6 +258,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             var entryCopy = new BinaryLogEntry
             {
+                IsConfiguration = entry.IsConfiguration,
                 Term = entry.Term,
                 Content = payload,
                 CommandId = entry.CommandId,
@@ -269,6 +272,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             // make a copy out of the lock
             var entryCopy = new BufferedLogEntry(((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferAllocator))
             {
+                IsConfiguration = entry.IsConfiguration,
                 Term = entry.Term,
                 CommandId = entry.CommandId,
                 Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,

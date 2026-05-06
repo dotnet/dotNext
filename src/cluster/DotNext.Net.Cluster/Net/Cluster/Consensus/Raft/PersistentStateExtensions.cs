@@ -2,6 +2,7 @@
 
 using Buffers.Binary;
 using IO.Log;
+using Patterns;
 using Text.Json;
 
 /// <summary>
@@ -9,22 +10,8 @@ using Text.Json;
 /// </summary>
 public static class PersistentStateExtensions
 {
-    private sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>
-    {
-        internal static readonly ILogEntryConsumer<IRaftLogEntry, long> Instance = new TermReader();
-
-        private TermReader()
-        {
-        }
-
-        ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            => new(entries[0].Term);
-
-        bool ILogEntryConsumer<IRaftLogEntry, long>.LogEntryMetadataOnly => true;
-    }
-
     internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
-        => index == 0L ? new(0L) : auditTrail.ReadAsync(TermReader.Instance, index, index, token);
+        => index is 0L ? new(0L) : auditTrail.ReadAsync(TermReader.Instance, index, index, token);
 
     internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
     {
@@ -65,7 +52,7 @@ public static class PersistentStateExtensions
         => state.AppendAsync<BinaryLogEntry<T>>(new() { Content = payload, Term = state.Term, Context = context }, token);
 
     /// <summary>
-    /// Appends JSON objec to the log tail.
+    /// Appends JSON object to the log tail.
     /// </summary>
     /// <param name="state">The log.</param>
     /// <param name="payload">The log entry payload.</param>
@@ -77,4 +64,18 @@ public static class PersistentStateExtensions
         CancellationToken token = default)
         where T : IJsonSerializable<T>
         => state.AppendAsync<JsonLogEntry<T>>(new() { Content = payload, Term = state.Term, Context = context }, token);
+}
+
+file sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>, ISingleton<TermReader>
+{
+    public static TermReader Instance { get; } = new();
+
+    private TermReader()
+    {
+    }
+
+    ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+        => new(entries[0].Term);
+
+    bool ILogEntryConsumer<IRaftLogEntry, long>.LogEntryMetadataOnly => true;
 }

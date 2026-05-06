@@ -346,7 +346,7 @@ public sealed class PoolingBufferedStreamTests : Test
     public static void ReadFromFile()
     {
         var expected = RandomBytes(4096);
-        using var handle = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite,
+        using var handle = File.OpenHandle(GetTempPath(), FileMode.CreateNew, FileAccess.ReadWrite,
             options: FileOptions.DeleteOnClose);
         RandomAccess.Write(handle, expected, fileOffset: 0L);
         RandomAccess.FlushToDisk(handle);
@@ -362,7 +362,7 @@ public sealed class PoolingBufferedStreamTests : Test
     public static async Task ReadFromFileAsync()
     {
         var expected = RandomBytes(4096);
-        using var handle = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite,
+        using var handle = File.OpenHandle(GetTempPath(), FileMode.CreateNew, FileAccess.ReadWrite,
             options: FileOptions.DeleteOnClose | FileOptions.Asynchronous);
         await RandomAccess.WriteAsync(handle, expected, fileOffset: 0L, TestToken);
         RandomAccess.FlushToDisk(handle);

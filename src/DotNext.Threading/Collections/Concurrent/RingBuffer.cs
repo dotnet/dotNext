@@ -39,7 +39,7 @@ internal struct RingBuffer<T>
 
     private void WaitForPendingEnqueues()
     {
-        Debug.Assert(IsFrozen);
+        Debug.Assert(frozenForEnqueues);
 
         // the slots prior to the frozen position can be still in progress by the enqueuer, so wait for it
         for (var position = FreezeProducer() - 1U;
@@ -49,7 +49,7 @@ internal struct RingBuffer<T>
 
     private nuint FreezeProducer()
     {
-        Debug.Assert(IsFrozen);
+        Debug.Assert(frozenForEnqueues);
         
         const nuint shift = 2U;
         var current = state.Producer;
@@ -67,8 +67,6 @@ internal struct RingBuffer<T>
     }
     
     private static nuint StateBit => (nuint)nint.MinValue;
-
-    public readonly bool IsFrozen => Volatile.Read(in frozenForEnqueues);
 
     public readonly int Length => slots.Length;
     

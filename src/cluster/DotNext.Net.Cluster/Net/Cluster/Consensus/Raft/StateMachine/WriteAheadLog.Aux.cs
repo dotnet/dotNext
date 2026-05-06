@@ -98,6 +98,7 @@ partial class WriteAheadLog
         public required long Term { get; init; }
         public required object? Context { get; init; }
         public required int? CommandId { get; init; }
+        public required bool IsConfiguration { get; init; }
 
         readonly long? IDataTransferObject.Length => buffer.Length;
 

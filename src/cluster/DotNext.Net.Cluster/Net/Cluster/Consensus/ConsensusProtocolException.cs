@@ -5,7 +5,6 @@ namespace DotNext.Net.Cluster.Consensus;
 /// <summary>
 /// Represents violation of network consensus protocol.
 /// </summary>
-[Serializable]
 public abstract class ConsensusProtocolException : ProtocolViolationException
 {
     /// <summary>

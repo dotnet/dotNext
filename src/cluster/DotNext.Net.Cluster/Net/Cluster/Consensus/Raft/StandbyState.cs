@@ -17,12 +17,16 @@ internal sealed class StandbyState<TMember> : RefreshableState<TMember>
     private volatile ConsensusTokenSource? consensusTokenSource;
     private Task? tracker;
 
-    internal StandbyState(IRaftStateMachine<TMember> stateMachine, TimeSpan consensusTimeout)
+    public StandbyState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
         lifecycleTokenSource = new();
         lifecycleToken = lifecycleTokenSource.Token;
-        this.consensusTimeout = consensusTimeout;
+    }
+
+    public required TimeSpan ConsensusTimeout
+    {
+        init => consensusTimeout = value;
     }
 
     public override CancellationToken Token => consensusTokenSource?.Token ?? new(canceled: true);
