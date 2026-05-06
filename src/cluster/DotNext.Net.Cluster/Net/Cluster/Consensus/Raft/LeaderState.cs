@@ -205,7 +205,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         if (unresponsiveMember is not null)
         {
             unresponsiveMember.State.IsAvailable = false;
-            UnavailableMemberDetected(unresponsiveMember, Token);
+            UnavailableMemberDetected(unresponsiveMember, Term, Token);
         }
     }
     

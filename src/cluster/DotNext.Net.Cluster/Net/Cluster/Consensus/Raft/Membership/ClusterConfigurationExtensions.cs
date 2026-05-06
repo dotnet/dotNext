@@ -6,6 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
 using IO;
+using IO.Log;
 
 /// <summary>
 /// Represents configuration extensions.
@@ -23,9 +24,14 @@ public static class ClusterConfigurationExtensions
     public static ValueTask<long> AppendAsync<TAddress>(this IPersistentState state, IClusterConfiguration<TAddress> configuration,
         CancellationToken token = default)
         where TAddress : notnull
+        => state.AppendAsync(configuration, state.Term, token);
+
+    internal static ValueTask<long> AppendAsync<TAddress>(this IAuditTrail<IRaftLogEntry> state, IClusterConfiguration<TAddress> configuration,
+        long term, CancellationToken token = default)
+        where TAddress : notnull
         => configuration is ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
-            ? state.AppendAsync(new OptimizedClusterConfigurationLogEntry<TAddress>(configuration) { Term = state.Term }, token)
-            : state.AppendAsync(new ClusterConfigurationLogEntry<TAddress>(configuration) { Term = state.Term }, token);
+            ? state.AppendAsync(new OptimizedClusterConfigurationLogEntry<TAddress>(configuration) { Term = term }, token)
+            : state.AppendAsync(new ClusterConfigurationLogEntry<TAddress>(configuration) { Term = term }, token);
 }
 
 [StructLayout(LayoutKind.Auto)]

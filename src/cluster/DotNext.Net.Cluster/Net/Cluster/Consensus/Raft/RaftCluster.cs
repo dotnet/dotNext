@@ -1200,7 +1200,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc />
-    async Task IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
+    async Task IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member,
+        long term, CancellationToken token)
     {
         var lockTaken = false;
         try
@@ -1211,10 +1212,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (callerState.IsValid(state))
             {
                 Logger.UnresponsiveMemberDetected(member.EndPoint);
-                await UnavailableMemberDetected(member, token).ConfigureAwait(false);
+                await UnavailableMemberDetected(member, term, token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException) when (lockTaken is false)
+        catch (OperationCanceledException) when (!lockTaken)
         {
             // ignore cancellation of lock acquisition
         }

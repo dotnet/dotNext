@@ -206,8 +206,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    protected sealed override ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-        => UnavailableMemberDetected(configurationStorage, GetAddress(member), token);
+    protected sealed override ValueTask UnavailableMemberDetected(RaftClusterMember member, long term, CancellationToken token)
+        => UnavailableMemberDetected(configurationStorage, GetAddress(member), term, token);
 
     /// <inheritdoc />
     bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);

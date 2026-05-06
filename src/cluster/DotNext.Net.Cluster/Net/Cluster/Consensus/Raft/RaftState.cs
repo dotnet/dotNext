@@ -31,8 +31,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private protected void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToFollowerState(this, randomizeTimeout, newTerm), preferLocal: true);
 
-    private protected void UnavailableMemberDetected(TMember member, CancellationToken token)
-        => ThreadPool.UnsafeQueueUserWorkItem(new UnavailableMemberNotification(this, member, token), preferLocal: false);
+    private protected void UnavailableMemberDetected(TMember member, long currentTerm, CancellationToken token)
+        => ThreadPool.UnsafeQueueUserWorkItem(new UnavailableMemberNotification(this, member, currentTerm, token), preferLocal: false);
 
     private protected void IncomingHeartbeatTimedOut()
         => ThreadPool.UnsafeQueueUserWorkItem(new IncomingHeartbeatTimedOutNotification(this), preferLocal: true);
@@ -139,16 +139,18 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     {
         private readonly TMember member;
         private readonly CancellationToken token;
+        private readonly long currentTerm;
 
-        internal UnavailableMemberNotification(RaftState<TMember> currentState, TMember member, CancellationToken token)
+        internal UnavailableMemberNotification(RaftState<TMember> currentState, TMember member, long currentTerm, CancellationToken token)
             : base(currentState)
         {
             this.member = member;
             this.token = token;
+            this.currentTerm = currentTerm;
         }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => _ = stateMachine.UnavailableMemberDetected(this, member, token);
+            => _ = stateMachine.UnavailableMemberDetected(this, member, currentTerm, token);
     }
 
     private sealed class IncomingHeartbeatTimedOutNotification(RaftState<TMember> currentState) : StateTransitionWorkItem(currentState)
