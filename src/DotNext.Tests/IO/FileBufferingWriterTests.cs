@@ -34,7 +34,7 @@ public sealed class FileBufferingWriterTests : Test
     {
         var expected = RandomBytes(500);
         string fileName;
-        using (var writer = new FileBufferingWriter(new FileBufferingWriter.Options { MemoryThreshold = 100, AsyncIO = false, FileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }))
+        using (var writer = new FileBufferingWriter(new FileBufferingWriter.Options { MemoryThreshold = 100, AsyncIO = false, FileName = GetTempPath() }))
         {
             writer.Write(expected);
             False(writer.TryGetWrittenContent(out _, out fileName));
@@ -315,7 +315,7 @@ public sealed class FileBufferingWriterTests : Test
     public static void CtorExceptions()
     {
         Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold: -1));
-        var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempFolder = GetTempPath();
         Throws<DirectoryNotFoundException>(() => new FileBufferingWriter(tempDir: tempFolder));
         Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold: 100, initialCapacity: 101));
         Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(initialCapacity: -1));

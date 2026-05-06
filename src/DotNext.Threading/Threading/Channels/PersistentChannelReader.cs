@@ -37,11 +37,8 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
         bool IReadBuffer.TryRead([MaybeNullWhen(false)] out T result)
         {
-            bool success;
-            result = (success = Interlocked.TrueToFalse(ref readyToRead))
-                ? value
-                : default;
-
+            var success = Interlocked.TrueToFalse(ref readyToRead);
+            result = success ? value : default;
             return success;
         }
 

@@ -1,51 +1,28 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
+using IO;
+
 /// <summary>
 /// Provides a storage of cluster members.
 /// </summary>
 public interface IClusterConfigurationStorage : IDisposable
 {
     /// <summary>
-    /// Represents active cluster configuration maintained by the node.
+    /// Saves the configuration to the storage.
     /// </summary>
-    IClusterConfiguration ActiveConfiguration { get; }
-
-    /// <summary>
-    /// Represents proposed cluster configuration.
-    /// </summary>
-    IClusterConfiguration? ProposedConfiguration { get; }
+    /// <param name="configuration">The configuration to store.</param>
+    /// <param name="configurationVersion">The configuration version.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if <paramref name="configurationVersion"/> is co</returns>
+    ValueTask<bool> SaveConfigurationAsync<TConfiguration>(TConfiguration configuration, long configurationVersion, CancellationToken token = default)
+        where TConfiguration : IDataTransferObject;
 
     /// <summary>
     /// Loads configuration from the storage.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    ValueTask LoadConfigurationAsync(CancellationToken token = default);
-
-    /// <summary>
-    /// Proposes the configuration.
-    /// </summary>
-    /// <remarks>
-    /// If method is called multiple times then <see cref="ProposedConfiguration"/> will be rewritten.
-    /// </remarks>
-    /// <param name="configuration">The proposed configuration.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default);
-
-    /// <summary>
-    /// Applies proposed configuration as active configuration.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    ValueTask ApplyAsync(CancellationToken token = default);
-
-    /// <summary>
-    /// Waits until the proposed configuration becomes active.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    Task WaitForApplyAsync(CancellationToken token = default);
+    /// <returns>The copy of the configuration.</returns>
+    ValueTask<(IDataTransferObject Configuration, long Version)> LoadConfigurationAsync(CancellationToken token = default);
 }
 
 /// <summary>
@@ -56,39 +33,14 @@ public interface IClusterConfigurationStorage<TAddress> : IClusterConfigurationS
     where TAddress : notnull
 {
     /// <summary>
-    /// Proposes a new member.
+    /// Loads configuration from the storage.
     /// </summary>
-    /// <param name="address">The address of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if the new member is added to the proposed configuration;
-    /// <see langword="false"/> if the storage has the proposed configuration already.
-    /// </returns>
-    ValueTask<bool> AddMemberAsync(TAddress address, CancellationToken token = default);
-
+    /// <returns>The copy of the configuration.</returns>
+    new ValueTask<IClusterConfiguration<TAddress>> LoadConfigurationAsync(CancellationToken token = default);
+    
     /// <summary>
-    /// Proposes removal of the existing member.
+    /// An event occurred when the configuration is changed.
     /// </summary>
-    /// <param name="address">The address of the cluster member.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if the new member is added to the proposed configuration;
-    /// <see langword="false"/> if the storage has the proposed configuration already.
-    /// </returns>
-    ValueTask<bool> RemoveMemberAsync(TAddress address, CancellationToken token = default);
-
-    /// <summary>
-    /// An event occurred when proposed configuration is applied.
-    /// </summary>
-    event Func<TAddress, bool, CancellationToken, ValueTask> ActiveConfigurationChanged;
-
-    /// <summary>
-    /// Represents active cluster configuration maintained by the node.
-    /// </summary>
-    new IReadOnlySet<TAddress> ActiveConfiguration { get; }
-
-    /// <summary>
-    /// Represents proposed cluster configuration.
-    /// </summary>
-    new IReadOnlySet<TAddress>? ProposedConfiguration { get; }
+    event Func<IClusterConfiguration<TAddress>, CancellationToken, ValueTask> ConfigurationChanged;
 }

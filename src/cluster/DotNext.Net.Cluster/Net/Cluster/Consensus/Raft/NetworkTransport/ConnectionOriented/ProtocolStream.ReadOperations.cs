@@ -1,0 +1,256 @@
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
+
+namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented;
+
+internal partial class ProtocolStream
+{
+    private enum ReadState
+    {
+        FrameNotStarted = 0,
+        FrameStarted,
+        EndOfStreamReached,
+    }
+
+    private ReadState readState;
+    private int frameSize;
+
+    internal ValueTask ReadAsync(int count, CancellationToken token)
+    {
+        if (bufferEnd - bufferStart >= count)
+            return ValueTask.CompletedTask;
+
+        var freeCapacity = buffer.Length - bufferEnd;
+
+        if (bufferStart + freeCapacity < count)
+            return ValueTask.FromException(new InternalBufferOverflowException());
+
+        if (freeCapacity < count)
+        {
+            WrittenBufferSpan.CopyTo(buffer.Span);
+            bufferEnd -= bufferStart;
+            bufferStart = 0;
+        }
+
+        return BufferizeSlowAsync(count, token);
+    }
+
+    internal void AdvanceReadCursor(int count)
+        => bufferStart += count;
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask BufferizeSlowAsync(int count, CancellationToken token)
+    {
+        Debug.Assert(bufferEnd < buffer.Length);
+
+        bufferEnd += await ReadFromTransportAsync(RemainingBuffer, count, token).ConfigureAwait(false);
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    internal async ValueTask<MessageType> ReadMessageTypeAsync(CancellationToken token)
+    {
+        Debug.Assert(bufferStart is 0);
+        Debug.Assert(bufferEnd is 0);
+
+        // in case of SslStream, ReadAsync will return 0 bytes and we don't want to throw an error
+        var buffer = this.buffer.Memory;
+        MessageType result;
+
+        if ((bufferEnd = await ReadFromTransportAsync(buffer, token).ConfigureAwait(false)) > 0)
+        {
+            bufferStart = 1;
+            result = (MessageType)MemoryMarshal.GetReference(buffer.Span);
+        }
+        else
+        {
+            result = MessageType.None;
+        }
+
+        return result;
+    }
+
+    private void BeginReadFrameHeader()
+    {
+        if (bufferStart == bufferEnd)
+        {
+            bufferStart = bufferEnd = 0;
+        }
+        else
+        {
+            // shift written buffer to the left
+            buffer.Span[bufferStart..bufferEnd].CopyTo(buffer.Span);
+            bufferEnd -= bufferStart;
+            bufferStart = 0;
+        }
+    }
+
+    private void EndReadFrameHeader()
+    {
+        (frameSize, var finalBlock) = ReadFrameHeaders(buffer.Span);
+        readState = finalBlock ? ReadState.EndOfStreamReached : ReadState.FrameStarted;
+        AdvanceReadCursor(FrameHeadersSize);
+
+        // see WriteFrameHeaders
+        static (int, bool) ReadFrameHeaders(ReadOnlySpan<byte> input)
+        {
+            var chunkSize = BinaryPrimitives.ReadInt32LittleEndian(input);
+            return (chunkSize & int.MaxValue, chunkSize < 0);
+        }
+    }
+
+    private void StartFrameRead()
+    {
+        BeginReadFrameHeader();
+
+        // how many bytes we should read from the stream to parse the frame headers
+        var frameHeaderRemainingBytes = FrameHeadersSize - bufferEnd;
+
+        // frame header is not yet in the buffer
+        if (frameHeaderRemainingBytes > 0)
+            bufferEnd = ReadFromTransport(frameHeaderRemainingBytes, buffer.Span.Slice(bufferEnd));
+
+        EndReadFrameHeader();
+    }
+
+    private int ReadFrame(Span<byte> output)
+    {
+        var count = Math.Min(frameSize, bufferEnd - bufferStart);
+        if (count > 0)
+        {
+            count = buffer.Span.Slice(bufferStart, count) >>> output;
+            bufferStart += count;
+            frameSize -= count;
+        }
+
+        return count;
+    }
+
+    private void SkipFrame()
+    {
+        var count = Math.Min(frameSize, bufferEnd - bufferStart);
+        bufferStart += count;
+        frameSize -= count;
+    }
+
+    public bool TryReadFrameData(int length, out ReadOnlyMemory<byte> frame)
+    {
+        if (readState is ReadState.FrameNotStarted)
+        {
+            BeginReadFrameHeader();
+            
+            // how many bytes we should read from the stream to parse the frame headers
+            if (FrameHeadersSize - bufferEnd <= 0)
+            {
+                // the header is in the buffer
+                EndReadFrameHeader();
+                var writtenBuffer = WrittenBuffer;
+                if (frameSize >= length && writtenBuffer.Length >= length)
+                {
+                    AdvanceReadCursor(length);
+                    frame = writtenBuffer.Slice(0, length);
+                    frameSize -= length;
+                    return true;
+                }
+            }
+        }
+
+        frame = default;
+        return false;
+    }
+
+    public sealed override int Read(Span<byte> output)
+    {
+    check_state:
+        switch (readState, frameSize is 0)
+        {
+            case (ReadState.FrameStarted, true):
+            case (ReadState.FrameNotStarted, _):
+                StartFrameRead();
+                goto check_state; // skip empty frames
+            case (ReadState.EndOfStreamReached, true):
+                return 0;
+            default:
+                if (bufferStart == bufferEnd)
+                {
+                    bufferStart = 0;
+                    bufferEnd = ReadFromTransport(buffer.Span);
+                }
+
+                // we can copy no more than remaining frame
+                return ReadFrame(output);
+        }
+    }
+
+    private ValueTask StartFrameReadAsync(CancellationToken token)
+    {
+        BeginReadFrameHeader();
+
+        // how much bytes we should read from the stream to parse the frame headers
+        var frameHeaderRemainingBytes = FrameHeadersSize - bufferEnd;
+
+        // frame header is not yet in the buffer
+        if (frameHeaderRemainingBytes > 0)
+            return StartFrameReadAsync(frameHeaderRemainingBytes, token);
+
+        EndReadFrameHeader();
+        return ValueTask.CompletedTask;
+    }
+
+    private async ValueTask StartFrameReadAsync(int frameHeaderRemainingBytes, CancellationToken token)
+    {
+        bufferEnd += await ReadFromTransportAsync(RemainingBuffer, frameHeaderRemainingBytes, token).ConfigureAwait(false);
+        EndReadFrameHeader();
+    }
+
+    public sealed override async ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token)
+    {
+        while (true)
+        {
+            switch (readState, frameSize)
+            {
+                case (ReadState.FrameStarted, 0):
+                case (ReadState.FrameNotStarted, _):
+                    await StartFrameReadAsync(token).ConfigureAwait(false);
+                    continue; // skip empty frames
+                case (ReadState.EndOfStreamReached, 0):
+                    return 0;
+                default:
+                    if (bufferStart == bufferEnd)
+                    {
+                        bufferStart = 0;
+                        bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
+                    }
+
+                    // we can copy no more than remaining frame
+                    return ReadFrame(output.Span);
+            }
+        }
+    }
+
+    internal async ValueTask SkipAsync(CancellationToken token)
+    {
+        while (true)
+        {
+            switch ((readState, frameSize))
+            {
+                case (ReadState.FrameStarted, 0):
+                case (ReadState.FrameNotStarted, _):
+                    await StartFrameReadAsync(token).ConfigureAwait(false);
+                    continue; // skip empty frames
+                case (ReadState.EndOfStreamReached, 0):
+                    return;
+                default:
+                    if (bufferStart == bufferEnd)
+                    {
+                        bufferStart = 0;
+                        bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
+                    }
+
+                    SkipFrame();
+                    continue;
+            }
+        }
+    }
+}

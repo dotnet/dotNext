@@ -61,7 +61,7 @@ public sealed class JsonSerializableTests : Test
     private static async Task<FileReader> SerializeToFileAsync<TObject>(TObject obj, bool hideLengthInfo)
         where TObject : struct, ISerializable<TObject>
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         await using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 2048, FileOptions.Asynchronous | FileOptions.SequentialScan))
         {
             await obj.WriteToAsync(output);

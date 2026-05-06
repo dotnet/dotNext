@@ -11,12 +11,16 @@ internal sealed class FollowerState<TMember> : RefreshableState<TMember>
     private volatile bool timedOut;
     private volatile bool refreshed;
 
-    public FollowerState(IRaftStateMachine<TMember> stateMachine, bool consensusReached)
+    public FollowerState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
         trackerCancellation = new();
         stateToken = trackerCancellation.Token;
-        refreshed = consensusReached;
+    }
+
+    public bool ConsensusReached
+    {
+        init => refreshed = value;
     }
 
     public override CancellationToken Token => refreshed ? stateToken : new(canceled: true);

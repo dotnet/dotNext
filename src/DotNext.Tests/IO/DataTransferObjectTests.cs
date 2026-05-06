@@ -11,7 +11,7 @@ using Runtime.InteropServices;
 
 public sealed class DataTransferObjectTests : Test
 {
-    private sealed class CustomDTO(ReadOnlyMemory<byte> content, bool withLength) : BinaryTransferObject(content), IDataTransferObject
+    private sealed class CustomDTO(ReadOnlyMemory<byte> content, bool withLength) : TestTransferObject(content), IDataTransferObject
     {
         long? IDataTransferObject.Length => withLength ? Content.Length : null;
     }
@@ -30,7 +30,7 @@ public sealed class DataTransferObjectTests : Test
     public static async Task MemoryDTO()
     {
         byte[] content = [1, 2, 3];
-        IDataTransferObject dto = new BinaryTransferObject(content);
+        IDataTransferObject dto = new TestTransferObject(content);
         Equal(3L, dto.Length);
         True(dto.IsReusable);
         using var ms = new MemoryStream();
@@ -44,7 +44,7 @@ public sealed class DataTransferObjectTests : Test
     public static async Task MemoryDTO2()
     {
         byte[] content = [1, 2, 3];
-        IDataTransferObject dto = new BinaryTransferObject(content);
+        IDataTransferObject dto = new TestTransferObject(content);
         Equal(3L, dto.Length);
         True(dto.IsReusable);
         var writer = new ArrayBufferWriter<byte>();
@@ -85,7 +85,7 @@ public sealed class DataTransferObjectTests : Test
         var expected = 42M;
         var bytes = new byte[sizeof(decimal)];
         MemoryMarshal.AsReadOnlyBytes(in expected).CopyTo(bytes);
-        var dto = new BinaryTransferObject(bytes);
+        var dto = new TestTransferObject(bytes);
         Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto, TestToken)).Content);
     }
 

@@ -10,8 +10,10 @@ using static System.Threading.Timeout;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Diagnostics;
+using IO.Log;
 using Messaging;
 using Replication;
+using StateMachine;
 using Threading;
 using static DotNext.Extensions.Logging.TestLoggers;
 
@@ -475,7 +477,8 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task RegressionIssue108()
     {
-        var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configRoot = GetTempPath();
+        Directory.CreateDirectory(configRoot);
 
         var config1 = new Dictionary<string, string>
             {
@@ -561,7 +564,8 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public async Task ClusterRecovery()
     {
-        var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var configRoot = GetTempPath();
+        Directory.CreateDirectory(configRoot);
 
         var config1 = new Dictionary<string, string>
             {
@@ -661,36 +665,9 @@ public sealed class RaftHttpClusterTests : RaftTest
         NotNull(host.Services.GetService<IPeerMesh<IClusterMember>>());
         NotNull(host.Services.GetService<IPeerMesh<ISubscriber>>());
         NotNull(host.Services.GetService<IInputChannel>());
-        await host.StopAsync(TestToken);
-    }
-
-    [Fact]
-    public static async Task SelfHost()
-    {
-        var configuration = new Dictionary<string, string>
-            {
-                {"metadata:nodeName", "TestNode"},
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-            };
-
-        using var host = new HostBuilder()
-            .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
-            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-            .ConfigureServices(static (context, services) =>
-            {
-                services.Configure<HttpClusterMemberConfiguration>(context.Configuration);
-            })
-            .Build();
-
-        await host.StartAsync(TestToken);
-        using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
-        {
-            Equal(new Uri(configuration["publicEndPoint"]), clusterHost.Cluster.LocalMemberAddress);
-            IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
-        }
-
+        NotNull(host.Services.GetService<IPersistentState>());
+        NotNull(host.Services.GetService<IAuditTrail<IRaftLogEntry>>());
+        NotNull(host.Services.GetService<IStateMachine>());
         await host.StopAsync(TestToken);
     }
 
@@ -722,7 +699,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         Action<IPeerMesh, PeerEventArgs> peerGoneHandler = (_, args) =>
         {
-            if (args.PeerAddress is UriEndPoint { Uri: { Port: 3262 } })
+            if (args.PeerAddress is UriEndPoint { Uri.Port: 3262 })
                 memberGoneTask.TrySetResult();
         };
 
@@ -806,7 +783,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         True(GetLocalClusterView(host2).ConsensusToken.IsCancellationRequested);
         await host2.StartAsync(TestToken);
 
-        await GetLocalClusterView(host1).WaitForLeadershipAsync(InfiniteTimeSpan, TestToken);
+        Equal(await GetLocalClusterView(host1).WaitForLeadershipAsync(TestToken), GetLocalClusterView(host1).LeadershipToken);
         Equal(GetLocalClusterView(host1).LeadershipToken, GetLocalClusterView(host1).ConsensusToken);
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress, TestToken));
 

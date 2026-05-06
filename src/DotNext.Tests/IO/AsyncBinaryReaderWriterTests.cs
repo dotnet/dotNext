@@ -138,7 +138,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
 
         public FileSource(int bufferSize)
         {
-            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var path = GetTempPath();
             handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
             writer = new(handle) { MaxBufferSize = bufferSize };
             reader = new(handle) { MaxBufferSize = bufferSize };
@@ -175,7 +175,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
 
         public BufferedFileSource(int bufferSize)
         {
-            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var path = GetTempPath();
             handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read,
                 FileOptions.Asynchronous | FileOptions.DeleteOnClose);
             writer = new(handle.AsUnbufferedStream(FileAccess.Write)) { MaxBufferSize = bufferSize };

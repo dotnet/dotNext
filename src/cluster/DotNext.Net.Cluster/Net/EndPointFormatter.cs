@@ -9,6 +9,7 @@ namespace DotNext.Net;
 
 using Buffers;
 using Numerics;
+using Patterns;
 using HttpEndPoint = Http.HttpEndPoint;
 using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
@@ -36,7 +37,7 @@ public static class EndPointFormatter
     /// Gets comparer for <see cref="UriEndPoint"/>.
     /// </summary>
     [CLSCompliant(false)]
-    public static IEqualityComparer<EndPoint> UriEndPointComparer { get; } = new UriEndPointComparer();
+    public static IEqualityComparer<EndPoint> UriEndPointComparer => Net.UriEndPointComparer.Instance;
 
     /// <summary>
     /// Serializes endpoint address to the buffer.
@@ -91,10 +92,30 @@ public static class EndPointFormatter
                 WriteIP(bufferWriter, ip);
                 break;
             case HttpEndPoint http:
-                WriteHttp(bufferWriter, http);
+                // the format is:
+                // DNS endpoint type = 1 byte
+                // HTTPS (true/false) = 1 byte
+                // port = 4 bytes
+                // address family = 4 bytes
+                // host name length, N = 4 bytes
+                // host name = N bytes
+                writer += HttpEndPointPrefix;
+                writer += Unsafe.BitCast<bool, byte>(http.IsSecure);
+                writer.WriteLittleEndian(http.Port);
+                writer.WriteLittleEndian<Enum<AddressFamily>>(new(http.AddressFamily));
+                Serialize(http.Host, ref writer);
                 break;
             case DnsEndPoint dns:
-                WriteDns(bufferWriter, dns);
+                // the format is:
+                // DNS endpoint type = 1 byte
+                // port = 4 bytes
+                // address family = 4 bytes
+                // host name length, N = 4 bytes
+                // host name = N bytes
+                writer += DnsEndPointPrefix;
+                writer.WriteLittleEndian(dns.Port);
+                writer.WriteLittleEndian<Enum<AddressFamily>>(new(dns.AddressFamily));
+                Serialize(dns.Host, ref writer);
                 break;
             case UnixDomainSocketEndPoint domainSocket:
                 WriteUds(bufferWriter, domainSocket);
@@ -258,7 +279,7 @@ public static class EndPointFormatter
     private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
     {
         port = reader.ReadLittleEndian<int>();
-        family = (AddressFamily)reader.ReadLittleEndian<int>();
+        family = reader.ReadLittleEndian<Enum<AddressFamily>>();
         var length = reader.ReadLittleEndian<int>();
 
         using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
@@ -280,4 +301,20 @@ public static class EndPointFormatter
         DeserializeHost(ref reader, out var hostName, out var port, out var family);
         return new(hostName, port, secure, family);
     }
+}
+
+file sealed class UriEndPointComparer : IEqualityComparer<EndPoint>, ISingleton<UriEndPointComparer>
+{
+    public static UriEndPointComparer Instance { get; } = new();
+
+    private UriEndPointComparer()
+    {
+    }
+
+    /// <inheritdoc />
+    bool IEqualityComparer<EndPoint>.Equals(EndPoint? x, EndPoint? y)
+        => Equals((x as UriEndPoint)?.Uri, (y as UriEndPoint)?.Uri);
+
+    int IEqualityComparer<EndPoint>.GetHashCode(EndPoint ep)
+        => (ep as UriEndPoint)?.Uri.GetHashCode() ?? ep.GetHashCode();
 }

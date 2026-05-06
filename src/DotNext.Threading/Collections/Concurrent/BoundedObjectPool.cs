@@ -9,6 +9,10 @@ namespace DotNext.Collections.Concurrent;
 public sealed class BoundedObjectPool<T> : IObjectPool<T>
     where T : class
 {
+    // null - no fast item is available
+    // Sentinel - the pool is frozen
+    // T - fast item
+    private volatile object? fastItem;
     private RingBuffer<T> buffer;
 
     /// <summary>
@@ -18,15 +22,18 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="desiredCapacity"/> is negative or greater than <see cref="Array.MaxLength"/>.</exception>
     public BoundedObjectPool(int desiredCapacity)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)MaxCapacity, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);
+        fastItem = null;
     }
+
+    private static int MaxCapacity => Array.MaxLength - 1;
 
     /// <summary>
     /// Gets the capacity of the pool.
     /// </summary>
-    public int Capacity => buffer.Length;
+    public int Capacity => buffer.Length + 1;
 
     /// <summary>
     /// Tries to rent the object.
@@ -34,8 +41,14 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// <returns>The object instance; or <see langword="null"/> if there are no available objects in the pool.</returns>
     public T? TryGet()
     {
+        // fast path - reuse fast item slot
+        var result = fastItem as T;
+        if (result is not null
+            && Interlocked.CompareExchange(ref fastItem, null, result) == result)
+            return result;
+        
+        // slow path
         ref var slot = ref buffer.TryDequeue(out var sequence);
-        T? result;
         if (Unsafe.IsNullRef(ref slot))
         {
             result = null;
@@ -59,6 +72,11 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// otherwise, <see langword="false"/> if there is no free space in the pool.</returns>
     public bool TryReturn(T item)
     {
+        // fast path - try to set fast item slot
+        if (fastItem is null && Interlocked.CompareExchange(ref fastItem, item, null) is null)
+            return true;
+        
+        // slow path
         ref var slot = ref buffer.TryEnqueue(out var sequence);
         if (Unsafe.IsNullRef(ref slot))
             return false;
@@ -76,14 +94,14 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// <remarks>
     /// Any subsequent call to the <see cref="TryReturn"/> method returns <see langword="false"/>.
     /// </remarks>
-    /// <returns>
-    /// <see langword="true"/> if this method is called for the first time;
-    /// <see langword="false"/> if the pool is already frozen.
-    /// </returns>
-    public bool Freeze() => buffer.Freeze();
+    public void Freeze()
+    {
+        fastItem = Sentinel.Instance;
+        buffer.Freeze();
+    }
 
     /// <summary>
     /// Gets a value indicating that the pool is frozen and the object cannot be returned back to the pool.
     /// </summary>
-    public bool IsFrozen => buffer.IsFrozen;
+    public bool IsFrozen => fastItem == Sentinel.Instance;
 }

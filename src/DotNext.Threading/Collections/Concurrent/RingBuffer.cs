@@ -27,6 +27,12 @@ internal struct RingBuffer<T>
         indexBits = int.CreateChecked(nuint.Log2(length));
         frozenForEnqueues = false;
     }
+
+    public void Freeze()
+    {
+        if (Interlocked.FalseToTrue(ref frozenForEnqueues))
+            WaitForPendingEnqueues();
+    }
     
     public bool Freeze()
     {

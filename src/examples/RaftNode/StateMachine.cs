@@ -23,7 +23,7 @@ internal sealed class StateMachine(DirectoryInfo location) : SimpleStateMachine(
 
     protected override async ValueTask RestoreAsync(FileInfo snapshotFile, CancellationToken token)
     {
-        byte[] buffer = new byte[sizeof(long)];
+        var buffer = new byte[sizeof(long)];
         using var handle = File.OpenHandle(
             snapshotFile.FullName,
             FileMode.Open,
@@ -32,7 +32,8 @@ internal sealed class StateMachine(DirectoryInfo location) : SimpleStateMachine(
             FileOptions.Asynchronous | FileOptions.SequentialScan);
 
         await RandomAccess.ReadAsync(handle, buffer, fileOffset: 0L, token).ConfigureAwait(false);
-        Value = BinaryPrimitives.ReadInt64LittleEndian(buffer);
+        var value = Value = BinaryPrimitives.ReadInt64LittleEndian(buffer);
+        Console.WriteLine($"Accepting snapshot with value {value}");
     }
 
     protected override ValueTask PersistAsync(IAsyncBinaryWriter writer, CancellationToken token)

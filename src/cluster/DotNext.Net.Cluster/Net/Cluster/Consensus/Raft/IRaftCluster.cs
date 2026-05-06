@@ -1,6 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Membership;
 using Replication;
 
 /// <summary>
@@ -31,7 +32,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Defines persistent state for the Raft-based cluster.
     /// </summary>
-    new IPersistentState AuditTrail { get; set; }
+    new IPersistentState AuditTrail { get; }
 
     /// <summary>
     /// Tries to get the lease that can be used to perform the read with linearizability guarantees.
@@ -77,12 +78,18 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Waits until the local node is elected as the leader.
     /// </summary>
-    /// <param name="timeout">The time to wait; or <see cref="Timeout.InfiniteTimeSpan"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The leadership token.</returns>
-    /// <exception cref="TimeoutException">The operation is timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
     /// <seealso cref="LeadershipToken"/>
-    ValueTask<CancellationToken> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default);
+    Task<CancellationToken> WaitForLeadershipAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Associates the configuration storage with the WAL.
+    /// </summary>
+    /// <param name="auditTrail">The WAL implementation.</param>
+    /// <param name="configurationStorage">The configuration storage.</param>
+    protected static void SetConfigurationStorage(IPersistentState auditTrail, IClusterConfigurationStorage configurationStorage)
+        => auditTrail.ConfigurationStorage = configurationStorage;
 }

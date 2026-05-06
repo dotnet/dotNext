@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using Diagnostics;
 
 internal interface IRaftStateMachine
 {
@@ -9,11 +12,11 @@ internal interface IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
-    void UpdateLeaderStickiness();
+    void UpdateLeaderStickiness(Timestamp refreshedAt);
 
     internal interface IWeakCallerStateIdentity
     {
-        bool IsValid(object? state);
+        bool IsValid([NotNullWhen(true)] object? state);
 
         void Clear();
     }
@@ -28,13 +31,13 @@ internal interface IRaftStateMachine<TMember> : IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
-    void MoveToFollowerState(IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm);
+    Task MoveToFollowerState(IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm);
 
-    void MoveToCandidateState(IWeakCallerStateIdentity callerState);
+    Task MoveToCandidateState(IWeakCallerStateIdentity callerState);
 
-    void MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
+    Task MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
 
-    void UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
+    Task UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
 
-    void IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
+    Task IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
 }

@@ -9,7 +9,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task WriteWithoutOverflowAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
@@ -35,7 +35,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task WriteWithOverflowAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
@@ -54,7 +54,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task WritDirectAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
@@ -74,7 +74,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static void WriteWithoutOverflow()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
         False(writer.HasBufferedData);
@@ -97,7 +97,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static void WriteWithOverflow()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
 
@@ -115,7 +115,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task FlushWithOffsetAsync()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { FilePosition = 100L, MaxBufferSize = 64 };
@@ -133,7 +133,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task WriteDirect()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
@@ -145,7 +145,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static async Task BufferOverflow()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
@@ -158,7 +158,7 @@ public sealed class FileWriterTests : Test
     [Fact]
     public static void TryWrite()
     {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var path = GetTempPath();
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
 

@@ -25,6 +25,14 @@ public readonly struct LogEntry : IInputLogEntry
         payload = reader;
         address = metadata.Offset;
         length = metadata.Length;
+        IsConfiguration = metadata.IsConfiguration;
+    }
+
+    // empty log entry
+    internal LogEntry(long term, long index)
+    {
+        Index = index;
+        Term = term;
     }
 
     internal LogEntry(IRaftLogEntry snapshot, long index)
@@ -39,6 +47,9 @@ public readonly struct LogEntry : IInputLogEntry
         : this(snapshot, snapshot.Index)
     {
     }
+
+    /// <inheritdoc cref="IRaftLogEntry.IsConfiguration"/>
+    public bool IsConfiguration { get; }
 
     /// <inheritdoc cref="IInputLogEntry.Context"/>
     public object? Context { get; init; }

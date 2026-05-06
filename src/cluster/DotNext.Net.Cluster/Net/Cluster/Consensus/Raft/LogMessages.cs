@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -118,10 +119,10 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 13,
         LogLevel.Debug,
-        "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}. Local fingerprint is {LocalFingerprint}, remote is {RemoteFingerprint}, apply {ApplyConfig}",
+        "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}",
         EventName = $"{EventIdPrefix}.{nameof(ReplicaSize)}"
     )]
-    public static partial void ReplicaSize(this ILogger logger, EndPoint member, int logEntries, long prevLogIndex, long prevLogTerm, long localFingerprint, long remoteFingerprint, bool applyConfig);
+    public static partial void ReplicaSize(this ILogger logger, EndPoint member, int logEntries, long prevLogIndex, long prevLogTerm);
 
     [LoggerMessage(
         EventIdOffset + 14,
@@ -142,7 +143,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 16,
         LogLevel.Debug,
-        "Local changes are not committed. Quorum is {Quorum}, last committed entry is {CommitIndex}",
+        "Local changes are not committed. Quorum is {Quorum}, calculated commit index is {CommitIndex}",
         EventName = $"{EventIdPrefix}.{nameof(CommitFailed)}"
     )]
     public static partial void CommitFailed(this ILogger logger, int quorum, long commitIndex);
@@ -310,14 +311,6 @@ internal static partial class LogMessages
     public static partial void UnresponsiveMemberDetected(this ILogger logger, EndPoint remoteEndPoint);
 
     [LoggerMessage(
-        EventIdOffset + 38,
-        LogLevel.Debug,
-        "Incoming configuration with {RemoteFingerprint} fingerprint from leader. Local fingerprint is {LocalFingerprint}, apply {ApplyConfig}",
-        EventName = $"{EventIdPrefix}.{nameof(IncomingConfiguration)}"
-    )]
-    public static partial void IncomingConfiguration(this ILogger logger, long localFingerprint, long remoteFingerprint, bool applyConfig);
-
-    [LoggerMessage(
         EventIdOffset + 39,
         LogLevel.Warning,
         "Failure detector cannot determine health status of {Member} cluster node. The node will not be removed automatically. Admin action is required",
@@ -348,4 +341,18 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(StandbyStateExitedWithError)}"
     )]
     public static partial void StandbyStateExitedWithError(this ILogger logger, Exception e);
+
+    [LoggerMessage(
+        EventIdOffset + 43,
+        LogLevel.Error,
+        "User-defined exception within {MemberName} is suspended",
+        EventName = $"{EventIdPrefix}.{nameof(UnhandledException)}")]
+    public static partial void UnhandledException(this ILogger logger, Exception e, [CallerMemberName] string? memberName = null);
+
+    [LoggerMessage(
+        EventIdOffset + 44,
+        LogLevel.Warning,
+        "Cluster member {Member} is too far behind the leader",
+        EventName = $"{EventIdPrefix}.{nameof(SlowMember)}")]
+    public static partial void SlowMember(this ILogger logger, EndPoint member);
 }

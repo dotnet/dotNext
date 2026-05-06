@@ -1,5 +1,6 @@
 ﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Membership;
 using Runtime;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
@@ -53,6 +54,11 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask UpdateVotedForAsync(ClusterMemberId member, CancellationToken token = default);
+
+    /// <summary>
+    /// Gets or sets the configuration storage.
+    /// </summary>
+    IClusterConfigurationStorage? ConfigurationStorage { get; internal set; }
 
     internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)
         => lastVote is null || lastVote.Value == expected;
