@@ -183,7 +183,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1__ctor_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.#ctor(DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration)">RaftCluster(IClusterMemberConfiguration)</h4>
@@ -214,7 +214,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1__ctor_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_System_Diagnostics_TagList__" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.#ctor(DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration,System.Diagnostics.TagList@)">RaftCluster(IClusterMemberConfiguration, in TagList)</h4>
@@ -254,7 +254,7 @@ protected RaftCluster(IClusterMemberConfiguration config, in TagList measurement
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AuditTrail_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AuditTrail" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AuditTrail">AuditTrail</h4>
@@ -263,7 +263,7 @@ protected RaftCluster(IClusterMemberConfiguration config, in TagList measurement
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IPersistentState AuditTrail { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required IPersistentState AuditTrail { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -298,35 +298,7 @@ protected RaftCluster(IClusterMemberConfiguration config, in TagList measurement
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfigurationStorage*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConfigurationStorage" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfigurationStorage">ConfigurationStorage</h4>
-  <div class="markdown level1 summary"><p>Gets configuration storage.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract IClusterConfigurationStorage ConfigurationStorage { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage.html">IClusterConfigurationStorage</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConsensusToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConsensusToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken">ConsensusToken</h4>
@@ -358,7 +330,7 @@ has communication with the leader.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ElectionTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ElectionTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ElectionTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ElectionTimeout">ElectionTimeout</h4>
@@ -386,7 +358,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EndPointComparer_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.EndPointComparer*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EndPointComparer" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.EndPointComparer">EndPointComparer</h4>
@@ -414,7 +386,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_FailureDetectorFactory_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.FailureDetectorFactory*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_FailureDetectorFactory" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.FailureDetectorFactory">FailureDetectorFactory</h4>
@@ -442,7 +414,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Leader_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Leader*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Leader" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Leader">Leader</h4>
@@ -470,7 +442,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeadershipToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeadershipToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipToken">LeadershipToken</h4>
@@ -501,7 +473,7 @@ has communication with the leader.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LifecycleToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LifecycleToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LifecycleToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LifecycleToken">LifecycleToken</h4>
@@ -529,7 +501,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Logger_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Logger*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Logger" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Logger">Logger</h4>
@@ -558,7 +530,7 @@ protected virtual ILogger Logger { get; }</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Members_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Members*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Members" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Members">Members</h4>
@@ -587,7 +559,7 @@ protected virtual ILogger Logger { get; }</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Readiness_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Readiness*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Readiness" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Readiness">Readiness</h4>
@@ -615,7 +587,7 @@ protected virtual ILogger Logger { get; }</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Standby_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Standby*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Standby" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Standby">Standby</h4>
@@ -641,96 +613,11 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Term*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Term">Term</h4>
-  <div class="markdown level1 summary"><p>Gets Term value maintained by local member.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long Term { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AddMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AddMemberAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AddMemberAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AddMemberAsync(`0,System.Threading.CancellationToken)">AddMemberAsync(TMember, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Adds a new member to the collection of members visible by the current node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; AddMemberAsync(TMember member, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TMember</span></td>
-        <td><span class="parametername">member</span></td>
-        <td><p>The member to add.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the member is added successfully; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the member is already in the list.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AddMemberAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is exposed to be called by <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfigurationChanged">ActiveConfigurationChanged</a>
-handler.</p>
-</div>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AddMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AddMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AddMemberAsync__1__0_System_Int32_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage___0__System_Func__0___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AddMemberAsync``1(`0,System.Int32,DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage{``0},System.Func{`0,``0},System.Threading.CancellationToken)">AddMemberAsync&lt;TAddress&gt;(TMember, int, IClusterConfigurationStorage&lt;TAddress&gt;, Func&lt;TMember, TAddress&gt;, CancellationToken)</h4>
@@ -849,16 +736,16 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AppendEntriesAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AppendEntriesAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Int64_System_Int64_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration,System.Boolean,System.Threading.CancellationToken)">AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId, long, ILogEntryProducer&lt;TEntry&gt;, long, long, long, IClusterConfiguration, bool, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AppendEntriesAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId, long, ILogEntryProducer&lt;TEntry&gt;, long, long, long, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Handles AppendEntries message received from remote cluster member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -907,19 +794,6 @@ handler.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration.html">IClusterConfiguration</a></td>
-        <td><span class="parametername">config</span></td>
-        <td><p>The list of cluster members.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">applyConfig</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to inform that the receiver must apply previously proposed configuration;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to propose a new configuration.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
@@ -961,16 +835,16 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ApplyReadBarrierAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ApplyReadBarrierAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ApplyReadBarrierAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ApplyReadBarrierAsync(System.Threading.CancellationToken)">ApplyReadBarrierAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_ReadBarrierType_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ApplyReadBarrierAsync(DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType,System.Threading.CancellationToken)">ApplyReadBarrierAsync(ReadBarrierType, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Ensures linearizable read from underlying state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask ApplyReadBarrierAsync(CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask ApplyReadBarrierAsync(ReadBarrierType barrierType, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -982,6 +856,12 @@ handler.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType.html">ReadBarrierType</a></td>
+        <td><span class="parametername">barrierType</span></td>
+        <td><p>Read barrier type. It has effect only when this instance is a leader.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
@@ -1016,6 +896,11 @@ handler.</p>
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">barrierType</code> is invalid.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled.</p>
 </td>
@@ -1029,16 +914,63 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ChangeConfigurationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ChangeConfigurationAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ChangeConfigurationAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ChangeConfigurationAsync(System.Threading.CancellationToken)">ChangeConfigurationAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Initiates configuration change.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ValueTask&lt;RaftCluster&lt;TMember&gt;.ConfigurationChangeScope&gt; ChangeConfigurationAsync(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster</a>&lt;TMember&gt;.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.ConfigurationChangeScope.html">ConfigurationChangeScope</a>&gt;</td>
+        <td><p>The scope that can be used to report the configuration changes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_CombineTokens_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_CombineTokens_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens(System.ReadOnlySpan{System.Threading.CancellationToken})">CombineTokens(ReadOnlySpan&lt;CancellationToken&gt;)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_CombineTokens_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens(System.ReadOnlySpan{System.Threading.CancellationToken})">CombineTokens(params ReadOnlySpan&lt;CancellationToken&gt;)</h4>
   <div class="markdown level1 summary"><p>Combines multiple cancellation tokens.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected CancellationTokenMultiplexer.Scope CombineTokens(ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
+    <pre><code class="lang-csharp hljs">protected CancellationTokenMultiplexer.Scope CombineTokens(params ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1076,60 +1008,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DetectLocalMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DetectLocalMemberAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DetectLocalMemberAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DetectLocalMemberAsync(`0,System.Threading.CancellationToken)">DetectLocalMemberAsync(TMember, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the specified candidate represents a local node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;bool&gt; DetectLocalMemberAsync(TMember candidate, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TMember</span></td>
-        <td><span class="parametername">candidate</span></td>
-        <td><p>The candidate to check.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">candidate</code> represents a local node; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -1162,7 +1041,7 @@ handler.</p>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DisposeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DisposeAsync">DisposeAsync()</h4>
@@ -1189,7 +1068,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -1223,7 +1102,7 @@ handler.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EnableStandbyModeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.EnableStandbyModeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EnableStandbyModeAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.EnableStandbyModeAsync(System.Threading.CancellationToken)">EnableStandbyModeAsync(CancellationToken)</h4>
@@ -1290,7 +1169,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ForceReplicationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ForceReplicationAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ForceReplicationAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ForceReplicationAsync(System.Threading.CancellationToken)">ForceReplicationAsync(CancellationToken)</h4>
@@ -1361,7 +1240,87 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallConfigurationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallConfigurationAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallConfigurationAsync__1_System_Int64___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallConfigurationAsync``1(System.Int64,``0,System.Int64,System.Threading.CancellationToken)">InstallConfigurationAsync&lt;TConfiguration&gt;(long, TConfiguration, long, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Installs the cluster configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ValueTask&lt;bool&gt; InstallConfigurationAsync&lt;TConfiguration&gt;(long senderTerm, TConfiguration configuration, long configurationVersion, CancellationToken token) where TConfiguration : IDataTransferObject</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">senderTerm</span></td>
+        <td><p>Term value provided by the message sender.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TConfiguration</span></td>
+        <td><span class="parametername">configuration</span></td>
+        <td><p>The configuration to install.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">configurationVersion</span></td>
+        <td><p>The configuration version.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TConfiguration</span></td>
+        <td><p>The type of the configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallSnapshotAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallSnapshotAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,``0,System.Int64,System.Threading.CancellationToken)">InstallSnapshotAsync&lt;TSnapshot&gt;(ClusterMemberId, long, TSnapshot, long, CancellationToken)</h4>
@@ -1448,7 +1407,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_PreVoteAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_PreVoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">PreVoteAsync(ClusterMemberId, long, long, long, CancellationToken)</h4>
@@ -1519,64 +1478,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RemoveMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RemoveMemberAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RemoveMemberAsync_DotNext_Net_Cluster_ClusterMemberId_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RemoveMemberAsync(DotNext.Net.Cluster.ClusterMemberId,System.Threading.CancellationToken)">RemoveMemberAsync(ClusterMemberId, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Removes the member from the collection of members visible by the current node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;TMember?&gt; RemoveMemberAsync(ClusterMemberId id, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a></td>
-        <td><span class="parametername">id</span></td>
-        <td><p>The identifier of the member.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMember&gt;</td>
-        <td><p>The removed member.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RemoveMemberAsync_DotNext_Net_Cluster_ClusterMemberId_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is exposed to be called by <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfigurationChanged">ActiveConfigurationChanged</a>
-handler.</p>
-</div>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RemoveMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RemoveMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RemoveMemberAsync__1_DotNext_Net_Cluster_ClusterMemberId_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage___0__System_Func__0___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RemoveMemberAsync``1(DotNext.Net.Cluster.ClusterMemberId,DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage{``0},System.Func{`0,``0},System.Threading.CancellationToken)">RemoveMemberAsync&lt;TAddress&gt;(ClusterMemberId, IClusterConfigurationStorage&lt;TAddress&gt;, Func&lt;TMember, TAddress&gt;, CancellationToken)</h4>
@@ -1684,7 +1586,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ReplicateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ReplicateAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ReplicateAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ReplicateAsync``1(``0,System.Threading.CancellationToken)">ReplicateAsync&lt;TEntry&gt;(TEntry, CancellationToken)</h4>
@@ -1693,7 +1595,7 @@ handler.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; ReplicateAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask ReplicateAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1729,9 +1631,8 @@ handler.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the appended log entry has been committed by the majority of nodes; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if retry is required.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -1779,7 +1680,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ResignAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ResignAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ResignAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ResignAsync(System.Threading.CancellationToken)">ResignAsync(CancellationToken)</h4>
@@ -1826,7 +1727,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RevertToNormalModeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RevertToNormalModeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RevertToNormalModeAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.RevertToNormalModeAsync(System.Threading.CancellationToken)">RevertToNormalModeAsync(CancellationToken)</h4>
@@ -1890,7 +1791,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StartAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StartAsync(System.Threading.CancellationToken)">StartAsync(CancellationToken)</h4>
@@ -1941,7 +1842,7 @@ handler.</p>
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartFollowing_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StartFollowing*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartFollowing" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StartFollowing">StartFollowing()</h4>
@@ -1954,7 +1855,7 @@ handler.</p>
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StopAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StopAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StopAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.StopAsync(System.Threading.CancellationToken)">StopAsync(CancellationToken)</h4>
@@ -2001,7 +1902,7 @@ handler.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_SynchronizeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.SynchronizeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_SynchronizeAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.SynchronizeAsync(System.Int64,System.Threading.CancellationToken)">SynchronizeAsync(long, CancellationToken)</h4>
@@ -2055,7 +1956,7 @@ request.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_TryGetLeaseToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.TryGetLeaseToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_TryGetLeaseToken_System_Threading_CancellationToken__" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.TryGetLeaseToken(System.Threading.CancellationToken@)">TryGetLeaseToken(out CancellationToken)</h4>
@@ -2102,7 +2003,7 @@ request.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_TryGetMember_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.TryGetMember*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_TryGetMember_DotNext_Net_Cluster_ClusterMemberId_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.TryGetMember(DotNext.Net.Cluster.ClusterMemberId)">TryGetMember(ClusterMemberId)</h4>
@@ -2149,16 +2050,16 @@ request.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.UnavailableMemberDetected*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.UnavailableMemberDetected(`0,System.Threading.CancellationToken)">UnavailableMemberDetected(TMember, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.UnavailableMemberDetected(`0,System.Int64,System.Threading.CancellationToken)">UnavailableMemberDetected(TMember, long, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Notifies that the member is unavailable.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected virtual ValueTask UnavailableMemberDetected(TMember member, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual ValueTask UnavailableMemberDetected(TMember member, long term, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2174,6 +2075,12 @@ request.</p>
         <td><span class="xref">TMember</span></td>
         <td><span class="parametername">member</span></td>
         <td><p>The member that is considered as unavailable.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">term</span></td>
+        <td><p>The cluster term at the point in time when the member was detected as unavailable.</p>
 </td>
       </tr>
       <tr>
@@ -2200,13 +2107,93 @@ request.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__0_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>It's an infrastructure method that can be used to remove unavailable member from the cluster configuration
 at the leader side.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.UnavailableMemberDetected*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__1_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage___0____0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.UnavailableMemberDetected``1(DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage{``0},``0,System.Int64,System.Threading.CancellationToken)">UnavailableMemberDetected&lt;TAddress&gt;(IClusterConfigurationStorage&lt;TAddress&gt;, TAddress, long, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Provides the helper for implementing <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_UnavailableMemberDetected__0_System_Int64_System_Threading_CancellationToken_">UnavailableMemberDetected(TMember, long, CancellationToken)</a> method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ValueTask UnavailableMemberDetected&lt;TAddress&gt;(IClusterConfigurationStorage&lt;TAddress&gt; configurationStorage, TAddress address, long term, CancellationToken token) where TAddress : notnull</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage</a>&lt;TAddress&gt;</td>
+        <td><span class="parametername">configurationStorage</span></td>
+        <td><p>The configuration storage.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TAddress</span></td>
+        <td><span class="parametername">address</span></td>
+        <td><p>The address of the cluster member.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">term</span></td>
+        <td><p>The cluster term at the point in time when the member was detected as unavailable.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TAddress</span></td>
+        <td><p>The type of the address.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_VoteAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_VoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">VoteAsync(ClusterMemberId, long, long, long, CancellationToken)</h4>
@@ -2277,7 +2264,7 @@ at the leader side.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeaderAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeaderAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeaderAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeaderAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitForLeaderAsync(TimeSpan, CancellationToken)</h4>
@@ -2356,16 +2343,16 @@ at the leader side.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitForLeadershipAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync(System.Threading.CancellationToken)">WaitForLeadershipAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Waits until the local node is elected as the leader.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;CancellationToken&gt; WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;CancellationToken&gt; WaitForLeadershipAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2377,12 +2364,6 @@ at the leader side.</p>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The time to wait; or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.timeout.infinitetimespan">InfiniteTimeSpan</a>.</p>
-</td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
@@ -2401,7 +2382,7 @@ at the leader side.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>&gt;</td>
         <td><p>The leadership token.</p>
 </td>
       </tr>
@@ -2417,11 +2398,6 @@ at the leader side.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The operation is timed out.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled.</p>
 </td>
@@ -2433,7 +2409,7 @@ at the leader side.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken__seealso">See Also</h5>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken">LeadershipToken</a></div>
   </div>
@@ -2441,7 +2417,7 @@ at the leader side.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeaderChanged" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeaderChanged">LeaderChanged</h4>
   <div class="markdown level1 summary"><p>An event raised when leader has been changed.</p>
@@ -2468,7 +2444,7 @@ at the leader side.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_MemberAdded" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberAdded">MemberAdded</h4>
   <div class="markdown level1 summary"><p>An event raised when new cluster member is detected.</p>
@@ -2495,7 +2471,7 @@ at the leader side.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_MemberRemoved" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberRemoved">MemberRemoved</h4>
   <div class="markdown level1 summary"><p>An event raised when cluster member is removed gracefully.</p>
@@ -2522,7 +2498,7 @@ at the leader side.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ReplicationCompleted" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ReplicationCompleted">ReplicationCompleted</h4>
   <div class="markdown level1 summary"><p>Represents an event raised when the local node completes its replication with another
@@ -2584,6 +2560,9 @@ node.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_Threading_CancellationToken_">RaftClusterExtensions.ApplyReadBarrierAsync(IRaftCluster, CancellationToken)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_ReadOnlyMemory_System_Byte__System_Object_System_Threading_CancellationToken_">RaftClusterExtensions.ReplicateAsync(IRaftCluster, ReadOnlyMemory&lt;byte&gt;, object?, CancellationToken)</a>
   </div>
   <div>
@@ -2610,7 +2589,7 @@ node.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

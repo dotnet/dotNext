@@ -87,16 +87,10 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_HostEndPoint">RaftCluster.BuiltInTransportConfiguration.HostEndPoint</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog">RaftCluster.BuiltInTransportConfiguration.ServerBacklog</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive">RaftCluster.BuiltInTransportConfiguration.TimeToLive</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_UseInMemoryConfigurationStorage">RaftCluster.NodeConfiguration.UseInMemoryConfigurationStorage()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_PublicEndPoint">RaftCluster.NodeConfiguration.PublicEndPoint</a>
@@ -169,7 +163,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration__ctor_System_Net_IPEndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.#ctor(System.Net.IPEndPoint)">TcpConfiguration(IPEndPoint)</h4>
@@ -202,7 +196,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_ConnectTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.ConnectTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_ConnectTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.ConnectTimeout">ConnectTimeout</h4>
@@ -211,7 +205,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TimeSpan ConnectTimeout { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TimeSpan ConnectTimeout { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -230,7 +224,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_GracefulShutdownTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.GracefulShutdownTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_GracefulShutdownTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.GracefulShutdownTimeout">GracefulShutdownTimeout</h4>
@@ -239,7 +233,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TimeSpan GracefulShutdownTimeout { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TimeSpan GracefulShutdownTimeout { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -258,7 +252,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_LingerOption_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.LingerOption*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_LingerOption" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.LingerOption">LingerOption</h4>
@@ -287,7 +281,7 @@ delay its closing in an attempt to send all pending data.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_SslOptions_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.SslOptions*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_SslOptions" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.SslOptions">SslOptions</h4>
@@ -296,7 +290,7 @@ delay its closing in an attempt to send all pending data.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public SslOptions? SslOptions { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public SslOptions? SslOptions { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -316,7 +310,7 @@ delay its closing in an attempt to send all pending data.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.TransmissionBlockSize*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.TransmissionBlockSize">TransmissionBlockSize</h4>
@@ -326,7 +320,7 @@ to the remote host without requesting the next block.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int TransmissionBlockSize { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int TransmissionBlockSize { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -345,8 +339,8 @@ to the remote host without requesting the next block.</p>
   </table>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This property allows to reduce signal traffic between endpoints
-and affects performance of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync__2_System_Int64___1_System_Int64_System_Int64_System_Int64_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_System_Boolean_System_Threading_CancellationToken_">AppendEntriesAsync&lt;TEntry, TList&gt;(long, TList, long, long, long, IClusterConfiguration, bool, CancellationToken)</a>,
-<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_System_Int64_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_System_Int64_System_Threading_CancellationToken_">InstallSnapshotAsync(long, IRaftLogEntry, long, CancellationToken)</a> and
+and affects performance of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync__2_System_Int64___1_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_">AppendEntriesAsync&lt;TEntry, TList&gt;(long, TList, long, long, long, CancellationToken)</a>,
+<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_System_Int64_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_System_Int64_DotNext_IO_IDataTransferObject_System_Int64_System_Threading_CancellationToken_">InstallSnapshotAsync(long, IRaftLogEntry, long, IDataTransferObject, long, CancellationToken)</a> and
 <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_GetMetadataAsync_System_Boolean_System_Threading_CancellationToken_">GetMetadataAsync(bool, CancellationToken)</a> methods. Ideally, the value
 must be equal to average size of single log entry.</p>
 </div>
@@ -373,7 +367,7 @@ must be equal to average size of single log entry.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

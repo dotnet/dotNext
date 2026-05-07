@@ -112,16 +112,16 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_ReadOnlyMemory_System_Byte__System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.ReadOnlyMemory{System.Byte},System.Object,System.Threading.CancellationToken)">ReplicateAsync(IRaftCluster, ReadOnlyMemory&lt;byte&gt;, object?, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Appends binary log entry and ensures that it is replicated and committed.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ApplyReadBarrierAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ApplyReadBarrierAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ApplyReadBarrierAsync(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Threading.CancellationToken)">ApplyReadBarrierAsync(IRaftCluster, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Ensures linearizable read from underlying state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;bool&gt; ReplicateAsync(this IRaftCluster cluster, ReadOnlyMemory&lt;byte&gt; payload, object? context = null, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask ApplyReadBarrierAsync(this IRaftCluster cluster, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -136,8 +136,80 @@
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></td>
         <td><span class="parametername">cluster</span></td>
-        <td><p>The cluster node.</p>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.html">QuorumUnreachableException</a></td>
+        <td><p>The quorum is not visible to the local node.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_ReadOnlyMemory_System_Byte__System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.ReadOnlyMemory{System.Byte},System.Object,System.Threading.CancellationToken)">ReplicateAsync(IRaftCluster, ReadOnlyMemory&lt;byte&gt;, object?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Appends binary log entry and ensures that it is replicated and committed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask ReplicateAsync(this IRaftCluster cluster, ReadOnlyMemory&lt;byte&gt; payload, object? context = null, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></td>
+        <td><span class="parametername">cluster</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
@@ -169,7 +241,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the appended log entry has been committed by the majority of nodes; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if retry is required.</p>
 </td>
       </tr>
@@ -198,7 +270,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync__1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster___0_System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateAsync``1(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,``0,System.Object,System.Threading.CancellationToken)">ReplicateAsync&lt;T&gt;(IRaftCluster, T, object?, CancellationToken)</h4>
@@ -207,7 +279,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;bool&gt; ReplicateAsync&lt;T&gt;(this IRaftCluster cluster, T payload, object? context = null, CancellationToken token = default) where T : IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask ReplicateAsync&lt;T&gt;(this IRaftCluster cluster, T payload, object? context = null, CancellationToken token = default) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -222,8 +294,7 @@
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></td>
         <td><span class="parametername">cluster</span></td>
-        <td><p>The cluster node.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">T</span></td>
@@ -255,7 +326,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the appended log entry has been committed by the majority of nodes; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if retry is required.</p>
 </td>
       </tr>
@@ -300,7 +371,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateJsonAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateJsonAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateJsonAsync__1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster___0_System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.ReplicateJsonAsync``1(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,``0,System.Object,System.Threading.CancellationToken)">ReplicateJsonAsync&lt;T&gt;(IRaftCluster, T, object?, CancellationToken)</h4>
@@ -309,7 +380,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;bool&gt; ReplicateJsonAsync&lt;T&gt;(this IRaftCluster cluster, T payload, object? context = null, CancellationToken token = default) where T : IJsonSerializable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask ReplicateJsonAsync&lt;T&gt;(this IRaftCluster cluster, T payload, object? context = null, CancellationToken token = default) where T : notnull, IJsonSerializable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -324,8 +395,7 @@
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></td>
         <td><span class="parametername">cluster</span></td>
-        <td><p>The cluster node.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">T</span></td>
@@ -357,7 +427,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the appended log entry has been committed by the majority of nodes; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if retry is required.</p>
 </td>
       </tr>
@@ -401,6 +471,51 @@
     </tbody>
   </table>
 
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_get_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.get_Term*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_get_Term_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.get_Term(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)">get_Term(IRaftCluster)</h4>
+  <div class="markdown level1 summary"><p>Gets term number used by Raft algorithm to check the consistency of the cluster.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long get_Term(IRaftCluster cluster)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></td>
+        <td><span class="parametername">cluster</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
 </article>
           </div>
 
@@ -409,7 +524,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterExtensions.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

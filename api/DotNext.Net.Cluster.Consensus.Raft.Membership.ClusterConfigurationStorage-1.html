@@ -178,21 +178,50 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
+  <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
   </span>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_allocator" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.allocator">allocator</h4>
-  <div class="markdown level1 summary"><p>The memory allocator.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Comparer_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Comparer*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Comparer" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Comparer">Comparer</h4>
+  <div class="markdown level1 summary"><p>Gets the comparer of the address.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected readonly MemoryAllocator&lt;byte&gt;? allocator</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual IEqualityComparer&lt;TAddress&gt; Comparer { get; }</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;TAddress&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_MemoryAllocator_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.MemoryAllocator*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_MemoryAllocator" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.MemoryAllocator">MemoryAllocator</h4>
+  <div class="markdown level1 summary"><p>Gets or sets memory allocator.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryAllocator&lt;byte&gt; MemoryAllocator { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
@@ -207,198 +236,11 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-</h3>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ActiveConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ActiveConfiguration*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ActiveConfiguration" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ActiveConfiguration">ActiveConfiguration</h4>
-  <div class="markdown level1 summary"><p>Represents active cluster configuration maintained by the node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract IClusterConfiguration ActiveConfiguration { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration.html">IClusterConfiguration</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_HasProposal_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.HasProposal*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_HasProposal" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.HasProposal">HasProposal</h4>
-  <div class="markdown level1 summary"><p>Gets a value indicating that this storage has proposed configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract bool HasProposal { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposedConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ProposedConfiguration*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposedConfiguration" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ProposedConfiguration">ProposedConfiguration</h4>
-  <div class="markdown level1 summary"><p>Represents proposed cluster configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract IClusterConfiguration? ProposedConfiguration { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration.html">IClusterConfiguration</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_AddMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.AddMemberAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_AddMemberAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.AddMemberAsync(`0,System.Threading.CancellationToken)">AddMemberAsync(TAddress, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Proposes a new member.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;bool&gt; AddMemberAsync(TAddress address, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TAddress</span></td>
-        <td><span class="parametername">address</span></td>
-        <td><p>The address of the cluster member.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the new member is added to the proposed configuration;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the storage has the proposed configuration already.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ApplyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ApplyAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ApplyAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ApplyAsync(System.Threading.CancellationToken)">ApplyAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Applies proposed configuration as active configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask ApplyAsync(CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.ClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Decode_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Decode*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Decode_DotNext_Buffers_SequenceReader__" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Decode(DotNext.Buffers.SequenceReader@)">Decode(ref SequenceReader)</h4>
@@ -445,7 +287,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -478,7 +320,7 @@
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.ClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Encode_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Encode*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_Encode__0_DotNext_Buffers_BufferWriterSlim_System_Byte___" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.Encode(`0,DotNext.Buffers.BufferWriterSlim{System.Byte}@)">Encode(TAddress, ref BufferWriterSlim&lt;byte&gt;)</h4>
@@ -487,7 +329,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract void Encode(TAddress address, ref BufferWriterSlim&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract void Encode(TAddress address, ref BufferWriterSlim&lt;byte&gt; writer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -507,7 +349,7 @@
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
+        <td><span class="parametername">writer</span></td>
         <td><p>The buffer for the address.</p>
 </td>
       </tr>
@@ -515,16 +357,16 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.ClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_LoadConfigurationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.LoadConfigurationAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_LoadConfigurationAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.LoadConfigurationAsync(System.Threading.CancellationToken)">LoadConfigurationAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Loads configuration from the storage.</p>
+  <div class="markdown level1 summary"><p>Loads the configuration from the storage.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask LoadConfigurationAsync(CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;(MemoryOwner&lt;byte&gt; Configuration, long Version)&gt; LoadConfigurationAsync(CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -554,24 +396,24 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous result.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;(<a class="xref" href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext/Buffers/MemoryOwner.cs">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt; <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-dotnext.buffers.memoryowner-system.byte-,system.int64-.configuration">Configuration</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-dotnext.buffers.memoryowner-system.byte-,system.int64-.version">Version</a>)&gt;</td>
+        <td><p>The memory block representing the cluster configuration.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.ClusterConfiguration.cs">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ProposeAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposeAsync_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ProposeAsync(DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration,System.Threading.CancellationToken)">ProposeAsync(IClusterConfiguration, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Proposes the configuration.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_SaveConfigurationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.SaveConfigurationAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_SaveConfigurationAsync_System_ReadOnlyMemory_System_Byte__System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.SaveConfigurationAsync(System.ReadOnlyMemory{System.Byte},System.Int64,System.Threading.CancellationToken)">SaveConfigurationAsync(ReadOnlyMemory&lt;byte&gt;, long, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Stores the configuration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;bool&gt; SaveConfigurationAsync(ReadOnlyMemory&lt;byte&gt; configuration, long configurationVersion, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -584,65 +426,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration.html">IClusterConfiguration</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
         <td><span class="parametername">configuration</span></td>
-        <td><p>The proposed configuration.</p>
+        <td><p>The memory block representing the cluster configuration.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposeAsync_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If method is called multiple times then <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ProposedConfiguration">ProposedConfiguration</a> will be rewritten.</p>
-</div>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_RemoveMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.RemoveMemberAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_RemoveMemberAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.RemoveMemberAsync(`0,System.Threading.CancellationToken)">RemoveMemberAsync(TAddress, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Proposes removal of the existing member.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;bool&gt; RemoveMemberAsync(TAddress address, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TAddress</span></td>
-        <td><span class="parametername">address</span></td>
-        <td><p>The address of the cluster member.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">configurationVersion</span></td>
+        <td><p>The version of the configuration.</p>
 </td>
       </tr>
       <tr>
@@ -664,8 +456,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the new member is added to the proposed configuration;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the storage has the proposed configuration already.</p>
+        <td><p>The task representing asynchronous result.</p>
 </td>
       </tr>
     </tbody>
@@ -674,15 +465,15 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs">View Source</a>
   </span>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ActiveConfigurationChanged" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ActiveConfigurationChanged">ActiveConfigurationChanged</h4>
-  <div class="markdown level1 summary"><p>An event occurred when proposed configuration is applied.</p>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_ConfigurationChanged" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage`1.ConfigurationChanged">ConfigurationChanged</h4>
+  <div class="markdown level1 summary"><p>An event occurred when the configuration is changed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Func&lt;TAddress, bool, CancellationToken, ValueTask&gt; ActiveConfigurationChanged</code></pre>
+    <pre><code class="lang-csharp hljs">public event Func&lt;IClusterConfiguration&lt;TAddress&gt;, CancellationToken, ValueTask&gt; ConfigurationChanged</code></pre>
   </div>
   <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-condensed">
@@ -694,7 +485,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TAddress, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration-1.html">IClusterConfiguration</a>&lt;TAddress&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -728,7 +519,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/ClusterConfigurationStorage.ClusterConfiguration.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

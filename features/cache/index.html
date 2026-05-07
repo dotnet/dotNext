@@ -74,7 +74,7 @@
 <p>Time-based eviction policy is not supported.</p>
 </div>
 <h1 id="capacity-based-cache">Capacity-based cache</h1>
-<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> is capacity-based cache. The cache can keep the specified maximum amount of items. When the capacity exceeds, the eldest item is evicted. The eviction process doesn't interfere with writers or readers, it runs in the background.</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> is capacity-based cache. The cache can keep the specified maximum amount of items. When the capacity is exceeded, an item is evicted. The eviction process doesn't interfere with writers or readers, it runs in the background.</p>
 <p>All methods of the cache are asynchronous except <code>TryRead</code> that is designed to be extremely fast in case of cache hit. <code>ChangeAsync</code> is designed to be asynchronous because in case of cache miss the application needs to load the resource asynchronously. In the same time, multiple callers of cache trying to cache the same resource. This is a waste of resources because at least one caller is already in the process of resource loading. For other callers, it's better to wait. The following example demonstrates this pattern:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.Caching;
 

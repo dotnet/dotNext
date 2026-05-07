@@ -88,9 +88,6 @@ transport implemented by .NEXT library.</p>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_UseInMemoryConfigurationStorage">RaftCluster.NodeConfiguration.UseInMemoryConfigurationStorage()</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_PublicEndPoint">RaftCluster.NodeConfiguration.PublicEndPoint</a>
     </div>
     <div>
@@ -164,7 +161,7 @@ transport implemented by .NEXT library.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_HostEndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.HostEndPoint*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_HostEndPoint" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.HostEndPoint">HostEndPoint</h4>
@@ -173,7 +170,7 @@ transport implemented by .NEXT library.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed IPEndPoint HostEndPoint { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">protected override sealed IPEndPoint HostEndPoint { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -194,7 +191,7 @@ transport implemented by .NEXT library.</p>
   <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_HostEndPoint">RaftCluster.NodeConfiguration.HostEndPoint</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.ServerBacklog*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.ServerBacklog">ServerBacklog</h4>
@@ -203,7 +200,7 @@ transport implemented by .NEXT library.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int ServerBacklog { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int ServerBacklog { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -241,7 +238,7 @@ transport implemented by .NEXT library.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.TimeToLive*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.TimeToLive">TimeToLive</h4>
@@ -250,7 +247,7 @@ transport implemented by .NEXT library.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public byte TimeToLive { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public byte TimeToLive { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -290,7 +287,7 @@ transport implemented by .NEXT library.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

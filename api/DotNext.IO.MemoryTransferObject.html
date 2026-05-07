@@ -163,11 +163,11 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryTransferObject__ctor_" data-uid="DotNext.IO.MemoryTransferObject.#ctor*"></a>
   <h4 id="DotNext_IO_MemoryTransferObject__ctor_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.MemoryTransferObject.#ctor(System.Int32,DotNext.Buffers.MemoryAllocator{System.Byte})">MemoryTransferObject(int, MemoryAllocator&lt;byte&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Represents data transfer object holding the content of the predefined size in the memory.</p>
+  <div class="markdown level1 summary"><p>Initializes a new memory DTO.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -202,7 +202,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryTransferObject_Content_" data-uid="DotNext.IO.MemoryTransferObject.Content*"></a>
   <h4 id="DotNext_IO_MemoryTransferObject_Content" data-uid="DotNext.IO.MemoryTransferObject.Content">Content</h4>
@@ -232,7 +232,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryTransferObject_Dispose_" data-uid="DotNext.IO.MemoryTransferObject.Dispose*"></a>
   <h4 id="DotNext_IO_MemoryTransferObject_Dispose_System_Boolean_" data-uid="DotNext.IO.MemoryTransferObject.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -265,7 +265,82 @@
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_MemoryTransferObject_TransformAsync_" data-uid="DotNext.IO.MemoryTransferObject.TransformAsync*"></a>
+  <h4 id="DotNext_IO_MemoryTransferObject_TransformAsync__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.MemoryTransferObject.TransformAsync``1(``0,DotNext.Buffers.MemoryAllocator{System.Byte},System.Threading.CancellationToken)">TransformAsync&lt;TObject&gt;(TObject, MemoryAllocator&lt;byte&gt;?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Transforms the Data Transfer Object to <a class="xref" href="DotNext.IO.MemoryTransferObject.html">MemoryTransferObject</a> instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;MemoryTransferObject&gt; TransformAsync&lt;TObject&gt;(TObject obj, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TObject</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to transform.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.IO.MemoryTransferObject.html">MemoryTransferObject</a>&gt;</td>
+        <td><p>The transformed object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TObject</span></td>
+        <td><p>The type of the object to transform.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryTransferObject_TransformAsync_" data-uid="DotNext.IO.MemoryTransferObject.TransformAsync*"></a>
   <h4 id="DotNext_IO_MemoryTransferObject_TransformAsync__2___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.MemoryTransferObject.TransformAsync``2(``1,System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(TTransformation, CancellationToken)</h4>
@@ -355,7 +430,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryTransferObject_WriteToAsync_" data-uid="DotNext.IO.MemoryTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_MemoryTransferObject_WriteToAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.MemoryTransferObject.WriteToAsync``1(``0,System.Threading.CancellationToken)">WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
@@ -488,7 +563,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/DotNext.IO/IO/MemoryTransferObject.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.IO/IO/MemoryTransferObject.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

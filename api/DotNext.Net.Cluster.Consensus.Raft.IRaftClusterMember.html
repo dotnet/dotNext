@@ -113,7 +113,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_MessageTypeAttributeName" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.MessageTypeAttributeName">MessageTypeAttributeName</h4>
   <div class="markdown level1 summary"><p>Represents metrics attribute containing Raft message type.</p>
@@ -140,7 +140,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_RemoteAddressMeterAttributeName" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.RemoteAddressMeterAttributeName">RemoteAddressMeterAttributeName</h4>
   <div class="markdown level1 summary"><p>Represents metrics attribute containing the address of the local node.</p>
@@ -169,7 +169,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_State_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.State*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_State" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.State">State</h4>
@@ -203,16 +203,16 @@ any special semantics.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.AppendEntriesAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync__2_System_Int64___1_System_Int64_System_Int64_System_Int64_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.AppendEntriesAsync``2(System.Int64,``1,System.Int64,System.Int64,System.Int64,DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration,System.Boolean,System.Threading.CancellationToken)">AppendEntriesAsync&lt;TEntry, TList&gt;(long, TList, long, long, long, IClusterConfiguration, bool, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync__2_System_Int64___1_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.AppendEntriesAsync``2(System.Int64,``1,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">AppendEntriesAsync&lt;TEntry, TList&gt;(long, TList, long, long, long, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Transfers log entries to the member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry, TList&gt;(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token) where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry, TList&gt;(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token) where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -252,19 +252,6 @@ any special semantics.</p>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td><span class="parametername">commitIndex</span></td>
         <td><p>Last entry known to be committed by the local node.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration.html">IClusterConfiguration</a></td>
-        <td><span class="parametername">config</span></td>
-        <td><p>The list of cluster members.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">applyConfig</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to inform that the receiver must apply previously proposed configuration;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to propose a new configuration.</p>
 </td>
       </tr>
       <tr>
@@ -330,7 +317,7 @@ any special semantics.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_CancelPendingRequestsAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.CancelPendingRequestsAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_CancelPendingRequestsAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.CancelPendingRequestsAsync">CancelPendingRequestsAsync()</h4>
@@ -359,16 +346,16 @@ any special semantics.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.InstallSnapshotAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_System_Int64_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.InstallSnapshotAsync(System.Int64,DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,System.Int64,System.Threading.CancellationToken)">InstallSnapshotAsync(long, IRaftLogEntry, long, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_System_Int64_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_System_Int64_DotNext_IO_IDataTransferObject_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.InstallSnapshotAsync(System.Int64,DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,System.Int64,DotNext.IO.IDataTransferObject,System.Int64,System.Threading.CancellationToken)">InstallSnapshotAsync(long, IRaftLogEntry, long, IDataTransferObject, long, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Installs the snapshot of the log to this cluster member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;Result&lt;HeartbeatResult&gt;&gt; InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;Result&lt;HeartbeatResult&gt;&gt; InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, IDataTransferObject configuration, long configurationVersion, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -396,6 +383,18 @@ any special semantics.</p>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td><span class="parametername">snapshotIndex</span></td>
         <td><p>The index of the last included log entry in the snapshot.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a></td>
+        <td><span class="parametername">configuration</span></td>
+        <td><p>The cluster configuration.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">configurationVersion</span></td>
+        <td><p>The configuration version.</p>
 </td>
       </tr>
       <tr>
@@ -440,7 +439,7 @@ any special semantics.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_PreVoteAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.PreVoteAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_PreVoteAsync_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.PreVoteAsync(System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">PreVoteAsync(long, long, long, CancellationToken)</h4>
@@ -514,7 +513,7 @@ Otherwise, wait for another election timeout.</p>
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.SynchronizeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.SynchronizeAsync(System.Int64,System.Threading.CancellationToken)">SynchronizeAsync(long, CancellationToken)</h4>
@@ -584,7 +583,7 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_VoteAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.VoteAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_VoteAsync_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.VoteAsync(System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">VoteAsync(long, long, long, CancellationToken)</h4>
@@ -666,7 +665,7 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftClusterMember.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

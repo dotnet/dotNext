@@ -113,7 +113,7 @@ public static class RaftClusterConfiguration</code></pre>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_ConfigureCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.ConfigureCluster*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_ConfigureCluster__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.ConfigureCluster``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">ConfigureCluster&lt;TConfig&gt;(IServiceCollection)</h4>
@@ -177,7 +177,7 @@ in DI container.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.RestoreStateAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync__1_Microsoft_AspNetCore_Builder_IApplicationBuilder_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.RestoreStateAsync``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Threading.CancellationToken)">RestoreStateAsync&lt;TStateMachine&gt;(IApplicationBuilder, CancellationToken)</h4>
@@ -245,11 +245,11 @@ in DI container.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync__1_Microsoft_AspNetCore_Builder_IApplicationBuilder_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The state machine must be registered previously with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection)</a> method.</p>
+  <div class="markdown level1 remarks"><p>The state machine must be registered previously with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection, Options)</a> method.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConfigurationStorage__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConfigurationStorage``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UseConfigurationStorage&lt;TStorage&gt;(IServiceCollection)</h4>
@@ -312,16 +312,63 @@ in DI container.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConsensusOnlyLog_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConsensusOnlyLog*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConsensusOnlyLog_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConsensusOnlyLog(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UseConsensusOnlyLog(IServiceCollection)</h4>
+  <div class="markdown level1 summary"><p>Registers <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.html">ConsensusOnlyState</a> as a Write-Ahead Log implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UseConsensusOnlyLog(this IServiceCollection services)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><span class="parametername">services</span></td>
+        <td><p>A collection of services provided by DI container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><p>A modified collection of services.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_Action_System_Collections_Generic_ICollection_Microsoft_AspNetCore_Connections_UriEndPoint___" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{System.Collections.Generic.ICollection{Microsoft.AspNetCore.Connections.UriEndPoint}})">UseInMemoryConfigurationStorage(IServiceCollection, Action&lt;ICollection&lt;UriEndPoint&gt;&gt;)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_Action_System_Collections_Generic_ICollection_Microsoft_AspNetCore_Connections_UriEndPoint___" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{System.Collections.Generic.ICollection{Microsoft.AspNetCore.Connections.UriEndPoint}})">UseInMemoryConfigurationStorage(IServiceCollection, Action&lt;ICollection&lt;UriEndPoint&gt;&gt;?)</h4>
   <div class="markdown level1 summary"><p>Registers in-memory storage service for maintaining a list of cluster members.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action&lt;ICollection&lt;UriEndPoint&gt;&gt; configuration)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action&lt;ICollection&lt;UriEndPoint&gt;&gt;? configuration = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -368,7 +415,7 @@ in DI container.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">UsePersistentConfigurationStorage(IServiceCollection, string)</h4>
@@ -377,7 +424,7 @@ in DI container.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string fileName)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -397,7 +444,7 @@ in DI container.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">path</span></td>
+        <td><span class="parametername">fileName</span></td>
         <td><p>The absolute path to the folder on the local machine to store the list.</p>
 </td>
       </tr>
@@ -421,16 +468,16 @@ in DI container.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection)</h4>
-  <div class="markdown level1 summary"><p>Registers the state machine and the write-ahead log for it.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentLog_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentLog*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentLog_Microsoft_Extensions_DependencyInjection_IServiceCollection_DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentLog(Microsoft.Extensions.DependencyInjection.IServiceCollection,DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options)">UsePersistentLog(IServiceCollection, Options)</h4>
+  <div class="markdown level1 summary"><p>Registers <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IServiceCollection UseStateMachine&lt;TStateMachine&gt;(this IServiceCollection services) where TStateMachine : class, IStateMachine</code></pre>
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UsePersistentLog(this IServiceCollection services, WriteAheadLog.Options options)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -446,6 +493,65 @@ in DI container.</p>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
         <td><span class="parametername">services</span></td>
         <td><p>A collection of services provided by DI container.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html">Options</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The WAL configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><p>A modified collection of services.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options)">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection, Options)</h4>
+  <div class="markdown level1 summary"><p>Registers the state machine and the write-ahead log for it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UseStateMachine&lt;TStateMachine&gt;(this IServiceCollection services, WriteAheadLog.Options options) where TStateMachine : class, IStateMachine</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><span class="parametername">services</span></td>
+        <td><p>A collection of services provided by DI container.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html">Options</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The WAL configuration.</p>
 </td>
       </tr>
     </tbody>
@@ -491,7 +597,7 @@ in DI container.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/08d2384dc6ff7547317f5e4be1fa5e6e5c81759f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
