@@ -103,7 +103,7 @@ internal sealed class StandbyState<TMember> : RefreshableState<TMember>
 
     private sealed class ConsensusTokenSource : CancellationTokenSource
     {
-        internal readonly new CancellationToken Token; // cached to avoid ObjectDisposedException
+        internal new readonly CancellationToken Token; // cached to avoid ObjectDisposedException
 
         internal ConsensusTokenSource() => Token = base.Token;
     }

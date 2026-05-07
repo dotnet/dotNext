@@ -208,7 +208,7 @@ public partial class RaftCluster<TMember>
         var process = new ReplicationProcess<TMember>(member, replicationLag)
         {
             Logger = Logger,
-            Term = AuditTrail.Term,
+            Term = leaderState.Term,
             AuditTrail = AuditTrail,
         };
         var lockTaken = false;
@@ -230,13 +230,15 @@ public partial class RaftCluster<TMember>
                 return false;
 
             // make sure that the previous configuration is committed
-            var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+            var commitIndex = await AuditTrail
+                .AppendAsync(new EmptyLogEntry { Term = leaderState.Term }, tokenSource.Token)
+                .ConfigureAwait(false);
             leaderState.ForceReplication();
             await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
             // Append new config to the log (extra empty log entry is required to be sure that other cluster members committed
             // the configuration
-            commitIndex = await AuditTrail.AppendAsync(config, tokenSource.Token).ConfigureAwait(false);
+            commitIndex = await AuditTrail.AppendAsync(config, leaderState.Term, tokenSource.Token).ConfigureAwait(false);
             leaderState.ForceReplication();
 
             // ensure that the configuration is committed
@@ -289,19 +291,21 @@ public partial class RaftCluster<TMember>
             lockTaken = membershipLock.TryAcquire();
             if (!lockTaken)
                 throw new ConcurrentMembershipModificationException();
-            
+
             if (members.TryGetValue(id, out var member))
             {
                 var config = await configurationStorage.LoadConfigurationAsync(tokenSource.Token).ConfigureAwait(false);
                 if (IClusterConfiguration<TAddress>.TryRemove(ref config, addressProvider(member)))
                 {
                     // make sure that the previous configuration is committed
-                    var commitIndex = await AuditTrail.AppendNoOpEntry(tokenSource.Token).ConfigureAwait(false);
+                    var commitIndex = await AuditTrail
+                        .AppendAsync(new EmptyLogEntry { Term = leaderState.Term }, tokenSource.Token)
+                        .ConfigureAwait(false);
                     leaderState.ForceReplication();
                     await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
 
                     // append new config to the log
-                    commitIndex = await AuditTrail.AppendAsync(config, tokenSource.Token).ConfigureAwait(false);
+                    commitIndex = await AuditTrail.AppendAsync(config, leaderState.Term, tokenSource.Token).ConfigureAwait(false);
                     leaderState.ForceReplication();
                     await AuditTrail.WaitForApplyAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
                     return true;
@@ -393,27 +397,30 @@ public partial class RaftCluster<TMember>
     /// at the leader side.
     /// </remarks>
     /// <param name="member">The member that is considered as unavailable.</param>
+    /// <param name="term">The cluster term at the point in time when the member was detected as unavailable.</param>
     /// <param name="token">The token associated with <see cref="LeadershipToken"/> that identifies the leader state at the time of detection.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    protected virtual ValueTask UnavailableMemberDetected(TMember member, CancellationToken token)
+    protected virtual ValueTask UnavailableMemberDetected(TMember member, long term, CancellationToken token)
         => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 
     /// <summary>
-    /// Provides the helper for implementing <see cref="UnavailableMemberDetected(TMember, CancellationToken)"/> method.
+    /// Provides the helper for implementing <see cref="UnavailableMemberDetected(TMember, long, CancellationToken)"/> method.
     /// </summary>
     /// <param name="configurationStorage">The configuration storage.</param>
     /// <param name="address">The address of the cluster member.</param>
+    /// <param name="term">The cluster term at the point in time when the member was detected as unavailable.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TAddress">The type of the address.</typeparam>
     protected async ValueTask UnavailableMemberDetected<TAddress>(IClusterConfigurationStorage<TAddress> configurationStorage,
         TAddress address,
+        long term,
         CancellationToken token)
         where TAddress : notnull
     {
         var config = await configurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
         if (IClusterConfiguration<TAddress>.TryRemove(ref config, address))
         {
-            await AuditTrail.AppendAsync(config, token).ConfigureAwait(false);
+            await AuditTrail.AppendAsync(config, term, token).ConfigureAwait(false);
         }
     }
 

@@ -49,5 +49,6 @@
     
   <ItemGroup>
     <CodeCoverageExclude Include="**/*.g.cs" />
+    <CodeCoverageExcludeByAttribute Include="System.CodeDom.Compiler.GeneratedCodeAttribute" />
   </ItemGroup>
 </Project>

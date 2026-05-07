@@ -24,7 +24,7 @@ stages:
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             timeoutInMinutes: 10
-            retryCountOnTaskFailure: 3
+            retryCountOnTaskFailure: 2
             inputs:
               command: test
               projects: $(TestProject)
@@ -52,7 +52,7 @@ stages:
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             timeoutInMinutes: 10
-            retryCountOnTaskFailure: 3
+            retryCountOnTaskFailure: 2
             inputs:
               command: test
               projects: $(TestProject)
@@ -81,6 +81,8 @@ stages:
               arguments: --configuration Debug
           - task: DotNetCoreCLI@2
             displayName: Test Debug
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 2
             inputs:
               command: test
               projects: $(TestProject)

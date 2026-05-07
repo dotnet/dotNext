@@ -43,7 +43,7 @@ public sealed class AsyncLazyTests : Test
 
         static async Task<long> ThrowException(CancellationToken token)
         {
-            await Task.Delay(100);
+            await Task.Delay(100, TestToken);
             throw new ArithmeticException();
         }
     }

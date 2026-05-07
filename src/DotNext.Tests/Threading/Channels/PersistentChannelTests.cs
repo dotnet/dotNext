@@ -126,13 +126,13 @@ public sealed class PersistentChannelTests : Test
     private static async Task Produce(ChannelWriter<Int128> writer, Int128 startInclusive, Int128 endExclusive)
     {
         for (Int128 i = startInclusive; i < endExclusive; i++)
-            await writer.WriteAsync(i);
+            await writer.WriteAsync(i, TestToken);
     }
 
     private static async Task Consume(ChannelReader<Int128> reader, Int128 startInclusive, Int128 endExclusive)
     {
         for (Int128 i = startInclusive; i < endExclusive; i++)
-            Equal(i, await reader.ReadAsync());
+            Equal(i, await reader.ReadAsync(TestToken));
     }
 
     private static async Task ConsumeInRange(ChannelReader<Int128> reader)

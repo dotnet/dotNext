@@ -13,6 +13,8 @@ internal interface IRaftStateMachine
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
     void UpdateLeaderStickiness(Timestamp refreshedAt);
+    
+    IPersistentState AuditTrail { get; }
 
     internal interface IWeakCallerStateIdentity
     {
@@ -35,9 +37,9 @@ internal interface IRaftStateMachine<TMember> : IRaftStateMachine
 
     Task MoveToCandidateState(IWeakCallerStateIdentity callerState);
 
-    Task MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
+    Task MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader, long writeBarrier);
 
-    Task UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
+    Task UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, long term, CancellationToken token);
 
     Task IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
 }

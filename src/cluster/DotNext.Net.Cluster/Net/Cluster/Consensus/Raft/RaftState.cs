@@ -14,6 +14,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
     private protected RaftState(IRaftStateMachine<TMember> stateMachine) => this.stateMachine = stateMachine;
 
+    private protected IPersistentState AuditTrail => stateMachine.AuditTrail;
+
     private protected ref readonly TagList MeasurementTags => ref stateMachine.MeasurementTags;
 
     private protected ILogger Logger => stateMachine.Logger;
@@ -25,14 +27,14 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private protected void MoveToCandidateState()
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToCandidateState(this), preferLocal: true);
 
-    private protected void MoveToLeaderState(TMember member)
-        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToLeaderState(this, member), preferLocal: true);
+    private protected void MoveToLeaderState(TMember member, long writeBarrier)
+        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToLeaderState(this, member, writeBarrier), preferLocal: true);
 
     private protected void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
         => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToFollowerState(this, randomizeTimeout, newTerm), preferLocal: true);
 
-    private protected void UnavailableMemberDetected(TMember member, CancellationToken token)
-        => ThreadPool.UnsafeQueueUserWorkItem(new UnavailableMemberNotification(this, member, token), preferLocal: false);
+    private protected void UnavailableMemberDetected(TMember member, long currentTerm, CancellationToken token)
+        => ThreadPool.UnsafeQueueUserWorkItem(new UnavailableMemberNotification(this, member, currentTerm, token), preferLocal: false);
 
     private protected void IncomingHeartbeatTimedOut()
         => ThreadPool.UnsafeQueueUserWorkItem(new IncomingHeartbeatTimedOutNotification(this), preferLocal: true);
@@ -122,29 +124,35 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private sealed class TransitionToLeaderState : StateTransitionWorkItem
     {
         private readonly TMember leader;
+        private readonly long writeBarrier;
 
-        internal TransitionToLeaderState(RaftState<TMember> currentState, TMember leader)
+        internal TransitionToLeaderState(RaftState<TMember> currentState, TMember leader, long writeBarrier)
             : base(currentState)
-            => this.leader = leader;
+        {
+            this.leader = leader;
+            this.writeBarrier = writeBarrier;
+        }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => _ = stateMachine.MoveToLeaderState(this, leader);
+            => _ = stateMachine.MoveToLeaderState(this, leader, writeBarrier);
     }
 
     private sealed class UnavailableMemberNotification : StateTransitionWorkItem
     {
         private readonly TMember member;
         private readonly CancellationToken token;
+        private readonly long currentTerm;
 
-        internal UnavailableMemberNotification(RaftState<TMember> currentState, TMember member, CancellationToken token)
+        internal UnavailableMemberNotification(RaftState<TMember> currentState, TMember member, long currentTerm, CancellationToken token)
             : base(currentState)
         {
             this.member = member;
             this.token = token;
+            this.currentTerm = currentTerm;
         }
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
-            => _ = stateMachine.UnavailableMemberDetected(this, member, token);
+            => _ = stateMachine.UnavailableMemberDetected(this, member, currentTerm, token);
     }
 
     private sealed class IncomingHeartbeatTimedOutNotification(RaftState<TMember> currentState) : StateTransitionWorkItem(currentState)

@@ -206,8 +206,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    protected sealed override ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-        => UnavailableMemberDetected(configurationStorage, GetAddress(member), token);
+    protected sealed override ValueTask UnavailableMemberDetected(RaftClusterMember member, long term, CancellationToken token)
+        => UnavailableMemberDetected(configurationStorage, GetAddress(member), term, token);
 
     /// <inheritdoc />
     bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
@@ -230,7 +230,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
         if (TryGetMember(sender) is not { } member)
-            return ValueTask.FromResult<Result<bool>>(new() { Term = Term });
+            return ValueTask.FromResult<Result<bool>>(new() { Term = AuditTrail.Term });
 
         member.Touch();
         return VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);

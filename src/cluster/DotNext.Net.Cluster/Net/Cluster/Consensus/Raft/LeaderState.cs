@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Diagnostics;
-using IO.Log;
 using ReplicationUtils;
 using Runtime.CompilerServices;
 using static Runtime.GCLatencyModeExtensions;
@@ -50,26 +49,15 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
-    private void Cancel()
-    {
-        if (Interlocked.Exchange(ref timerCancellation, null) is { } cts)
-        {
-            using (cts)
-            {
-                cts.Cancel(throwOnFirstException: false);
-            }
-        }
-    }
-
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoHeartbeats(TimeSpan period, IPersistentState auditTrail)
+    private async Task DoHeartbeats(TimeSpan period)
     {
         IReadOnlyCollection<TMember> membersCopy = [];
 
         for (var forced = false;;)
         {
             // populates running replications on first iteration
-            membersCopy = await HandleMembershipChangesAsync(membersCopy, Members, auditTrail).ConfigureAwait(false);
+            membersCopy = await HandleMembershipChangesAsync(membersCopy, Members).ConfigureAwait(false);
             
             // do not resume suspended callers that came after the barrier, resume them in the next iteration
             replicationQueue.SwitchValve();
@@ -80,16 +68,16 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             using (forced ? default : GCLatencyMode.SustainedLowLatency.Enable())
             {
                 // process responses
-                var (quorum, hasConsensus) = await ReplicateAsync(auditTrail, out var barrier).ConfigureAwait(false);
+                var (quorum, hasConsensus) = await ReplicateAsync(out var barrier).ConfigureAwait(false);
                 if (GetCommitIndex(barrier, quorum, hasConsensus) is not { } commitIndex)
                     break;
 
                 Debug.Assert(hasConsensus);
                 LeaderState.BroadcastTimeMeter.Record(RenewLease(startTime), in MeasurementTags);
-                if (commitIndex > auditTrail.LastCommittedEntryIndex)
+                if (commitIndex > AuditTrail.LastCommittedEntryIndex)
                 {
                     // majority of nodes accept entries with at least one entry from the current term
-                    var count = await auditTrail
+                    var count = await AuditTrail
                         .CommitAsync(commitIndex, Token)
                         .ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
                     Logger.CommitSuccessful(commitIndex, count);
@@ -112,26 +100,23 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     // two collections by reference. If the collections are not equal, perform heavyweight analysis to spawn
     // or stop replication processes.
     private ValueTask<IReadOnlyCollection<TMember>> HandleMembershipChangesAsync(IReadOnlyCollection<TMember> oldMembership,
-        IReadOnlyCollection<TMember> newMembership,
-        IPersistentState auditTrail)
+        IReadOnlyCollection<TMember> newMembership)
         => ReferenceEquals(oldMembership, newMembership)
             ? ValueTask.FromResult(oldMembership)
-            : HandleMembershipChangesCoreAsync(newMembership, auditTrail);
+            : HandleMembershipChangesCoreAsync(newMembership);
 
-    private async ValueTask<IReadOnlyCollection<TMember>> HandleMembershipChangesCoreAsync(
-        IReadOnlyCollection<TMember> members,
-        IPersistentState auditTrail)
+    private async ValueTask<IReadOnlyCollection<TMember>> HandleMembershipChangesCoreAsync(IReadOnlyCollection<TMember> members)
     {
         IReadOnlySet<TMember> membersCopy = new HashSet<TMember>(members, ReferenceEqualityComparer.Instance);
         await RemoveMembers(membersCopy).ConfigureAwait(false);
-        AddMembers(membersCopy, auditTrail);
+        AddMembers(membersCopy);
         return members;
     }
 
-    private void AddMembers(IReadOnlySet<TMember> members, IPersistentState auditTrail)
+    private void AddMembers(IReadOnlySet<TMember> members)
     {
         var state = new IRaftClusterMember.ReplicationState();
-        state.Initialize(auditTrail);
+        state.Initialize(AuditTrail);
         
         foreach (var member in members)
         {
@@ -140,7 +125,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                 Debug.Assert(member.IsRemote);
                 
                 member.State = state;
-                runningReplications.Add(member, StartReplication(member, auditTrail));
+                runningReplications.Add(member, StartReplication(member));
             }
         }
     }
@@ -163,21 +148,21 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         removedMembers.Clear(); // help GC
     }
 
-    private ValueTask<ReplicationResult> ReplicateAsync(IAuditTrail auditTrail, out ReplicationBarrier barrier)
+    private ValueTask<ReplicationResult> ReplicateAsync(out ReplicationBarrier barrier)
     {
         barrier = RentBarrier();
-        var task = barrier.WaitAsync(runningReplications.Count, auditTrail.LastEntryIndex);
+        var task = barrier.WaitAsync(runningReplications.Count, AuditTrail.LastEntryIndex);
         StartReplication(barrier);
         return task;
     }
     
-    private ReplicationProcess<TMember> StartReplication(TMember member, IPersistentState auditTrail)
+    private ReplicationProcess<TMember> StartReplication(TMember member)
     {
         var process = new ReplicationProcess<TMember>(member, barriers.Capacity)
         {
             Term = Term,
             Logger = Logger,
-            AuditTrail = auditTrail,
+            AuditTrail = AuditTrail,
             FailureDetector = FailureDetectorFactory?.Invoke(maxLease, member),
             MeasurementTags = MeasurementTags,
         };
@@ -205,7 +190,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         if (unresponsiveMember is not null)
         {
             unresponsiveMember.State.IsAvailable = false;
-            UnavailableMemberDetected(unresponsiveMember, Token);
+            UnavailableMemberDetected(unresponsiveMember, Term, Token);
         }
     }
     
@@ -260,12 +245,22 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     /// </summary>
     /// <param name="leaderNode">The leader node.</param>
     /// <param name="period">Time period of Heartbeats.</param>
-    /// <param name="auditTrail">Transaction log.</param>
-    internal void StartLeading(TMember leaderNode, TimeSpan period, IPersistentState auditTrail)
+    internal void StartLeading(TMember leaderNode, TimeSpan period)
     {
         runningReplications.Add(leaderNode, new());
-        heartbeatTask = DoHeartbeats(period, auditTrail);
+        heartbeatTask = DoHeartbeats(period);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
+    }
+    
+    private void Cancel()
+    {
+        if (Interlocked.Exchange(ref timerCancellation, null) is { } cts)
+        {
+            using (cts)
+            {
+                cts.Cancel(throwOnFirstException: false);
+            }
+        }
     }
 
     protected override async ValueTask DisposeAsyncCore()

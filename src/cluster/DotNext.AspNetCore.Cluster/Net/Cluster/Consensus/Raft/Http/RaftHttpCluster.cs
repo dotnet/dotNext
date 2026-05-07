@@ -231,8 +231,8 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         return null;
     }
 
-    protected override ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-        => UnavailableMemberDetected(ConfigurationStorage, GetAddress(member), token);
+    protected override ValueTask UnavailableMemberDetected(RaftClusterMember member, long term, CancellationToken token)
+        => UnavailableMemberDetected(ConfigurationStorage, GetAddress(member), term, token);
 
     protected override void Dispose(bool disposing)
     {
