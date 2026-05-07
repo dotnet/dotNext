@@ -171,7 +171,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public required IPersistentState AuditTrail
     {
         get;
-        set => field = value ?? throw new ArgumentNullException(nameof(value));
+        init => field = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
