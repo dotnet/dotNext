@@ -269,30 +269,35 @@ public sealed class RaftHttpClusterTests : RaftTest
     private static IRaftHttpCluster GetLocalClusterView(IHost host)
         => host.Services.GetRequiredService<IRaftHttpCluster>();
 
-    [Fact]
-    public static async Task Leadership()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public static async Task Leadership(bool optimizedLogEntryTransfer)
     {
         var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"}
-            };
+        {
+            { "partitioning", "false" },
+            { "publicEndPoint", "http://localhost:3262" },
+            { "coldStart", "true" },
+            { "metadata:nodeName", "node1" },
+            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
+        };
         var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"}
-            };
+        {
+            { "partitioning", "false" },
+            { "publicEndPoint", "http://localhost:3263" },
+            { "coldStart", "false" },
+            { "metadata:nodeName", "node2" },
+            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
+        };
         var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"}
-            };
+        {
+            { "partitioning", "false" },
+            { "publicEndPoint", "http://localhost:3264" },
+            { "coldStart", "false" },
+            { "metadata:nodeName", "node3" },
+            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
+        };
 
         var listener = new LeaderTracker();
         using var host1 = CreateHost<Startup>(3262, config1, listener);
