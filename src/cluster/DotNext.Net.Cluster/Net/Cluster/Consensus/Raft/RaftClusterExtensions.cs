@@ -57,6 +57,16 @@ public static class RaftClusterExtensions
             => cluster.ReplicateAsync<JsonLogEntry<T>>(new() { Content = payload, Term = cluster.Term, Context = context }, token);
 
         /// <summary>
+        /// Ensures linearizable read from underlying state machine.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="QuorumUnreachableException">The quorum is not visible to the local node.</exception>
+        public ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
+            => cluster.ApplyReadBarrierAsync(ReadBarrierType.Strong, token);
+
+        /// <summary>
         /// Gets term number used by Raft algorithm to check the consistency of the cluster.
         /// </summary>
         public long Term => cluster.AuditTrail.Term;

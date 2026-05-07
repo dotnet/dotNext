@@ -64,11 +64,13 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Ensures linearizable read from underlying state machine.
     /// </summary>
+    /// <param name="barrierType">Read barrier type. It has effect only when this instance is a leader.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="barrierType"/> is invalid.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="QuorumUnreachableException">The quorum is not visible to the local node.</exception>
-    ValueTask ApplyReadBarrierAsync(CancellationToken token = default);
+    ValueTask ApplyReadBarrierAsync(ReadBarrierType barrierType, CancellationToken token = default);
 
     /// <summary>
     /// Waits until the local node is elected as the leader.

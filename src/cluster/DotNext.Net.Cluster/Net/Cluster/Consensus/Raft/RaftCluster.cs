@@ -909,24 +909,39 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     /// <inheritdoc cref="IRaftCluster.ApplyReadBarrierAsync"/>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
+    public async ValueTask ApplyReadBarrierAsync(ReadBarrierType barrierType, CancellationToken token = default)
     {
         for (long commitIndex; ; token.ThrowIfCancellationRequested())
         {
             if (state is LeaderState<TMember> leaderState)
             {
-                // on leader node, we want to be sure that everything is committed and applied
-                commitIndex = AuditTrail.LastEntryIndex;
-                try
+                switch (barrierType)
                 {
-                    await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                    case ReadBarrierType.Weak:
+                        commitIndex = leaderState.WriteBarrier;
+
+                        // fast path
+                        if (commitIndex <= AuditTrail.LastCommittedEntryIndex)
+                            return;
+                        
+                        break;
+                    case ReadBarrierType.Strong:
+                        commitIndex = AuditTrail.LastEntryIndex;
+                        try
+                        {
+                            await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                        }
+                        catch (NotLeaderException)
+                        {
+                            // local node is not a leader, retry
+                            continue;
+                        }
+
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(barrierType));
                 }
-                catch (NotLeaderException)
-                {
-                    // local node is not a leader, retry
-                    continue;
-                }
-                
+
                 var tokenSource = CombineTokens(token, LifecycleToken, leaderState.Token);
                 try
                 {
