@@ -15,11 +15,6 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     protected const string LocalAddressMeterAttributeName = "dotnext.raft.server.address";
 
     /// <summary>
-    /// Gets term number used by Raft algorithm to check the consistency of the cluster.
-    /// </summary>
-    long Term => AuditTrail.Term;
-
-    /// <summary>
     /// Gets election timeout used by local cluster member.
     /// </summary>
     TimeSpan ElectionTimeout { get; }

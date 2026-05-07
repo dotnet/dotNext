@@ -48,9 +48,8 @@ public interface IReplicationCluster<TEntry> : IReplicationCluster
     /// <typeparam name="TEntryImpl">The type of the log entry.</typeparam>
     /// <param name="entry">The log entry to be added.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
     /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
+    ValueTask ReplicateAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
         where TEntryImpl : TEntry;
 }

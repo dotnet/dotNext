@@ -305,7 +305,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
         else
         {
-            result = new() { Term = Term };
+            result = new() { Term = AuditTrail.Term };
         }
 
         await RequestVoteMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
