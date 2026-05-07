@@ -4,14 +4,12 @@ namespace DotNext.Runtime.CompilerServices;
 
 public class AdvancedHelpersTests : Test
 {
-    private Guid field;
-    private string str;
-
     [Fact]
     public void FieldTypedReferenceValueType()
     {
-        TypedReference reference = __makeref(field);
-        ref Guid g = ref reference.AsRef<Guid>();
+        var field = Guid.Empty;
+        var reference = __makeref(field);
+        ref var g = ref reference.AsRef<Guid>();
         Equal(Guid.Empty, g);
         g = Guid.NewGuid();
         Equal(field, g);
@@ -21,8 +19,9 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public void FieldTypedReferenceClass()
     {
-        TypedReference reference = __makeref(str);
-        ref string f = ref reference.AsRef<string>();
+        var str = default(string);
+        var reference = __makeref(str);
+        ref var f = ref reference.AsRef<string>();
         Null(f);
         f = "Hello, world!";
         Equal(str, f);
@@ -49,7 +48,7 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void CopyBlock()
     {
-        char[] chars1 = new[] { 'a', 'b', 'c' };
+        char[] chars1 = ['a', 'b', 'c'];
         var chars2 = new char[2];
         Unsafe.Copy(in chars1[1], out chars2[0], (nuint)2);
         Equal('b', chars2[0]);
