@@ -31,30 +31,43 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-29-2026
+Release Date: 05-07-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.1.0">DotNext 6.1.0</a>
-* Fixed cancellation support in `BufferWriterSlim<T>`
-* `BoxedValue<T>` cannot be derived anymore (which was a bug)
+This release contains major update of Raft implementation: leader can move forward to the next heartbeat round when the majority committed the log entry. Before `6.2.0`, leader was able to commit the log entry when the majority confirmed the replication, however, for the next heartbeat round it had to wait all cluster members. The overall latency was impacted. Now, slow cluster member cannot impact the latency. The core of the replication is significantly modified to achieve this behavior:
+1. WAL binary format remains the same, so you can migrate existing data in the log smoothly
+2. Cluster configuration storage format is changed. It's not backward compatible
+3. Wire protocol for communication between cluster nodes is changed. It's not backward compatible
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.1.0">DotNext.Metaprogramming 6.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext/6.2.0">DotNext 6.2.0</a>
+* Added `T.ZeroBytes` static extension property which returns zero bytes for particular numeric type
+* 
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.2.0">DotNext.Metaprogramming 6.2.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.1.0">DotNext.Unsafe 6.1.0</a>
-* Added cleanup callback for `OpaqueValue<T>` that can be passed to the unmanaged code
-
-<a href="https://www.nuget.org/packages/dotnext.threading/6.1.0">DotNext.Threading 6.1.0</a>
-* Added alternate lookup to `RandomAccessCache<TKey, TValue>` class
-* Fixed false positive when the object cannot be returned to the object pool even if there is a free space in it
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.1.0">DotNext.IO 6.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.2.0">DotNext.Unsafe 6.2.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.1.0">DotNext.Net.Cluster 6.1.0</a>
-* Fixed memory leak [280](https://github.com/dotnet/dotNext/pull/280)
-* Refresh election timer when vote is granted [281](https://github.com/dotnet/dotNext/pull/281)
+<a href="https://www.nuget.org/packages/dotnext.threading/6.2.0">DotNext.Threading 6.2.0</a>
+* Increased chance of object reusability when it's rented from and returned to `BoundedObjectPool<T>`
+* Added `CancellationToken.Combine` static extension method which allows to combine multiple cancellation tokens without `CancellationTokenMultiplexer` instance
+* Fixed documentation for SIEVE cache: [283](https://github.com/dotnet/dotNext/pull/283)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.1.0">DotNext.AspNetCore.Cluster 6.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/6.2.0">DotNext.IO 6.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.0">DotNext.Net.Cluster 6.2.0</a>
+* Major performance improvement: leader advances forward to the next heartbeat round when the majority is committed the log entry, without waiting for the rest of nodes
+* Major performance improvement: AppendEntries RPC message doesn't carry cluster configuration data anymore, which reduces the network overhead
+* Introduced different types of read barriers in Raft
+* Cluster configuration system is now tightly integrated with WAL and replication mechanism
+* `IRaftCluster.ReplicateAsync` method return type is changed from `ValueTask<bool>` to `ValueTask` for simplicity
+* Smallish perf improvements of `WriteAheadLog` class
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.0">DotNext.AspNetCore.Cluster 6.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.0.0">DotNext.MaintenanceServices 1.2.0</a>
 * Updated dependencies
 
 # Release & Support Policy
