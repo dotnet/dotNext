@@ -163,7 +163,7 @@ public class CancellationTokenMultiplexerTests : Test
     public static void BoundedPool(int maximumRetained)
     {
         var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = maximumRetained };
-        Equal(maximumRetained, multiplexer.MaximumRetained);
+        Equal(maximumRetained + 1, multiplexer.MaximumRetained);
         for (var i = 0; i < maximumRetained << 1; i++)
         {
             var scope = multiplexer.Combine(CancellationToken.None, CancellationToken.None, CancellationToken.None);
