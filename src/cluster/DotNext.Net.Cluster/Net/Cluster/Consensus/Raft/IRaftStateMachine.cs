@@ -13,6 +13,8 @@ internal interface IRaftStateMachine
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
     void UpdateLeaderStickiness(Timestamp refreshedAt);
+    
+    IPersistentState AuditTrail { get; }
 
     internal interface IWeakCallerStateIdentity
     {

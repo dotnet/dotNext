@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using IO.Log;
 using Runtime.CompilerServices;
 
 internal sealed class CandidateState<TMember> : RaftState<TMember>
@@ -27,18 +26,18 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    private async Task VoteAsync(TimeSpan timeout)
     {
         // Perf: reuse index and related term once for all members
-        var lastIndex = auditTrail.LastEntryIndex;
-        var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellationToken).ConfigureAwait(false);
+        var lastIndex = AuditTrail.LastEntryIndex;
+        var lastTerm = await AuditTrail.GetTermAsync(lastIndex, votingCancellationToken).ConfigureAwait(false);
 
         // start voting in parallel
         var voters = StartVoting(lastIndex, lastTerm);
         votingCancellation.CancelAfter(timeout);
 
         // finish voting
-        await EndVoting(voters, auditTrail).ConfigureAwait(false);
+        await EndVoting(voters).ConfigureAwait(false);
     }
     
     private IAsyncEnumerable<Task<(TMember, long, bool?)>> StartVoting(long lastIndex, long lastTerm)
@@ -69,7 +68,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         return (voter, currentTerm, result);
     }
 
-    private async Task EndVoting(IAsyncEnumerable<Task<(TMember, long, bool?)>> voters, IAuditTrail<IRaftLogEntry> auditTrail)
+    private async Task EndVoting(IAsyncEnumerable<Task<(TMember, long, bool?)>> voters)
     {
         var votes = 0;
         var localMember = default(TMember);
@@ -132,7 +131,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
             // becomes a leader
             MoveToLeaderState(
                 localMember,
-                await auditTrail.AppendAsync(new EmptyLogEntry { Term = Term }, votingCancellationToken).ConfigureAwait(false));
+                await AuditTrail.AppendAsync(new EmptyLogEntry { Term = Term }, votingCancellationToken).ConfigureAwait(false));
         }
     }
 
@@ -155,12 +154,11 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     /// Starts voting asynchronously.
     /// </summary>
     /// <param name="timeout">Candidate state timeout.</param>
-    /// <param name="auditTrail">The local transaction log.</param>
-    internal void StartVoting(TimeSpan timeout, IPersistentState auditTrail)
+    internal void StartVoting(TimeSpan timeout)
     {
         CandidateState.TransitionRateMeter.Add(1, in MeasurementTags);
         Logger.VotingStarted(timeout, Term);
-        votingTask = VoteAsync(timeout, auditTrail);
+        votingTask = VoteAsync(timeout);
     }
 
     protected override async ValueTask DisposeAsyncCore()

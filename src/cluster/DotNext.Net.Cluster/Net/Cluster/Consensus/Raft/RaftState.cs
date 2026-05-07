@@ -14,6 +14,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
     private protected RaftState(IRaftStateMachine<TMember> stateMachine) => this.stateMachine = stateMachine;
 
+    private protected IPersistentState AuditTrail => stateMachine.AuditTrail;
+
     private protected ref readonly TagList MeasurementTags => ref stateMachine.MeasurementTags;
 
     private protected ILogger Logger => stateMachine.Logger;

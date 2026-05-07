@@ -1102,7 +1102,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
-                    newState.StartVoting(ElectionTimeout, AuditTrail);
+                    newState.StartVoting(ElectionTimeout);
                     Logger.TransitionToCandidateStateCompleted(currentTerm);
                 }
                 else
@@ -1168,7 +1168,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Leader = newLeader;
                 leadershipEvent.TrySetResult(newState);
 
-                newState.StartLeading(newLeader, HeartbeatTimeout, AuditTrail);
+                newState.StartLeading(newLeader, HeartbeatTimeout);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }
         }
