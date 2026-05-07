@@ -502,6 +502,6 @@ public sealed class LambdaTests : Test
         Equal(42, await lambda.Invoke());
         Equal(42, await lambda.Invoke());
 
-        static Task DoAsync() => Task.Delay(1);
+        static Task DoAsync() => Task.Delay(1, TestToken);
     }
 }
