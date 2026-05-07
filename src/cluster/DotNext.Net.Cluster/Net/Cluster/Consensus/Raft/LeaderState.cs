@@ -49,17 +49,6 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
     public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
-    private void Cancel()
-    {
-        if (Interlocked.Exchange(ref timerCancellation, null) is { } cts)
-        {
-            using (cts)
-            {
-                cts.Cancel(throwOnFirstException: false);
-            }
-        }
-    }
-
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoHeartbeats(TimeSpan period)
     {
@@ -261,6 +250,17 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         runningReplications.Add(leaderNode, new());
         heartbeatTask = DoHeartbeats(period);
         LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
+    }
+    
+    private void Cancel()
+    {
+        if (Interlocked.Exchange(ref timerCancellation, null) is { } cts)
+        {
+            using (cts)
+            {
+                cts.Cancel(throwOnFirstException: false);
+            }
+        }
     }
 
     protected override async ValueTask DisposeAsyncCore()
