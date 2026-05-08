@@ -514,7 +514,7 @@ public partial class RandomAccessCache<TKey, TValue>
             ? throw new InsufficientMemoryException()
             : (uint)(newSize = oldVersion.Count << 1) > maxPrimeLength && maxPrimeLength > oldVersion.Count
                 ? maxPrimeLength
-                : PrimeNumber.GetPrime(newSize);
+                : int.GetPrime(newSize);
             
         // acquire locks
         var lockCount = 0;
