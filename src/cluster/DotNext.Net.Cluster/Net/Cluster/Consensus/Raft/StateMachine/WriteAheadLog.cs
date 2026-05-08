@@ -472,11 +472,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         var length = long.CreateChecked(dataPages.LastWrittenAddress - startAddress);
         var writer = metadataPages.GetView<MetadataWriter>(index);
         writer.WriteMetadata(LogEntryMetadata.Create(entry, startAddress, length));
+        length += LogEntryMetadata.Size;
 
         if (hash is not null)
         {
             dataPages.ComputeHash(hash, startAddress, length);
-            writer.CompleteAndWriteHash(hash);
+            length += writer.CompleteAndWriteHash(hash);
         }
 
         if (entry is IInputLogEntry { Context: { } ctx })
