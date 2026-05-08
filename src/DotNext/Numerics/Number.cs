@@ -249,11 +249,12 @@ public static partial class Number
     /// <param name="multiplier">The multiplier.</param>
     /// <typeparam name="T">The type of the number.</typeparam>
     /// <returns><paramref name="value"/> rounded up to the multiple of <paramref name="multiplier"/>.</returns>
+    /// <exception cref="OverflowException"><paramref name="value"/> is too large to round up.</exception>
     public static T RoundUp<T>(this T value, T multiplier)
         where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
     {
-        var other = RoundDown(value, multiplier);
-        return other == value ? value : checked(other + multiplier);
+        var complement = (multiplier - value % multiplier) % multiplier;
+        return checked(value + complement);
     }
 
     /// <summary>
