@@ -22,13 +22,12 @@ using Threading.Tasks;
 public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyModeSupport, IRaftStateMachine<TMember>, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
-    private readonly bool aggressiveStickiness;
+    private readonly bool aggressiveStickiness, standbyNode, leaseEnabled;
     private readonly ElectionTimeout electionTimeoutProvider;
     private readonly CancellationTokenSource transitionCancellation;
     private readonly double heartbeatThreshold, clockDriftBound;
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
-    private readonly bool standbyNode;
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
     private readonly TagList measurementTags;
     private readonly CancellationTokenMultiplexer cancellationTokens;
@@ -63,6 +62,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         electionTimeoutProvider = config.ElectionTimeout;
         replicationLag = config.MaxReplicationLag;
+        leaseEnabled = config.IsLeaderLeaseEnabled;
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         members = IMemberList.Empty;
@@ -1175,6 +1175,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     Term = currentTerm,
                     FailureDetectorFactory = FailureDetectorFactory,
                     WriteBarrier = writeBarrier,
+                    IsLeaseEnabled = leaseEnabled,
                 };
 
                 await UpdateStateAsync(newState).ConfigureAwait(false);

@@ -88,6 +88,13 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
         set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     } = 16;
 
+    /// <inheritdoc cref="IClusterMemberConfiguration.IsLeaderLeaseEnabled"/>
+    public bool IsLeaderLeaseEnabled
+    {
+        get;
+        set;
+    }
+
     /// <inheritdoc cref="IClusterMemberConfiguration.AggressiveLeaderStickiness"/>
     public bool AggressiveLeaderStickiness { get; set; }
 }

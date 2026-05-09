@@ -153,17 +153,21 @@ public partial class RaftCluster
         /// </summary>
         public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Gets or sets a value indicating that the cluster member
-        /// represents standby node which is never become a leader.
-        /// </summary>
+        /// <inheritdoc cref="IClusterMemberConfiguration.Standby"/>
         public bool Standby { get; init; }
 
-        /// <summary>
-        /// Gets a value indicating that the follower node should not try to upgrade
-        /// to the candidate state if the leader is reachable via the network.
-        /// </summary>
+        /// <inheritdoc cref="IClusterMemberConfiguration.AggressiveLeaderStickiness"/>
         public bool AggressiveLeaderStickiness { get; init; }
+
+        /// <inheritdoc cref="IClusterMemberConfiguration.MaxReplicationLag"/>
+        public int MaxReplicationLag
+        {
+            get;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <inheritdoc cref="IClusterMemberConfiguration.IsLeaderLeaseEnabled"/>
+        public bool IsLeaderLeaseEnabled { get; init; }
 
         internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint);
 
