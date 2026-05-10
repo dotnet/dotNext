@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
-using System.Runtime.CompilerServices;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -23,122 +23,6 @@ using Buffers;
 /// </remarks>
 public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<byte>
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct ReadSession : IDisposable
-    {
-        private readonly WeakReference refHolder;
-
-        internal ReadSession(WeakReference obj)
-            => refHolder = obj;
-
-        public void Dispose()
-            => refHolder?.Target = null;
-    }
-
-    private sealed unsafe class NativeMemoryManager : MemoryManager<byte>
-    {
-        private int length;
-        private ReadSession session;
-        private void* ptr;
-
-        internal NativeMemoryManager(FileBufferingWriter writer, int length)
-        {
-            Debug.Assert(length > 0);
-            Debug.Assert(writer.fileBackend is not null);
-
-            this.length = length;
-            ptr = NativeMemory.Alloc((nuint)length);
-            session = writer.EnterReadMode(this);
-
-            Debug.Assert(writer.IsReading);
-        }
-
-        internal void SetLength(int value)
-        {
-            Debug.Assert(value > 0);
-
-            length = value;
-        }
-
-        public override Span<byte> GetSpan()
-        {
-            ObjectDisposedException.ThrowIf(ptr is null, this);
-            return new(ptr, length);
-        }
-
-        public override Memory<byte> Memory => CreateMemory(length);
-
-        public override MemoryHandle Pin(int elementIndex = 0)
-        {
-            ObjectDisposedException.ThrowIf(ptr is null, this);
-            return new(Unsafe.Add<byte>(ptr, elementIndex));
-        }
-
-        public override void Unpin() => ObjectDisposedException.ThrowIf(ptr is null, this);
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                session.Dispose();
-                session = default;
-            }
-
-            if (ptr is not null)
-                NativeMemory.Free(ptr);
-
-            ptr = null;
-            length = 0;
-        }
-    }
-
-    private sealed class BufferedMemoryManager : MemoryManager<byte>
-    {
-        private ReadSession session;
-        private Memory<byte> memory;
-
-        internal BufferedMemoryManager()
-        {
-            // no need to initialize memory block as empty block
-        }
-
-        internal BufferedMemoryManager(FileBufferingWriter writer, in Range range)
-        {
-            memory = writer.WrittenMemory[range];
-            session = writer.EnterReadMode(this);
-            Debug.Assert(writer.IsReading);
-        }
-
-        public override Span<byte> GetSpan()
-            => memory.Span;
-
-        public override Memory<byte> Memory => memory;
-
-        public override MemoryHandle Pin(int elementIndex = 0)
-            => memory.Slice(elementIndex).Pin();
-
-        public override void Unpin()
-        {
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                memory = default;
-                session.Dispose();
-                session = default;
-            }
-        }
-    }
-
-    private enum MemoryEvaluationResult
-    {
-        Success = 0,
-        PersistExistingBuffer,
-        PersistAll,
-    }
-
     private static readonly Histogram<int> AllocationMeter;
 
     static FileBufferingWriter()
@@ -752,30 +636,13 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (HasBufferedData)
             PersistBuffer(flushToDisk: false);
 
-        var (offset, length) = GetOffsetAndLength(range, filePosition);
-        switch ((offset, length))
+        return GetOffsetAndLength(range, filePosition) switch
         {
-            case (< 0L, _):
-            case (_, < 0L):
-                throw new ArgumentOutOfRangeException(nameof(range));
-            case (0L, 0L):
-                return new BufferedMemoryManager();
-            case (_, > int.MaxValue):
-                throw new InsufficientMemoryException();
-        }
-
-        var result = new NativeMemoryManager(this, unchecked((int)length));
-        try
-        {
-            result.SetLength(RandomAccess.Read(fileBackend, result.GetSpan(), offset));
-        }
-        catch
-        {
-            result.As<IDisposable>().Dispose();
-            throw;
-        }
-
-        return result;
+            (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(nameof(range)),
+            (0L, 0L) => new BufferedMemoryManager(),
+            (_, > int.MaxValue) => throw new InsufficientMemoryException(),
+            var (offset, length) => new MemoryMappedFileManager(this, offset, length)
+        };
     }
 
     /// <summary>
@@ -811,30 +678,13 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (HasBufferedData)
             await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
 
-        var (offset, length) = GetOffsetAndLength(range, filePosition);
-        switch ((offset, length))
+        return GetOffsetAndLength(range, filePosition) switch
         {
-            case (< 0L, _):
-            case (_, < 0L):
-                throw new ArgumentOutOfRangeException(nameof(range));
-            case (0L, 0L):
-                return new BufferedMemoryManager();
-            case (_, > int.MaxValue):
-                throw new InsufficientMemoryException();
-        }
-
-        var result = new NativeMemoryManager(this, unchecked((int)length));
-        try
-        {
-            result.SetLength(await RandomAccess.ReadAsync(fileBackend, result.Memory, offset, token).ConfigureAwait(false));
-        }
-        catch
-        {
-            result.As<IDisposable>().Dispose();
-            throw;
-        }
-
-        return result;
+            (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(nameof(range)),
+            (0L, 0L) => new BufferedMemoryManager(),
+            (_, > int.MaxValue) => throw new InsufficientMemoryException(),
+            var (offset, length) => new MemoryMappedFileManager(this, offset, length)
+        };
     }
 
     /// <summary>
@@ -901,6 +751,19 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     public override long Seek(long offset, SeekOrigin origin)
         => throw new NotSupportedException();
 
+    private MemoryMappedFile CreateMemoryMappedFile()
+    {
+        Debug.Assert(fileBackend is not null);
+
+        return MemoryMappedFile.CreateFromFile(
+            fileBackend,
+            mapName: null,
+            filePosition,
+            MemoryMappedFileAccess.ReadWrite,
+            HandleInheritability.None,
+            leaveOpen: true);
+    }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -911,5 +774,119 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         }
 
         base.Dispose(disposing);
+    }
+    
+    private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
+    {
+        private readonly MemoryMappedFile mappedFile;
+        private readonly MemoryMappedViewAccessor accessor;
+        private ReadSession session;
+
+        internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
+        {
+            Debug.Assert(length <= int.MaxValue);
+            Debug.Assert(writer.fileBackend is not null);
+            mappedFile = writer.CreateMemoryMappedFile();
+            accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
+            
+            session = writer.EnterReadMode(this);
+            Debug.Assert(writer.IsReading);
+        }
+        
+        private void ThrowIfDisposed()
+            => ObjectDisposedException.ThrowIf(accessor.SafeMemoryMappedViewHandle.IsClosed, this);
+
+        public override Span<byte> GetSpan()
+        {
+            ThrowIfDisposed();
+            
+            var ptr = accessor.SafeMemoryMappedViewHandle.DangerousGetHandle() + accessor.PointerOffset;
+            return new Span<byte>((void*)ptr, (int)accessor.Capacity);
+        }
+
+        public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
+
+        public override MemoryHandle Pin(int elementIndex = 0)
+        {
+            ThrowIfDisposed();
+            
+            if (elementIndex < 0 || elementIndex >= accessor.Capacity)
+                throw new ArgumentOutOfRangeException(nameof(elementIndex));
+
+            var ptr = accessor.SafeMemoryMappedViewHandle.DangerousGetHandle() + accessor.PointerOffset + elementIndex;
+            return new MemoryHandle((void*)ptr);
+        }
+
+        public override void Unpin() => ThrowIfDisposed();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                accessor.Dispose();
+                mappedFile.Dispose();
+                session.Dispose();
+                session = default;
+            }
+        }
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ReadSession : IDisposable
+    {
+        private readonly WeakReference refHolder;
+
+        internal ReadSession(WeakReference obj)
+            => refHolder = obj;
+
+        public void Dispose()
+            => refHolder?.Target = null;
+    }
+
+    private sealed class BufferedMemoryManager : MemoryManager<byte>
+    {
+        private ReadSession session;
+        private Memory<byte> memory;
+
+        internal BufferedMemoryManager()
+        {
+            // no need to initialize memory block as empty block
+        }
+
+        internal BufferedMemoryManager(FileBufferingWriter writer, in Range range)
+        {
+            memory = writer.WrittenMemory[range];
+            session = writer.EnterReadMode(this);
+            Debug.Assert(writer.IsReading);
+        }
+
+        public override Span<byte> GetSpan()
+            => memory.Span;
+
+        public override Memory<byte> Memory => memory;
+
+        public override MemoryHandle Pin(int elementIndex = 0)
+            => memory.Slice(elementIndex).Pin();
+
+        public override void Unpin()
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                memory = default;
+                session.Dispose();
+                session = default;
+            }
+        }
+    }
+
+    private enum MemoryEvaluationResult
+    {
+        Success = 0,
+        PersistExistingBuffer,
+        PersistAll,
     }
 }
