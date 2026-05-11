@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -604,19 +605,6 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         return totalBytes;
     }
 
-    private static (long Offset, long Length) GetOffsetAndLength(in Range range, long length)
-    {
-        long start = range.Start.Value;
-        if (range.Start.IsFromEnd)
-            start = length - start;
-
-        long end = range.End.Value;
-        if (range.End.IsFromEnd)
-            end = length - end;
-
-        return (start, end - start);
-    }
-
     /// <summary>
     /// Returns buffered content as a source of <see cref="Memory{T}"/> instances synchronously.
     /// </summary>
@@ -636,13 +624,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (HasBufferedData)
             PersistBuffer(flushToDisk: false);
 
-        return GetOffsetAndLength(range, filePosition) switch
-        {
-            (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(nameof(range)),
-            (0L, 0L) => new BufferedMemoryManager(),
-            (_, > int.MaxValue) => throw new InsufficientMemoryException(),
-            var (offset, length) => new MemoryMappedFileManager(this, offset, length)
-        };
+        return GetWrittenContentCore(in range);
     }
 
     /// <summary>
@@ -678,14 +660,16 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (HasBufferedData)
             await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
 
-        return GetOffsetAndLength(range, filePosition) switch
-        {
-            (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(nameof(range)),
-            (0L, 0L) => new BufferedMemoryManager(),
-            (_, > int.MaxValue) => throw new InsufficientMemoryException(),
-            var (offset, length) => new MemoryMappedFileManager(this, offset, length)
-        };
+        return GetWrittenContentCore(in range);
     }
+
+    private IMemoryOwner<byte> GetWrittenContentCore(in Range range, [CallerArgumentExpression(nameof(range))] string? paramName = null) => range.GetOffsetAndLength(filePosition) switch
+    {
+        (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(paramName),
+        (0L, 0L) => new BufferedMemoryManager(),
+        (_, > int.MaxValue) => throw new InsufficientMemoryException(),
+        var (offset, length) => new MemoryMappedFileManager(this, offset, length)
+    };
 
     /// <summary>
     /// Returns the whole buffered content as a source of <see cref="Memory{T}"/> instances asynchronously.
@@ -888,5 +872,21 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         Success = 0,
         PersistExistingBuffer,
         PersistAll,
+    }
+}
+
+file static class RangeExtensions
+{
+    public static (long Offset, long Length) GetOffsetAndLength(this in Range range, long length)
+    {
+        long start = range.Start.Value;
+        if (range.Start.IsFromEnd)
+            start = length - start;
+
+        long end = range.End.Value;
+        if (range.End.IsFromEnd)
+            end = length - end;
+
+        return (start, end - start);
     }
 }
