@@ -6,18 +6,19 @@ namespace DotNext.IO.MemoryMappedFiles;
 
 using Runtime.InteropServices;
 
-internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
+internal sealed class MappedMemory : MemoryManager<byte>, IMappedMemory
 {
     private readonly MemoryMappedViewAccessor accessor;
-    private readonly byte* ptr;
 
-    internal MappedMemory(MemoryMappedViewAccessor accessor)
+    internal MappedMemory(MemoryMappedFile file, long offset, int size, MemoryMappedFileAccess access)
     {
-        if (accessor.Capacity > int.MaxValue)
-            throw new ArgumentException(ExceptionMessages.SegmentVeryLarge, nameof(accessor));
+        accessor = file.CreateViewAccessor(offset, size, access);
 
-        accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
-        this.accessor = accessor;
+        if (accessor.Capacity > int.MaxValue)
+        {
+            accessor.Dispose();
+            throw new ArgumentException(ExceptionMessages.SegmentVeryLarge, nameof(accessor));
+        }
     }
 
     SafeBuffer IMappedMemory.Buffer => accessor.SafeMemoryMappedViewHandle;
@@ -26,13 +27,13 @@ internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
 
     nuint IUnmanagedMemory.Size => (nuint)accessor.Capacity;
 
-    public Pointer<byte> Pointer => new(ptr + accessor.PointerOffset);
+    public Pointer<byte> Pointer => accessor.Pointer;
 
     Span<byte> IUnmanagedMemory.Bytes => GetSpan();
 
     Span<byte> IUnmanagedMemory<byte>.Span => GetSpan();
 
-    public Stream AsStream() => Stream.Create(Pointer, accessor.Capacity, accessor.GetFileAccess());
+    public Stream AsStream() => Stream.Create(Pointer, accessor.Capacity, accessor.AccessMode);
 
     public void Flush() => accessor.Flush();
 
@@ -50,7 +51,7 @@ internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
     {
         if (disposing)
         {
-            accessor.ReleasePointerAndDispose();
+            accessor.Dispose();
         }
     }
 }

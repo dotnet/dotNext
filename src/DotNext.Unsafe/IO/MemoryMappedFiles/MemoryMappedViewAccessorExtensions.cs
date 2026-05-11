@@ -2,20 +2,21 @@
 
 namespace DotNext.IO.MemoryMappedFiles;
 
+using Runtime.InteropServices;
+
 internal static class MemoryMappedViewAccessorExtensions
 {
-    internal static FileAccess GetFileAccess(this MemoryMappedViewAccessor accessor)
-        => (accessor.CanRead, accessor.CanWrite) switch
+    extension(MemoryMappedViewAccessor accessor)
+    {
+        public FileAccess AccessMode => (accessor.CanRead, accessor.CanWrite) switch
         {
             (true, false) => FileAccess.Read,
             (false, true) => FileAccess.Write,
             (true, true) => FileAccess.ReadWrite,
             _ => default,
         };
-
-    internal static void ReleasePointerAndDispose(this MemoryMappedViewAccessor accessor)
-    {
-        accessor.SafeMemoryMappedViewHandle.ReleasePointer();
-        accessor.Dispose();
+        
+        public Pointer<byte> Pointer
+            => new(nint.CreateChecked(accessor.SafeMemoryMappedViewHandle.DangerousGetHandle() + accessor.PointerOffset));
     }
 }

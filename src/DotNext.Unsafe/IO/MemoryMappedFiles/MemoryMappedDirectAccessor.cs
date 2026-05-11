@@ -10,17 +10,12 @@ using Runtime.InteropServices;
 /// to its virtual memory.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
+public struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
 {
     private readonly MemoryMappedViewAccessor accessor;
-    private readonly byte* ptr;
 
-    internal MemoryMappedDirectAccessor(MemoryMappedViewAccessor accessor)
-    {
-        this.accessor = accessor;
-        ptr = null;
-        accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
-    }
+    internal MemoryMappedDirectAccessor(MemoryMappedFile file, long offset, long size, MemoryMappedFileAccess access)
+        => accessor = file.CreateViewAccessor(offset, size, access);
 
     /// <summary>
     /// Converts the segment of the memory-mapped file.
@@ -30,7 +25,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// </remarks>
     /// <returns>The stream representing virtual memory of the memory-mapped file.</returns>
     public readonly Stream AsStream() => accessor is { } acc
-        ? Stream.Create(new Pointer<byte>(ptr + acc.PointerOffset), Size, acc.GetFileAccess())
+        ? Stream.Create(acc.Pointer, Size, acc.AccessMode)
         : Stream.Null;
 
     /// <summary>
@@ -47,7 +42,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// Gets pointer to the virtual memory of the mapped file.
     /// </summary>
     /// <value>The pointer to the memory-mapped file.</value>
-    public readonly Pointer<byte> Pointer => accessor is null ? default : new Pointer<byte>(ptr + accessor.PointerOffset);
+    public readonly Pointer<byte> Pointer => accessor?.Pointer ?? default;
 
     /// <summary>
     /// Gets length of the mapped segment, in bytes.
@@ -61,7 +56,9 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// Represents memory-mapped file segment in the form of <see cref="Span{T}"/>.
     /// </summary>
     /// <value><see cref="Span{T}"/> representing virtual memory of the mapped file segment.</value>
-    public readonly Span<byte> Bytes => Pointer.AsSpan(int.CreateSaturating(accessor.Capacity));
+    public readonly Span<byte> Bytes => accessor is { } acc
+        ? acc.Pointer.AsSpan(int.CreateSaturating(acc.Capacity))
+        : Span<byte>.Empty;
 
     /// <summary>
     /// Sets all bits of allocated memory to zero.
@@ -69,9 +66,9 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
     public readonly void Clear()
     {
-        ObjectDisposedException.ThrowIf(ptr is null, this);
+        ObjectDisposedException.ThrowIf(accessor?.SafeMemoryMappedViewHandle.IsClosed ?? true, this);
 
-        Pointer.Clear(nuint.CreateSaturating(Size));
+        accessor.Pointer.Clear(nuint.CreateSaturating(accessor.Capacity));
     }
 
     /// <summary>
@@ -84,7 +81,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// </summary>
     public void Dispose()
     {
-        accessor?.ReleasePointerAndDispose();
+        accessor?.Dispose();
         this = default;
     }
 }
