@@ -38,6 +38,8 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
     public ReplicationProcess(TMember member, int queueSize)
     {
+        Debug.Assert(queueSize > 0);
+        
         this.member = member;
 
         var channel = Channel.CreateBounded<ReplicationBarrier>(new BoundedChannelOptions(queueSize)

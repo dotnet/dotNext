@@ -164,7 +164,7 @@ public partial class RaftCluster
         {
             get;
             init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+        } = 16;
 
         /// <inheritdoc cref="IClusterMemberConfiguration.IsLeaderLeaseEnabled"/>
         public bool IsLeaderLeaseEnabled { get; init; }
