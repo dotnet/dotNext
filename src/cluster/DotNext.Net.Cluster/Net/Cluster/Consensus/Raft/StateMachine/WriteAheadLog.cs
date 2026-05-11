@@ -472,7 +472,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         var length = long.CreateChecked(dataPages.LastWrittenAddress - startAddress);
         var writer = metadataPages.GetView<MetadataWriter>(index);
         writer.WriteMetadata(LogEntryMetadata.Create(entry, startAddress, length));
-        length += LogEntryMetadata.Size;
 
         if (hash is not null)
         {
@@ -487,7 +486,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         LastEntryIndex = index;
         AppendRateMeter.Add(1L, measurementTags);
-        BytesWrittenMeter.Record(length, measurementTags);
+        BytesWrittenMeter.Record(length + LogEntryMetadata.Size, measurementTags);
     }
 
     /// <inheritdoc cref="IAuditTrail.CommitAsync(long, CancellationToken)"/>
