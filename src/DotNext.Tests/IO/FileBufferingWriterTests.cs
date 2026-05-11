@@ -474,7 +474,6 @@ public sealed class FileBufferingWriterTests : Test
 
     private sealed class CallbackChecker : TaskCompletionSource<bool>
     {
-
         internal void DoCallback(IAsyncResult ar) => SetResult(true);
     }
 
@@ -572,5 +571,28 @@ public sealed class FileBufferingWriterTests : Test
         Equal(bytes.Length, writer.Length);
         using var source = writer.GetWrittenContent(10);
         Equal(bytes, source.Sequence.ToArray());
+    }
+
+    [Fact]
+    public static async Task ModifyWrittenContent()
+    {
+        const int dataSize = 1000;
+        var initialData = RandomBytes(dataSize);
+        var newData = RandomBytes(dataSize);
+        
+        await using var writer = new FileBufferingWriter(memoryThreshold: 128, asyncIO: true);
+        await writer.WriteAsync(initialData, TestToken);
+
+        using (var owner = await writer.GetWrittenContentAsync(TestToken))
+        {
+            Equal(initialData, owner.Memory);
+            newData.CopyTo(owner.Memory);
+        }
+
+        using (var owner = await writer.GetWrittenContentAsync(TestToken))
+        {
+            NotEqual(initialData, owner.Memory);
+            Equal(newData, owner.Memory);
+        }
     }
 }
