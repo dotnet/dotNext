@@ -108,6 +108,7 @@ public sealed class CustomTransportTests : TransportTestSuite
             {
                 ColdStart = coldStart,
                 ConfigurationStorage = null,
+                IsLeaderLeaseEnabled = true,
             };
 
             return new(config) { AuditTrail = wal };
