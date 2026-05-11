@@ -750,15 +750,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         return votes > 0;
 
-        static IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(IEnumerable<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
-        {
-            var responses = new TaskCompletionPipe<Task<Result<PreVoteResult>>>();
-            foreach (var member in members)
-                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, token));
-
-            responses.Complete();
-            return responses;
-        }
+        static IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(IEnumerable<TMember> members, long currentTerm, long lastIndex,
+            long lastTerm, CancellationToken token)
+            => Task.WhenEach(members.Select(member => member.PreVoteAsync(currentTerm, lastIndex, lastTerm, token)));
     }
 
     /// <summary>
