@@ -139,7 +139,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue * heartbeatThreshold);
 
-    private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
+    private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue / clockDriftBound);
 
     /// <inheritdoc cref="IRaftCluster.TryGetLeaseToken(out CancellationToken)"/>
     public bool TryGetLeaseToken(out CancellationToken token)
