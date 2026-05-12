@@ -137,7 +137,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     public Task Readiness => readinessProbe.Task;
 
-    private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
+    private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue * heartbeatThreshold);
 
     private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
 

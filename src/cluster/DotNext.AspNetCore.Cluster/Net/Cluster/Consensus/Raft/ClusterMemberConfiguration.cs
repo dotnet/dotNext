@@ -35,9 +35,7 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
         set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    /// <summary>
-    /// Gets or sets threshold of the heartbeat timeout.
-    /// </summary>
+    /// <inheritdoc cref="RaftCluster.NodeConfiguration.HeartbeatThreshold"/>
     public double HeartbeatThreshold
     {
         get;

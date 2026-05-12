@@ -64,7 +64,7 @@ public partial class RaftCluster
         /// </summary>
         /// <remarks>
         /// The threshold should be in range (0, 1). The heartbeat timeout is computed as
-        /// node election timeout X threshold. The default is 0.5.
+        /// <see cref="LowerElectionTimeout"/> timeout multiplied by threshold. The default is 0.5.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">Attempts to set invalid value.</exception>
         public double HeartbeatThreshold
@@ -212,7 +212,7 @@ public partial class RaftCluster
         /// </summary>
         public TimeSpan ConnectTimeout
         {
-            get => connectTimeout ?? RequestTimeout;
+            get => connectTimeout ?? TimeSpan.FromMilliseconds(LowerElectionTimeout * HeartbeatThreshold);
             init => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
