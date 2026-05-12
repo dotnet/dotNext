@@ -134,11 +134,11 @@ partial class WriteAheadLog
         public void WriteMetadata(LogEntryMetadata metadata)
             => metadata.Format(buffer);
 
-        public void CompleteAndWriteHash(NonCryptographicHashAlgorithm hash)
+        public int CompleteAndWriteHash(NonCryptographicHashAlgorithm hash)
         {
             ReadOnlySpan<byte> metadata = buffer.TrimLength(LogEntryMetadata.Size, out var hashBuf);
             hash.Append(metadata);
-            hash.GetHashAndReset(hashBuf);
+            return hash.GetHashAndReset(hashBuf);
         }
 
         static MemoryManager<byte> IMetadataView<MetadataWriter>.GetPage(PageManager manager, uint pageIndex)

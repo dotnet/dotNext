@@ -215,6 +215,7 @@ public sealed class TcpTransportTests : TransportTestSuite
             {
                 ColdStart = coldStart,
                 ConfigurationStorage = null,
+                IsLeaderLeaseEnabled = true,
             };
 
             return new(config)

@@ -55,7 +55,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             keyComparer = (IEqualityComparer<TKey>)StringComparer.Ordinal;
         }
 
-        dictionarySize = PrimeNumber.GetPrime(dictionarySize);
+        dictionarySize = int.GetPrime(dictionarySize);
         cancellationTokens = new() { MaximumRetained = 100 };
         growable = collisionThreshold is not int.MaxValue;
         maxCacheCapacity = growable

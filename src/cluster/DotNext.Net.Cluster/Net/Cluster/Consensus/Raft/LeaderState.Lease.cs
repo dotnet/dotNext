@@ -42,8 +42,7 @@ internal partial class LeaderState<TMember>
 
     private void RenewLease(TimeSpan elapsed)
     {
-        var currentLease = lease;
-        if (currentLease is not null && currentLease.TryRenew(elapsed = maxLease - elapsed) is false)
+        if (lease is { } currentLease && currentLease.TryRenew(elapsed = maxLease - elapsed) is false)
         {
             var newLease = new Lease();
             if (ReferenceEquals(Interlocked.CompareExchange(ref lease, newLease, currentLease), currentLease))

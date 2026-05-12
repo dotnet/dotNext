@@ -19,9 +19,10 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     /// Initializes a new object pool.
     /// </summary>
     /// <param name="desiredCapacity">The desired number of the objects that can be retained by the pool. The value is rounded to the power of 2 by the pool.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="desiredCapacity"/> is negative or greater than <see cref="Array.MaxLength"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="desiredCapacity"/> is negative, zero, or greater than <see cref="Array.MaxLength"/>.</exception>
     public BoundedObjectPool(int desiredCapacity)
     {
+        ArgumentOutOfRangeException.ThrowIfZero(desiredCapacity);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)MaxCapacity, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);

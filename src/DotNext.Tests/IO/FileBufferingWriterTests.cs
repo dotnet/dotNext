@@ -22,10 +22,10 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using var manager = writer.GetWrittenContent();
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
         if (writer.TryGetWrittenContent(out var content))
         {
-            Equal(bytes, content.ToArray());
+            Equal(bytes, content);
         }
     }
 
@@ -64,7 +64,7 @@ public sealed class FileBufferingWriterTests : Test
         Equal(bytes, manager.Memory.ToArray());
         if (writer.TryGetWrittenContent(out var content, out var fileName))
         {
-            Equal(bytes, content.ToArray());
+            Equal(bytes, content);
         }
         else
         {
@@ -79,7 +79,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000)]
     public static async Task ReadWriteAsync(int threshold)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -88,7 +88,7 @@ public sealed class FileBufferingWriterTests : Test
         await writer.WriteAsync(bytes.AsMemory(200), TestToken);
         Equal(bytes.Length, writer.Length);
         using var manager = await writer.GetWrittenContentAsync(TestToken);
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
     }
 
     [Theory]
@@ -97,7 +97,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000)]
     public static async Task ReuseAfterBuild(int threshold)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -111,7 +111,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.WriteByte(6);
         using (var manager = await writer.GetWrittenContentAsync(500.., TestToken))
         {
-            Equal(new byte[] { 3, 4, 5, 6 }, manager.Memory.ToArray());
+            Equal(new byte[] { 3, 4, 5, 6 }, manager.Memory);
         }
     }
 
@@ -130,7 +130,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using var manager = writer.GetWrittenContent(0..255);
-        Equal(bytes.AsMemory(0, 255).ToArray(), manager.Memory.ToArray());
+        Equal(bytes.AsMemory(0, 255), manager.Memory);
     }
 
     [Theory]
@@ -139,7 +139,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000)]
     public static async Task ReadWriteBuildWithRangeAsync(int threshold)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -148,7 +148,7 @@ public sealed class FileBufferingWriterTests : Test
         await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
         using var manager = await writer.GetWrittenContentAsync(..255, TestToken);
-        Equal(bytes.AsMemory(0, 255).ToArray(), manager.Memory.ToArray());
+        Equal(bytes.AsMemory(0, 255), manager.Memory);
     }
 
     [Theory]
@@ -166,14 +166,14 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using (var manager = writer.GetWrittenContent())
-            Equal(bytes, manager.Memory.ToArray());
+            Equal(bytes, manager.Memory);
 
         writer.Clear();
         writer.Write(bytes, 0, byte.MaxValue);
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using (var manager = writer.GetWrittenContent())
-            Equal(bytes, manager.Memory.ToArray());
+            Equal(bytes, manager.Memory);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000)]
     public static async Task DrainToStreamAsync(int threshold)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -260,7 +260,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000)]
     public static async Task DrainToBufferAsync(int threshold)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -270,7 +270,7 @@ public sealed class FileBufferingWriterTests : Test
         Equal(bytes.Length, writer.Length);
         var ms = new ArrayBufferWriter<byte>();
         await writer.CopyToAsync(ms, token: TestToken);
-        Equal(bytes, ms.WrittenSpan.ToArray());
+        Equal(bytes, ms.WrittenSpan);
     }
 
     [Theory]
@@ -324,7 +324,7 @@ public sealed class FileBufferingWriterTests : Test
     [Fact]
     public static async Task WriteDuringReadAsync()
     {
-        using var writer = new FileBufferingWriter();
+        await using var writer = new FileBufferingWriter();
         writer.Write([1, 2, 3]);
         using var manager = writer.GetWrittenContent();
         Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
@@ -359,7 +359,7 @@ public sealed class FileBufferingWriterTests : Test
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
         await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var manager = writer.GetWrittenContent();
-        using var source = StreamSource.Create(manager.Memory);
+        await using var source = StreamSource.Create(manager.Memory);
         Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
@@ -376,10 +376,10 @@ public sealed class FileBufferingWriterTests : Test
             };
 
         Memory<byte> buffer = new byte[16];
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
         await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var source = new MemoryStream(1024);
-        writer.CopyTo(source);
+        await writer.CopyToAsync(source, TestToken);
         source.Position = 0L;
         Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
@@ -409,9 +409,9 @@ public sealed class FileBufferingWriterTests : Test
             };
 
         Memory<byte> buffer = new byte[16];
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
         await DictionarySerializer.SerializeAsync(dict, writer, buffer);
-        using var source = writer.GetWrittenContentAsStream();
+        await using var source = writer.GetWrittenContentAsStream();
         Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
@@ -427,7 +427,7 @@ public sealed class FileBufferingWriterTests : Test
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
         await JsonSerializer.SerializeAsync(writer, dict, cancellationToken: TestToken);
         await using (var source = await writer.GetWrittenContentAsStreamAsync(TestToken))
         {
@@ -474,7 +474,6 @@ public sealed class FileBufferingWriterTests : Test
 
     private sealed class CallbackChecker : TaskCompletionSource<bool>
     {
-
         internal void DoCallback(IAsyncResult ar) => SetResult(true);
     }
 
@@ -516,7 +515,7 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(1000, true)]
     public static async Task ReadWriteApm2(int threshold, bool asyncIO)
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: asyncIO);
+        await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: asyncIO);
         var bytes = new byte[500];
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
@@ -572,5 +571,28 @@ public sealed class FileBufferingWriterTests : Test
         Equal(bytes.Length, writer.Length);
         using var source = writer.GetWrittenContent(10);
         Equal(bytes, source.Sequence.ToArray());
+    }
+
+    [Fact]
+    public static async Task ModifyWrittenContent()
+    {
+        const int dataSize = 1000;
+        var initialData = RandomBytes(dataSize);
+        var newData = RandomBytes(dataSize);
+        
+        await using var writer = new FileBufferingWriter(memoryThreshold: 128, asyncIO: true);
+        await writer.WriteAsync(initialData, TestToken);
+
+        using (var owner = await writer.GetWrittenContentAsync(TestToken))
+        {
+            Equal(initialData, owner.Memory);
+            newData.CopyTo(owner.Memory);
+        }
+
+        using (var owner = await writer.GetWrittenContentAsync(TestToken))
+        {
+            NotEqual(initialData, owner.Memory);
+            Equal(newData, owner.Memory);
+        }
     }
 }

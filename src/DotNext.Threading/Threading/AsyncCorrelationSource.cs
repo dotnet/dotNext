@@ -39,7 +39,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
-        concurrencyLevel = PrimeNumber.GetPrime(concurrencyLevel);
+        concurrencyLevel = int.GetPrime(concurrencyLevel);
         fastMod = new((uint)concurrencyLevel);
         buckets = new Bucket[concurrencyLevel];
         this.comparer = comparer;

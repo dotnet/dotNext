@@ -22,13 +22,12 @@ using Threading.Tasks;
 public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyModeSupport, IRaftStateMachine<TMember>, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
-    private readonly bool aggressiveStickiness;
+    private readonly bool aggressiveStickiness, standbyNode, leaseEnabled;
     private readonly ElectionTimeout electionTimeoutProvider;
     private readonly CancellationTokenSource transitionCancellation;
     private readonly double heartbeatThreshold, clockDriftBound;
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
-    private readonly bool standbyNode;
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
     private readonly TagList measurementTags;
     private readonly CancellationTokenMultiplexer cancellationTokens;
@@ -63,6 +62,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         electionTimeoutProvider = config.ElectionTimeout;
         replicationLag = config.MaxReplicationLag;
+        leaseEnabled = config.IsLeaderLeaseEnabled;
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         members = IMemberList.Empty;
@@ -137,9 +137,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     public Task Readiness => readinessProbe.Task;
 
-    private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
+    private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue * heartbeatThreshold);
 
-    private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
+    private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue / clockDriftBound);
 
     /// <inheritdoc cref="IRaftCluster.TryGetLeaseToken(out CancellationToken)"/>
     public bool TryGetLeaseToken(out CancellationToken token)
@@ -750,15 +750,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         return votes > 0;
 
-        static IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(IEnumerable<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
-        {
-            var responses = new TaskCompletionPipe<Task<Result<PreVoteResult>>>();
-            foreach (var member in members)
-                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, token));
-
-            responses.Complete();
-            return responses;
-        }
+        static IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(IEnumerable<TMember> members, long currentTerm, long lastIndex,
+            long lastTerm, CancellationToken token)
+            => Task.WhenEach(members.Select(member => member.PreVoteAsync(currentTerm, lastIndex, lastTerm, token)));
     }
 
     /// <summary>
@@ -1175,6 +1169,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     Term = currentTerm,
                     FailureDetectorFactory = FailureDetectorFactory,
                     WriteBarrier = writeBarrier,
+                    IsLeaseEnabled = leaseEnabled,
                 };
 
                 await UpdateStateAsync(newState).ConfigureAwait(false);

@@ -136,16 +136,16 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
 
         if (await ApplyAsync(entry, token).ConfigureAwait(false))
         {
-            var newTask = BeginSnapshottingAsync(entry.Index, entry.Term, lifetimeToken);
-
-            if (Interlocked.CompareExchange(ref snapshottingProcess, newTask, null) is not null)
-            {
-                await newTask.ConfigureAwait(false);
-            }
+            await SetSnapshottingProcessAsync(BeginSnapshottingAsync(entry.Index, entry.Term, lifetimeToken)).ConfigureAwait(false);
         }
 
         return appliedIndex = entry.Index;
     }
+
+    private Task SetSnapshottingProcessAsync(Task<SnapshotWriter> task)
+        => snapshottingProcess is not null || Interlocked.CompareExchange(ref snapshottingProcess, task, null) is not null
+            ? task
+            : Task.CompletedTask;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Task EndSnapshottingAsync(bool commit)

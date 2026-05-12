@@ -45,6 +45,11 @@ public interface IClusterMemberConfiguration
     /// Gets a value representing the maximum number of replication steps allowed for the follower to be behind the leader.
     /// </summary>
     int MaxReplicationLag => 16;
+    
+    /// <summary>
+    /// Gets a value indicating that the lease-based linearizable read is enabled on the leader node.
+    /// </summary>
+    bool IsLeaderLeaseEnabled { get; }
 
     /// <summary>
     /// Gets comparer for endpoint address.

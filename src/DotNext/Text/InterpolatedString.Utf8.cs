@@ -88,5 +88,5 @@ public static partial class StringInterpolation
     public static int Interpolate(this ref BufferWriterSlim<byte> writer, Encoder encoder, scoped Span<char> buffer,
         [InterpolatedStringHandlerArgument(nameof(writer), nameof(encoder), nameof(buffer))]
         scoped in BufferWriterSlimEncodingInterpolatedStringHandler handler)
-        => handler.WrittenCount;
+        => Interpolate(ref writer, encoder, buffer, provider: null, in handler);
 }

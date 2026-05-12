@@ -64,7 +64,7 @@ public partial class RaftCluster
         /// </summary>
         /// <remarks>
         /// The threshold should be in range (0, 1). The heartbeat timeout is computed as
-        /// node election timeout X threshold. The default is 0.5.
+        /// <see cref="LowerElectionTimeout"/> timeout multiplied by threshold. The default is 0.5.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">Attempts to set invalid value.</exception>
         public double HeartbeatThreshold
@@ -153,17 +153,21 @@ public partial class RaftCluster
         /// </summary>
         public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Gets or sets a value indicating that the cluster member
-        /// represents standby node which is never become a leader.
-        /// </summary>
+        /// <inheritdoc cref="IClusterMemberConfiguration.Standby"/>
         public bool Standby { get; init; }
 
-        /// <summary>
-        /// Gets a value indicating that the follower node should not try to upgrade
-        /// to the candidate state if the leader is reachable via the network.
-        /// </summary>
+        /// <inheritdoc cref="IClusterMemberConfiguration.AggressiveLeaderStickiness"/>
         public bool AggressiveLeaderStickiness { get; init; }
+
+        /// <inheritdoc cref="IClusterMemberConfiguration.MaxReplicationLag"/>
+        public int MaxReplicationLag
+        {
+            get;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        } = 16;
+
+        /// <inheritdoc cref="IClusterMemberConfiguration.IsLeaderLeaseEnabled"/>
+        public bool IsLeaderLeaseEnabled { get; init; }
 
         internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint);
 
@@ -208,7 +212,7 @@ public partial class RaftCluster
         /// </summary>
         public TimeSpan ConnectTimeout
         {
-            get => connectTimeout ?? RequestTimeout;
+            get => connectTimeout ?? TimeSpan.FromMilliseconds(LowerElectionTimeout * HeartbeatThreshold);
             init => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 

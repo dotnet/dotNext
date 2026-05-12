@@ -476,7 +476,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         if (hash is not null)
         {
             dataPages.ComputeHash(hash, startAddress, length);
-            writer.CompleteAndWriteHash(hash);
+            length += writer.CompleteAndWriteHash(hash);
         }
 
         if (entry is IInputLogEntry { Context: { } ctx })
@@ -486,7 +486,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         LastEntryIndex = index;
         AppendRateMeter.Add(1L, measurementTags);
-        BytesWrittenMeter.Record(length, measurementTags);
+        BytesWrittenMeter.Record(length + LogEntryMetadata.Size, measurementTags);
     }
 
     /// <inheritdoc cref="IAuditTrail.CommitAsync(long, CancellationToken)"/>

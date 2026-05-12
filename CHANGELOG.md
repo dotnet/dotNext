@@ -1,6 +1,34 @@
 Release Notes
 ====
 
+# 05-12-2026
+<a href="https://www.nuget.org/packages/dotnext/6.2.1">DotNext 6.2.1</a>
+* Improved performance of `Number.RoundUp` extension method
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.2.1">DotNext.Metaprogramming 6.2.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.2.1">DotNext.Unsafe 6.2.1</a>
+* Improved performance of views produced by extension methods in `MemoryMappedFileExtensions` class
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.2.1">DotNext.Threading 6.2.1</a>
+* `ScheduleAsync` methods are now available as static extension methods for [TaskScheduler](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskscheduler) class
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.2.1">DotNext.IO 6.2.1</a>
+* `FileBufferingWriter` uses memory-mapped file rather than private memory to represent the written content if it's larger than memory threshold
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.1">DotNext.Net.Cluster 6.2.1</a>
+* Improved accuracy of `WriteAheadLog` metrics
+* Added `ReplicationLag` configuration property for Raft nodes
+* Lease-based linearizable read is disabled by default for optimization purposes. Use `IsLeaderLeaseEnabled` configuration property to enable it
+* Fixed heartbeat timeout: it should be less than the lower election timeout to satisfy Timing Requirement in Raft
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.1">DotNext.AspNetCore.Cluster 6.2.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.0.0">DotNext.MaintenanceServices 1.2.1</a>
+* Updated dependencies
+
 # 05-07-2026
 This release contains major update of Raft implementation: leader can move forward to the next heartbeat round when the majority committed the log entry. Before `6.2.0`, leader was able to commit the log entry when the majority confirmed the replication, however, for the next heartbeat round it had to wait all cluster members. The overall latency was impacted. Now, slow cluster member cannot impact the latency. The core of the replication is significantly modified to achieve this behavior:
 1. WAL binary format remains the same, so you can migrate existing data in the log smoothly

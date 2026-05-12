@@ -21,7 +21,7 @@ public static class MemoryMappedFileExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
         ArgumentOutOfRangeException.ThrowIfNegative(size);
 
-        return new(file.CreateViewAccessor(offset, size, access));
+        return new(file, offset, size, access);
     }
 
     /// <summary>
@@ -42,6 +42,6 @@ public static class MemoryMappedFileExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
         ArgumentOutOfRangeException.ThrowIfNegative(size);
 
-        return new MappedMemory(file.CreateViewAccessor(offset, size, access));
+        return new MappedMemory(file, offset, size, access);
     }
 }

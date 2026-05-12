@@ -25,13 +25,19 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     internal LeaderState(IRaftStateMachine<TMember> stateMachine, int replicationLag)
         : base(stateMachine)
     {
+        Debug.Assert(replicationLag > 0);
+        
         timerCancellation = new();
         Token = timerCancellation.Token;
         runningReplications = new(9, ReferenceEqualityComparer.Instance);
-        lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         barriers = new(replicationLag);
+    }
+
+    public required bool IsLeaseEnabled
+    {
+        init => lease = value ? new() : null;
     }
 
     public required TimeSpan MaxLease
