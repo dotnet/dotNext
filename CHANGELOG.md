@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 05-11-2026
+# 05-12-2026
 <a href="https://www.nuget.org/packages/dotnext/6.2.1">DotNext 6.2.1</a>
 * Improved performance of `Number.RoundUp` extension method
 
@@ -21,6 +21,7 @@ Release Notes
 * Improved accuracy of `WriteAheadLog` metrics
 * Added `ReplicationLag` configuration property for Raft nodes
 * Lease-based linearizable read is disabled by default for optimization purposes. Use `IsLeaderLeaseEnabled` configuration property to enable it
+* Fixed heartbeat timeout: it should be less than the lower election timeout to satisfy Timing Requirement in Raft
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.1">DotNext.AspNetCore.Cluster 6.2.1</a>
 * Updated dependencies
