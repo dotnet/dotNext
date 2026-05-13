@@ -116,6 +116,7 @@ partial class SimpleStateMachine
                 Access = FileAccess.Read,
                 BufferSize = Environment.SystemPageSize,
                 Share = FileShare.Read,
+                Options = FileOptions.Asynchronous | FileOptions.SequentialScan
             });
 
             try
