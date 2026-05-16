@@ -10,11 +10,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented
 
 using Membership;
 using NetworkTransport;
+using Replication;
+using StateMachine;
 using static DotNext.Extensions.Logging.TestLoggers;
 
 [Collection(TestCollections.Raft)]
 public sealed class TcpTransportTests : TransportTestSuite
 {
+    private const int Host1Port = 3362;
+    private const int Host2Port = 3363;
+    private const int Host3Port = 3364;
+    
     private static X509Certificate2 LoadCertificate()
     {
         using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Test), "node.pfx");
@@ -267,13 +273,9 @@ public sealed class TcpTransportTests : TransportTestSuite
     [Fact]
     public static async Task ConcurrentElection()   // https://github.com/dotnet/dotNext/issues/168
     {
-        const int host1Port = 3362;
-        const int host2Port = 3363;
-        const int host3Port = 3364;
-        
-        await using var host1 = new RaftCluster(CreateConfiguration(host1Port)) { AuditTrail = new ConsensusOnlyState() };
-        await using var host2 = new RaftCluster(CreateConfiguration(host2Port)) { AuditTrail = new ConsensusOnlyState() };
-        await using var host3 = new RaftCluster(CreateConfiguration(host3Port)) { AuditTrail = new ConsensusOnlyState() };
+        await using var host1 = new RaftCluster(CreateConfiguration(Host1Port)) { AuditTrail = new ConsensusOnlyState() };
+        await using var host2 = new RaftCluster(CreateConfiguration(Host2Port)) { AuditTrail = new ConsensusOnlyState() };
+        await using var host3 = new RaftCluster(CreateConfiguration(Host3Port)) { AuditTrail = new ConsensusOnlyState() };
 
         // start in parallel
         await Task.WhenAll(
@@ -303,28 +305,57 @@ public sealed class TcpTransportTests : TransportTestSuite
         await host1.StopAsync(TestToken);
         await host2.StopAsync(TestToken);
         await host3.StopAsync(TestToken);
+    }
+    
+    [Fact]
+    public static async Task ReplicateLogEntry()
+    {
+        await using var wal1 = CreateWal();
+        await using var host1 = new RaftCluster(CreateConfiguration(Host1Port)) { AuditTrail = wal1 };
+        await host1.StartAsync(TestToken);
+        
+        await using var wal2 = CreateWal();
+        await using var host2 = new RaftCluster(CreateConfiguration(Host2Port)) { AuditTrail = wal2 };
+        await host2.StartAsync(TestToken);
+        
+        await using var wal3 = CreateWal();
+        await using var host3 = new RaftCluster(CreateConfiguration(Host3Port)) { AuditTrail = wal3 };
+        await host3.StartAsync(TestToken);
 
-        static RaftCluster.TcpConfiguration CreateConfiguration(int port)
+        await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2, host3);
+        var leader = await FindLeaderAsync(host1, host2, host3);
+
+        // Expected index is 2, because index 1 is added by the leader as a write barrier
+        await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
+        Equal(2L, leader.AuditTrail.LastCommittedEntryIndex);
+        Equal(2L, IsType<WriteAheadLog>(leader.AuditTrail).LastAppliedIndex);
+        await leader.As<IReplicationCluster<IRaftLogEntry>>().ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
+
+        await host1.StopAsync(TestToken);
+        await host2.StopAsync(TestToken);
+        await host3.StopAsync(TestToken);
+    }
+    
+    private static RaftCluster.TcpConfiguration CreateConfiguration(int port)
+    {
+        var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
         {
-            var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
-            {
-                // LowerElectionTimeout = 1000,
-                // UpperElectionTimeout = 2000,
-                ColdStart = false,
-                LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
-                ConfigurationStorage = null,
-            };
+            // LowerElectionTimeout = 1000,
+            // UpperElectionTimeout = 2000,
+            ColdStart = false,
+            LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
+            ConfigurationStorage = null,
+        };
 
-            var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
-            NotNull(configuration);
-            var builder = configuration.CreateInitialConfigurationBuilder();
+        var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
+        NotNull(configuration);
+        var builder = configuration.CreateInitialConfigurationBuilder();
 
-            builder.Add(new IPEndPoint(IPAddress.Loopback, host1Port));
-            builder.Add(new IPEndPoint(IPAddress.Loopback, host2Port));
-            builder.Add(new IPEndPoint(IPAddress.Loopback, host3Port));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, Host1Port));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, Host2Port));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, Host3Port));
 
-            builder.Build();
-            return result;
-        }
+        builder.Build();
+        return result;
     }
 }
