@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 05-17-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.2">DotNext.Net.Cluster 6.2.2</a>
+* Fix: snapshot file produced by `SimpleStateMachine` is opened with `FileOptions.Asynchronous` flag
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.2">DotNext.AspNetCore.Cluster 6.2.2</a>
+* Updated dependencies
+
 # 05-12-2026
 <a href="https://www.nuget.org/packages/dotnext/6.2.1">DotNext 6.2.1</a>
 * Improved performance of `Number.RoundUp` extension method
