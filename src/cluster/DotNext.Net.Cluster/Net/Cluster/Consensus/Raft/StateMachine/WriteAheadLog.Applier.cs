@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -34,8 +33,8 @@ partial class WriteAheadLog
             }
             catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
             {
-                backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
-                appliedEvent.Interrupt(e);
+                backgroundTaskFailure = e;
+                appliedEvent.Interrupt(new InternalException(e));
                 break;
             }
             finally

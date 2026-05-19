@@ -22,8 +22,8 @@ partial class WriteAheadLog
             task = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (endIndex < 0L || endIndex > LastEntryIndex)
             task = ValueTask.FromException<LogEntryReader>(new ArgumentOutOfRangeException(nameof(endIndex)));
-        else if (backgroundTaskFailure?.SourceException is { } exception)
-            task = ValueTask.FromException<LogEntryReader>(exception);
+        else if (backgroundTaskFailure is { } exception)
+            task = ValueTask.FromException<LogEntryReader>(new InternalException(exception));
         else if (startIndex > endIndex)
             task = new(default(LogEntryReader));
         else
@@ -54,7 +54,7 @@ partial class WriteAheadLog
     [StructLayout(LayoutKind.Auto)]
     public readonly struct LogEntryReader : IReadOnlyList<LogEntry>, IDisposable
     {
-        private readonly (LogEntryList List, LockManager Manager) state;
+        private readonly (LogEntryList List, LockManager? Manager) state;
 
         /// <summary>
         /// Gets the log entry by index.

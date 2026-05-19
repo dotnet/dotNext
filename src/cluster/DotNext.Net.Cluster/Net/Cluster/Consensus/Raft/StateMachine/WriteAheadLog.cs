@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Hashing;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -26,8 +25,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private readonly IStateMachine stateMachine;
     private readonly CancellationToken lifetimeToken;
     private readonly CancellationTokenMultiplexer cancellationTokens;
-    
-    private volatile ExceptionDispatchInfo? backgroundTaskFailure;
 
     // lifetime management
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -245,9 +242,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             task = new(GetDisposedTask<long>());
         }
-        else if (backgroundTaskFailure?.SourceException is { } exception)
+        else if (backgroundTaskFailure is { } exception)
         {
-            task = ValueTask.FromException<long>(exception);
+            task = ValueTask.FromException<long>(new InternalException(exception));
         }
         else if (typeof(TEntry) == typeof(BinaryLogEntry))
         {
@@ -297,7 +294,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        backgroundTaskFailure?.Throw();
+        ThrowOnInternalError();
 
         lockManager.SetCallerInformation("Append Single Entry at Custom Index");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
@@ -344,7 +341,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        backgroundTaskFailure?.Throw();
+        ThrowOnInternalError();
 
         lockManager.SetCallerInformation("Append Multiple Entries");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
@@ -393,8 +390,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         return IsDisposingOrDisposed
             ? new(GetDisposedTask<long>())
-            : backgroundTaskFailure?.SourceException is { } exception
-                ? ValueTask.FromException<long>(exception)
+            : backgroundTaskFailure is { } exception
+                ? ValueTask.FromException<long>(new InternalException(exception))
                 : entries.RemainingCount is 0L
                     ? CommitAsync(commitIndex, token)
                     : commitIndex < startIndex
@@ -501,9 +498,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             task = new(GetDisposedTask<long>());
         }
-        else if (backgroundTaskFailure?.SourceException is { } exception)
+        else if (backgroundTaskFailure is { } exception)
         {
-            task = ValueTask.FromException<long>(exception);
+            task = ValueTask.FromException<long>(new InternalException(exception));
         }
         else
         {
@@ -560,14 +557,14 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(CancellationToken)"/>
     public ValueTask WaitForApplyAsync(CancellationToken token = default)
-        => backgroundTaskFailure?.SourceException is { } exception
-            ? ValueTask.FromException(exception)
+        => backgroundTaskFailure is { } exception
+            ? ValueTask.FromException(new InternalException(exception))
             : appliedEvent.WaitAsync(token);
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(long, CancellationToken)"/>
     public ValueTask WaitForApplyAsync(long index, CancellationToken token = default)
-        => backgroundTaskFailure?.SourceException is { } exception
-            ? ValueTask.FromException(exception)
+        => backgroundTaskFailure is { } exception
+            ? ValueTask.FromException(new InternalException(exception))
             : appliedEvent.SpinWaitAsync<CommitChecker>(new(this, index), token);
 
     /// <inheritdoc cref="IAuditTrail{TEntryImpl}.ReadAsync{TResult}(ILogEntryConsumer{TEntryImpl, TResult}, long, long, CancellationToken)"/>
@@ -581,8 +578,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             task = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (endIndex < 0L || endIndex > LastEntryIndex)
             task = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
-        else if (backgroundTaskFailure?.SourceException is { } exception)
-            task = ValueTask.FromException<TResult>(exception);
+        else if (backgroundTaskFailure is { } exception)
+            task = ValueTask.FromException<TResult>(new InternalException(exception));
         else if (startIndex > endIndex)
             task = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else

@@ -152,17 +152,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => state is LeaderState<TMember> leaderState
-                                                && AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier
-        ? leaderState.Token
-        : new(canceled: true);
+    public CancellationToken LeadershipToken => state switch
+    {
+        LeaderState<TMember> leaderState when AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier => leaderState.Token,
+        ZombieState zombieState => throw zombieState.CreateException(),
+        _ => new(canceled: true),
+    };
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
-    public CancellationToken ConsensusToken => (state as ConsensusState<TMember>)?.Token ?? new(canceled: true);
+    public CancellationToken ConsensusToken => state switch
+    {
+        ConsensusState<TMember> consensusState => consensusState.Token,
+        ZombieState zombieState => throw zombieState.CreateException(),
+        _ => new(canceled: true),
+    };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private LeaderState<TMember> LeaderStateOrException
-        => state as LeaderState<TMember> ?? throw new NotLeaderException();
+    private LeaderState<TMember> LeaderStateOrException => state as LeaderState<TMember> ?? throw new NotLeaderException();
 
     /// <summary>
     /// Associates audit trail with the current instance.
@@ -396,7 +402,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         RaftState<TMember> currentState;
-        if ((currentState = state) is not StandbyState<TMember>)
+        if ((currentState = state) is not StandbyState<TMember> and not ZombieState)
         {
             var tokenSource = CombineTokens(token, LifecycleToken);
             var lockTaken = false;
@@ -479,7 +485,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await transitionLock.AcquireAsync(token).ConfigureAwait(false);
                 lockTaken = true;
 
-                await MoveToStandbyState().ConfigureAwait(false);
+                await MoveToStandbyState(resumable: false).ConfigureAwait(false);
                 LocalMemberGone();
             }
             finally
@@ -990,6 +996,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return UpdateStateAsync(new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration, Resumable = resumable });
     }
 
+    private ValueTask MoveToZombieState(Exception innerException)
+    {
+        var newState = new ZombieState(this, innerException);
+        Leader = null;
+        
+        readinessProbe.TrySetException(newState.CreateException());
+        leadershipEvent.TrySetException(newState.CreateException());
+        leadershipEvent.TrySetException(newState.CreateException());
+
+        return UpdateStateAsync(newState);
+    }
+
     async Task IRaftStateMachine<TMember>.IncomingHeartbeatTimedOut(IRaftStateMachine.IWeakCallerStateIdentity callerState)
     {
         var lockTaken = false;
@@ -1057,7 +1075,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToFollowerStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            await MoveToZombieState(e).ConfigureAwait(false);
         }
         finally
         {
@@ -1133,7 +1151,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToCandidateStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            await MoveToZombieState(e).ConfigureAwait(false);
         }
         finally
         {
@@ -1345,6 +1363,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
     private sealed class UnstartedState(RaftCluster<TMember> cluster) : RaftState<TMember>(cluster);
+    
+    private sealed class ZombieState(RaftCluster<TMember> cluster, Exception innerException) : RaftState<TMember>(cluster)
+    {
+        public new UnreachableException CreateException() => new(innerException.Message, innerException);
+    }
 }
 
 file static class LockTypes
