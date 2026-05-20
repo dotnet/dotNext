@@ -117,9 +117,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 {
                     precedingTerm = await AuditTrail.GetTermAsync(replicationIndex, source.Token).ConfigureAwait(false);
                     var response = available
-                        ? await AuditTrail
-                            .ReadAsync(this, replicationIndex + 1L, barrier.Checkpoint, source.Token)
-                            .ConfigureAwait(false)
+                        ? await ReplicateAsync(replicationIndex + 1L, barrier.Checkpoint, source.Token).ConfigureAwait(false)
                         : throw new MemberUnavailableException(member);
 
                     detector?.ReportHeartbeat();
@@ -150,6 +148,13 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 CheckHealthStatus();
             }
         }
+    }
+
+    private ValueTask<Result<HeartbeatResult>> ReplicateAsync(long startIndex, long endIndex, CancellationToken token)
+    {
+        Logger.ReplicationStarted(member.EndPoint, startIndex, endIndex);
+        return AuditTrail
+            .ReadAsync(this, startIndex, endIndex, token);
     }
 
     private void SetResult(ReplicationBarrier barrier, in MemberResult? result)

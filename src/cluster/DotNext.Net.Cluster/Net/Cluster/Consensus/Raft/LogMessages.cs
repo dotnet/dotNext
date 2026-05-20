@@ -277,14 +277,6 @@ internal static partial class LogMessages
     public static partial void CandidateStateExitedWithError(this ILogger logger, Exception e);
 
     [LoggerMessage(
-        EventIdOffset + 35,
-        LogLevel.Debug,
-        "Leader state reverted with error",
-        EventName = $"{EventIdPrefix}.{nameof(LeaderStateExitedWithError)}"
-    )]
-    public static partial void LeaderStateExitedWithError(this ILogger logger, Exception e);
-
-    [LoggerMessage(
         EventIdOffset + 36,
         LogLevel.Warning,
         "The leader failed to process unresponsive member {RemoteEndPoint}",
