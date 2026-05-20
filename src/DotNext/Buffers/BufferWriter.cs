@@ -39,7 +39,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// Sets a list of tags to be associated with each measurement.
     /// </summary>
     [CLSCompliant(false)]
-    public virtual TagList MeasurementTags
+    public TagList MeasurementTags
     {
         init
         {
