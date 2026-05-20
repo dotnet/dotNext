@@ -17,14 +17,17 @@ public class PendingTaskInterruptedException(string? message = null, Exception? 
     /// </summary>
     public object? Reason
     {
-        get;
+        get => field ?? InnerException;
         init;
     }
 
     [StackTraceHidden]
     internal static PendingTaskInterruptedException CreateAndFillStackTrace(object? reason = null)
     {
-        var e = new PendingTaskInterruptedException { Reason = reason };
+        var e = reason is Exception inner
+            ? new PendingTaskInterruptedException(innerException: inner)
+            : new PendingTaskInterruptedException { Reason = reason };
+
         ExceptionDispatchInfo.SetCurrentStackTrace(e);
         return e;
     }
