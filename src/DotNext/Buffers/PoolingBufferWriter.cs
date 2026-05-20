@@ -22,17 +22,12 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
     {
         get => buffer.Length;
 
-        init
+        init => buffer = value switch
         {
-            switch (value)
-            {
-                case < 0:
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                case > 0:
-                    buffer = allocator.AllocateAtLeast(value);
-                    break;
-            }
-        }
+            < 0 => throw new ArgumentOutOfRangeException(nameof(value)),
+            > 0 => allocator.AllocateAtLeast(value),
+            _ => default,
+        };
     }
 
     private Memory<T> GetWrittenMemory()
