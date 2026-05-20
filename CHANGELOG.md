@@ -1,6 +1,16 @@
 Release Notes
 ====
 
+# 05-20-2026
+<a href="https://www.nuget.org/packages/dotnext.threading/6.2.3">DotNext.Threading 6.2.3</a>
+* `PendingTaskInterruptedException.Reason` property returns `InnerException` if another reason is not defined
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.3">DotNext.Net.Cluster 6.2.3</a>
+* Improved logging and error reporting in `WriteAheadLog` and `RaftCluster` classes in case of critical failures
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.3">DotNext.AspNetCore.Cluster 6.2.3</a>
+* Updated dependencies
+
 # 05-17-2026
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.2">DotNext.Net.Cluster 6.2.2</a>
 * Fix: snapshot file produced by `SimpleStateMachine` is opened with `FileOptions.Asynchronous` flag
