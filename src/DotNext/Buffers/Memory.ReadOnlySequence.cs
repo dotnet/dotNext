@@ -366,7 +366,7 @@ file readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IE
 
     void IEnumerator.Reset() => enumerator.Reset();
 
-    object? IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
     public ReadOnlyMemory<char> Current => enumerator.Current.AsMemory();
 
