@@ -327,8 +327,8 @@ public sealed class MemoryWriterTests : Test
         block[2] = 120;
 
         writer.Insert(writer.WrittenCount - 1, block);
-        Equal(random[..^1], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
-        Equal(block.ToArray(), writer.WrittenMemory.Span.Slice(random.Length - 1, 3).ToArray());
+        Equal(random[..^1], writer.WrittenMemory.Span.Slice(0, random.Length - 1));
+        Equal(block, writer.WrittenMemory.Span.Slice(random.Length - 1, 3));
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public sealed class MemoryWriterTests : Test
         var random2 = RandomBytes(random.Length + 1);
         writer.Overwrite(1, random2);
         Equal(random[0], writer[0]);
-        Equal(random2, writer.WrittenMemory.Span.Slice(1).ToArray());
+        Equal(random2, writer.WrittenMemory.Span.Slice(1));
     }
 
     [Fact]

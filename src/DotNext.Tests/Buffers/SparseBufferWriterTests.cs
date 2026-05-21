@@ -17,7 +17,7 @@ public sealed class SparseBufferWriterTests : Test
         using var writer = new SparseBufferWriter<byte>(128, growth);
         var sequence = ToReadOnlySequence(new ReadOnlyMemory<byte>(RandomBytes(5000)), 1000);
         writer.Write(in sequence, copyMemory);
-        Equal(sequence.ToArray(), writer.Concat().ToArray());
+        True(sequence.SequenceEqual(writer.Concat()));
     }
 
     [Theory]
@@ -102,7 +102,7 @@ public sealed class SparseBufferWriterTests : Test
         var buffer = new ArrayBufferWriter<int>();
         writer.CopyTo(Write, buffer);
 
-        Equal(writer.Concat().ToArray(), buffer.WrittenMemory);
+        True(writer.Concat().SequenceEqual(buffer.WrittenSpan));
 
         static void Write(ReadOnlySpan<int> span, ArrayBufferWriter<int> buffer)
             => buffer.Write(span);
@@ -119,12 +119,13 @@ public sealed class SparseBufferWriterTests : Test
 
         using var dest = new MemoryStream(capacity: 32);
         writer.CopyTo<StreamConsumer>(dest, default);
-        Equal(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 }, dest.ToArray());
+        Equal<byte>([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+            dest.ToArray());
 
         dest.Position = 0L;
         dest.SetLength(0L);
         Equal(2L, writer.CopyTo<StreamConsumer>(dest, ref middle, 2L));
-        Equal(new byte[] { 16, 17 }, dest.ToArray());
+        Equal<byte>([16, 17], dest.ToArray());
     }
 
     [Fact]
@@ -136,7 +137,7 @@ public sealed class SparseBufferWriterTests : Test
 
         Collection(
             writer,
-            static block => Equal(Enumerable.Range(0, 16).ToArray(), block.ToArray()),
+            static block => Equal(Enumerable.Range(0, 16).ToArray(), block),
             static block => Equal(Enumerable.Range(16, 16), block.ToArray()));
     }
 

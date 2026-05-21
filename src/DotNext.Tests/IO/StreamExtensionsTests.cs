@@ -144,7 +144,7 @@ public sealed class StreamExtensionsTests : Test
         Span<byte> buffer = stackalloc byte[6];
         combined.ReadExactly(buffer);
 
-        Equal([1, 2, 3, 4, 5, 6], buffer.ToArray());
+        Equal<byte>([1, 2, 3, 4, 5, 6], buffer);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = StreamExtensions.Combine([ms1, ms2]);
+        await using var combined = Stream.Combine([ms1, ms2]);
 
         var buffer = new byte[6];
         await combined.ReadExactlyAsync(buffer, TestToken);

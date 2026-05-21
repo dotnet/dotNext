@@ -2,6 +2,8 @@ using System.Buffers;
 
 namespace DotNext.IO;
 
+using Buffers;
+
 public sealed class TextBufferReaderTests : Test
 {
     private static char[] CharData { get; }
@@ -124,7 +126,7 @@ public sealed class TextBufferReaderTests : Test
         using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(data.Length, tr.ReadBlock(array, 0, array.Length));
-        Equal(data.ToArray(), array);
+        True(data.SequenceEqual(array));
     }
 
     [Fact]
@@ -148,7 +150,7 @@ public sealed class TextBufferReaderTests : Test
         using var tr = TextReader.Create(data);
         var array = new char[data.Length];
         Equal(data.Length, await tr.ReadBlockAsync(array, 0, array.Length));
-        Equal(data.ToArray(), array);
+        True(data.SequenceEqual(array));
     }
 
     [Theory]

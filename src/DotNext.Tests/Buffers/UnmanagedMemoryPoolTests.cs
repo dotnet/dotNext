@@ -15,7 +15,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         array[0] = 10;
         array[1] = 20;
         array[2] = 30;
-        Equal([10, 20, 30], owner.Span.ToArray());
+        Equal<ushort>([10, 20, 30], owner.Span);
         Equal(3, array.Length);
         Equal(3, owner.Length);
         Equal(6U, owner.Size);

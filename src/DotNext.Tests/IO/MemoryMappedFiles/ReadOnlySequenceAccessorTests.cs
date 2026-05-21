@@ -1,5 +1,5 @@
-using System.Buffers;
 using System.IO.MemoryMappedFiles;
+using DotNext.Buffers;
 
 namespace DotNext.IO.MemoryMappedFiles;
 
@@ -47,6 +47,6 @@ public sealed class ReadOnlySequenceAccessorTests : Test
         var sequence = accessor.Sequence;
         Equal(content.Length, sequence.Length);
         False(sequence.IsSingleSegment);
-        Equal(content, sequence.ToArray());
+        True(sequence.SequenceEqual(content));
     }
 }

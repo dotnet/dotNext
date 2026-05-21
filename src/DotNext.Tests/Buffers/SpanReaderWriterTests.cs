@@ -28,7 +28,7 @@ public sealed class SpanReaderTests : Test
         segment[3] = 50;
         Equal(5, writer.WrittenCount);
         Equal(0, writer.FreeCapacity);
-        Equal(new [] { 10, 20, 30, 40, 50 }, writer.WrittenSpan.ToArray());
+        Equal([10, 20, 30, 40, 50], writer.WrittenSpan);
 
         var exceptionThrown = false;
         try
@@ -67,8 +67,8 @@ public sealed class SpanReaderTests : Test
         Equal(2, reader.RemainingCount);
         Equal(1, reader.ConsumedCount);
 
-        Equal(new byte[] { 10 }, reader.ConsumedSpan.ToArray());
-        Equal(new byte[] { 20, 30 }, reader.Read(2).ToArray());
+        Equal<byte>([10], reader.ConsumedSpan);
+        Equal<byte>([20, 30], reader.Read(2));
 
         Equal(0, reader.Read(new byte[2]));
 
@@ -103,7 +103,7 @@ public sealed class SpanReaderTests : Test
         var reader = new SpanReader<byte>();
         Equal(0, reader.RemainingCount);
         Equal(0, reader.ConsumedCount);
-        Equal([], reader.ReadToEnd().ToArray());
+        Equal([], reader.ReadToEnd());
 
         var exceptionThrown = false;
         try
@@ -194,11 +194,11 @@ public sealed class SpanReaderTests : Test
     [Fact]
     public static void ReadToEnd()
     {
-        var reader = new SpanReader<int>(new[] { 10, 20, 30 });
-        Equal(new[] { 10, 20, 30 }, reader.ReadToEnd().ToArray());
+        var reader = new SpanReader<int>([10, 20, 30]);
+        Equal([10, 20, 30], reader.ReadToEnd());
         reader.Reset();
         Equal(10, reader.Read());
-        Equal(new[] { 20, 30 }, reader.ReadToEnd().ToArray());
+        Equal([20, 30], reader.ReadToEnd());
     }
 
     [Fact]

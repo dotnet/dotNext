@@ -299,7 +299,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             Equal(valueT, await reader.ParseAsync(InvariantCulture, TimeSpan.Parse, decodingContext, LengthFormat.LittleEndian, token: TestToken));
             Equal(valueT, await reader.ParseAsync(InvariantCulture, static (c, p) => TimeSpan.ParseExact(c, "G", p), decodingContext, LengthFormat.LittleEndian, token: TestToken));
             using var decodedBlob = await reader.ReadAsync(LengthFormat.Compressed, token: TestToken);
-            Equal(blob, decodedBlob.Memory.ToArray());
+            Equal(blob, decodedBlob.Memory);
             Equal(memberId, await reader.ReadAsync<Net.Cluster.ClusterMemberId>(TestToken));
 
             // UTF-8
@@ -524,7 +524,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
                 var reader = source.CreateReader();
                 var destination = new ArrayBufferWriter<byte>(256);
                 await reader.CopyToAsync(destination, token: TestToken);
-                Equal(content, destination.WrittenSpan.ToArray());
+                Equal(content, destination.WrittenSpan);
             }
         }
     }
@@ -553,7 +553,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             var reader = source.CreateReader();
             var destination = new ArrayBufferWriter<byte>(256);
             await reader.CopyToAsync(destination, sourceStream.Length, TestToken);
-            Equal(content, destination.WrittenSpan.ToArray());
+            Equal(content, destination.WrittenSpan);
         }
     }
 

@@ -61,7 +61,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using var manager = writer.GetWrittenContent();
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
         if (writer.TryGetWrittenContent(out var content, out var fileName))
         {
             Equal(bytes, content);
@@ -106,12 +106,12 @@ public sealed class FileBufferingWriterTests : Test
         await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
         using (var manager = await writer.GetWrittenContentAsync(TestToken))
-            Equal(bytes, manager.Memory.ToArray());
+            Equal(bytes, manager.Memory);
         await writer.WriteAsync(new byte[] { 3, 4, 5 }.AsMemory(), TestToken);
         writer.WriteByte(6);
         using (var manager = await writer.GetWrittenContentAsync(500.., TestToken))
         {
-            Equal(new byte[] { 3, 4, 5, 6 }, manager.Memory);
+            Equal<byte>([3, 4, 5, 6], manager.Memory.Span);
         }
     }
 
@@ -232,7 +232,7 @@ public sealed class FileBufferingWriterTests : Test
         Equal(bytes.Length, writer.Length);
         var ms = new ArrayBufferWriter<byte>();
         writer.CopyTo(ms, token: TestToken);
-        Equal(bytes, ms.WrittenSpan.ToArray());
+        Equal(bytes, ms.WrittenSpan);
     }
 
     [Theory]
@@ -327,7 +327,7 @@ public sealed class FileBufferingWriterTests : Test
         await using var writer = new FileBufferingWriter();
         writer.Write([1, 2, 3]);
         using var manager = writer.GetWrittenContent();
-        Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
+        Equal<byte>([1, 2, 3], manager.Memory.Span);
         Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Reset);
         Throws<InvalidOperationException>(() => writer.WriteByte(2));
         Throws<InvalidOperationException>(writer.GetWrittenContent);
@@ -456,10 +456,10 @@ public sealed class FileBufferingWriterTests : Test
         buffer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         using var manager = writer.GetWrittenContent();
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
         if (writer.TryGetWrittenContent(out var content))
         {
-            Equal(bytes, content.ToArray());
+            Equal(bytes, content);
         }
     }
 
@@ -503,7 +503,7 @@ public sealed class FileBufferingWriterTests : Test
 
         Equal(bytes.Length, writer.Length);
         using var manager = writer.GetWrittenContent();
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
     }
 
     [Theory]
@@ -534,7 +534,7 @@ public sealed class FileBufferingWriterTests : Test
 
         Equal(bytes.Length, writer.Length);
         using var manager = await writer.GetWrittenContentAsync(TestToken);
-        Equal(bytes, manager.Memory.ToArray());
+        Equal(bytes, manager.Memory);
     }
 
     [Theory]
@@ -552,7 +552,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(450));
         Equal(bytes.Length, writer.Length);
         using var source = writer.GetWrittenContent(10);
-        Equal(bytes, source.Sequence.ToArray());
+        True(source.Sequence.SequenceEqual(bytes));
     }
 
     [Theory]
@@ -570,7 +570,7 @@ public sealed class FileBufferingWriterTests : Test
         await writer.WriteAsync(bytes.AsMemory(450), TestToken);
         Equal(bytes.Length, writer.Length);
         using var source = writer.GetWrittenContent(10);
-        Equal(bytes, source.Sequence.ToArray());
+        True(source.Sequence.SequenceEqual(bytes));
     }
 
     [Fact]
