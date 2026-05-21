@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -250,21 +251,126 @@ public static partial class Memory
 
             return false;
         }
-    }
 
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IEnumerator<ReadOnlyMemory<char>>
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="EqualityComparer{T}.Default"/>.</param>
+        /// <returns><see langword="true"/> if both sequences have the same elements in the same order; otherwise, <see langword="false"/>.</returns>
+        public bool SequenceEqual(ReadOnlySpan<T> other, IEqualityComparer<T>? comparer = null)
+        {
+            bool hasMoreSegments;
+            for (var position = source.Start;
+                 (hasMoreSegments = source.TryGet(ref position, out var block)) && block.Length <= other.Length;
+                 other = other.Slice(block.Length))
+            {
+                if (!block.Span.SequenceEqual(other.Slice(0, block.Length), comparer))
+                    break;
+            }
+
+            return other.IsEmpty && !hasMoreSegments;
+        }
+
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="EqualityComparer{T}.Default"/>.</param>
+        /// <returns><see langword="true"/> if both sequences have the same elements in the same order; otherwise, <see langword="false"/>.</returns>
+        public bool SequenceEqual(in ReadOnlySequence<T> other, IEqualityComparer<T>? comparer = null)
+            => (source.IsSingleSegment, other.IsSingleSegment) switch
+            {
+                (true, true) => source.FirstSpan.SequenceEqual(other.FirstSpan, comparer),
+                (true, false) => other.SequenceEqual(source.FirstSpan, comparer),
+                (false, true) => source.SequenceEqual(other.FirstSpan, comparer),
+                (false, false) => source.SequenceEqualSlow(in other, comparer)
+            };
+        
+        private bool SequenceEqualSlow(in ReadOnlySequence<T> other, IEqualityComparer<T>? comparer)
+        {
+            scoped var segment1 = new SequenceReaderSlim<T>(in source);
+            scoped var segment2 = new SequenceReaderSlim<T>(in other);
+
+            do
+            {
+                switch (segment1.Span.Length.CompareTo(segment2.Span.Length))
+                {
+                    case < 0 when CompareWithLargerSegment(ref segment1, ref segment2, comparer):
+                    case > 0 when CompareWithLargerSegment(ref segment2, ref segment1, comparer):
+                        break;
+                    case 0 when segment1.Span.SequenceEqual(segment2.Span, comparer):
+                        segment1.Advance();
+                        segment2.Advance();
+                        break;
+                    default:
+                        return false;
+                }
+            } while (segment1.HasMoreSegments && segment2.HasMoreSegments);
+
+            return segment1.HasMoreSegments == segment2.HasMoreSegments;
+
+            static bool CompareWithLargerSegment(ref SequenceReaderSlim<T> smaller, ref SequenceReaderSlim<T> larger,
+                IEqualityComparer<T>? comparer)
+            {
+                Debug.Assert(smaller.Span.Length < larger.Span.Length);
+
+                var fragment = larger.Span.Slice(0, smaller.Span.Length);
+                if (!smaller.Span.SequenceEqual(fragment, comparer) || !smaller.Advance())
+                    return false;
+
+                larger.Advance(fragment.Length);
+                return true;
+            }
+        }
+    }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct SequenceReaderSlim<T>
+{
+    private readonly ref readonly ReadOnlySequence<T> sequence;
+    private ReadOnlyMemory<T> block;
+    private SequencePosition position;
+    private bool hasMoreSegments;
+
+    public SequenceReaderSlim(ref readonly ReadOnlySequence<T> sequence)
     {
-        private readonly IEnumerator<string?> enumerator = strings.GetEnumerator();
-
-        void IEnumerator.Reset() => enumerator.Reset();
-
-        object? IEnumerator.Current => Current;
-
-        public ReadOnlyMemory<char> Current => enumerator.Current.AsMemory();
-
-        public bool MoveNext() => enumerator.MoveNext();
-
-        public void Dispose() => enumerator.Dispose();
+        this.sequence = ref sequence;
+        position = sequence.Start;
+        hasMoreSegments = sequence.TryGet(ref position, out block);
     }
+
+    public readonly bool HasMoreSegments => hasMoreSegments;
+
+    public readonly ReadOnlySpan<T> Span => block.Span;
+
+    public void Advance(int count)
+    {
+        Debug.Assert(count < block.Length);
+
+        block = block.Slice(count);
+    }
+
+    public bool Advance() => hasMoreSegments = sequence.TryGet(ref position, out block);
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IEnumerator<ReadOnlyMemory<char>>
+{
+    private readonly IEnumerator<string?> enumerator = strings.GetEnumerator();
+
+    void IEnumerator.Reset() => enumerator.Reset();
+
+    object? IEnumerator.Current => Current;
+
+    public ReadOnlyMemory<char> Current => enumerator.Current.AsMemory();
+
+    public bool MoveNext() => enumerator.MoveNext();
+
+    public void Dispose() => enumerator.Dispose();
 }
