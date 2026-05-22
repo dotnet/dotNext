@@ -73,7 +73,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
-    private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
+    private readonly int Overflow => int.Max(0, position - initialBuffer.Length);
 
     /// <summary>
     /// Gets the amount of data written to the underlying memory so far.
