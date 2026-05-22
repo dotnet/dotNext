@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Immutable;
 
 namespace DotNext.Buffers;
 
@@ -388,4 +389,34 @@ public sealed class MemoryWriterTests : Test
         Equal(0, writer.WrittenCount);
         Throws<ArgumentOutOfRangeException>(() => writer.RemoveFirst(-1));
     }
+
+    [Theory]
+    [MemberData(nameof(CollectionsToAdd))]
+    public static void AddAll(ICollection<int> items)
+    {
+        using (var writer = new PoolingBufferWriter<int>())
+        {
+            AddElements(writer, items);
+        }
+
+        using (var writer = new PoolingArrayBufferWriter<int>())
+        {
+            AddElements(writer, items);
+        }
+        
+        static void AddElements(BufferWriter<int> writer, ICollection<int> items)
+        {
+            writer.AddAll(items);
+            Equal(writer, items);
+        }
+    }
+
+    public static TheoryData<ICollection<int>> CollectionsToAdd =>
+    [
+        ImmutableArray<int>.Empty,
+        new[] { 1, 2, 3 },
+        new List<int> { 1, 2, 3 },
+        new ArraySegment<int>([1, 2, 3]),
+        ImmutableList.Create(1, 2, 3)
+    ];
 }
