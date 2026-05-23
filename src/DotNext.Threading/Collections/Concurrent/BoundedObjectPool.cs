@@ -12,7 +12,7 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     // null - no fast item is available
     // Sentinel - the pool is frozen
     // T - fast item
-    private volatile object? fastItem;
+    private object? fastItem;
     private RingBuffer<T> buffer;
 
     /// <summary>
@@ -26,7 +26,6 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)MaxCapacity, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);
-        fastItem = null;
     }
 
     private static int MaxCapacity => Array.MaxLength - 1;
