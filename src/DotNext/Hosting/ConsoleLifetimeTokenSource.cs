@@ -6,10 +6,6 @@ namespace DotNext.Hosting;
 /// <summary>
 /// Represents a token that becomes canceled if the console application is requested to stop.
 /// </summary>
-[UnsupportedOSPlatform("android")]
-[UnsupportedOSPlatform("browser")]
-[UnsupportedOSPlatform("ios")]
-[UnsupportedOSPlatform("tvos")]
 public sealed class ConsoleLifetimeTokenSource : CancellationTokenSource
 {
     private readonly IReadOnlyCollection<PosixSignalRegistration> registrations;
@@ -17,6 +13,10 @@ public sealed class ConsoleLifetimeTokenSource : CancellationTokenSource
     /// <summary>
     /// Initializes a new lifetime token source.
     /// </summary>
+    [UnsupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("browser")]
+    [UnsupportedOSPlatform("ios")]
+    [UnsupportedOSPlatform("tvos")]
     public ConsoleLifetimeTokenSource()
     {
         ReadOnlySpan<PosixSignal> signals = [PosixSignal.SIGINT, PosixSignal.SIGQUIT, PosixSignal.SIGTERM];
@@ -29,6 +29,16 @@ public sealed class ConsoleLifetimeTokenSource : CancellationTokenSource
 
         registrations = result;
     }
+    
+    /// <summary>
+    /// Gets a value indicating that <see cref="ConsoleLifetimeTokenSource"/> is supported.
+    /// </summary>
+    [UnsupportedOSPlatformGuard("android")]
+    [UnsupportedOSPlatformGuard("browser")]
+    [UnsupportedOSPlatformGuard("ios")]
+    [UnsupportedOSPlatformGuard("tvos")]
+    public static bool IsSupported
+        => !OperatingSystem.IsTvOS() && !OperatingSystem.IsIOS() && !OperatingSystem.IsAndroid() && !OperatingSystem.IsBrowser();
 
     private void Cancel(PosixSignalContext context)
     {
