@@ -264,9 +264,9 @@ public static partial class Memory
         /// or <see langword="null"/> to use the <see cref="EqualityComparer{T}.Default"/>.</param>
         /// <returns><see langword="true"/> if both sequences have the same elements in the same order; otherwise, <see langword="false"/>.</returns>
         public bool SequenceEqual(ReadOnlySpan<T> other, IEqualityComparer<T>? comparer = null)
-            => source.Compare<T, bool, SpanEqualityComparer<T>>(ref other, new(comparer), out var hasMoreSegment)
+            => source.Compare<T, bool, SpanEqualityComparer<T>>(ref other, new(comparer), out var hasMoreSegments)
                && other.IsEmpty
-               && !hasMoreSegment;
+               && !hasMoreSegments;
 
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements.
