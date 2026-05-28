@@ -258,6 +258,16 @@ public sealed class ChunkSequenceTests : Test
             ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
             -1
         },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            -1
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }),
+            1
+        },
     };
 
     [Theory]
