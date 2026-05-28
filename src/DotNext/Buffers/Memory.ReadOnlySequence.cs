@@ -6,9 +6,6 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
-using Runtime;
-using Runtime.CompilerServices;
-
 public static partial class Memory
 {
     /// <summary>
@@ -358,7 +355,7 @@ file static class ComparisonHelpers
 {
     public static int SequenceCompareTo<T, TComparer>(this in ReadOnlySequence<T> source, ReadOnlySpan<T> other,
         scoped TComparer comparer, out bool firstNotEmpty, out bool secondNotEmpty)
-        where TComparer : struct, ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, int>, IComparisonResultSupport<int>, allows ref struct
+        where TComparer : struct, IComparer<T, int>, allows ref struct
     {
         var cmp = source.Compare<T, int, TComparer>(
             ref other,
@@ -382,15 +379,16 @@ file static class ComparisonHelpers
     }
     
     public static TResult Compare<T, TResult, TComparer>(this in ReadOnlySequence<T> source, ref ReadOnlySpan<T> other, scoped TComparer comparer, out bool hasMoreSegments)
-        where TComparer : struct, ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>, IComparisonResultSupport<TResult>, allows ref struct
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
     {
-        var result = TComparer.Equality;
+        var result = TComparer.Same;
         for (var position = source.Start;
              (hasMoreSegments = source.TryGet(ref position, out var block)) && block.Length <= other.Length;
              other = other.Slice(block.Length))
         {
-            result = comparer.Invoke(block.Span, other.Slice(0, block.Length));
-            if (!TComparer.MeansEquality(result))
+            result = comparer.Compare(block.Span, other.Slice(0, block.Length));
+            if (!result.Equals(TComparer.Same))
                 break;
         }
 
@@ -399,18 +397,20 @@ file static class ComparisonHelpers
 
     public static TResult Compare<T, TResult, TComparer>(this ref SequenceReaderSlim<T> segment,
         ref SequenceReaderSlim<T> other, TComparer comparer)
-        where TComparer : struct, ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>, IComparisonResultSupport<TResult>, allows ref struct
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
     {
-        var result = TComparer.Equality;
+        var result = TComparer.Same;
         do
         {
             switch (segment.Span.Length.CompareTo(other.Span.Length))
             {
-                case < 0 when TComparer.MeansEquality(result = segment.CompareWithLargerSegment<T, TResult, TComparer>(ref other, comparer)):
-                case > 0 when TComparer.MeansEquality(result =
-                    other.CompareWithLargerSegment<T, TResult, ReversedSpanComparer<T, TResult, TComparer>>(ref segment, new(comparer))):
+                case < 0 when segment.CompareWithLargerSegment(ref other, comparer, out result):
+                case > 0 when other.CompareWithLargerSegment<T, TResult, ReversedSpanComparer<T, TResult, TComparer>>(ref segment,
+                    new(comparer),
+                    out result):
                     continue;
-                case 0 when TComparer.MeansEquality(result = comparer.Invoke(segment.Span, other.Span)):
+                case 0 when (result = comparer.Compare(segment.Span, other.Span)).Equals(TComparer.Same):
                     segment.Advance();
                     other.Advance();
                     continue;
@@ -422,72 +422,92 @@ file static class ComparisonHelpers
         return result;
     }
 
-    private static TResult CompareWithLargerSegment<T, TResult, TComparer>(this ref SequenceReaderSlim<T> segment,
-        ref SequenceReaderSlim<T> other, TComparer comparer)
-        where TComparer : struct, ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>, IComparisonResultSupport<TResult>, allows ref struct
+    private static bool CompareWithLargerSegment<T, TResult, TComparer>(this ref SequenceReaderSlim<T> segment,
+        ref SequenceReaderSlim<T> other, TComparer comparer, out TResult result)
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
     {
         Debug.Assert(segment.Span.Length < other.Span.Length);
 
         var fragment = other.Span.Slice(0, segment.Span.Length);
-        var cmp = comparer.Invoke(segment.Span, fragment);
-        if (!TComparer.MeansEquality(cmp) || !segment.Advance())
-            return cmp;
+        result = comparer.Compare(segment.Span, fragment);
 
-        other.Advance(fragment.Length);
-        return cmp;
+        var equal = result.Equals(TComparer.Same);
+        if (!equal)
+        {
+            // nothing to do
+        }
+        else if (segment.Advance())
+        {
+            other.Advance(fragment.Length);
+        }
+        else
+        {
+            // the first segment is empty, while the second one is not, so the result is segment < other
+            result = TComparer.Smaller;
+            equal = false;
+        }
+
+        return equal;
     }
 }
 
-file interface IComparisonResultSupport<TResult>
+file interface IComparer<T, out TResult>
+    where TResult : struct, IEquatable<TResult>
 {
-    public static abstract bool MeansEquality(TResult result);
+    TResult Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y);
     
-    public static abstract TResult Equality { get; }
+    public static abstract TResult Same { get; }
+    
+    public static abstract TResult Smaller { get; }
+    
+    public static abstract TResult Larger { get; }
 }
 
 [StructLayout(LayoutKind.Auto)]
-file readonly ref struct ReversedSpanComparer<T, TResult, TComparer>(TComparer comparer) :
-    ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>,
-    IComparisonResultSupport<TResult>
-    where TComparer : struct, ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>, IComparisonResultSupport<TResult>, allows ref struct
+file readonly ref struct ReversedSpanComparer<T, TResult, TComparer>(TComparer comparer) : IComparer<T, TResult>
+    where TResult : struct, IEquatable<TResult>
+    where TComparer : struct, IComparer<T, TResult>, allows ref struct
 {
     private readonly TComparer comparer = comparer;
 
-    TResult ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, TResult>.Invoke(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+    TResult IComparer<T, TResult>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
     {
         var copy = comparer;
-        return copy.Invoke(y, x);
+        return copy.Compare(y, x);
     }
 
-    static bool IComparisonResultSupport<TResult>.MeansEquality(TResult result) => TComparer.MeansEquality(result);
+    static TResult IComparer<T, TResult>.Same => TComparer.Same;
 
-    static TResult IComparisonResultSupport<TResult>.Equality => TComparer.Equality;
+    static TResult IComparer<T, TResult>.Smaller => TComparer.Larger;
 
-    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
+    static TResult IComparer<T, TResult>.Larger => TComparer.Smaller;
 }
 
 [StructLayout(LayoutKind.Auto)]
-file readonly struct SpanComparer<T>(IComparer<T>? comparer) : ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, int>, IComparisonResultSupport<int>
+file readonly struct SpanComparer<T>(IComparer<T>? comparer) : IComparer<T, int>
 {
-    int ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, int>.Invoke(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+    int IComparer<T, int>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
         => x.SequenceCompareTo(y, comparer);
 
-    static bool IComparisonResultSupport<int>.MeansEquality(int result) => result is 0;
+    static int IComparer<T, int>.Same => 0;
 
-    static int IComparisonResultSupport<int>.Equality => 0;
+    static int IComparer<T, int>.Smaller => -1;
+
+    static int IComparer<T, int>.Larger => 1;
 }
 
 [StructLayout(LayoutKind.Auto)]
-file readonly struct SpanEqualityComparer<T>(IEqualityComparer<T>? comparer)
-    : ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, bool>, IComparisonResultSupport<bool>
+file readonly struct SpanEqualityComparer<T>(IEqualityComparer<T>? comparer) : IComparer<T, bool>
 {
-    bool ISupplier<ReadOnlySpan<T>, ReadOnlySpan<T>, bool>.Invoke(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+    bool IComparer<T, bool>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
         => x.SequenceEqual(y, comparer);
-
-    static bool IComparisonResultSupport<bool>.MeansEquality(bool result) => result;
     
-    static bool IComparisonResultSupport<bool>.Equality => true;
+    static bool IComparer<T, bool>.Same => true;
+
+    static bool IComparer<T, bool>.Smaller => false;
+
+    static bool IComparer<T, bool>.Larger => false;
 }
 
 [StructLayout(LayoutKind.Auto)]
