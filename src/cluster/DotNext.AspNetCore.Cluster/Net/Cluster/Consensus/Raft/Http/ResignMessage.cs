@@ -22,5 +22,5 @@ internal sealed class ResignMessage : HttpMessage, IHttpMessage<bool>
 
     void IHttpMessage.PrepareRequest(HttpRequestMessage request) => PrepareRequest(request);
 
-    internal static new Task SaveResponseAsync(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponseAsync(response, result, token);
+    internal new static Task SaveResponseAsync(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponseAsync(response, result, token);
 }
