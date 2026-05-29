@@ -11,7 +11,7 @@ internal abstract class RaftHttpMessage : HttpMessage
     // cached to avoid memory allocation
     private protected static readonly ValueParser<DateTimeOffset> Rfc1123Parser = TryParseRfc1123FormattedDateTime;
 
-    // request - represents Term value according with Raft protocol
+    // request - represents Term value according to Raft protocol
     // response - represents Term value of the reply node
     private const string TermHeader = "X-Raft-Term";
 
