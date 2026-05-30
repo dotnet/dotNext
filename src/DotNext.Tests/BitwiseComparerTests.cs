@@ -2,6 +2,8 @@
 
 namespace DotNext;
 
+using Patterns;
+
 public sealed class BitwiseComparerTests : Test
 {
     [Fact]
@@ -112,5 +114,15 @@ public sealed class BitwiseComparerTests : Test
 
         var lookup = dictionary.GetAlternateLookup<ReadOnlySpan<byte>>();
         Equal(key.ToString(), lookup[key.ToByteArray()]);
+    }
+
+    [Fact]
+    public static void SingletonAccess()
+    {
+        Same(BitwiseComparer<Guid>.Instance, GetSingleton<BitwiseComparer<Guid>>());
+        
+        static T GetSingleton<T>()
+            where T : class, ISingleton<T>
+            => T.Instance;
     }
 }
