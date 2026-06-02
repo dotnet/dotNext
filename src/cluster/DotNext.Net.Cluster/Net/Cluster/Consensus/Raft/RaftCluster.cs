@@ -331,7 +331,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public virtual async Task StartAsync(CancellationToken token = default)
     {
         await AuditTrail.InitializeAsync(token).ConfigureAwait(false);
-        
+        InitializeState();
+    }
+
+    private void InitializeState()
+    {
         if (members.LocalMember is not { } member)
         {
             // Local member is not known. Start in frozen state and wait when the current node will be added to the cluster
