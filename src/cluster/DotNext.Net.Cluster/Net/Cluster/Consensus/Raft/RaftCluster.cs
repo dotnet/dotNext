@@ -332,27 +332,62 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         await AuditTrail.InitializeAsync(token).ConfigureAwait(false);
         
-        if (members.LocalMember is { } member)
+        if (members.LocalMember is not { } member)
         {
-            // local member is known then turn readiness probe into signaled state and start serving the messages from the cluster
-            state = standbyNode
-                ? new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration }
-                : new FollowerState<TMember>(this);
+            // Local member is not known. Start in frozen state and wait when the current node will be added to the cluster
+            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
+            Logger.StartedAsFrozen();
+        }
+        else if (standbyNode)
+        {
+            // Local member is known, but it's configured as stand-by node
+            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
             readinessProbe.TrySetResult();
-            Logger.StartedAsFollower(member.EndPoint);
+        }
+        else if (Members.Count is 1)
+        {
+            // Local member is the only member in the membership list. Start it as a leader
+            var newState = new LeaderState<TMember>(this, replicationLag)
+            {
+                IsLeaseEnabled = leaseEnabled,
+                MaxLease = LeaderLeaseDuration,
+                Term = AuditTrail.Term,
+                FailureDetectorFactory = FailureDetectorFactory,
+                WriteBarrier = AuditTrail.LastEntryIndex
+            };
+
+            Logger.TransitionToLeaderStateStarted(newState.Term);
+            Leader = member;
+            leadershipEvent.TrySetResult(newState);
+            state = newState;
+            
+            readinessProbe.TrySetResult();
+            Logger.TransitionToLeaderStateCompleted(newState.Term);
         }
         else
         {
-            // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
-            Logger.StartedAsFrozen();
+            // Local member is known. Turn readiness probe into signaled state and start serving the messages from the cluster
+            state = new FollowerState<TMember>(this);
+            readinessProbe.TrySetResult();
+            Logger.StartedAsFollower(member.EndPoint);
         }
     }
 
     /// <summary>
     /// Starts Follower timer.
     /// </summary>
-    protected void StartFollowing() => (state as FollowerState<TMember>)?.StartServing(ElectionTimeout);
+    protected void StartFollowing()
+    {
+        switch (state)
+        {
+            case FollowerState<TMember> followerState:
+                followerState.StartServing(ElectionTimeout);
+                break;
+            case LeaderState<TMember> leaderState when members is { Count: 1, LocalMember: { } leaderNode }:
+                leaderState.StartLeading(leaderNode, HeartbeatTimeout);
+                break;
+        }
+    }
 
     /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
     public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
@@ -511,7 +546,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         await StepDownAsync(consensusReached).ConfigureAwait(false);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask StepDownAsync(bool consensusReached)
     {
         Logger.DowngradingToFollowerState(AuditTrail.Term);
