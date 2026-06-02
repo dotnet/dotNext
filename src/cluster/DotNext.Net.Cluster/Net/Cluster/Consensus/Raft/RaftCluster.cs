@@ -348,7 +348,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
             readinessProbe.TrySetResult();
         }
-        else if (Members.Count is 1)
+        else if (members.Count is 1)
         {
             // Local member is the only member in the membership list. Start it as a leader
             var newState = new LeaderState<TMember>(this, replicationLag)
