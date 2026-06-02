@@ -33,13 +33,28 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 05-20-2026
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.2.3">DotNext.Threading 6.2.3</a>
-* `PendingTaskInterruptedException.Reason` property returns `InnerException` if another reason is not defined
+<a href="https://www.nuget.org/packages/dotnext/6.3.0">DotNext 6.3.0</a>
+* Added `SequenceEqual` and `SequenceCompareTo` extension methods for [ReadOnlySequence&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) type
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.2.3">DotNext.Net.Cluster 6.2.3</a>
-* Improved logging and error reporting in `WriteAheadLog` and `RaftCluster` classes in case of critical failures
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.3.0">DotNext.Metaprogramming 6.3.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.2.3">DotNext.AspNetCore.Cluster 6.2.3</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.3.0">DotNext.Unsafe 6.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.3.0">DotNext.Threading 6.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.3.0">DotNext.IO 6.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.3.0">DotNext.Net.Cluster 6.3.0</a>
+* For single node setup, Raft node starts as leader without waiting for the candidate timeout
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.3.0">DotNext.AspNetCore.Cluster 6.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.3.0">DotNext.MaintenanceServices 1.3.0</a>
 * Updated dependencies
 
 # Release & Support Policy
