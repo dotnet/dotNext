@@ -35,18 +35,18 @@ public sealed class MeterListenerBuilder
         InstrumentPublished = registration,
         MeasurementsCompleted = InstrumentObserver.ObservationCompletionCallback,
     };
-    
-    private sealed class InstrumentHandler<TMeasurement, TInstrument>(Predicate<TInstrument> filter,
-        InstrumentObserver<TMeasurement, TInstrument> observer)
-        where TMeasurement : unmanaged, INumberBase<TMeasurement>
-        where TInstrument : Instrument<TMeasurement>
+}
+
+file sealed class InstrumentHandler<TMeasurement, TInstrument>(Predicate<TInstrument> filter,
+    InstrumentObserver<TMeasurement, TInstrument> observer)
+    where TMeasurement : unmanaged, INumberBase<TMeasurement>
+    where TInstrument : Instrument<TMeasurement>
+{
+    public void Publish(Instrument instrument, MeterListener listener)
     {
-        public void Publish(Instrument instrument, MeterListener listener)
+        if (instrument is TInstrument typedInstrument && filter(typedInstrument))
         {
-            if (instrument is TInstrument typedInstrument && filter(typedInstrument))
-            {
-                observer.Observe(typedInstrument, listener);
-            }
+            observer.Observe(typedInstrument, listener);
         }
     }
 }

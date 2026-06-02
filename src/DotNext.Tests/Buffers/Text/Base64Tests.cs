@@ -19,7 +19,7 @@ public sealed class Base64Tests : Test
         using var actual = decoder.DecodeFromUtf8(base64);
         False(decoder.NeedMoreData);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class Base64Tests : Test
         using var actual = decoder.DecodeFromUtf16(base64);
         False(decoder.NeedMoreData);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]
@@ -116,7 +116,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]
@@ -138,7 +138,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]
@@ -157,7 +157,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(base64.Span);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(base64.Span);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public sealed class Base64Tests : Test
         True(encoder.HasBufferedData);
 
         Equal(2, encoder.BufferedData.Length);
-        Equal(expected, encoder.BufferedData.Slice(0, 2).ToArray());
+        Equal(expected, encoder.BufferedData.Slice(0, 2));
 
         Span<byte> base64 = stackalloc byte[Base64Encoder.MaxCharsToFlush];
         Equal(4, encoder.Flush(base64));
@@ -229,7 +229,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.ToString());
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]
@@ -251,7 +251,7 @@ public sealed class Base64Tests : Test
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
-        Equal(expected, actual.Span.ToArray());
+        Equal(expected, actual.Span);
     }
 
     [Theory]

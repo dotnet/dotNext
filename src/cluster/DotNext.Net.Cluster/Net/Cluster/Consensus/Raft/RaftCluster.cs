@@ -152,17 +152,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => state is LeaderState<TMember> leaderState
-                                                && AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier
-        ? leaderState.Token
-        : new(canceled: true);
+    public CancellationToken LeadershipToken => state switch
+    {
+        LeaderState<TMember> leaderState when AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier => leaderState.Token,
+        ZombieState zombieState => throw zombieState.CreateException(),
+        _ => new(canceled: true),
+    };
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
-    public CancellationToken ConsensusToken => (state as ConsensusState<TMember>)?.Token ?? new(canceled: true);
+    public CancellationToken ConsensusToken => state switch
+    {
+        ConsensusState<TMember> consensusState => consensusState.Token,
+        ZombieState zombieState => throw zombieState.CreateException(),
+        _ => new(canceled: true),
+    };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private LeaderState<TMember> LeaderStateOrException
-        => state as LeaderState<TMember> ?? throw new NotLeaderException();
+    private LeaderState<TMember> LeaderStateOrException => state as LeaderState<TMember> ?? throw new NotLeaderException();
 
     /// <summary>
     /// Associates audit trail with the current instance.
@@ -325,28 +331,67 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public virtual async Task StartAsync(CancellationToken token = default)
     {
         await AuditTrail.InitializeAsync(token).ConfigureAwait(false);
-        
-        if (members.LocalMember is { } member)
+        InitializeState();
+    }
+
+    private void InitializeState()
+    {
+        if (members.LocalMember is not { } member)
         {
-            // local member is known then turn readiness probe into signaled state and start serving the messages from the cluster
-            state = standbyNode
-                ? new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration }
-                : new FollowerState<TMember>(this);
+            // Local member is not known. Start in frozen state and wait when the current node will be added to the cluster
+            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
+            Logger.StartedAsFrozen();
+        }
+        else if (standbyNode)
+        {
+            // Local member is known, but it's configured as stand-by node
+            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
             readinessProbe.TrySetResult();
-            Logger.StartedAsFollower(member.EndPoint);
+        }
+        else if (Members.Count is 1)
+        {
+            // Local member is the only member in the membership list. Start it as a leader
+            var newState = new LeaderState<TMember>(this, replicationLag)
+            {
+                IsLeaseEnabled = leaseEnabled,
+                MaxLease = LeaderLeaseDuration,
+                Term = AuditTrail.Term,
+                FailureDetectorFactory = FailureDetectorFactory,
+                WriteBarrier = AuditTrail.LastEntryIndex
+            };
+
+            Logger.TransitionToLeaderStateStarted(newState.Term);
+            Leader = member;
+            leadershipEvent.TrySetResult(newState);
+            state = newState;
+            
+            readinessProbe.TrySetResult();
+            Logger.TransitionToLeaderStateCompleted(newState.Term);
         }
         else
         {
-            // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-            state = new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration };
-            Logger.StartedAsFrozen();
+            // Local member is known. Turn readiness probe into signaled state and start serving the messages from the cluster
+            state = new FollowerState<TMember>(this);
+            readinessProbe.TrySetResult();
+            Logger.StartedAsFollower(member.EndPoint);
         }
     }
 
     /// <summary>
     /// Starts Follower timer.
     /// </summary>
-    protected void StartFollowing() => (state as FollowerState<TMember>)?.StartServing(ElectionTimeout);
+    protected void StartFollowing()
+    {
+        switch (state)
+        {
+            case FollowerState<TMember> followerState:
+                followerState.StartServing(ElectionTimeout);
+                break;
+            case LeaderState<TMember> leaderState when members is { Count: 1, LocalMember: { } leaderNode }:
+                leaderState.StartLeading(leaderNode, HeartbeatTimeout);
+                break;
+        }
+    }
 
     /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
     public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
@@ -396,7 +441,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         RaftState<TMember> currentState;
-        if ((currentState = state) is not StandbyState<TMember>)
+        if ((currentState = state) is not StandbyState<TMember> and not ZombieState)
         {
             var tokenSource = CombineTokens(token, LifecycleToken);
             var lockTaken = false;
@@ -479,7 +524,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await transitionLock.AcquireAsync(token).ConfigureAwait(false);
                 lockTaken = true;
 
-                await MoveToStandbyState().ConfigureAwait(false);
+                await MoveToStandbyState(resumable: false).ConfigureAwait(false);
                 LocalMemberGone();
             }
             finally
@@ -505,7 +550,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         await StepDownAsync(consensusReached).ConfigureAwait(false);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask StepDownAsync(bool consensusReached)
     {
         Logger.DowngradingToFollowerState(AuditTrail.Term);
@@ -990,6 +1034,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return UpdateStateAsync(new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration, Resumable = resumable });
     }
 
+    private ValueTask MoveToZombieState(Exception innerException)
+    {
+        var newState = new ZombieState(this, innerException);
+        Leader = null;
+        
+        readinessProbe.TrySetException(newState.CreateException());
+        leadershipEvent.TrySetException(newState.CreateException());
+        leadershipEvent.TrySetException(newState.CreateException());
+
+        return UpdateStateAsync(newState);
+    }
+
     async Task IRaftStateMachine<TMember>.IncomingHeartbeatTimedOut(IRaftStateMachine.IWeakCallerStateIdentity callerState)
     {
         var lockTaken = false;
@@ -1057,7 +1113,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToFollowerStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            await MoveToZombieState(e).ConfigureAwait(false);
         }
         finally
         {
@@ -1133,7 +1189,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (Exception e)
         {
             Logger.TransitionToCandidateStateFailed(e);
-            await MoveToStandbyState().ConfigureAwait(false);
+            await MoveToZombieState(e).ConfigureAwait(false);
         }
         finally
         {
@@ -1345,6 +1401,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
     private sealed class UnstartedState(RaftCluster<TMember> cluster) : RaftState<TMember>(cluster);
+    
+    private sealed class ZombieState(RaftCluster<TMember> cluster, Exception innerException) : RaftState<TMember>(cluster)
+    {
+        public new UnreachableException CreateException() => new(innerException.Message, innerException);
+    }
 }
 
 file static class LockTypes

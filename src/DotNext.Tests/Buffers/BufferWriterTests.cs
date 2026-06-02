@@ -203,7 +203,7 @@ public sealed class BufferWriterTests : Test
             Equal(0, writer.FreeCapacity);
             False(buffer.IsEmpty);
             Equal(3, buffer.Length);
-            Equal(bytes, buffer.Memory.ToArray());
+            Equal(bytes, buffer.Memory);
             buffer.Dispose();
         }
     }

@@ -164,16 +164,6 @@ internal static partial class LogMessages
     )]
     public static partial void InstallingSnapshot(this ILogger logger, EndPoint member, long entryIndex);
 
-    public const string SnapshotInstallationFailed = "Critical error detected while installing snapshot of audit trail";
-
-    [LoggerMessage(
-        EventIdOffset + 20,
-        LogLevel.Error,
-        "Too many pallel requests",
-        EventName = $"{EventIdPrefix}.{nameof(NotEnoughRequestHandlers)}"
-    )]
-    public static partial void NotEnoughRequestHandlers(this ILogger logger);
-
     [LoggerMessage(
         EventIdOffset + 21,
         LogLevel.Error,
@@ -285,14 +275,6 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(CandidateStateExitedWithError)}"
     )]
     public static partial void CandidateStateExitedWithError(this ILogger logger, Exception e);
-
-    [LoggerMessage(
-        EventIdOffset + 35,
-        LogLevel.Debug,
-        "Leader state reverted with error",
-        EventName = $"{EventIdPrefix}.{nameof(LeaderStateExitedWithError)}"
-    )]
-    public static partial void LeaderStateExitedWithError(this ILogger logger, Exception e);
 
     [LoggerMessage(
         EventIdOffset + 36,

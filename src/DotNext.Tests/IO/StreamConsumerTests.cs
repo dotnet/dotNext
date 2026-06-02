@@ -28,8 +28,8 @@ public sealed class StreamConsumerTests : Test
     {
         using var ms = new MemoryStream();
         var consumer = new StreamConsumer(ms);
-        consumer.As<IConsumer<ReadOnlySpan<byte>>>().Invoke(new ReadOnlySpan<byte>([1, 2]));
+        consumer.As<IConsumer<ReadOnlySpan<byte>>>().Invoke([1, 2]);
         consumer.As<ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>>().Invoke(new ReadOnlyMemory<byte>([3, 4]), TestToken);
-        Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
+        Equal<byte>([1, 2, 3, 4], ms.ToArray());
     }
 }

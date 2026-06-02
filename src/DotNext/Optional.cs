@@ -83,7 +83,7 @@ public static class Optional
         var optional = await task.ConfigureAwait(false);
         return optional.HasValue
             ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
-            : optional.IsNull && AdvancedHelpers.IsNullable<TOutput>()
+            : optional.IsNull && RuntimeHelpers.IsNullable<TOutput>()
                 ? new(default)
                 : Optional<TOutput>.None;
     }

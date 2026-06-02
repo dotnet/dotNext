@@ -39,7 +39,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// Sets a list of tags to be associated with each measurement.
     /// </summary>
     [CLSCompliant(false)]
-    public virtual TagList MeasurementTags
+    public TagList MeasurementTags
     {
         init
         {
@@ -153,7 +153,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public virtual void AddAll(ICollection<T> items)
     {
-        if (items.Count == 0)
+        if (items.Count is 0)
             return;
 
         var span = GetSpan(items.Count);

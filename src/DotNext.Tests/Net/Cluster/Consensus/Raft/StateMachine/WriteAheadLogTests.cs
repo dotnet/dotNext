@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 using Buffers.Binary;
 using Membership;
 using Text.Json;
+using Threading;
 using static IO.DataTransferObject;
 using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
@@ -97,6 +98,22 @@ public sealed class WriteAheadLogTests : Test
         await wal.WaitForApplyAsync(2L, TestToken);
 
         Equal(context, Contains(1L, stateMachine.Context));
+    }
+
+    [Fact]
+    public static async Task ExceptionFlow()
+    {
+        var dir = GetTempPath();
+        var stateMachine = new BrokenStateMachine();
+        await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
+
+        Equal(1L, await wal.AppendAsync(RandomBytes(16), context: null, TestToken));
+
+        await wal.CommitAsync(wal.LastEntryIndex, TestToken);
+        var e = await ThrowsAsync<PendingTaskInterruptedException>(wal.WaitForApplyAsync(1L, TestToken).AsTask);
+        IsType<ArithmeticException>(IsType<WriteAheadLog.InternalException>(e.InnerException).InnerException);
+
+        await ThrowsAsync<WriteAheadLog.InternalException>(wal.CommitAsync(1L, TestToken).AsTask);
     }
 
     [Fact]

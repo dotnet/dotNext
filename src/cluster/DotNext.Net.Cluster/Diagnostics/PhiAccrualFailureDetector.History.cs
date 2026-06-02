@@ -106,21 +106,21 @@ public partial class PhiAccrualFailureDetector
 
         private double Variance => (squaredIntervalSum / count) - Squared(Mean);
 
-        private double StdDeviation => Math.Sqrt(Variance);
+        private double StdDeviation => double.Sqrt(Variance);
 
         internal virtual Measurement Next(Timestamp ts) => new StampedMeasurement(this, ts);
 
         protected double Phi(double timeSinceLastMeasurement, double acceptableHeartbeatPause, double minStdDeviation)
         {
             var meanMillis = Mean + acceptableHeartbeatPause;
-            var deviationMillis = Math.Max(StdDeviation, minStdDeviation);
+            var deviationMillis = double.Max(StdDeviation, minStdDeviation);
 
             Debug.Assert(double.IsNaN(deviationMillis) is false);
 
             var y = (timeSinceLastMeasurement - meanMillis) / deviationMillis;
-            var e = Math.Exp(-y * (1.5976D + (0.070566D * Squared(y))));
+            var e = double.Exp(-y * (1.5976D + (0.070566D * Squared(y))));
 
-            return -Math.Log10(timeSinceLastMeasurement > meanMillis ? e / (1D + e) : 1D - (1D / (1D + e)));
+            return -double.Log10(timeSinceLastMeasurement > meanMillis ? e / (1D + e) : 1D - (1D / (1D + e)));
         }
 
         internal virtual double Phi(Timestamp ts, double acceptableHeartbeatPause, double minStdDeviation)

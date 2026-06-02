@@ -496,6 +496,6 @@ public abstract class TransportTestSuite : RaftTest
         await host1.StopAsync();
     }
 
-    private static WriteAheadLog CreateWal()
+    protected static WriteAheadLog CreateWal()
         => new(new() { Location = GetTempPath() }, IStateMachine.CreateNoOp());
 }

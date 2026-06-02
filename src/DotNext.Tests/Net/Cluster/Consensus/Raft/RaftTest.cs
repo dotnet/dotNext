@@ -22,7 +22,7 @@ public abstract class RaftTest : Test
         }
     }
 
-    internal static async Task<EndPoint> AssertLeadershipAsync(IEqualityComparer<EndPoint> comparer, params IRaftCluster[] nodes)
+    protected static async Task<EndPoint> AssertLeadershipAsync(IEqualityComparer<EndPoint> comparer, params IRaftCluster[] nodes)
     {
         EndPoint ep = null;
         var startTime = new Timestamp();
@@ -30,7 +30,7 @@ public abstract class RaftTest : Test
     restart:
         foreach (var n in nodes)
         {
-            var leader = await n.WaitForLeaderAsync(DefaultTimeout);
+            var leader = await n.WaitForLeaderAsync(DefaultTimeout, TestToken);
             NotNull(leader);
 
             if (ep is null)
@@ -53,5 +53,19 @@ public abstract class RaftTest : Test
 
         NotNull(ep);
         return ep;
+    }
+    
+    protected static async Task<RaftCluster> FindLeaderAsync(params RaftCluster[] candidates)
+    {
+        for (;; TestToken.ThrowIfCancellationRequested())
+        {
+            foreach (var candidate in candidates)
+            {
+                if (!candidate.LeadershipToken.IsCancellationRequested)
+                    return candidate;
+            }
+
+            await Task.Yield();
+        }
     }
 }

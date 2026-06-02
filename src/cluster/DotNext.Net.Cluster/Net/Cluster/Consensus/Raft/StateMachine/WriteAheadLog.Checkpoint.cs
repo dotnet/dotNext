@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
 using Buffers.Binary;
+using IO.Log;
 
 partial class WriteAheadLog
 {

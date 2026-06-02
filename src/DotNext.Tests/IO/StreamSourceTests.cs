@@ -169,7 +169,7 @@ public sealed class StreamSourceTests : Test
         using var src = Stream.Create(sequence);
         Span<byte> dest = new byte[Data.Length];
         Equal(dest.Length, src.Read(dest));
-        Equal(Data, dest.ToArray());
+        Equal(Data, dest);
 
         src.Position = sequence.Length - 1;
         Equal(1, src.Read(dest.Slice(0, 1)));
@@ -185,7 +185,7 @@ public sealed class StreamSourceTests : Test
         using var src = Stream.Create(buffer, writable: false);
         Span<byte> dest = new byte[Data.Length];
         src.ReadExactly(dest);
-        Equal(Data, dest.ToArray());
+        Equal(Data, dest);
     }
 
     [Theory]
@@ -209,7 +209,7 @@ public sealed class StreamSourceTests : Test
         await using var src = Stream.Create(sequence);
         Memory<byte> dest = new byte[Data.Length];
         Equal(dest.Length, await src.ReadAsync(dest, TestToken));
-        Equal(Data, dest.ToArray());
+        Equal(Data, dest);
 
         src.Position = sequence.Length - 1;
         Equal(1, await src.ReadAsync(dest.Slice(0, 1), TestToken));
@@ -228,7 +228,7 @@ public sealed class StreamSourceTests : Test
         Memory<byte> dest = new byte[Data.Length];
         await src.ReadExactlyAsync(dest, TestToken);
         Equal(src.Length, src.Position);
-        Equal(Data, dest.ToArray());
+        Equal(Data, dest);
     }
 
     [Theory]
@@ -526,7 +526,7 @@ public sealed class StreamSourceTests : Test
         stream.Flush();
         Equal(3, stream.Position);
         Equal(3, stream.Length);
-        Equal(content, writer.WrittenMemory.ToArray());
+        Equal(content, writer.WrittenMemory);
     }
 
     [Fact]
@@ -542,7 +542,7 @@ public sealed class StreamSourceTests : Test
         await stream.WriteAsync(content, TestToken);
         await stream.FlushAsync(TestToken);
         Equal(3, stream.Position);
-        Equal(content, writer.WrittenMemory.ToArray());
+        Equal(content, writer.WrittenMemory);
     }
 
     [Fact]
@@ -561,7 +561,7 @@ public sealed class StreamSourceTests : Test
         stream.Write(content);
         stream.Flush();
         Equal(3, stream.Position);
-        Equal(content, writer.WrittenMemory.ToArray());
+        Equal(content, writer.WrittenMemory);
     }
 
     [Fact]
@@ -580,7 +580,7 @@ public sealed class StreamSourceTests : Test
         await stream.WriteAsync(content, TestToken);
         await stream.FlushAsync(TestToken);
         Equal(3, stream.Position);
-        Equal(content, writer.WrittenMemory.ToArray());
+        Equal(content, writer.WrittenMemory);
     }
 
     [Fact]
@@ -602,15 +602,15 @@ public sealed class StreamSourceTests : Test
         await checker.Task;
         stream.EndWrite(ar);
         Equal(3, stream.Position);
-        Equal(content, writer.WrittenMemory.ToArray());
+        Equal(content, writer.WrittenMemory);
     }
 
     [Fact]
     public static async Task SharedStreamConcurrentReadAsync()
     {
-        byte[] expected = RandomBytes(512);
+        var expected = RandomBytes(512);
 
-        await using var stream = StreamSource.CreateShared(new(expected));
+        await using var stream = Stream.CreateShared(new(expected));
 
         var task1 = ReadStreamAsync(stream);
         var task2 = ReadStreamAsync(stream);

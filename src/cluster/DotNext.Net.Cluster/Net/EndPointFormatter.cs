@@ -259,7 +259,7 @@ public static class EndPointFormatter
     private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
     {
         port = reader.ReadLittleEndian<int>();
-        family = (AddressFamily)reader.ReadLittleEndian<int>();
+        family = reader.ReadLittleEndian<Enum<AddressFamily>>();
         var length = reader.ReadLittleEndian<int>();
 
         using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold

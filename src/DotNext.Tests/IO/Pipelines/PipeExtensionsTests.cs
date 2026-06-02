@@ -169,7 +169,7 @@ public sealed class PipeExtensionsTests : Test
         await pipe.Writer.CompleteAsync();
         var buffer = new ArrayBufferWriter<byte>();
         await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
-        Equal([10, 20, 30], buffer.WrittenMemory.ToArray());
+        Equal<byte>([10, 20, 30], buffer.WrittenSpan);
     }
 
     [Fact]
@@ -290,14 +290,14 @@ public sealed class PipeExtensionsTests : Test
         await using (var enumerator = reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
-            Equal(portion1, enumerator.Current.ToArray());
+            Equal(portion1, enumerator.Current);
             True(await enumerator.MoveNextAsync());
         }
 
         await using (var enumerator = reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
-            Equal(portion2, enumerator.Current.ToArray());
+            Equal(portion2, enumerator.Current);
             False(await enumerator.MoveNextAsync());
         }
     }

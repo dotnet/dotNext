@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Immutable;
 
 namespace DotNext.Buffers;
 
@@ -327,8 +328,8 @@ public sealed class MemoryWriterTests : Test
         block[2] = 120;
 
         writer.Insert(writer.WrittenCount - 1, block);
-        Equal(random[..^1], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
-        Equal(block.ToArray(), writer.WrittenMemory.Span.Slice(random.Length - 1, 3).ToArray());
+        Equal(random[..^1], writer.WrittenMemory.Span.Slice(0, random.Length - 1));
+        Equal(block, writer.WrittenMemory.Span.Slice(random.Length - 1, 3));
     }
 
     [Fact]
@@ -350,7 +351,7 @@ public sealed class MemoryWriterTests : Test
         var random2 = RandomBytes(random.Length + 1);
         writer.Overwrite(1, random2);
         Equal(random[0], writer[0]);
-        Equal(random2, writer.WrittenMemory.Span.Slice(1).ToArray());
+        Equal(random2, writer.WrittenMemory.Span.Slice(1));
     }
 
     [Fact]
@@ -388,4 +389,34 @@ public sealed class MemoryWriterTests : Test
         Equal(0, writer.WrittenCount);
         Throws<ArgumentOutOfRangeException>(() => writer.RemoveFirst(-1));
     }
+
+    [Theory]
+    [MemberData(nameof(CollectionsToAdd))]
+    public static void AddAll(ICollection<int> items)
+    {
+        using (var writer = new PoolingBufferWriter<int>())
+        {
+            AddElements(writer, items);
+        }
+
+        using (var writer = new PoolingArrayBufferWriter<int>())
+        {
+            AddElements(writer, items);
+        }
+        
+        static void AddElements(BufferWriter<int> writer, ICollection<int> items)
+        {
+            writer.AddAll(items);
+            Equal(writer, items);
+        }
+    }
+
+    public static TheoryData<ICollection<int>> CollectionsToAdd =>
+    [
+        ImmutableArray<int>.Empty,
+        new[] { 1, 2, 3 },
+        new List<int> { 1, 2, 3 },
+        new ArraySegment<int>([1, 2, 3]),
+        ImmutableList.Create(1, 2, 3)
+    ];
 }

@@ -50,7 +50,7 @@ public sealed class DataTransferObjectTests : Test
         var writer = new ArrayBufferWriter<byte>();
         await dto.WriteToAsync(writer, TestToken);
         Equal(3, writer.WrittenCount);
-        Equal(content, writer.WrittenSpan.ToArray());
+        Equal(content, writer.WrittenSpan);
     }
 
     [Fact]

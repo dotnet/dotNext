@@ -159,4 +159,179 @@ public sealed class ChunkSequenceTests : Test
         Equal(source.End, consumed);
         Equal(destination.AsSpan(0, (int)source.Length), source.Slice(0, consumed).ToArray().AsSpan());
     }
+    
+    [Theory]
+    [MemberData(nameof(EqualityComparisonData))]
+    public static void CompareSequenceEquality(ReadOnlySequence<byte> sequence1, ReadOnlySequence<byte> sequence2, int comparison)
+    {
+        Equal(comparison is 0, sequence1.SequenceEqual(sequence2));
+    }
+
+    [Theory]
+    [MemberData(nameof(EqualityComparisonData))]
+    public static void CompareSequence(ReadOnlySequence<byte> sequence1, ReadOnlySequence<byte> sequence2, int comparison)
+    {
+        Equal(comparison, sequence1.SequenceCompareTo(sequence2));
+    }
+
+    public static TheoryData<ReadOnlySequence<byte>, ReadOnlySequence<byte>, int> EqualityComparisonData => new()
+    {
+        // positive cases
+        {
+            ReadOnlySequence<byte>.Empty,
+            ReadOnlySequence<byte>.Empty,
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            0
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }, new byte[] { 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }, new byte[] { 5, 6 }),
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4, 5 }, new byte[] { 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1 }, new byte[] { 2, 3 }, new byte[] { 4, 5, 6 }),
+            0
+        },
+        // negative cases
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 7 }, new byte[] { 4, 5, 6 }),
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            4
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 7 }, new byte[] { 4, 5, 6 }),
+            -4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 7 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 7, 4 }, new byte[] { 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 7, 4 }, new byte[] { 5, 6 }),
+            -4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 7, 4, 5 }, new byte[] { 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1 }, new byte[] { 2, 3 }, new byte[] { 4, 5, 6 }),
+            4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4, 5 }, new byte[] { 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1 }, new byte[] { 2, 7 }, new byte[] { 4, 5, 6 }),
+            -4
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            new ReadOnlySequence<byte>([1, 2, 3]),
+            1
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3]),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            -1
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            -1
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2 }, new byte[] { 3, 4 }),
+            1
+        },
+    };
+
+    [Theory]
+    [MemberData(nameof(SpanComparisonData))]
+    public static void CompareSpanEquality(ReadOnlySequence<byte> sequence, ReadOnlyMemory<byte> memory, int comparison)
+    {
+        Equal(comparison is 0, sequence.SequenceEqual(memory.Span));
+    }
+
+    [Theory]
+    [MemberData(nameof(SpanComparisonData))]
+    public static void CompareSpan(ReadOnlySequence<byte> sequence, ReadOnlyMemory<byte> memory, int comparison)
+    {
+        Equal(comparison, sequence.SequenceCompareTo(memory.Span));
+    }
+
+    public static TheoryData<ReadOnlySequence<byte>, ReadOnlyMemory<byte>, int> SpanComparisonData => new()
+    {
+        // positive cases
+        {
+            ReadOnlySequence<byte>.Empty,
+            ReadOnlyMemory<byte>.Empty,
+            0
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            new byte[] { 1, 2, 3, 4, 5, 6 },
+            0
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            new byte[] { 1, 2, 3, 4, 5, 6 },
+            0
+        },
+        // negative cases
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            ReadOnlyMemory<byte>.Empty,
+            1
+        },
+        {
+            ReadOnlySequence<byte>.Empty,
+            new byte[] { 1, 2, 3, 4, 5, 6 },
+            -1
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 6]),
+            new byte[] { 1, 2, 3, 4, 5, 7 },
+            -1
+        },
+        {
+            new ReadOnlySequence<byte>([1, 2, 3, 4, 5, 7]),
+            new byte[] { 1, 2, 3, 4, 5, 6 },
+            1
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 7 }),
+            new byte[] { 1, 2, 3, 4, 5, 6 },
+            1
+        },
+        {
+            ReadOnlyMemory<byte>.Concat(new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }),
+            new byte[] { 1, 2, 3, 4, 5, 7 },
+            -1
+        },
+    };
 }

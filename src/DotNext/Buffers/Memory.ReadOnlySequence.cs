@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -250,21 +251,306 @@ public static partial class Memory
 
             return false;
         }
-    }
 
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IEnumerator<ReadOnlyMemory<char>>
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="EqualityComparer{T}.Default"/>.</param>
+        /// <returns><see langword="true"/> if both sequences have the same elements in the same order; otherwise, <see langword="false"/>.</returns>
+        public bool SequenceEqual(ReadOnlySpan<T> other, IEqualityComparer<T>? comparer = null)
+            => source.Compare<T, bool, SpanEqualityComparer<T>>(ref other, new(comparer), out var hasMoreSegments)
+               && other.IsEmpty
+               && !hasMoreSegments;
+
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="EqualityComparer{T}.Default"/>.
+        /// </param>
+        /// <returns><see langword="true"/> if both sequences have the same elements in the same order; otherwise, <see langword="false"/>.</returns>
+        public bool SequenceEqual(in ReadOnlySequence<T> other, IEqualityComparer<T>? comparer = null)
+            => (source.IsSingleSegment, other.IsSingleSegment) switch
+            {
+                (true, true) => source.FirstSpan.SequenceEqual(other.FirstSpan, comparer),
+                (true, false) => other.SequenceEqual(source.FirstSpan, comparer),
+                (false, true) => source.SequenceEqual(other.FirstSpan, comparer),
+                (false, false) => source.SequenceEqualSlow(in other, comparer)
+            };
+
+        private bool SequenceEqualSlow(in ReadOnlySequence<T> other, IEqualityComparer<T>? comparer)
+        {
+            scoped var segment1 = new SequenceReaderSlim<T>(in source);
+            scoped var segment2 = new SequenceReaderSlim<T>(in other);
+
+            return segment1.Compare<T, bool, SpanEqualityComparer<T>>(ref segment2, new(comparer))
+                   && segment1.HasMoreSegments == segment2.HasMoreSegments;
+        }
+
+        /// <summary>
+        /// Determines the relative order of the sequences being compared by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="Comparer{T}.Default"/>.
+        /// </param>
+        /// <returns>A signed integer that indicates the relative order.</returns>
+        public int SequenceCompareTo(ReadOnlySpan<T> other, IComparer<T>? comparer = null)
+        {
+            var cmp = source.SequenceCompareTo(other, new SpanComparer<T>(comparer), out var firstNotEmpty, out var secondNotEmpty);
+            if (cmp is 0)
+                cmp = firstNotEmpty.CompareTo(secondNotEmpty);
+
+            return cmp;
+        }
+
+        /// <summary>
+        /// Determines the relative order of the sequences being compared by comparing the elements.
+        /// </summary>
+        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing elements;
+        /// or <see langword="null"/> to use the <see cref="Comparer{T}.Default"/>.
+        /// </param>
+        /// <returns>A signed integer that indicates the relative order.</returns>
+        public int SequenceCompareTo(in ReadOnlySequence<T> other, IComparer<T>? comparer = null)
+        {
+            int cmp;
+            bool firstNotEmpty;
+            bool secondNotEmpty;
+            switch (source.IsSingleSegment, other.IsSingleSegment)
+            {
+                case (true, true):
+                    cmp = source.FirstSpan.SequenceCompareTo(other.FirstSpan, comparer);
+                    firstNotEmpty = secondNotEmpty = false;
+                    break;
+                case (false, true):
+                    cmp = source.SequenceCompareTo(other.FirstSpan, new SpanComparer<T>(comparer), out firstNotEmpty, out secondNotEmpty);
+                    break;
+                case (true, false):
+                    cmp = other.SequenceCompareTo(source.FirstSpan, new ReversedSpanComparer<T, int, SpanComparer<T>>(new(comparer)),
+                        out secondNotEmpty, out firstNotEmpty);
+                    
+                    break;
+                case (false, false):
+                    cmp = source.SequenceCompareTo(in other, comparer, out firstNotEmpty, out secondNotEmpty);
+                    break;
+            }
+
+            if (cmp is 0)
+                cmp = firstNotEmpty.CompareTo(secondNotEmpty);
+
+            return cmp;
+        }
+    }
+}
+
+file static class ComparisonHelpers
+{
+    public static int SequenceCompareTo<T, TComparer>(this in ReadOnlySequence<T> source, ReadOnlySpan<T> other,
+        scoped TComparer comparer, out bool firstNotEmpty, out bool secondNotEmpty)
+        where TComparer : struct, IComparer<T, int>, allows ref struct
     {
-        private readonly IEnumerator<string?> enumerator = strings.GetEnumerator();
+        var cmp = source.Compare<T, int, TComparer>(
+            ref other,
+            comparer,
+            out firstNotEmpty);
 
-        void IEnumerator.Reset() => enumerator.Reset();
-
-        object? IEnumerator.Current => Current;
-
-        public ReadOnlyMemory<char> Current => enumerator.Current.AsMemory();
-
-        public bool MoveNext() => enumerator.MoveNext();
-
-        public void Dispose() => enumerator.Dispose();
+        secondNotEmpty = other.Length > 0;
+        return cmp;
     }
+
+    public static int SequenceCompareTo<T>(this in ReadOnlySequence<T> source, in ReadOnlySequence<T> other,
+        IComparer<T>? comparer, out bool firstNotEmpty, out bool secondNotEmpty)
+    {
+        scoped var segment1 = new SequenceReaderSlim<T>(in source);
+        scoped var segment2 = new SequenceReaderSlim<T>(in other);
+
+        var cmp = segment1.Compare<T, int, SpanComparer<T>>(ref segment2, new(comparer));
+        firstNotEmpty = segment1.HasMoreSegments;
+        secondNotEmpty = segment2.HasMoreSegments;
+        return cmp;
+    }
+    
+    public static TResult Compare<T, TResult, TComparer>(this in ReadOnlySequence<T> source, ref ReadOnlySpan<T> other, scoped TComparer comparer, out bool hasMoreSegments)
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
+    {
+        var result = TComparer.Same;
+        for (var position = source.Start;
+             (hasMoreSegments = source.TryGet(ref position, out var block)) && block.Length <= other.Length;
+             other = other.Slice(block.Length))
+        {
+            result = comparer.Compare(block.Span, other.Slice(0, block.Length));
+            if (!result.Equals(TComparer.Same))
+                break;
+        }
+
+        return result;
+    }
+
+    public static TResult Compare<T, TResult, TComparer>(this ref SequenceReaderSlim<T> segment,
+        ref SequenceReaderSlim<T> other, TComparer comparer)
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
+    {
+        var result = TComparer.Same;
+        do
+        {
+            switch (segment.Span.Length.CompareTo(other.Span.Length))
+            {
+                case < 0 when segment.CompareWithLargerSegment(ref other, comparer, out result):
+                case > 0 when other.CompareWithLargerSegment<T, TResult, ReversedSpanComparer<T, TResult, TComparer>>(ref segment,
+                    new(comparer),
+                    out result):
+                    continue;
+                case 0 when (result = comparer.Compare(segment.Span, other.Span)).Equals(TComparer.Same):
+                    segment.Advance();
+                    other.Advance();
+                    continue;
+            }
+
+            break;
+        } while (segment.HasMoreSegments && other.HasMoreSegments);
+
+        return result;
+    }
+
+    private static bool CompareWithLargerSegment<T, TResult, TComparer>(this ref SequenceReaderSlim<T> segment,
+        ref SequenceReaderSlim<T> other, TComparer comparer, out TResult result)
+        where TResult : struct, IEquatable<TResult>
+        where TComparer : struct, IComparer<T, TResult>, allows ref struct
+    {
+        Debug.Assert(segment.Span.Length < other.Span.Length);
+
+        var fragment = other.Span.Slice(0, segment.Span.Length);
+        result = comparer.Compare(segment.Span, fragment);
+
+        var equal = result.Equals(TComparer.Same);
+        if (!equal)
+        {
+            // nothing to do
+        }
+        else if (segment.Advance())
+        {
+            other.Advance(fragment.Length);
+        }
+        else
+        {
+            // the first segment is empty, while the second one is not, so the result is segment < other
+            result = TComparer.Smaller;
+            equal = false;
+        }
+
+        return equal;
+    }
+}
+
+file interface IComparer<T, out TResult>
+    where TResult : struct, IEquatable<TResult>
+{
+    TResult Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y);
+    
+    public static abstract TResult Same { get; }
+    
+    public static abstract TResult Smaller { get; }
+    
+    public static abstract TResult Larger { get; }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ReversedSpanComparer<T, TResult, TComparer>(TComparer comparer) : IComparer<T, TResult>
+    where TResult : struct, IEquatable<TResult>
+    where TComparer : struct, IComparer<T, TResult>, allows ref struct
+{
+    private readonly TComparer comparer = comparer;
+
+    TResult IComparer<T, TResult>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+    {
+        var copy = comparer;
+        return copy.Compare(y, x);
+    }
+
+    static TResult IComparer<T, TResult>.Same => TComparer.Same;
+
+    static TResult IComparer<T, TResult>.Smaller => TComparer.Larger;
+
+    static TResult IComparer<T, TResult>.Larger => TComparer.Smaller;
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly struct SpanComparer<T>(IComparer<T>? comparer) : IComparer<T, int>
+{
+    int IComparer<T, int>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+        => x.SequenceCompareTo(y, comparer);
+
+    static int IComparer<T, int>.Same => 0;
+
+    static int IComparer<T, int>.Smaller => -1;
+
+    static int IComparer<T, int>.Larger => 1;
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly struct SpanEqualityComparer<T>(IEqualityComparer<T>? comparer) : IComparer<T, bool>
+{
+    bool IComparer<T, bool>.Compare(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+        => x.SequenceEqual(y, comparer);
+    
+    static bool IComparer<T, bool>.Same => true;
+
+    static bool IComparer<T, bool>.Smaller => false;
+
+    static bool IComparer<T, bool>.Larger => false;
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct SequenceReaderSlim<T>
+{
+    private readonly ref readonly ReadOnlySequence<T> sequence;
+    private ReadOnlyMemory<T> block;
+    private SequencePosition position;
+    private bool hasMoreSegments;
+
+    public SequenceReaderSlim(ref readonly ReadOnlySequence<T> sequence)
+    {
+        this.sequence = ref sequence;
+        position = sequence.Start;
+        hasMoreSegments = sequence.TryGet(ref position, out block);
+    }
+
+    public readonly bool HasMoreSegments => hasMoreSegments;
+
+    public readonly ReadOnlySpan<T> Span => block.Span;
+
+    public void Advance(int count)
+    {
+        Debug.Assert(count < block.Length);
+
+        block = block.Slice(count);
+    }
+
+    public bool Advance() => hasMoreSegments = sequence.TryGet(ref position, out block);
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IEnumerator<ReadOnlyMemory<char>>
+{
+    private readonly IEnumerator<string?> enumerator = strings.GetEnumerator();
+
+    void IEnumerator.Reset() => enumerator.Reset();
+
+    object IEnumerator.Current => Current;
+
+    public ReadOnlyMemory<char> Current => enumerator.Current.AsMemory();
+
+    public bool MoveNext() => enumerator.MoveNext();
+
+    public void Dispose() => enumerator.Dispose();
 }

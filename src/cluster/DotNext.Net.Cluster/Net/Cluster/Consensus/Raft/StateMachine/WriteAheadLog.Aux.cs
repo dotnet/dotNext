@@ -40,40 +40,6 @@ partial class WriteAheadLog
         await WaitForApplyAsync(other.LastAppliedIndex, token).ConfigureAwait(false);
         await FlushAsync(token).ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Represents catastrophic WAL failure.
-    /// </summary>
-    public abstract class IntegrityException : Exception
-    {
-        private protected IntegrityException(string message)
-            : base(message)
-        {
-        }
-    }
-    
-    /// <summary>
-    /// Indicates that the hash of the log entry doesn't match.
-    /// </summary>
-    public sealed class HashMismatchException : IntegrityException
-    {
-        internal HashMismatchException()
-            : base(ExceptionMessages.LogEntryHashMismatch)
-        {
-            
-        }
-    }
-    
-    /// <summary>
-    /// Indicates that the log doesn't have a page on the disk.
-    /// </summary>
-    public sealed class MissingPageException : IntegrityException
-    {
-        internal MissingPageException(uint pageIndex)
-            : base(ExceptionMessages.MissingWalPage(pageIndex))
-        {
-        }
-    }
     
     private interface IConstant<out T>
     {
