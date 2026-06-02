@@ -664,7 +664,7 @@ dotnet run -- http 3264 node3
 <p>This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.</p>
 <p>For memory-based state machine:</p>
 <ol>
-<li>Derive from <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.html">MemoryBasedStateMachine</a> class to implement core logic related to manipulation with state machine
+<li>Implement <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.html">SimpleStateMachine</a> class to implement core logic related to manipulation with state machine
 <ol>
 <li>Override <code>ApplyAsync</code> method which contains interpretation of commands contained in log entries</li>
 <li>Override <code>PersistAsync</code> to provide serialization and persistence of in-memory state</li>
@@ -685,6 +685,7 @@ dotnet run -- http 3264 node3
 <li>Expose data manipulation methods from class described above to clients using selected network transport</li>
 <li>Implement duplicates elimination logic for write requests from clients</li>
 </ol>
+<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.html">SimpleStateMachine</a> hides most of the complexity under the hood, especially snapshot rotation and installation. However, it is designed to keep the entire database state in the memory (which is persisted in the snapshot and WAL for durability). It's fine for relatively small databases, but not for the large data sets of tens and thousands of gigabytes. For large databases, only hot part of the data must be available for query. LSM trees are good example of a such data structures. In this case, <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.html">IStateMachine</a> interface is a better choice for low-level control over the state of the database.</p>
 <p><code>ForceReplicationAsync</code> method doesn't provide strong guarantees that the log entry at the specified index will be replicated and committed on return. A typical code for processing a new log entry from the client might be look like this:</p>
 <pre><code class="lang-csharp">IRaftCluster cluster = ...;
 var term = cluster.Term;

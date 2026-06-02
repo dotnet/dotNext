@@ -77,8 +77,10 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></div>
-    <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.IntegrityException.html">IntegrityException</a></div>
-    <div class="level3"><span class="xref">WriteAheadLog.UnsupportedCheckpointVersionException</span></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.systemexception">SystemException</a></div>
+    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></div>
+    <div class="level4"><a class="xref" href="DotNext.IO.Log.IntegrityException.html">IntegrityException</a></div>
+    <div class="level5"><span class="xref">WriteAheadLog.UnsupportedCheckpointVersionException</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
@@ -136,13 +138,13 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_UnsupportedCheckpointVersionException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class WriteAheadLog.UnsupportedCheckpointVersionException : WriteAheadLog.IntegrityException, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class WriteAheadLog.UnsupportedCheckpointVersionException : IntegrityException, ISerializable</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/abf843e0b6c78da31f25d67cdabedfce29714c83/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Checkpoint.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/3ec2ea78b7af1a2682191e485f3c0bc492edf1e9/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Checkpoint.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_UnsupportedCheckpointVersionException_Version_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.UnsupportedCheckpointVersionException.Version*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_UnsupportedCheckpointVersionException_Version" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.UnsupportedCheckpointVersionException.Version">Version</h4>
@@ -192,7 +194,7 @@ public uint Version { get; }</code></pre>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/abf843e0b6c78da31f25d67cdabedfce29714c83/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Applier.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/3ec2ea78b7af1a2682191e485f3c0bc492edf1e9/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Applier.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -444,7 +444,7 @@ On Linux, WAL implementation automatically detects availability of [Transparent 
 This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
 
 For memory-based state machine:
-1. Derive from [MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine) class to implement core logic related to manipulation with state machine
+1. Implement [SimpleStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine) class to implement core logic related to manipulation with state machine
     1. Override `ApplyAsync` method which contains interpretation of commands contained in log entries
     1. Override `PersistAsync` to provide serialization and persistence of in-memory state
     1. Implement `RestoreAsync` to load persistent state into the memory
@@ -458,6 +458,8 @@ For memory-based state machine:
     1. Use `IRaftCluster.ReplicateAsync` for write operations
 1. Expose data manipulation methods from class described above to clients using selected network transport
 1. Implement duplicates elimination logic for write requests from clients
+
+[SimpleStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine) hides most of the complexity under the hood, especially snapshot rotation and installation. However, it is designed to keep the entire database state in the memory (which is persisted in the snapshot and WAL for durability). It's fine for relatively small databases, but not for the large data sets of tens and thousands of gigabytes. For large databases, only hot part of the data must be available for query. LSM trees are good example of a such data structures. In this case, [IStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine) interface is a better choice for low-level control over the state of the database.
 
 `ForceReplicationAsync` method doesn't provide strong guarantees that the log entry at the specified index will be replicated and committed on return. A typical code for processing a new log entry from the client might be look like this:
 ```csharp

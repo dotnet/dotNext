@@ -68,15 +68,15 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="delayed-tasks">Delayed Tasks</h1>
 
-<p><a href="xref:DotNext.Threading.Scheduler">Scheduler</a> class provides a way to schedule asynchronous tasks execution delayed in time. Scheduled task can be canceled in two states:</p>
+<p><a class="xref" href="../../api/DotNext.Threading.Tasks.TaskSchedulerExtensions.html">TaskSchedulerExtensions</a> class provides a way to schedule asynchronous tasks execution delayed in time. Scheduled task can be canceled in two states:</p>
 <ul>
 <li>If the task is scheduled but not yet executed</li>
 <li>During task execution</li>
 </ul>
 <p>The following example demonstrates a task to be executed asynchronously after 1 minute:</p>
-<pre><code class="lang-csharp">using DotNext.Threading;
+<pre><code class="lang-csharp">using DotNext.Threading.Tasks;
 
-Scheduler.DelayedTask delayed = Scheduler.ScheduleAsync(ExecuteAsync, &quot;Task1&quot;, TimeSpan.FromMinutes(1));
+DelayedTask delayed = TaskScheduler.ScheduleAsync(ExecuteAsync, &quot;Task1&quot;, TimeSpan.FromMinutes(1));
 
 // await the task
 await delayed.Task;
@@ -87,7 +87,7 @@ static async ValueTask ExecuteAsync(string taskName, CancellationToken token)
     Console.WriteLine($&quot;Hello from delayed task {taskName}!&quot;);
 }
 </code></pre>
-<p><a href="xref:DotNext.Threading.Scheduler.DelayedTask">DelayedTask</a> type provides control over the scheduled task such as cancellation.</p>
+<p><a class="xref" href="../../api/DotNext.Threading.Tasks.DelayedTask.html">DelayedTask</a> type provides control over the scheduled task such as cancellation.</p>
 
 </article>
           </div>

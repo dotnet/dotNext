@@ -138,9 +138,8 @@ struct SubtractCommand : IJsonSerializable&lt;SubtractCommand&gt;
 	static JsonTypeInfo&lt;TestJsonObject&gt; IJsonSerializable&lt;TestJsonObject&gt;.TypeInfo =&gt; SerializationContext.Default.SubtractCommand;
 }
 
-MemoryBasedStateMachine state = ...;
-var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
-await state.AppendAsync(entry);
+WriteAheadLog log = ...;
+var index = log.AppendJsonAsync(new SubtractCommand { X = 10, Y = 20 });
 </code></pre>
 <p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialized to JSON and written as log entry. It's recommended to use <a href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism">JSON polymorphic serialization</a>.</p>
 <p>Now the written log entry can be deserialized and interpreted easily inside of <code>AppendAsync</code> method:</p>
