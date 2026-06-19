@@ -41,8 +41,6 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         internal new WaitNode? Next => Unsafe.As<WaitNode>(base.Next);
 
-        internal new WaitNode? Previous => Unsafe.As<WaitNode>(base.Previous);
-
         protected override void AfterConsumed()
         {
             if (ownerRef.TryGetTarget(out var owner))
@@ -56,35 +54,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     private sealed class Bucket : IConsumer<WaitNode>
     {
         private readonly System.Threading.Lock syncRoot = new();
-        private WaitNode? first, last, pooled;
-
-        private void Add(WaitNode node)
-        {
-            Debug.Assert(syncRoot.IsHeldByCurrentThread);
-
-            if (last is null)
-            {
-                first = last = node;
-            }
-            else
-            {
-                last.Append(node);
-                last = node;
-            }
-        }
-
-        private void Remove(WaitNode node)
-        {
-            Debug.Assert(syncRoot.IsHeldByCurrentThread);
-
-            if (ReferenceEquals(first, node))
-                first = node.Next;
-
-            if (ReferenceEquals(last, node))
-                last = node.Previous;
-
-            node.Detach();
-        }
+        private WaitNode.LinkedList waitQueue;
+        private WaitNode? pooled;
 
         void IConsumer<WaitNode>.Invoke(WaitNode node)
         {
@@ -97,7 +68,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         private void OnCompleted(WaitNode node)
         {
             if (node.NeedsRemoval)
-                Remove(node);
+                waitQueue.Remove(node);
 
             if (pooled is null)
             {
@@ -116,12 +87,14 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         private WaitNode? RemoveCore(TKey expected, IEqualityComparer<TKey>? comparer, out short completionToken)
         {
-            for (WaitNode? current = first, next; current is not null; current = next)
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
+            
+            for (WaitNode? current = Unsafe.As<WaitNode>(waitQueue.First), next; current is not null; current = next)
             {
                 next = current.Next;
                 if (current.Match(expected, comparer))
                 {
-                    Remove(current);
+                    waitQueue.Remove(current);
                     completionToken = current.CompletionToken; // it cannot be modified concurrently
                     return current;
                 }
@@ -143,13 +116,15 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         private void DrainCore<TResult>(TResult arg)
             where TResult : struct, IResultMonad<TValue>
         {
-            for (LinkedValueTaskCompletionSource<TValue>? current = first, next; current is not null; current = next)
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
+            
+            for (LinkedValueTaskCompletionSource<TValue>? current = waitQueue.First, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), arg);
             }
 
-            first = last = null;
+            waitQueue = default;
         }
 
         internal WaitNode CreateNode(TKey eventId, object? userData)
@@ -162,6 +137,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         private WaitNode CreateNodeCore(TKey eventId, object? userData)
         {
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
+            
             WaitNode node;
             if (pooled is null)
             {
@@ -177,7 +154,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
             // we need to add the node to the list before the task construction
             // to ensure that completed node will not be added to the list due to cancellation
-            Add(node);
+            waitQueue.Add(node);
             return node;
         }
     }
