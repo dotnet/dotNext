@@ -14,7 +14,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal LinkedValueTaskCompletionSource<T>? Previous { get; private set; }
 
-    internal void Append(LinkedValueTaskCompletionSource<T> node)
+    private void Append(LinkedValueTaskCompletionSource<T> node)
     {
         Debug.Assert(Next is null);
 
@@ -22,12 +22,10 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         Next = node;
     }
 
-    internal void Detach()
+    private void Detach()
     {
         Previous?.Next = Next;
-
         Next?.Previous = Previous;
-
         Next = Previous = null;
     }
 
