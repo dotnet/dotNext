@@ -9,7 +9,7 @@ namespace DotNext.Threading.Tasks.Pooling;
  * can be used to keep completion sources in the pool. The access must be synchronized.
  */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<T>(long maximumRetained)
+internal struct ValueTaskPool<T>(long maximumRetained) : IResettable
 {
     private LinkedValueTaskCompletionSource<T>? first;
     private long count;
@@ -20,6 +20,12 @@ internal struct ValueTaskPool<T>(long maximumRetained)
     }
 
     public readonly long MaximumRetained => maximumRetained;
+
+    public void Reset()
+    {
+        first = null;
+        count = 0;
+    }
 
     public void Return(LinkedValueTaskCompletionSource<T> node)
     {
