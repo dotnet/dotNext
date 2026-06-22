@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 06-22-2026
+<a href="https://www.nuget.org/packages/dotnext.threading/6.4.0">DotNext.Threading 6.4.0</a>
+* Added `AsyncStateTracker` synchronization primitive that allows to produce a stream of state changes
+
 # 06-02-2026
 <a href="https://www.nuget.org/packages/dotnext/6.3.0">DotNext 6.3.0</a>
 * Added `SequenceEqual` and `SequenceCompareTo` extension methods for [ReadOnlySequence&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) type
