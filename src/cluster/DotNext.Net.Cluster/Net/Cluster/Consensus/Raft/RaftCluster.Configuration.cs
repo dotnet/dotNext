@@ -285,7 +285,7 @@ public partial class RaftCluster
         private readonly TimeSpan? gracefulShutdown, connectTimeout;
 
         /// <summary>
-        /// Initializes a new UDP transport settings.
+        /// Initializes a new TCP transport settings.
         /// </summary>
         /// <param name="localNodeHostAddress">The address used to listen requests to the local node.</param>
         public TcpConfiguration(IPEndPoint localNodeHostAddress)
