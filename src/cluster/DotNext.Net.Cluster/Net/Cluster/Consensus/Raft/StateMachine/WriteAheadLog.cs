@@ -110,6 +110,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
         LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
+        applyTrigger = new();
+        appliedEvent = new()
+        {
+            ConcurrencyLevel = configuration.ConcurrencyLevel,
+            MeasurementTags = configuration.MeasurementTags,
+        };
         
         // flusher
         {
@@ -133,13 +139,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         // applier
         {
             appliedIndex = snapshotIndex;
-            applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
-            appliedEvent = new()
-            {
-                ConcurrencyLevel = configuration.ConcurrencyLevel,
-                MeasurementTags = configuration.MeasurementTags,
-            };
         }
     }
 
