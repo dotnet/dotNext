@@ -31,10 +31,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-22-2026
+Release Date: 06-30-2026
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.4.0">DotNext.Threading 6.4.0</a>
-* Added `AsyncStateTracker` synchronization primitive that allows to produce a stream of state changes
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.0">DotNext.Net.Cluster 6.4.0</a>
+* Fixed potential [NullReferenceException](https://learn.microsoft.com/en-us/dotnet/api/system.nullreferenceexception) in `WriteAheadLog` constructor
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.4.0">DotNext.AspNetCore.Cluster 6.4.0</a>
+* Updated dependencies
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).

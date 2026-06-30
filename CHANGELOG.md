@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 06-30-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.0">DotNext.Net.Cluster 6.4.0</a>
+* Fixed potential [NullReferenceException](https://learn.microsoft.com/en-us/dotnet/api/system.nullreferenceexception) in `WriteAheadLog` constructor
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.4.0">DotNext.AspNetCore.Cluster 6.4.0</a>
+* Updated dependencies
+
 # 06-22-2026
 <a href="https://www.nuget.org/packages/dotnext.threading/6.4.0">DotNext.Threading 6.4.0</a>
 * Added `AsyncStateTracker` synchronization primitive that allows to produce a stream of state changes
