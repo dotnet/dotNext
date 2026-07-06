@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 
@@ -9,6 +10,7 @@ namespace DotNext.Threading;
 /// <remarks>
 /// This class can be used to organize a stream of change notifications.
 /// </remarks>
+[DebuggerDisplay($"IsCompleted = {{{nameof(IsCompleted)}}}, Version = {{{nameof(CurrentState)}}}")]
 public partial class AsyncStateTracker
 {
     private readonly bool respectStaleCallers;
@@ -113,7 +115,7 @@ public partial class AsyncStateTracker
             }
         }
 
-        return factory.Invoke(InfiniteTimeSpan, token);
+        return factory.Invoke(token);
 
         static ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> GetFactory(bool value)
             => value ? QueuedSynchronizer.TrueValueFactory : QueuedSynchronizer.FalseValueFactory;

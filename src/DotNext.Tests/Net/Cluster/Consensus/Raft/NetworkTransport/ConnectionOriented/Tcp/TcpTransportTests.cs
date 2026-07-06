@@ -12,6 +12,7 @@ using Membership;
 using NetworkTransport;
 using Replication;
 using StateMachine;
+using Threading;
 using static DotNext.Extensions.Logging.TestLoggers;
 
 [Collection(TestCollections.Raft)]
@@ -335,27 +336,47 @@ public sealed class TcpTransportTests : TransportTestSuite
         await host2.StopAsync(TestToken);
         await host3.StopAsync(TestToken);
     }
+
+    [Fact]
+    public static async Task SingleNodeDeployment()
+    {
+        await using var wal1 = CreateWal();
+        await using var host1 = new RaftCluster(CreateConfiguration(Host1Port, coldStart: true)) { AuditTrail = wal1 };
+        await host1.StartAsync(TestToken);
+
+        var leadershipToken = await host1.WaitForLeadershipAsync(TestToken);
+        False(leadershipToken.IsCancellationRequested);
+        
+        var leader = await host1.WaitForLeaderAsync(InfiniteTimeSpan, TestToken);
+        Equal(Host1Port, IsType<IPEndPoint>(leader.EndPoint).Port);
+        
+        await host1.StopAsync(TestToken);
+    }
     
-    private static RaftCluster.TcpConfiguration CreateConfiguration(int port)
+    private static RaftCluster.TcpConfiguration CreateConfiguration(int port, bool coldStart = false)
     {
         var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
         {
             // LowerElectionTimeout = 1000,
             // UpperElectionTimeout = 2000,
-            ColdStart = false,
+            ColdStart = coldStart,
             LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
             ConfigurationStorage = null,
         };
 
-        var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
-        NotNull(configuration);
-        var builder = configuration.CreateInitialConfigurationBuilder();
+        if (!coldStart)
+        {
+            var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
+            NotNull(configuration);
+            var builder = configuration.CreateInitialConfigurationBuilder();
 
-        builder.Add(new IPEndPoint(IPAddress.Loopback, Host1Port));
-        builder.Add(new IPEndPoint(IPAddress.Loopback, Host2Port));
-        builder.Add(new IPEndPoint(IPAddress.Loopback, Host3Port));
+            builder.Add(new IPEndPoint(IPAddress.Loopback, Host1Port));
+            builder.Add(new IPEndPoint(IPAddress.Loopback, Host2Port));
+            builder.Add(new IPEndPoint(IPAddress.Loopback, Host3Port));
 
-        builder.Build();
+            builder.Build();
+        }
+
         return result;
     }
 }

@@ -80,7 +80,7 @@ partial class WriteAheadLog
         }
         finally
         {
-            (flushTrigger as IDisposable)?.Dispose();
+            flushTrigger.Dispose();
         }
     }
 
@@ -174,7 +174,7 @@ partial class WriteAheadLog
         CommitRateMeter.Add(count, measurementTags);
     }
     
-    private interface IFlushTrigger
+    private interface IFlushTrigger : IDisposable
     {
         ValueTask<bool> WaitAsync(CancellationToken token);
 
@@ -198,11 +198,16 @@ partial class WriteAheadLog
             => flushTrigger.WaitAsync();
 
         void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
+
+        void IDisposable.Dispose()
+        {
+            // nothing to do
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
     [SuppressMessage("Usage", "CA1001", Justification = "False positive")]
-    private readonly struct TimeoutTrigger : IFlushTrigger, IDisposable
+    private readonly struct TimeoutTrigger : IFlushTrigger
     {
         private readonly PeriodicTimer timer;
         private readonly AsyncAutoResetEventSlim flushNotification;
@@ -232,5 +237,10 @@ partial class WriteAheadLog
         }
 
         static bool IFlushTrigger.IsBackground => false;
+        
+        void IDisposable.Dispose()
+        {
+            // nothing to do
+        }
     }
 }
