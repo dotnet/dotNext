@@ -22,9 +22,7 @@ Read more about persistent Write-Ahead Log for Raft [here](./wal.md).
 
 # Client Interaction
 [Chapter 6](https://github.com/ongardie/dissertation/tree/master/clients) of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:
-1. `IPersistentState.EnsureConsistencyAsync` method waits until last committed entry is from leader's term
 1. `IReplicationCluster.ForceReplicationAsync` method initiates a new round of heartbeats and waits for reply from the majority of nodes
-1. `IRaftCluster.Lease` property to gets the lease that can be used for linearizable read
 1. `IRaftCluster.ReplicateAsync` method to append, replicate and commit the log entry. Useful for implementing _write_ operations
 1. `IRaftCluster.ApplyReadBarrierAsync` method to insert a barrier to achieve linearizable read
 1. `IRaftCluster.LeadershipToken` property provides [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) that represents a leadership state. If the local node is a leader, then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state, then the token will be moved to the canceled state. This token is useful when implementing _write_ operations and allow to abort asynchronous operation in case of downgrade
@@ -37,14 +35,14 @@ of the latest committed write. For instance, if the client performs _Write_ oper
 
 Linearizable read can be achieved in Raft naturally. _Read_ operation can be performed on leader or follower nodes.
 
-`IRaftCluster.Lease` property exposes leadership lease than guarantees that the leader cannot be changed during that lease. This method of providing linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on _clockDriftBound_. Here's the citation from Raft paper:
+`IRaftCluster.TryGetLeaseToken` method exposes leadership lease than guarantees that the leader cannot be changed during that lease. This method of providing linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on _clockDriftBound_. Here's the citation from Raft paper:
 > The lease approach assumes a bound on clock drift across servers (over a given time period, no server’s clock increases more than this bound times any other). Discovering and maintaining this bound might present operational challenges (e.g., due to scheduling and garbage collection pauses, virtual machine migrations, or clock rate adjustments for time synchronization). If the assumptions are violated, the system could return arbitrarily stale information.
 
 Lease approach can be used only if processing of all read-only queries performed by the leader node.
 
 Another approach is to use _read barrier_. The barrier is provided by `IRaftCluster.ApplyReadBarrierAsync` method. It allows to process read-only queries by follower nodes. In case of follower node, the method instructs leader node to execute a new round of heartbeats (with help of `ForceReplicationAsync` method). The follower waits for its state machine to advance at least as far as the index of the last committed log entry on the leader node. These actions are enough to satisfy linearizability. As you can see, this approach leads to extra overhead caused by network communication.
 
-Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each _Write_ request. The client can update and remember this value locally and provide it with the read-only query. When _Read_ request is received, the server may call `IPersistentState.WaitForCommitAsync` to ensure that the log contains the index of the last committed log entry by the client.
+Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each _Write_ request. The client can update and remember this value locally and provide it with the read-only query. When _Read_ request is received, the server may call `IPersistentState.WaitForApplyAsync` to ensure that the log contains the index of the last committed log entry by the client.
 
 # Node Bootstrapping
 The node can be started in two modes:
@@ -57,14 +55,6 @@ Another way of cluster bootstrapping is to pre-populate a list of cluster member
 
 # Cluster Configuration Management
 Raft supports cluster configuration management out-of-the-box. Cluster configuration is a set of cluster members consistently stored on the nodes. The leader node is responsible for processing amendments of the configuration and replicating the modified configuration to follower nodes. Thus, a list of cluster members is always in consistent state.
-
-The configuration can be in two states:
-* _Active_ configuration which is used by the leader node for sending heartbeats. This type of configuration is always acknowledged by the majority of nodes and, as a result, the same on every node in the cluster
-* _Proposed_ configuration which is created by leader node as a response to configuration change. This type of configuration must be replicated and confirmed by the majority of nodes to be transformed into _Active_ configuration.
-
-The proposed configuration is similar to uncommitted log entries in Raft log. Due to simplicity, the proposed configuration can be created using the following operations:
-* Add a new member
-* Remove the existing member
 
 It's not possible to remove or add multiple members at a time. Instead, you need to add or remove single member and replicate that change. When the proposed configuration is accepted by the majority of nodes, the leader node turns that configuration into the active configuration.
 
@@ -90,12 +80,20 @@ TCP network transport shipped with `DotNext.Net.Cluster` library without heavywe
 
 Cluster programming model using TCP, and generic transports is unified and exposed via [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class. The following example demonstrates usage of this class:
 ```csharp
+using System.Net;
 using DotNext.Net.Cluster.Consensus.Raft;
 
-RaftCluster.NodeConfiguration config = ...;//configuration of the local node
+//configuration of the local node
+RaftCluster.NodeConfiguration config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3262))
+{
+    ConfigurationStorage = null, // use in-memory config
+};
+
 //configuring members in the cluster
-config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3262);
-config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3263);
+var configStorage = config.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
+var builder = configStorage.CreateInitialConfigurationBuilder();
+builder.Add(new IPEndPoint(IPAddress.Loopback), 3262);
+builder.Add(new IPEndPoint(IPAddress.Loopback), 3263);
 
 using var cluster = new RaftCluster(config);
 await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
@@ -115,10 +113,13 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 | RequestTimeout | No | _UpperElectionTimeout_ | Defines request timeout for accessing cluster members across the network |
 | LoggerFactory | No | [NullLoggerFactory.Instance](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance) | The logger factory |
 | Standby | No | **false** | **true** to prevent election of the cluster member as a leader. It's useful to configure the nodes available for read-only operations only |
-| ConfigurationStorage | Yes | N/A | Represents a storage for the list of cluster members. You can use `UseInMemoryConfigurationStorage` method for testing purposes |
+| ConfigurationStorage | Yes | N/A | Represents a storage for the list of cluster members. You can use **null** value that means in-memory storage for testing purposes |
 | Announcer | No | **null** | A delegate of type [ClusterMemberAnnouncer&lt;TAddress&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer`1) that can be used to announce a new node on leader |
 | WarmupRounds | No | 10 | The numbers of rounds used to warmup a fresh node which wants to join the cluster |
 | ColdStart | No | **true** | **true** to start the initial node in the cluster. In case of cold start, the node doesn't announce itself. **false** to start the node in standby node and wait for announcement |
+| AggressiveLeaderStickiness | No | **false** | **true** to force the leader to reject any voting from another cluster node when it tries to become a candidate |
+| IsLeaderLeaseEnabled | No | **false** | Set to **true** to enable support of lease-based linerizable reads. Otherwise, `IRaftCluster.TryGetLeaseToken` always returns **false** |
+| MaxReplicationLag | No | 16 | The maximum number of replication rounds a follower node can lag behind before it is considered as unavailable |
 
 By default, all transport bindings for Raft use in-memory configuration storage.
 
@@ -192,21 +193,21 @@ The application may request the following services from ASP.NET Core DI containe
 The application should be configured properly to work as a cluster node. The following JSON represents the example of configuration:
 ```json
 {
-	"lowerElectionTimeout" : 150,
-	"upperElectionTimeout" : 300,
-	"metadata" :
-	{
-		"key": "value"
-	},
-	"requestJournal" :
-	{
-		"memoryLimit": 5,
-		"expiration": "00:00:10",
-		"pollingInterval" : "00:01:00"
-	},
+    "lowerElectionTimeout" : 150,
+    "upperElectionTimeout" : 300,
+    "metadata" :
+    {
+        "key": "value"
+    },
+    "requestJournal" :
+    {
+        "memoryLimit": 5,
+        "expiration": "00:00:10",
+        "pollingInterval" : "00:01:00"
+    },
     "clientHandlerName" : "raftClient",
-	"port" : 3262,
-	"heartbeatThreshold" : 0.5,
+    "port" : 3262,
+    "heartbeatThreshold" : 0.5,
     "requestTimeout" : "00:01:00",
     "rpcTimeout" : "00:00:150",
     "keepAliveTimeout": "00:02:00",
@@ -217,6 +218,9 @@ The application should be configured properly to work as a cluster node. The fol
     "warmupRounds" : 10,
     "protocolVersion" : "auto",
     "protocolVersionPolicy" : "RequestVersionOrLower",
+    "aggressiveLeaderStickiness" : false,
+    "isLeaderLeaseEnabled" : false,
+    "maxReplicationLag" : 16
 }
 ```
 
@@ -238,6 +242,9 @@ The application should be configured properly to work as a cluster node. The fol
 | coldStart | No | true | **true** to start the initial node in the cluster. In case of cold start, the node doesn't announce itself. **false** to start the node in standby node and wait for announcement |
 | clockDriftBound | No | 1.0 | A bound on clock drift across servers. This value is used to calculate the leader lease duration. The lease can be obtained via `IRaftCluster.Lease` property. The lease approach assumes a bound on clock drift across servers: over a given time period, no server’s clock increases more than this bound times any other |
 | warmupRounds | No | 10 | The numbers of rounds used to warmup a fresh node which wants to join the cluster |
+| agressiveLeaderStickiness | No | **false** | **true** to force the leader to reject any voting from another cluster node when it tries to become a candidate |
+| isLeaderLeaseEnabled | No | **false** | Set to **true** to enable support of lease-based linerizable reads. Otherwise, `IRaftCluster.TryGetLeaseToken` always returns **false** |
+| maxReplicationLag | No | 16 | The maximum number of replication rounds a follower node can lag behind before it is considered as unavailable |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenarios only.
 
