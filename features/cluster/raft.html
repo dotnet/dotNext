@@ -90,9 +90,7 @@
 <h1 id="client-interaction">Client Interaction</h1>
 <p><a href="https://github.com/ongardie/dissertation/tree/master/clients">Chapter 6</a> of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:</p>
 <ol>
-<li><code>IPersistentState.EnsureConsistencyAsync</code> method waits until last committed entry is from leader's term</li>
 <li><code>IReplicationCluster.ForceReplicationAsync</code> method initiates a new round of heartbeats and waits for reply from the majority of nodes</li>
-<li><code>IRaftCluster.Lease</code> property to gets the lease that can be used for linearizable read</li>
 <li><code>IRaftCluster.ReplicateAsync</code> method to append, replicate and commit the log entry. Useful for implementing <em>write</em> operations</li>
 <li><code>IRaftCluster.ApplyReadBarrierAsync</code> method to insert a barrier to achieve linearizable read</li>
 <li><code>IRaftCluster.LeadershipToken</code> property provides <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> that represents a leadership state. If the local node is a leader, then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state, then the token will be moved to the canceled state. This token is useful when implementing <em>write</em> operations and allow to abort asynchronous operation in case of downgrade</li>
@@ -102,13 +100,13 @@
 <p><a href="https://en.wikipedia.org/wiki/Linearizability">Linearizability</a> requires the results of a read to reflect the state of the system sometime after the read was initiated; each read must at least return the results
 of the latest committed write. For instance, if the client performs <em>Write</em> operation on variable <em>A</em> and immediately requests variable <em>A</em> back then <em>A</em> must have the value which is equal to the value provided by <em>Write</em> operation or more recent value. Without the linearizability, the client can see stale value of <em>A</em>. In other words, there is no guarantee that the client will able to see the result of its own <em>Write</em> operation. A system that allowed stale reads would only provide serializability, which is a weaker form of consistency.</p>
 <p>Linearizable read can be achieved in Raft naturally. <em>Read</em> operation can be performed on leader or follower nodes.</p>
-<p><code>IRaftCluster.Lease</code> property exposes leadership lease than guarantees that the leader cannot be changed during that lease. This method of providing linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on <em>clockDriftBound</em>. Here's the citation from Raft paper:</p>
+<p><code>IRaftCluster.TryGetLeaseToken</code> method exposes leadership lease than guarantees that the leader cannot be changed during that lease. This method of providing linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on <em>clockDriftBound</em>. Here's the citation from Raft paper:</p>
 <blockquote>
 <p>The lease approach assumes a bound on clock drift across servers (over a given time period, no server’s clock increases more than this bound times any other). Discovering and maintaining this bound might present operational challenges (e.g., due to scheduling and garbage collection pauses, virtual machine migrations, or clock rate adjustments for time synchronization). If the assumptions are violated, the system could return arbitrarily stale information.</p>
 </blockquote>
 <p>Lease approach can be used only if processing of all read-only queries performed by the leader node.</p>
 <p>Another approach is to use <em>read barrier</em>. The barrier is provided by <code>IRaftCluster.ApplyReadBarrierAsync</code> method. It allows to process read-only queries by follower nodes. In case of follower node, the method instructs leader node to execute a new round of heartbeats (with help of <code>ForceReplicationAsync</code> method). The follower waits for its state machine to advance at least as far as the index of the last committed log entry on the leader node. These actions are enough to satisfy linearizability. As you can see, this approach leads to extra overhead caused by network communication.</p>
-<p>Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each <em>Write</em> request. The client can update and remember this value locally and provide it with the read-only query. When <em>Read</em> request is received, the server may call <code>IPersistentState.WaitForCommitAsync</code> to ensure that the log contains the index of the last committed log entry by the client.</p>
+<p>Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each <em>Write</em> request. The client can update and remember this value locally and provide it with the read-only query. When <em>Read</em> request is received, the server may call <code>IPersistentState.WaitForApplyAsync</code> to ensure that the log contains the index of the last committed log entry by the client.</p>
 <h1 id="node-bootstrapping">Node Bootstrapping</h1>
 <p>The node can be started in two modes:</p>
 <ul>
@@ -119,16 +117,6 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <p>Another way of cluster bootstrapping is to pre-populate a list of cluster members with 3 or more cluster members and start them in parallel. In this case, <strong>Cold start</strong> mode is unnecessary.</p>
 <h1 id="cluster-configuration-management">Cluster Configuration Management</h1>
 <p>Raft supports cluster configuration management out-of-the-box. Cluster configuration is a set of cluster members consistently stored on the nodes. The leader node is responsible for processing amendments of the configuration and replicating the modified configuration to follower nodes. Thus, a list of cluster members is always in consistent state.</p>
-<p>The configuration can be in two states:</p>
-<ul>
-<li><em>Active</em> configuration which is used by the leader node for sending heartbeats. This type of configuration is always acknowledged by the majority of nodes and, as a result, the same on every node in the cluster</li>
-<li><em>Proposed</em> configuration which is created by leader node as a response to configuration change. This type of configuration must be replicated and confirmed by the majority of nodes to be transformed into <em>Active</em> configuration.</li>
-</ul>
-<p>The proposed configuration is similar to uncommitted log entries in Raft log. Due to simplicity, the proposed configuration can be created using the following operations:</p>
-<ul>
-<li>Add a new member</li>
-<li>Remove the existing member</li>
-</ul>
 <p>It's not possible to remove or add multiple members at a time. Instead, you need to add or remove single member and replicate that change. When the proposed configuration is accepted by the majority of nodes, the leader node turns that configuration into the active configuration.</p>
 <p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage.html">IClusterConfigurationStorage</a> interface is responsible for maintaining cluster configuration. There are two possible storages:</p>
 <ul>
@@ -153,12 +141,20 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <li>General-purpose messaging between nodes is not supported via <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface</li>
 </ul>
 <p>Cluster programming model using TCP, and generic transports is unified and exposed via <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class. The following example demonstrates usage of this class:</p>
-<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+<pre><code class="lang-csharp">using System.Net;
+using DotNext.Net.Cluster.Consensus.Raft;
 
-RaftCluster.NodeConfiguration config = ...;//configuration of the local node
+//configuration of the local node
+RaftCluster.NodeConfiguration config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3262))
+{
+    ConfigurationStorage = null, // use in-memory config
+};
+
 //configuring members in the cluster
-config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3262);
-config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3263);
+var configStorage = config.ConfigurationStorage as InMemoryClusterConfigurationStorage&lt;EndPoint&gt;;
+var builder = configStorage.CreateInitialConfigurationBuilder();
+builder.Add(new IPEndPoint(IPAddress.Loopback), 3262);
+builder.Add(new IPEndPoint(IPAddress.Loopback), 3263);
 
 using var cluster = new RaftCluster(config);
 await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
@@ -234,7 +230,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>ConfigurationStorage</td>
 <td>Yes</td>
 <td>N/A</td>
-<td>Represents a storage for the list of cluster members. You can use <code>UseInMemoryConfigurationStorage</code> method for testing purposes</td>
+<td>Represents a storage for the list of cluster members. You can use <strong>null</strong> value that means in-memory storage for testing purposes</td>
 </tr>
 <tr>
 <td>Announcer</td>
@@ -253,6 +249,24 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td><strong>true</strong></td>
 <td><strong>true</strong> to start the initial node in the cluster. In case of cold start, the node doesn't announce itself. <strong>false</strong> to start the node in standby node and wait for announcement</td>
+</tr>
+<tr>
+<td>AggressiveLeaderStickiness</td>
+<td>No</td>
+<td><strong>false</strong></td>
+<td><strong>true</strong> to force the leader to reject any voting from another cluster node when it tries to become a candidate</td>
+</tr>
+<tr>
+<td>IsLeaderLeaseEnabled</td>
+<td>No</td>
+<td><strong>false</strong></td>
+<td>Set to <strong>true</strong> to enable support of lease-based linerizable reads. Otherwise, <code>IRaftCluster.TryGetLeaseToken</code> always returns <strong>false</strong></td>
+</tr>
+<tr>
+<td>MaxReplicationLag</td>
+<td>No</td>
+<td>16</td>
+<td>The maximum number of replication rounds a follower node can lag behind before it is considered as unavailable</td>
 </tr>
 </tbody>
 </table>
@@ -320,21 +334,21 @@ IHost host = new HostBuilder()
 <h3 id="configuration">Configuration</h3>
 <p>The application should be configured properly to work as a cluster node. The following JSON represents the example of configuration:</p>
 <pre><code class="lang-json">{
-	&quot;lowerElectionTimeout&quot; : 150,
-	&quot;upperElectionTimeout&quot; : 300,
-	&quot;metadata&quot; :
-	{
-		&quot;key&quot;: &quot;value&quot;
-	},
-	&quot;requestJournal&quot; :
-	{
-		&quot;memoryLimit&quot;: 5,
-		&quot;expiration&quot;: &quot;00:00:10&quot;,
-		&quot;pollingInterval&quot; : &quot;00:01:00&quot;
-	},
+    &quot;lowerElectionTimeout&quot; : 150,
+    &quot;upperElectionTimeout&quot; : 300,
+    &quot;metadata&quot; :
+    {
+        &quot;key&quot;: &quot;value&quot;
+    },
+    &quot;requestJournal&quot; :
+    {
+        &quot;memoryLimit&quot;: 5,
+        &quot;expiration&quot;: &quot;00:00:10&quot;,
+        &quot;pollingInterval&quot; : &quot;00:01:00&quot;
+    },
     &quot;clientHandlerName&quot; : &quot;raftClient&quot;,
-	&quot;port&quot; : 3262,
-	&quot;heartbeatThreshold&quot; : 0.5,
+    &quot;port&quot; : 3262,
+    &quot;heartbeatThreshold&quot; : 0.5,
     &quot;requestTimeout&quot; : &quot;00:01:00&quot;,
     &quot;rpcTimeout&quot; : &quot;00:00:150&quot;,
     &quot;keepAliveTimeout&quot;: &quot;00:02:00&quot;,
@@ -345,6 +359,9 @@ IHost host = new HostBuilder()
     &quot;warmupRounds&quot; : 10,
     &quot;protocolVersion&quot; : &quot;auto&quot;,
     &quot;protocolVersionPolicy&quot; : &quot;RequestVersionOrLower&quot;,
+    &quot;aggressiveLeaderStickiness&quot; : false,
+    &quot;isLeaderLeaseEnabled&quot; : false,
+    &quot;maxReplicationLag&quot; : 16
 }
 </code></pre>
 <table>
@@ -452,6 +469,24 @@ IHost host = new HostBuilder()
 <td>No</td>
 <td>10</td>
 <td>The numbers of rounds used to warmup a fresh node which wants to join the cluster</td>
+</tr>
+<tr>
+<td>agressiveLeaderStickiness</td>
+<td>No</td>
+<td><strong>false</strong></td>
+<td><strong>true</strong> to force the leader to reject any voting from another cluster node when it tries to become a candidate</td>
+</tr>
+<tr>
+<td>isLeaderLeaseEnabled</td>
+<td>No</td>
+<td><strong>false</strong></td>
+<td>Set to <strong>true</strong> to enable support of lease-based linerizable reads. Otherwise, <code>IRaftCluster.TryGetLeaseToken</code> always returns <strong>false</strong></td>
+</tr>
+<tr>
+<td>maxReplicationLag</td>
+<td>No</td>
+<td>16</td>
+<td>The maximum number of replication rounds a follower node can lag behind before it is considered as unavailable</td>
 </tr>
 </tbody>
 </table>
