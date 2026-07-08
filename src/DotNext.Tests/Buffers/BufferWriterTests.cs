@@ -208,6 +208,70 @@ public sealed class BufferWriterTests : Test
         }
     }
 
+    public static TheoryData<BufferWriter<byte>> BoundedBuffers() =>
+    [
+        new PoolingBufferWriter<byte> { MaxCapacity = 16 },
+        new PoolingArrayBufferWriter<byte> { MaxCapacity = 16 },
+    ];
+
+    [Theory]
+    [MemberData(nameof(BoundedBuffers))]
+    public static void GrowWithinMaxCapacity(BufferWriter<byte> writer)
+    {
+        using (writer)
+        {
+            Equal(16, writer.MaxCapacity);
+
+            writer.Write(new byte[16]);
+            Equal(16, writer.WrittenCount);
+            True(writer.Capacity >= 16);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(BoundedBuffers))]
+    public static void GrowBeyondMaxCapacity(BufferWriter<byte> writer)
+    {
+        using (writer)
+            Throws<InsufficientMemoryException>(() => writer.Write(new byte[17]));
+    }
+
+    [Fact]
+    public static void GrowClampedToMaxCapacity()
+    {
+        // ArrayPool<byte>.Shared.Rent(16) returns an array of exactly 16 elements,
+        // so the internal capacity is observable here.
+        using var writer = new PoolingArrayBufferWriter<byte> { MaxCapacity = 16 };
+
+        // Without a limit, the first write would grow the buffer to the default
+        // initial size (128). Because the write exactly matches MaxCapacity, growth
+        // is clamped to 16 instead, and the write still succeeds.
+        writer.Write(new byte[16]);
+        Equal(16, writer.WrittenCount);
+        Equal(16, writer.Capacity);
+        Equal(0, writer.FreeCapacity);
+
+        // The buffer sits exactly at MaxCapacity, so any further growth must throw.
+        Throws<InsufficientMemoryException>(() => writer.Add(0));
+    }
+
+    [Fact]
+    public static void MaxCapacityValidation()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => new PoolingBufferWriter<byte> { MaxCapacity = 0 });
+        Throws<ArgumentOutOfRangeException>(static () => new PoolingArrayBufferWriter<byte> { MaxCapacity = -1 });
+    }
+
+    [Fact]
+    public static void UnboundedMaxCapacityByDefault()
+    {
+        using var writer1 = new PoolingBufferWriter<byte>();
+        Equal(int.MaxValue, writer1.MaxCapacity);
+
+        using var writer2 = new PoolingArrayBufferWriter<byte>();
+        Equal(int.MaxValue, writer2.MaxCapacity);
+    }
+
     [Fact]
     public static void Concatenation()
     {

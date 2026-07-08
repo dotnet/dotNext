@@ -30,7 +30,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     private readonly MemoryAllocator<T> allocator;
     private MemoryOwner<T> extraBuffer;
     private int position;
-
+    private int maxCapacity;
     /// <summary>
     /// Initializes growable buffer.
     /// </summary>
@@ -98,6 +98,31 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     public readonly int Capacity => extraBuffer.IsEmpty ? initialBuffer.Length : extraBuffer.Length;
 
     /// <summary>
+    /// Gets or sets the maximum amount of space that the underlying memory is allowed to grow to.
+    /// </summary>
+    /// <remarks>
+    /// The limit is checked when the builder needs to grow the internal buffer to satisfy a write request.
+    /// If the requested size exceeds this value, <see cref="InsufficientMemoryException"/> is thrown.
+    /// By default, the maximum capacity is unbounded.
+    /// <para/>
+    /// This value bounds the growth request rather than the exact size of the underlying buffer. Because
+    /// the extra buffer is rented from a memory pool, the allocator may round the request up to the next
+    /// bucket, so the actual <see cref="Capacity"/> can be somewhat larger than this value. The overshoot is
+    /// determined by the pool's bucket sizes and stays reasonably bounded.
+    /// </remarks>
+    /// <value>The maximum capacity of the internal buffer.</value>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
+    public int MaxCapacity
+    {
+        readonly get => maxCapacity is 0 ? int.MaxValue : maxCapacity;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+            maxCapacity = value;
+        }
+    }
+
+    /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
     /// </summary>
     public readonly int FreeCapacity => Capacity - WrittenCount;
@@ -139,7 +164,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         else
         {
             // copy everything to the extra buffer, because it's not possible to return the stack pointer
-            IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize);
+            IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, MaxCapacity, out var newSize);
             extraBuffer = allocator.AllocateAtLeast(newSize);
             initialBuffer.Slice(0, position).CopyTo(extraBuffer.Span);
         }
@@ -158,7 +183,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
             EnsureExtraBufferSize(sizeHint);
             result = extraBuffer.Span;
         }
-        else if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize))
+        else if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, MaxCapacity, out var newSize))
         {
             extraBuffer = allocator.AllocateAtLeast(newSize);
             initialBuffer.CopyTo(result = extraBuffer.Span);
@@ -173,7 +198,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     private void EnsureExtraBufferSize(int sizeHint)
     {
-        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out sizeHint))
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, MaxCapacity, out sizeHint))
             extraBuffer.Resize(sizeHint, allocator);
     }
 

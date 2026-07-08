@@ -138,10 +138,14 @@ public interface IGrowableBuffer<T> :
     bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
 
     private protected static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
+        => GetBufferSize(sizeHint, capacity, writtenCount, int.MaxValue, out newSize);
+
+    private protected static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, int maxCapacity, out int newSize)
     {
         Debug.Assert(sizeHint >= 0);
         Debug.Assert(capacity >= 0);
         Debug.Assert(writtenCount >= 0);
+        Debug.Assert(maxCapacity > 0);
 
         if (sizeHint is 0)
             sizeHint = 1;
@@ -151,6 +155,14 @@ public interface IGrowableBuffer<T> :
             var growBy = capacity is 0 ? DefaultInitialBufferSize : capacity;
             if ((sizeHint > growBy || (uint)(growBy += capacity) > (uint)Array.MaxLength) && (uint)(growBy = capacity + sizeHint) > (uint)Array.MaxLength)
                 throw new InsufficientMemoryException();
+
+            if (growBy > maxCapacity)
+            {
+                if (sizeHint > maxCapacity - writtenCount)
+                    throw new InsufficientMemoryException();
+
+                growBy = maxCapacity;
+            }
 
             newSize = growBy;
             return true;

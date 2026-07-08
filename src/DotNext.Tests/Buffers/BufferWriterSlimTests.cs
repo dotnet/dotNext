@@ -329,6 +329,68 @@ public sealed class BufferWriterSlimTests : Test
     }
 
     [Fact]
+    public static void UnboundedMaxCapacityByDefault()
+    {
+        var buffer = new BufferWriterSlim<int>(stackalloc int[3]);
+        Equal(int.MaxValue, buffer.MaxCapacity);
+    }
+
+    [Fact]
+    public static void MaxCapacityValidation()
+    {
+        var raised = false;
+        try
+        {
+            _ = new BufferWriterSlim<int>(stackalloc int[3]) { MaxCapacity = 0 };
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            raised = true;
+        }
+
+        True(raised);
+    }
+
+    [Fact]
+    public static void GrowWithinMaxCapacity()
+    {
+        var buffer = new BufferWriterSlim<int>(stackalloc int[2]) { MaxCapacity = 4 };
+        try
+        {
+            Equal(4, buffer.MaxCapacity);
+
+            buffer.Write([1, 2, 3, 4]);
+            Equal(4, buffer.WrittenCount);
+            True(buffer.Capacity >= 4);
+        }
+        finally
+        {
+            buffer.Dispose();
+        }
+    }
+
+    [Fact]
+    public static void GrowBeyondMaxCapacity()
+    {
+        var buffer = new BufferWriterSlim<int>(stackalloc int[2]) { MaxCapacity = 4 };
+        var raised = false;
+        try
+        {
+            buffer.Write([1, 2, 3, 4, 5]);
+        }
+        catch (InsufficientMemoryException)
+        {
+            raised = true;
+        }
+        finally
+        {
+            buffer.Dispose();
+        }
+
+        True(raised);
+    }
+
+    [Fact]
     public static void EncodeAsUtf8()
     {
         var writer = new BufferWriterSlim<byte>();

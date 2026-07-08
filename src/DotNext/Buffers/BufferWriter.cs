@@ -27,6 +27,8 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// </summary>
     private protected int position;
 
+    private int maxCapacity = int.MaxValue;
+
     /// <summary>
     /// Initializes a new memory writer.
     /// </summary>
@@ -202,6 +204,31 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     public abstract int Capacity { get; init; }
 
     /// <summary>
+    /// Gets or sets the maximum amount of space that the underlying memory is allowed to grow to.
+    /// </summary>
+    /// <remarks>
+    /// The limit is checked when the writer needs to grow the internal buffer to satisfy a write request.
+    /// If the requested size exceeds this value, <see cref="InsufficientMemoryException"/> is thrown.
+    /// By default, the maximum capacity is unbounded.
+    /// <para/>
+    /// This value bounds the growth request rather than the exact size of the underlying buffer. Because
+    /// the buffer is rented from a memory pool, the allocator may round the request up to the next bucket,
+    /// so the actual <see cref="Capacity"/> can be somewhat larger than this value. The overshoot is
+    /// determined by the pool's bucket sizes and stays reasonably bounded.
+    /// </remarks>
+    /// <value>The maximum capacity of the internal buffer.</value>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
+    public int MaxCapacity
+    {
+        get => maxCapacity;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+            maxCapacity = value;
+        }
+    }
+
+    /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
     /// </summary>
     public int FreeCapacity => Capacity - WrittenCount;
@@ -284,7 +311,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void CheckAndResizeBuffer(int sizeHint)
     {
-        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, maxCapacity, out sizeHint))
             Resize(sizeHint);
     }
 

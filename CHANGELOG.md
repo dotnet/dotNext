@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 07-08-2026
+<a href="https://www.nuget.org/packages/dotnext/6.4.0">DotNext 6.4.0</a>
+* Added optional `MaxCapacity` to `PoolingBufferWriter<T>`, `PoolingArrayBufferWriter<T>`, and `BufferWriterSlim<T>` that bounds the growth of the internal buffer
+
 # 06-30-2026
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.0">DotNext.Net.Cluster 6.4.0</a>
 * Fixed potential [NullReferenceException](https://learn.microsoft.com/en-us/dotnet/api/system.nullreferenceexception) in `WriteAheadLog` constructor
