@@ -28,22 +28,20 @@ partial class WriterStream<TOutput> : IValueTaskSource
 
     private void EndWrite()
     {
+        var awaiterCopy = awaiter;
+        awaiter = default;
         try
         {
-            awaiter.GetResult();
+            awaiterCopy.GetResult();
         }
         catch (Exception e)
         {
             source.SetException(e);
             return;
         }
-        finally
-        {
-            awaiter = default;
-        }
 
-        source.SetResult(chunkBytesWritten);
         writtenBytes += chunkBytesWritten;
+        source.SetResult(chunkBytesWritten);
     }
 
     void IValueTaskSource.GetResult(short token)

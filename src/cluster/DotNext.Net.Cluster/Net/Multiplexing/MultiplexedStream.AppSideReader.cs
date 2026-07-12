@@ -16,20 +16,24 @@ partial class MultiplexedStream
 
         private void EndRead()
         {
+            // readAwaiter must be cleared before SetResult/SetException publishes the result:
+            // the resumed consumer can start the next read and assign a fresh awaiter to the field,
+            // so any write to it after publication races with the consumer and can wipe the live awaiter
+            ReadResult result;
+            var awaiter = readAwaiter;
+            readAwaiter = default;
             try
             {
-                var result = readAwaiter.GetResult();
-                readBuffer = result.Buffer;
-                source.SetResult(result);
+                result = awaiter.GetResult();
             }
             catch (Exception e)
             {
                 source.SetException(e);
+                return;
             }
-            finally
-            {
-                readAwaiter = default;
-            }
+
+            readBuffer = result.Buffer;
+            source.SetResult(result);
         }
 
         ReadResult IValueTaskSource<ReadResult>.GetResult(short token)

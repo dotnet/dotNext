@@ -35,6 +35,13 @@ partial class ManualResetCompletionSource
         short newVersion;
         for (uint stateCopy = syncState, tmp;; stateCopy = tmp)
         {
+            // Reset of a subscribed but unconsumed source is not allowed: it silently wipes
+            // the subscription, so the parked consumer is never notified (lost wakeup), and
+            // it races the in-flight notifier over the continuation field. The consumer must
+            // observe the completed task before the source can be reset.
+            if ((stateCopy & (SubscribedState | ConsumedState)) is SubscribedState)
+                throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+
             // do not reset if completion, subscription, or activation is in progress
             if ((stateCopy & CompletedState) is CompletingState
                 || (stateCopy & ActivatedState) is ActivatingState
@@ -147,25 +154,24 @@ partial class ManualResetCompletionSource
 
     private protected void Consume(short expectedToken)
     {
-        for (uint stateCopy = OverrideToken(syncState, expectedToken), tmp;; stateCopy = OverrideToken(tmp, expectedToken))
+        for (uint stateCopy = Volatile.Read(in syncState), tmp;; stateCopy = tmp)
         {
-            var expectedState = stateCopy & ~ConsumedState;
-            tmp = Interlocked.CompareExchange(ref syncState, expectedState | ConsumedState, expectedState);
-
-            if (tmp == expectedState)
-                break;
-
             string message;
-            if ((tmp & ConsumedState) is not 0)
-            {
-                message = ExceptionMessages.InvalidSourceState;
-            }
-            else if (GetVersion(tmp) != expectedToken)
+            if (GetVersion(stateCopy) != expectedToken)
             {
                 message = ExceptionMessages.InvalidSourceToken;
             }
+            else if ((stateCopy & (CompletedState | ConsumedState)) is not CompletedState)
+            {
+                // the task must be completed, but not yet consumed
+                message = ExceptionMessages.InvalidSourceState;
+            }
             else
             {
+                tmp = Interlocked.CompareExchange(ref syncState, stateCopy | ConsumedState, stateCopy);
+                if (tmp == stateCopy)
+                    break;
+
                 continue;
             }
 

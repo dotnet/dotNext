@@ -62,6 +62,33 @@ public sealed class ValueTaskCompletionSourceTests : Test
         Same(string.Empty, source.CompletionData);
     }
 
+    [Fact]
+    public static void ResetWhenSubscribed()
+    {
+        var source = new ValueTaskCompletionSource();
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+
+        // attach a consumer without consuming the task
+        task.GetAwaiter().OnCompleted(Action.NoOp);
+
+        // abandoning a task with the attached consumer is not allowed: the consumer would hang
+        Throws<InvalidOperationException>(() => source.Reset());
+    }
+
+    [Fact]
+    public static async Task ConsumePendingTask()
+    {
+        var source = new ValueTaskCompletionSource();
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+
+        // sync-over-async on a pending task must throw instead of silently consuming the source
+        Throws<InvalidOperationException>(() => task.GetAwaiter().GetResult());
+
+        // the source must stay in a valid state
+        True(source.TrySetResult());
+        await task;
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -93,12 +120,12 @@ public sealed class ValueTaskCompletionSourceTests : Test
     public static async Task Reuse(bool runContinuationsAsynchronously)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
-        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None);
         True(source.TrySetResult());
         await task;
 
         source.Reset();
-        task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None);
         True(source.TrySetResult());
         await task;
     }
@@ -236,5 +263,21 @@ public sealed class ValueTaskCompletionSourceTests : Test
         });
 
         await task.Task;
+    }
+
+    [Fact]
+    public static async Task ImmediateTimeout()
+    {
+        var source = new ValueTaskCompletionSource();
+        var task = source.CreateTask(TimeSpan.Zero, TestToken);
+        True(task.IsCompleted);
+        await ThrowsAsync<TimeoutException>(task.AsTask);
+    }
+
+    [Fact]
+    public static void ThrowOnInvalidTimeout()
+    {
+        var source = new ValueTaskCompletionSource();
+        Throws<ArgumentOutOfRangeException>(() => source.CreateTask(TimeSpan.MinValue, TestToken));
     }
 }

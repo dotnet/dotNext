@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet"/>
-    <PackageReference Include="FastMember.Signed"/>
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>

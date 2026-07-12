@@ -23,7 +23,7 @@ partial class MultiplexedStream
 
         public override void Complete(Exception? exception = null)
         {
-            if (appSide.TryCompleteOutput())
+            if (appSide.TryCompleteInput())
             {
                 try
                 {

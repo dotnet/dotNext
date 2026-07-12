@@ -5,32 +5,31 @@
   <ItemGroup>
     <!--Compile-time dependencies-->
     <PackageVersion Include="Fody" Version="6.9.3" />
-    <PackageVersion Include="InlineIL.Fody" Version="1.10.1" />
+    <PackageVersion Include="InlineIL.Fody" Version="1.10.2" />
     <PackageVersion Include="Microsoft.FASTER.Core" Version="2.6.5" />
   </ItemGroup>
   <ItemGroup>
     <!--System packages-->
-    <PackageVersion Include="System.CommandLine" Version="2.0.7" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.7" />
-    <PackageVersion Include="System.Resources.Extensions" Version="10.0.7" />
-    <PackageVersion Include="System.Runtime.Caching" Version="10.0.7" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.9" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.9" />
+    <PackageVersion Include="System.Resources.Extensions" Version="10.0.9" />
+    <PackageVersion Include="System.Runtime.Caching" Version="10.0.9" />
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
     <!--Test packages-->
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.1.0" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.3.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
   </ItemGroup>
 </Project>

@@ -16,47 +16,20 @@ public abstract partial class ManualResetCompletionSource
     /// Represents initial value of the completion token when constructing a new instance of the completion source.
     /// </summary>
     protected const short InitialCompletionToken = short.MinValue;
-
-    private readonly Action<object?, CancellationToken> cancellationCallback;
+    
     private readonly bool runContinuationsAsynchronously;
-    private CancellationState state; // protected by activation states
-    private Continuation continuation; // protected by subscription states
+    
+    // protected by activation states
+    private CancellationTokenRegistration tokenTracker;
+    private IBinaryInteger<short>? cachedVersion;
+    
+    // protected by subscription states
+    private Continuation continuation;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
         syncState = unchecked((uint)(ushort)InitialCompletionToken << 16);
-
-        // cached callback to avoid further allocations
-        cancellationCallback = CancellationRequested;
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private void CancellationRequested(object? expectedVersion, CancellationToken token)
-    {
-        Debug.Assert(expectedVersion is short);
-
-        if (BeginCompletion((short)expectedVersion))
-        {
-            try
-            {
-                if (state.IsTimeoutToken(token))
-                {
-                    CompleteAsTimedOut();
-                }
-                else
-                {
-                    CompleteAsCanceled(token);
-                }
-            }
-            finally
-            {
-                if (EndCompletion())
-                {
-                    NotifyConsumer();
-                }
-            }
-        }
     }
 
     private protected abstract void CompleteAsTimedOut();
@@ -77,13 +50,22 @@ public abstract partial class ManualResetCompletionSource
     /// This method acts as a barrier for completion.
     /// It means that calling of this method guarantees that the task
     /// cannot be completed by the previously linked timeout or cancellation token.
+    /// <para>
+    /// The source can be reset when the previously created task is already consumed by its consumer,
+    /// or when no consumer is attached to the task (a pending task can be abandoned this way).
+    /// Calling this method while a consumer is awaiting the current task and the task is not yet
+    /// consumed is not allowed: the awaiting consumer would never be resumed. In this case,
+    /// the method throws <see cref="InvalidOperationException"/>.
+    /// </para>
     /// </remarks>
     /// <returns>The version of the uncompleted task.</returns>
+    /// <exception cref="InvalidOperationException">A consumer is subscribed to the current task, and the task is not yet consumed.</exception>
     public short Reset()
     {
         var newVersion = ResetCore();
         CompletionData = null;
-        state.Detach().Dispose();
+        ResetCancellationState();
+        continuation = default;
         CleanUp();
         return newVersion;
     }
@@ -91,9 +73,20 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Invokes when this source is ready to reuse.
     /// </summary>
+    /// <remarks>
+    /// The default implementation releases the linked cancellation token registration,
+    /// the timeout timer, and the captured continuation, so the consumed source is not
+    /// rooted by them. In contrast to <see cref="Reset()"/>, it doesn't change the observable
+    /// state of the source: the version, <see cref="Status"/>, and <see cref="CompletionData"/>
+    /// remain intact until <see cref="Reset()"/> is called explicitly.
+    /// </remarks>
     /// <seealso cref="CompletionData"/>
     protected virtual void AfterConsumed()
     {
+        // release external roots: the CTS registration, the timer, and the captured continuation.
+        // Consumption is causally after the notification, so these fields are exclusive here.
+        ResetCancellationState();
+        continuation = default;
     }
 
     /// <summary>
@@ -107,11 +100,28 @@ public abstract partial class ManualResetCompletionSource
 
     internal void NotifyConsumer()
     {
-        state.Detach().Dispose();
-
         var continuationCopy = continuation;
         continuation = default;
         continuationCopy.InvokeOnCapturedContext(runContinuationsAsynchronously);
+    }
+
+    private void ResetCancellationState()
+    {
+        if (timeoutTracker is { } timer && !TryReset(timer, completedByTimeout))
+        {
+            timer.Dispose();
+            timeoutTracker = null;
+            cachedVersion = null;
+        }
+
+        completedByTimeout = false;
+
+        if (!tokenTracker.UnregisterAndReuse())
+        {
+            cachedVersion = null;
+            timeoutTracker?.Dispose();
+            timeoutTracker = null;
+        }
     }
 
     private void OnCompleted(in Continuation continuation, short expectedToken)
@@ -222,23 +232,17 @@ public abstract partial class ManualResetCompletionSource
     public bool IsCompleted => (Volatile.Read(in syncState) & CompletedState) is CompletedState;
 
     private protected short Activate(TimeSpan timeout, CancellationToken token)
-    {
-        Timeout.Validate(timeout);
-
-        if (BeginActivation(out var version))
+        => (timeout.Ticks, token.CanBeCanceled) switch
         {
-            try
-            {
-                state.Initialize(version, cancellationCallback, timeout, token);
-            }
-            finally
-            {
-                EndActivation();
-            }
-        }
-
-        return version;
-    }
+            (Timeout.InfiniteTicks, false) => Activate(new NoOpActivation()),
+            (Timeout.InfiniteTicks, true) => Activate(new CancellationTokenActivation(token)),
+            (0L, _) => Activate(new TimedOutActivation()),
+            (> 0L and < Timeout.MaxTimeoutParameterTicks, false)
+                => Activate(new TimeoutActivation(timeout)),
+            (> 0L and < Timeout.MaxTimeoutParameterTicks, true)
+                => Activate(new TimeoutAndCancellationTokenActivation(timeout, token)),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeout))
+        };
 
     /// <summary>
     /// Represents continuation attached by the task consumer.
@@ -329,60 +333,38 @@ public abstract partial class ManualResetCompletionSource
             action(state);
         }
     }
+}
 
-    [StructLayout(LayoutKind.Auto)]
-    private struct CancellationState : IDisposable
+file static class CancellationTokenRegistrationExtensions
+{
+    public static bool UnregisterAndReuse(this ref CancellationTokenRegistration registration)
     {
-        private CancellationTokenRegistration tokenTracker;
-        private CancellationTokenSource? timeoutSource;
+        var token = registration.Token;
 
-        internal void Initialize(short version, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
+        // Unregister() doesn't block the caller in contrast to Dispose()
+        bool unregistered;
+        if (!token.CanBeCanceled)
         {
-            // box current token once and only if needed
-            IBinaryInteger<short>? cachedVersion = null;
-
-            if (token.CanBeCanceled)
-            {
-                tokenTracker = token.UnsafeRegister(callback, cachedVersion = version);
-            }
-
-            if (!token.IsCancellationRequested && timeout > TimeSpan.Zero)
-            {
-                timeoutSource ??= new();
-
-                // TryReset() or Dispose() destroys active registration so it's not necessary
-                // to keep CancellationTokenRegistration to save memory
-                timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? version);
-                timeoutSource.CancelAfter(timeout);
-            }
+            unregistered = true;
+        }
+        else if (LinkedCancellationTokenSource.CanInlineToken)
+        {
+            var source = Unsafe.BitCast<CancellationToken, ValueTuple<CancellationTokenSource>>(token).Item1;
+            
+            // If unregistered, the callback cannot be invoked by cancellation.
+            // Otherwise, the callback can be in-flight.
+            unregistered = registration.Unregister() || !source.IsCancellationRequested || IsCancellationCompleted(source);
+        }
+        else
+        {
+            registration.Unregister();
+            unregistered = false;
         }
 
-        internal readonly bool IsTimeoutToken(CancellationToken token)
-            => timeoutSource?.Token == token;
+        registration = default;
+        return unregistered;
 
-        internal CancellationState Detach()
-        {
-            var copy = new CancellationState
-            {
-                tokenTracker = tokenTracker,
-            };
-
-            // reuse CTS for timeout if possible
-            if (timeoutSource is { } ts && !ts.TryReset())
-            {
-                copy.timeoutSource = ts;
-                timeoutSource = null;
-            }
-
-            tokenTracker = default;
-            return copy;
-        }
-
-        public readonly void Dispose()
-        {
-            // Unregister() doesn't block the caller in contrast to Dispose()
-            tokenTracker.Unregister();
-            timeoutSource?.Dispose();
-        }
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = $"get_IsCancellationCompleted")]
+        static extern bool IsCancellationCompleted(CancellationTokenSource source);
     }
 }

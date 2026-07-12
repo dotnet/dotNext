@@ -85,8 +85,10 @@ partial class MultiplexedClient
             catch (Exception e)
             {
                 socket?.Dispose();
+                socket = null;
                 await receiveLoop.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
-                
+                receiveLoop = Task.CompletedTask;
+
                 ReportDisconnected();
                 await input.CompleteAllAsync(e).ConfigureAwait(false);
             }

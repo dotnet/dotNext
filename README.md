@@ -31,12 +31,34 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-30-2026
+Release Date: 07-12-2026
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.0">DotNext.Net.Cluster 6.4.0</a>
-* Fixed potential [NullReferenceException](https://learn.microsoft.com/en-us/dotnet/api/system.nullreferenceexception) in `WriteAheadLog` constructor
+<a href="https://www.nuget.org/packages/dotnext/6.4.1">DotNext 6.4.1</a>
+* Fixed race conditions occurred in async methods of the streams produced by `StreamSource` factory methods
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.4.0">DotNext.AspNetCore.Cluster 6.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.4.1">DotNext.Metaprogramming 6.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.4.1">DotNext.Unsafe 6.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.4.1">DotNext.Threading 6.4.1</a>
+* Reduced memory allocations in `ManualResetCompletionSource` class. **short** version token is no longer allocated on every `Reset` call. Additionally, even if timeout is happened, the internal timer can be reused again. It means that `ManualResetCompletionSource` class, it's derived classes and async locks do not allocate on all execution paths including worst cases
+* `ManualResetCompletionSource.Reset` now throws an exception when the caller tries to reuse the completion source in the invalid state. Check `Reset` method remarks for more information
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.4.1">DotNext.IO 6.4.1</a>
+* Fixed race conditions occurred in async methods of `FileReader` and `FileWriter` classes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.1">DotNext.Net.Cluster 6.4.1</a>
+* Replication loop on leader doesn't allocate memory anymore when heartbeat timeout is happened. This is possible due to performance improvements in `ManualResetCompletionSource` class mentioned above
+* Fixed issue when TCP multiplexer can hang
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.4.1">DotNext.AspNetCore.Cluster 6.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.4.1">DotNext.MaintenanceServices 1.4.1</a>
 * Updated dependencies
 
 # Release & Support Policy
