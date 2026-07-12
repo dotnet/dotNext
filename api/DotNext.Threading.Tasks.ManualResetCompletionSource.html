@@ -114,7 +114,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.CompletionOptions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.Activation.cs">View Source</a>
   </span>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_InitialCompletionToken" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.InitialCompletionToken">InitialCompletionToken</h4>
   <div class="markdown level1 summary"><p>Represents initial value of the completion token when constructing a new instance of the completion source.</p>
@@ -143,7 +143,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_CompletionData_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.CompletionData*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_CompletionData" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.CompletionData">CompletionData</h4>
@@ -171,7 +171,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted">IsCompleted</h4>
@@ -203,7 +203,7 @@ or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStat
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_Status_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Status*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_Status" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Status">Status</h4>
@@ -233,7 +233,7 @@ or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStat
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed">AfterConsumed()</h4>
@@ -244,13 +244,20 @@ or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStat
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected virtual void AfterConsumed()</code></pre>
   </div>
+  <h5 id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The default implementation releases the linked cancellation token registration,
+the timeout timer, and the captured continuation, so the consumed source is not
+rooted by them. In contrast to <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Reset">Reset()</a>, it doesn't change the observable
+state of the source: the version, <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Status">Status</a>, and <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_CompletionData">CompletionData</a>
+remain intact until <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Reset">Reset()</a> is called explicitly.</p>
+</div>
   <h5 id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_CompletionData">CompletionData</a></div>
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_CleanUp_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_CleanUp" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp">CleanUp()</h4>
@@ -263,7 +270,7 @@ or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStat
   </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_Reset_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Reset*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_Reset" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Reset">Reset()</h4>
@@ -294,10 +301,33 @@ or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStat
   <div class="markdown level1 remarks"><p>This method acts as a barrier for completion.
 It means that calling of this method guarantees that the task
 cannot be completed by the previously linked timeout or cancellation token.</p>
+<p>
+The source can be reset when the previously created task is already consumed by its consumer,
+or when no consumer is attached to the task (a pending task can be abandoned this way).
+Calling this method while a consumer is awaiting the current task and the task is not yet
+consumed is not allowed: the awaiting consumer would never be resumed. In this case,
+the method throws <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a>.
+</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>A consumer is subscribed to the current task, and the task is not yet consumed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled(System.Threading.CancellationToken)">TrySetCanceled(CancellationToken)</h4>
@@ -344,7 +374,7 @@ cannot be completed by the previously linked timeout or cancellation token.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled``1(``0,System.Threading.CancellationToken)">TrySetCanceled&lt;TOptions&gt;(TOptions, CancellationToken)</h4>
@@ -412,7 +442,7 @@ cannot be completed by the previously linked timeout or cancellation token.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_System_Exception_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException(System.Exception)">TrySetException(Exception)</h4>
@@ -459,7 +489,7 @@ cannot be completed by the previously linked timeout or cancellation token.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.CompletionOptions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.Activation.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException__1___0_System_Exception_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException``1(``0,System.Exception)">TrySetException&lt;TOptions&gt;(TOptions, Exception)</h4>
@@ -544,7 +574,7 @@ cannot be completed by the previously linked timeout or cancellation token.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/f9747c080d66f468138c60f67b7c111ec6f277e6/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.CompletionOptions.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.Activation.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
