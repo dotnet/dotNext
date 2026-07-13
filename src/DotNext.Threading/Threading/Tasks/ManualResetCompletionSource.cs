@@ -1,11 +1,12 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading.Tasks;
+
+using Runtime;
 
 /// <summary>
 /// Represents base class for producer of value task.
@@ -21,7 +22,7 @@ public abstract partial class ManualResetCompletionSource
     
     // protected by activation states
     private CancellationTokenRegistration tokenTracker;
-    private IBinaryInteger<short>? cachedVersion;
+    private BoxedValue<short>? cachedVersion;
     
     // protected by subscription states
     private Continuation continuation;
