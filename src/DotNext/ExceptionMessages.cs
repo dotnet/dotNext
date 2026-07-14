@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
@@ -8,49 +9,52 @@ namespace DotNext;
 internal static class ExceptionMessages
 {
     private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+    
+    private static string GetResourceString([CallerMemberName] string callerName = "")
+        => Resources.GetString(callerName)!;
 
-    internal static string OptionalNoValue => Resources.GetString("OptionalNoValue")!;
+    internal static string OptionalNoValue => GetResourceString();
 
-    internal static string OptionalNullValue => Resources.GetString("OptionalNullValue")!;
+    internal static string OptionalNullValue => GetResourceString();
 
-    internal static string InvalidUserDataSlot => Resources.GetString("InvalidUserDataSlot")!;
+    internal static string InvalidUserDataSlot => GetResourceString();
 
-    internal static string CastNullToValueType => Resources.GetString("CastNullToValueType")!;
+    internal static string CastNullToValueType => GetResourceString();
 
-    internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition")!;
+    internal static string UnsupportedLockAcquisition => GetResourceString();
 
-    internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected")!;
+    internal static string ConcreteDelegateExpected => GetResourceString();
 
-    internal static string InvalidExpressionTree => Resources.GetString("InvalidExpressionTree")!;
+    internal static string InvalidExpressionTree => GetResourceString();
 
-    internal static string NotEnoughMemory => Resources.GetString("NotEnoughMemory")!;
+    internal static string NotEnoughMemory => GetResourceString();
 
     internal static string BoxedValueTypeExpected<T>()
         where T : struct
-        => string.Format(Resources.GetString("BoxedValueTypeExpected")!, typeof(T));
+        => string.Format(GetResourceString(), typeof(T));
 
     internal static string ResourceEntryIsNull(string name)
-        => string.Format(Resources.GetString("ResourceEntryIsNull")!, name);
+        => string.Format(GetResourceString(), name);
 
-    internal static string LargeBuffer => Resources.GetString("LargeBuffer")!;
+    internal static string LargeBuffer => GetResourceString();
 
-    internal static string MalformedBase64 => Resources.GetString("MalformedBase64")!;
+    internal static string MalformedBase64 => GetResourceString();
 
-    internal static string UndefinedValueDetected => Resources.GetString("UndefinedValueDetected")!;
+    internal static string UndefinedValueDetected => GetResourceString();
 
-    internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
+    internal static string KeyAlreadyExists => GetResourceString();
 
     internal static string NoResult<TError>(TError errorCode)
         where TError : struct, Enum
-        => string.Format(Resources.GetString("NoResult")!, errorCode);
+        => string.Format(GetResourceString(), errorCode);
 
-    internal static string EndOfBuffer(long remaining) => string.Format(Resources.GetString("EndOfBuffer")!, remaining);
+    internal static string EndOfBuffer(long remaining) => string.Format(GetResourceString(), remaining);
 
-    internal static string OverlappedRange => Resources.GetString("OverlappedRange")!;
+    internal static string OverlappedRange => GetResourceString();
 
-    internal static string FullyQualifiedPathExpected => Resources.GetString("FullyQualifiedPathExpected")!;
+    internal static string FullyQualifiedPathExpected => GetResourceString();
 
-    internal static string BufferTooSmall => Resources.GetString("BufferTooSmall")!;
+    internal static string BufferTooSmall => GetResourceString();
 
-    internal static string EmptyCollection => Resources.GetString("EmptyCollection")!;
+    internal static string EmptyCollection => GetResourceString();
 }
