@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
@@ -62,5 +63,21 @@ public class ChannelVersusPipeBenchmark
         pipe.Complete();
 
         await consumer;
+    }
+
+    [Benchmark]
+    public async Task<int> WhenEach()
+    {
+        var sum = 0;
+        await foreach (var task in Task.WhenEach(GetTasks()))
+            sum += await task;
+
+        return sum;
+        
+        IEnumerable<Task<int>> GetTasks()
+        {
+            for (var i = 0; i < iterations; i++)
+                yield return GetTask(i);
+        }
     }
 }
