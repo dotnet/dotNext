@@ -15,29 +15,51 @@ public static class BufferWriter
 {
     private const int MaxBufferSize = int.MaxValue / 2;
 
-    /// <summary>
-    /// Writes the sequence of elements to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The sequence of elements to be written.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Write<T>(this IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+    extension<T>(IBufferWriter<T> writer)
     {
-        if (value.IsSingleSegment)
+        /// <summary>
+        /// Writes the sequence of elements to the buffer.
+        /// </summary>
+        /// <param name="value">The sequence of elements to be written.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(in ReadOnlySequence<T> value)
         {
-            writer.Write(value.FirstSpan);
-        }
-        else
-        {
-            WriteSlow(writer, in value);
+            if (value.IsSingleSegment)
+            {
+                writer.Write(value.FirstSpan);
+            }
+            else
+            {
+                WriteSlow(writer, in value);
+            }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+            {
+                foreach (var segment in value)
+                    writer.Write(segment.Span);
+            }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+        /// <summary>
+        /// Limits the buffer with the maximum allowed elements.
+        /// </summary>
+        /// <remarks>
+        /// The following operations on the returned writer may throw <see cref="BufferSizeLimitExceededException"/> exception:
+        /// <see cref="IBufferWriter{T}.GetMemory"/>, <see cref="IBufferWriter{T}.GetSpan"/>
+        /// </remarks>
+        /// <param name="maxCapacity">The maximum elements that can be written to the buffer.</param>
+        /// <returns>The capped buffer writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxCapacity"/> is negative.</exception>
+        public IBufferWriter<T> Limit(long maxCapacity)
         {
-            foreach (var segment in value)
-                writer.Write(segment.Span);
+            ArgumentNullException.ThrowIfNull(writer);
+            ArgumentOutOfRangeException.ThrowIfNegative(maxCapacity);
+
+            return new BoundedBufferWriter<T>(writer, maxCapacity);
         }
     }
 
