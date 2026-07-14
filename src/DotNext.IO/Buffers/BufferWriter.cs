@@ -52,7 +52,7 @@ public static class BufferWriter
         /// </remarks>
         /// <param name="maxCapacity">The maximum elements that can be written to the buffer.</param>
         /// <returns>The capped buffer writer.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxCapacity"/> is negative.</exception>
         public IBufferWriter<T> Limit(long maxCapacity)
         {
