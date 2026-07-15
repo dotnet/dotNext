@@ -98,7 +98,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Clones this container atomically.
     /// </summary>
     /// <returns>The cloned container.</returns>
-    public Atomic<T> Clone()
+    public readonly Atomic<T> Clone()
     {
         var result = new Atomic<T>();
         Read(out result.value);
@@ -106,7 +106,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     }
 
     /// <inheritdoc/>
-    object ICloneable.Clone() => Clone();
+    readonly object ICloneable.Clone() => Clone();
 
     /// <summary>
     /// Performs atomic read.
@@ -116,7 +116,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// if a concurrent write happens during the copy of the value.
     /// </remarks>
     /// <param name="result">The result of atomic read.</param>
-    public void Read(out T result)
+    public readonly void Read(out T result)
     {
         for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
@@ -399,7 +399,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// </remarks>
     public T Value
     {
-        get
+        readonly get
         {
             Read(out var result);
             return result;
@@ -410,15 +410,12 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <inheritdoc/>
     object? IStrongBox.Value
     {
-        get => Value;
+        readonly get => Value;
         set => Value = (T)value!;
     }
 
-    /// <summary>
-    /// Converts the stored value into string atomically.
-    /// </summary>
-    /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-    public override string? ToString()
+    /// <inheritdoc/>
+    public readonly override string? ToString()
     {
         Read(out var result);
         return result.ToString();
