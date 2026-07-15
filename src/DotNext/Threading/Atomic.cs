@@ -172,12 +172,14 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         bool successful;
         var stamp = EnterWriteLock();
+        var current = value;
         try
         {
             // custom comparer may throw exception
-            var current = value;
-            if (successful = comparer.Equals(in current, in expected))
+            successful = comparer.Equals(in current, in expected);
+            if (successful)
                 RuntimeHelpers.Copy(in update, out value);
+            
             RuntimeHelpers.Copy(in current, out result);
         }
         finally
@@ -222,14 +224,15 @@ public struct Atomic<T> : IStrongBox, ICloneable
         => CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
 
     private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
-        where TComparer : struct, IEqualityComparer
+        where TComparer : struct, IEqualityComparer, allows ref struct
     {
         bool result;
         var stamp = EnterWriteLock();
         try
         {
             // custom comparer may throw exception
-            if (result = comparer.Equals(in value, in expected))
+            result = comparer.Equals(in value, in expected);
+            if (result)
                 RuntimeHelpers.Copy(in update, out value);
         }
         finally
@@ -318,7 +321,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         ArgumentNullException.ThrowIfNull(updater);
 
         var stamp = EnterWriteLock();
-        var previous = value;
+        RuntimeHelpers.Copy(in value, out result);
         try
         {
             // custom updater may throw exception
@@ -328,8 +331,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             ExitWriteLock(stamp);
         }
-
-        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
@@ -376,7 +377,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         ArgumentNullException.ThrowIfNull(accumulator);
 
         var stamp = EnterWriteLock();
-        var previous = value;
+        RuntimeHelpers.Copy(in value, out result);
         try
         {
             // custom accumulator may throw exception
@@ -386,8 +387,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             ExitWriteLock(stamp);
         }
-
-        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
