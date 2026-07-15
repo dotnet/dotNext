@@ -131,7 +131,7 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
     /// Tries to switch the current value with the supplied one.
     /// </summary>
     /// <remarks>
-    /// This method doesn't introduce contention in contrast to <see cref="CompareExchange(in T, in T, out T)"/> method,
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(in T, in T)"/> method,
     /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
     /// </remarks>
     /// <param name="comparisonValue">The value to be compared with the currently stored value.</param>
@@ -148,7 +148,7 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
     /// Tries to switch the current value with the supplied one.
     /// </summary>
     /// <remarks>
-    /// This method doesn't introduce contention in contrast to <see cref="CompareExchange(in T, in T, out T)"/> method,
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(Func{T, T, bool}, in T,in T)"/> method,
     /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
     /// In this case, <paramref name="comparer"/> is not called.
     /// </remarks>
@@ -172,7 +172,7 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
     /// Tries to switch the current value with the supplied one.
     /// </summary>
     /// <remarks>
-    /// This method doesn't introduce contention in contrast to <see cref="CompareExchange(in T, in T, out T)"/> method,
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(Func{T, T, bool}, in T,in T)"/> method,
     /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
     /// In this case, <paramref name="comparer"/> is not called.
     /// </remarks>
