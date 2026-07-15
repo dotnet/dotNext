@@ -71,7 +71,7 @@ partial struct Atomic<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ExitWriteLock(uint stamp) => Volatile.Write(ref version, stamp + 2U);
 
-    private bool TryWrite(uint stamp, in T newValue)
+    internal bool TryWrite(uint stamp, in T newValue)
     {
         var entered = TryEnterWriteLock(stamp);
         if (entered)
@@ -83,7 +83,7 @@ partial struct Atomic<T>
         return entered;
     }
     
-    private readonly uint Read(ref SpinWait spinner, out T result)
+    internal readonly uint Read(ref SpinWait spinner, out T result)
     {
         uint stamp;
         while (!TryRead(out result, out stamp))
