@@ -83,6 +83,7 @@ public sealed class AtomicContainerTests : Test
     {
         var container = new Atomic<decimal> { Value = 42M };
         False(container.CompareExchange(10M, 43M, out var value));
+        False(container.CompareExchange(static (x, y) => x == y, 10M, 43M, out _));
         Equal(42M, value);
         Equal(42M, container.Value);
     }
@@ -106,5 +107,13 @@ public sealed class AtomicContainerTests : Test
         x.Swap(ref y);
         Equal(43, x.Value);
         Equal(42, y.Value);
+    }
+
+    [Fact]
+    public static void TryUpdateValue()
+    {
+        var x = new Atomic<decimal> { Value = 42 };
+        True(x.TryUpdate(static (x, y) => x == y, 42M, 43M));
+        False(x.TryUpdate(42M, 43M));
     }
 }
