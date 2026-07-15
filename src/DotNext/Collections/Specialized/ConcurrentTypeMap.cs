@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
+using Threading;
+
 /// <summary>
 /// Represents thread-safe implementation of <see cref="ITypeMap{TValue}"/> interface.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private readonly Lock syncRoot;
+    private readonly System.Threading.Lock syncRoot;
 
     // Assuming that the map will not contain hundreds or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
@@ -406,158 +408,41 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private sealed class GenericEntry : Entry
     {
-        private volatile EntryState state;
-        private TValue? value;
+        private Atomic<Optional<TValue>> atomic;
 
-        public override bool TrySet(TValue newValue)
-        {
-            if (TryAcquireLock(EntryState.Empty))
-            {
-                value = newValue;
-                ReleaseLock(EntryState.HasValue);
-                return true;
-            }
+        public override bool TrySet(TValue newValue) => atomic.TrySet(newValue);
 
-            return false;
-        }
-
-        public override void Set(TValue newValue)
-        {
-            AcquireLock();
-            value = newValue;
-            ReleaseLock(EntryState.HasValue);
-        }
+        public override void Set(TValue newValue) => atomic.Value = newValue;
 
         public override TValue GetOrSet(TValue newValue, out bool isSet)
-        {
-            if (isSet = AcquireLock() is EntryState.Empty)
-            {
-                value = newValue;
-            }
-            else
-            {
-                newValue = value!;
-            }
-
-            ReleaseLock(EntryState.HasValue);
-            return newValue;
-        }
+            => atomic.GetOrSet(newValue, out isSet);
 
         public override bool SetOrUpdate(TValue newValue)
         {
-            var added = AcquireLock() is EntryState.Empty;
-            value = newValue;
-            ReleaseLock(EntryState.HasValue);
-            return added;
+            var optional = new Optional<TValue>(newValue);
+            atomic.Swap(ref optional);
+            return optional.IsUndefined;
         }
 
         public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         {
-            var modified = AcquireLock() is EntryState.HasValue;
-            oldValue = modified
-                ? value
-                : default;
-
-            value = newValue;
-            ReleaseLock(EntryState.HasValue);
-            return modified;
+            var optional = new Optional<TValue>(newValue);
+            atomic.Swap(ref optional);
+            return optional.TryGet(out oldValue);
         }
 
         public override bool Unset([MaybeNullWhen(false)] out TValue oldValue)
         {
-            if (TryAcquireLock(EntryState.HasValue))
-            {
-                oldValue = value!;
-                value = default;
-                ReleaseLock(EntryState.Empty);
-                return true;
-            }
-
-            oldValue = default;
-            return false;
+            atomic.Clear(out var optional);
+            return optional.TryGet(out oldValue);
         }
 
         public override bool TryGet([MaybeNullWhen(false)] out TValue existingValue)
-        {
-            var valueTaken = TryAcquireLock(EntryState.HasValue);
-            if (valueTaken)
-            {
-                existingValue = value!;
-                ReleaseLock(EntryState.HasValue);
-            }
-            else
-            {
-                existingValue = default;
-            }
+            => atomic.Value.TryGet(out existingValue);
 
-            return valueTaken;
-        }
+        public override void Unset() => atomic.Clear();
 
-        public override void Unset()
-        {
-            AcquireLock();
-            value = default;
-            ReleaseLock(EntryState.Empty);
-        }
-
-        private EntryState AcquireLock()
-        {
-            var oldState = Interlocked.Exchange(ref state, EntryState.Locked);
-            return oldState is EntryState.Locked ? AcquireLockContention() : oldState;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private EntryState AcquireLockContention()
-        {
-            EntryState currentState;
-            do
-            {
-                currentState = Interlocked.Exchange(ref state, EntryState.Locked);
-            } while (currentState is EntryState.Locked);
-
-            return currentState;
-        }
-
-        private void ReleaseLock([ConstantExpected] EntryState newState) => state = newState;
-
-        public override bool HasValue
-        {
-            get
-            {
-                EntryState currentState;
-                do
-                {
-                    currentState = state;
-                } while (currentState is EntryState.Locked);
-
-                return currentState is EntryState.HasValue;
-            }
-        }
-
-        private bool TryAcquireLock([ConstantExpected] EntryState expectedState)
-        {
-            var currentState = Interlocked.CompareExchange(ref state, EntryState.Locked, expectedState);
-            return currentState == expectedState || TryAcquireLockContention(expectedState);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool TryAcquireLockContention(EntryState expectedState)
-        {
-            EntryState currentState;
-            do
-            {
-                currentState = Interlocked.CompareExchange(ref state, EntryState.Locked, expectedState);
-            } while (currentState is EntryState.Locked);
-
-            return currentState == expectedState;
-        }
-    }
-    
-    private enum EntryState
-    {
-        Empty = 0,
-        Locked = 1,
-        HasValue = 2,
+        public override bool HasValue => !atomic.IsUndefined;
     }
 }
 
@@ -596,7 +481,7 @@ public partial class ConcurrentTypeMap : ITypeMap
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
     }
 
-    private readonly Lock syncRoot;
+    private readonly System.Threading.Lock syncRoot;
     private Entry[] entries;
 
     /// <summary>
