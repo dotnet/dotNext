@@ -71,16 +71,27 @@ public struct Atomic<T> : IStrongBox, ICloneable
     private T value;
     private uint version; // even = stable, odd = write in progress (seqlock)
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private uint EnterWriteLock()
     {
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+        var stamp = version;
+        return (stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp
+            ? stamp
+            : Contention(ref version);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static uint Contention(ref uint version)
         {
-            var stamp = version;
-            if ((stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp)
-                return stamp;
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+            {
+                var stamp = version;
+                if ((stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp)
+                    return stamp;
+            }
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ExitWriteLock(uint stamp) => Volatile.Write(ref version, stamp + 2U);
 
     /// <summary>
