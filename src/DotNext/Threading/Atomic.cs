@@ -167,7 +167,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
         ExitWriteLock(stamp);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private bool CompareExchange<TComparer>(TComparer comparer, in T update, in T expected, out T result)
         where TComparer : struct, IEqualityComparer
     {
@@ -222,7 +221,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public unsafe bool CompareExchange(delegate*<in T, in T, bool> comparer, in T update, in T expected, out T result)
         => CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
         where TComparer : struct, IEqualityComparer
     {
@@ -291,7 +289,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void UpdateAndGet(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
@@ -316,7 +313,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndUpdate(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
@@ -347,7 +343,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
@@ -376,7 +371,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
