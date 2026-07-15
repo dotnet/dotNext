@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Threading;
 
 partial class Atomic
@@ -7,7 +9,7 @@ partial class Atomic
     /// </summary>
     /// <param name="atomic">The receiver.</param>
     /// <typeparam name="T">The type of the optional value.</typeparam>
-    extension<T>(Atomic<Optional<T>> atomic)
+    extension<T>(ref Atomic<Optional<T>> atomic)
     {
         /// <summary>
         /// Sets the value to if it's not defined in the receiver.
@@ -24,8 +26,8 @@ partial class Atomic
         {
             for (var spinner = new SpinWait();; spinner.SpinOnce())
             {
-                var stamp = atomic.Read(ref spinner, out var currentValue);
-                if (!currentValue.IsUndefined)
+                var stamp = atomic.Read<bool, GetUndefinedStateOperation<T>>(ref spinner, out var isUndefined);
+                if (!isUndefined)
                     return false;
 
                 if (atomic.TryWrite(stamp, in newValue))
@@ -68,4 +70,32 @@ partial class Atomic
             }
         }
     }
+
+    /// <summary>
+    /// Extends <see cref="Atomic{T}"/> type that holds optional value.
+    /// </summary>
+    /// <param name="atomic">The receiver.</param>
+    /// <typeparam name="T">The type of the optional value.</typeparam>
+    extension<T>(ref readonly Atomic<Optional<T>> atomic)
+    {
+        /// <summary>
+        /// Indicates that the value withing the receiver is not set.
+        /// </summary>
+        public bool IsUndefined
+        {
+            get
+            {
+                var spinner = new SpinWait();
+                atomic.Read<bool, GetUndefinedStateOperation<T>>(ref spinner, out var isUndefined);
+                return isUndefined;
+            }
+        }
+    }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct GetUndefinedStateOperation<T> : Atomic<Optional<T>>.IReadOperation<bool>
+{
+    static void Atomic<Optional<T>>.IReadOperation<bool>.Invoke(in Optional<T> input, out bool output)
+        => output = input.IsUndefined;
 }

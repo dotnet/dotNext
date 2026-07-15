@@ -117,4 +117,21 @@ public sealed class AtomicContainerTests : Test
         True(x.TryUpdate(static (x, y) => x == y, 42M, 43M));
         False(x.TryUpdate(42M, 43M));
     }
+
+    [Fact]
+    public static void OptionalValue()
+    {
+        var atomic = new Atomic<Optional<int>>();
+        True(atomic.IsUndefined);
+
+        True(atomic.TrySet(42));
+        False(atomic.IsUndefined);
+
+        Equal(42, atomic.GetOrSet(43, out var isSet));
+        False(isSet);
+        
+        atomic.Clear();
+        Equal(42, atomic.GetOrSet(42, out isSet));
+        True(isSet);
+    }
 }

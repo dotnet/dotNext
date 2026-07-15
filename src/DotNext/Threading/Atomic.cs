@@ -356,6 +356,28 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
         set => Write(value);
     }
 
+    /// <summary>
+    /// Sets the default value and returns the previous value.
+    /// </summary>
+    /// <param name="previousValue">The previous value.</param>
+    public void Clear(out T previousValue)
+    {
+        var stamp = EnterWriteLock();
+        RuntimeHelpers.Copy(in value, out previousValue);
+        value = default;
+        ExitWriteLock(stamp);
+    }
+
+    /// <summary>
+    /// Sets the default value.
+    /// </summary>
+    public void Clear()
+    {
+        var stamp = EnterWriteLock();
+        value = default;
+        ExitWriteLock(stamp);
+    }
+
     /// <inheritdoc/>
     object? IStrongBox.Value
     {

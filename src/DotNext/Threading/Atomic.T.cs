@@ -23,10 +23,10 @@ partial struct Atomic<T>
                 return true;
         }
     }
-    
+
     private bool TryUpdate<TComparer>(TComparer comparer, in T comparisonValue, in T newValue)
         where TComparer : struct, IEqualityComparer, allows ref struct
-        => TryRead(out var result, out var stamp)
+        => TryRead<T, CopyOperation>(out var result, out var stamp)
            && comparer.Equals(in result, in comparisonValue)
            && TryWrite(stamp, in newValue);
     
@@ -82,11 +82,15 @@ partial struct Atomic<T>
 
         return entered;
     }
-    
+
     internal readonly uint Read(ref SpinWait spinner, out T result)
+        => Read<T, CopyOperation>(ref spinner, out result);
+
+    internal readonly uint Read<TResult, TOperation>(ref SpinWait spinner, out TResult result)
+        where TOperation : struct, IReadOperation<TResult>, allows ref struct
     {
         uint stamp;
-        while (!TryRead(out result, out stamp))
+        while (!TryRead<TResult, TOperation>(out result, out stamp))
         {
             spinner.SpinOnce();
         }
@@ -94,7 +98,8 @@ partial struct Atomic<T>
         return stamp;
     }
 
-    private readonly bool TryRead(out T result, out uint stamp)
+    private readonly bool TryRead<TResult, TOperation>(out TResult result, out uint stamp)
+        where TOperation : struct, IReadOperation<TResult>, allows ref struct
     {
         Unsafe.SkipInit(out result);
         Unsafe.SkipInit(out stamp);
@@ -103,10 +108,21 @@ partial struct Atomic<T>
         if ((currentStamp & 1U) is not 0U)
             return false;
 
-        RuntimeHelpers.Copy(in value, out result);
+        TOperation.Invoke(in value, out result);
         Volatile.ReadBarrier();
         stamp = currentStamp;
         return currentStamp == version;
+    }
+    
+    internal interface IReadOperation<TResult>
+    {
+        public static abstract void Invoke(in T input, out TResult output);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct CopyOperation : IReadOperation<T>
+    {
+        static void IReadOperation<T>.Invoke(in T value, out T destination) => RuntimeHelpers.Copy(in value, out destination);
     }
     
     private interface IEqualityComparer
