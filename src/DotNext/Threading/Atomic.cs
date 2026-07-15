@@ -14,7 +14,7 @@ using Runtime.CompilerServices;
 /// Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
 /// to keep synchronization root in the form of the object, or you need to have volatile field
 /// inside of value type then <see cref="Atomic{T}"/> is the best choice. Its performance is better
-/// than synchronized methods according to benchmarks.
+/// than synchronized methods according to benchmarks. This type provides no contention for read path.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 public struct Atomic<T> : IStrongBox, ICloneable
@@ -69,7 +69,19 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public delegate void Accumulator(ref T current, in T x);
 
     private T value;
-    private bool lockState;
+    private uint version; // even = stable, odd = write in progress (seqlock)
+
+    private uint EnterWriteLock()
+    {
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+        {
+            var stamp = version;
+            if ((stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp)
+                return stamp;
+        }
+    }
+
+    private void ExitWriteLock(uint stamp) => Volatile.Write(ref version, stamp + 2U);
 
     /// <summary>
     /// Clones this container atomically.
@@ -88,12 +100,24 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <summary>
     /// Performs atomic read.
     /// </summary>
+    /// <remarks>
+    /// The read is optimistic: it doesn't block concurrent readers or writers, but retries
+    /// if a concurrent write happens during the copy of the value.
+    /// </remarks>
     /// <param name="result">The result of atomic read.</param>
     public void Read(out T result)
     {
-        Interlocked.Acquire(ref lockState);
-        RuntimeHelpers.Copy(in value, out result);
-        Interlocked.Release(ref lockState);
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+        {
+            var stamp = Volatile.Read(in version);
+            if ((stamp & 1U) is not 0U)
+                continue;
+
+            RuntimeHelpers.Copy(in value, out result);
+            Volatile.ReadBarrier();
+            if (version == stamp)
+                break;
+        }
     }
 
     /// <summary>
@@ -105,9 +129,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The container for the value.</param>
     public void Swap(ref Atomic<T> other)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         other.Swap(ref value);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -116,9 +140,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The managed pointer to the value to swap.</param>
     public void Swap(ref T other)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Swap(ref value, ref other);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -127,9 +151,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="newValue">The value to be stored into this container.</param>
     public void Write(in T newValue)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Copy(in newValue, out value);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -137,12 +161,20 @@ public struct Atomic<T> : IStrongBox, ICloneable
         where TComparer : struct, IEqualityComparer
     {
         bool successful;
-        Interlocked.Acquire(ref lockState);
-        var current = value;
-        if (successful = comparer.Equals(in current, in expected))
-            RuntimeHelpers.Copy(in update, out value);
-        RuntimeHelpers.Copy(in current, out result);
-        Interlocked.Release(ref lockState);
+        var stamp = EnterWriteLock();
+        try
+        {
+            // custom comparer may throw exception
+            var current = value;
+            if (successful = comparer.Equals(in current, in expected))
+                RuntimeHelpers.Copy(in update, out value);
+            RuntimeHelpers.Copy(in current, out result);
+        }
+        finally
+        {
+            ExitWriteLock(stamp);
+        }
+
         return successful;
     }
 
@@ -184,7 +216,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         where TComparer : struct, IEqualityComparer
     {
         bool result;
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         try
         {
             // custom comparer may throw exception
@@ -193,7 +225,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
 
         return result;
@@ -236,10 +268,10 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="previous">The original stored value before modification.</param>
     public void Exchange(in T update, out T previous)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Copy(in value, out previous);
         RuntimeHelpers.Copy(in update, out value);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -253,7 +285,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         try
         {
             // custom updater may throw exception
@@ -262,7 +294,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
     }
 
@@ -278,7 +310,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         var previous = value;
         try
         {
@@ -287,7 +319,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
 
         RuntimeHelpers.Copy(in previous, out result);
@@ -309,7 +341,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         try
         {
             // custom accumulator may throw exception
@@ -318,7 +350,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
     }
 
@@ -338,7 +370,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         var previous = value;
         try
         {
@@ -347,7 +379,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
 
         RuntimeHelpers.Copy(in previous, out result);
