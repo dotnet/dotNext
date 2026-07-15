@@ -46,6 +46,7 @@ public sealed class AtomicContainerTests : Test
         True(container.CompareAndSet(Guid.Empty, Guid.NewGuid()));
         NotEqual(Guid.Empty, container.Value);
         False(container.CompareAndSet(Guid.Empty, Guid.NewGuid()));
+        False(container.CompareAndSet(static (x, y) => x == y, Guid.Empty, Guid.NewGuid()));
         NotEqual(Guid.Empty, container.Value);
     }
 
