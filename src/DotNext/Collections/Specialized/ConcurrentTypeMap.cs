@@ -308,20 +308,18 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private sealed class ReferenceEntry : Entry
     {
-        private volatile object value = Sentinel.Instance;
+        private object value = Sentinel.Instance;
 
-        public override bool HasValue => !IsEmpty;
-        
-        private bool IsEmpty => ReferenceEquals(value, Sentinel.Instance);
+        public override bool HasValue => Volatile.Read(in value) != Sentinel.Instance;
 
         public override bool TrySet(TValue newValue)
-            => IsEmpty && ReferenceEquals(Interlocked.CompareExchange(
+            => value == Sentinel.Instance && Interlocked.CompareExchange(
                 ref value,
                 Unsafe.As<TValue, object>(ref newValue),
-                Sentinel.Instance), Sentinel.Instance);
+                Sentinel.Instance) == Sentinel.Instance;
 
         public override void Set(TValue newValue)
-            => value = Unsafe.As<TValue, object>(ref newValue);
+            => Volatile.Write(ref value, Unsafe.As<TValue, object>(ref newValue));
 
         public override TValue GetOrSet(TValue newValue, out bool isSet)
         {
@@ -330,13 +328,13 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             // Therefore, change the symmetry between GET and ADD overhead as follows:
             // 1. Make GET cheaper
             // 2. Make ADD more expensive
-            // So, GET can be done with simple Read Fence. If it's successful, CompareExchange is not needed.
+            // So, GET can be done with a simple read. If it's successful, CompareExchange is not needed.
             var result = value;
-            if (ReferenceEquals(result, Sentinel.Instance))
+            if (result == Sentinel.Instance)
             {
                 result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
 
-                if (ReferenceEquals(result, Sentinel.Instance))
+                if (result == Sentinel.Instance)
                 {
                     isSet = true;
                     return newValue;
@@ -348,10 +346,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         }
 
         public override bool SetOrUpdate(TValue newValue)
-        {
-            var result = Interlocked.Exchange(ref value, Unsafe.As<TValue, object>(ref newValue));
-            return ReferenceEquals(result, Sentinel.Instance);
-        }
+            => Interlocked.Exchange(ref value, Unsafe.As<TValue, object>(ref newValue)) == Sentinel.Instance;
 
         public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         {
@@ -366,16 +361,21 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool Unset([MaybeNullWhen(false)] out TValue oldValue)
         {
-            var removed = HasValue;
-            if (removed)
+            var valueCopy = value;
+            bool removed;
+            if (valueCopy != Sentinel.Instance)
             {
-                var result = Interlocked.Exchange(ref value, Sentinel.Instance);
-                removed = !ReferenceEquals(result, Sentinel.Instance);
+                valueCopy = Interlocked.Exchange(ref value, Sentinel.Instance);
+                removed = valueCopy != Sentinel.Instance;
                 if (removed)
                 {
-                    oldValue = Unsafe.As<object, TValue>(ref result);
+                    oldValue = Unsafe.As<object, TValue>(ref valueCopy);
                     goto exit;
                 }
+            }
+            else
+            {
+                removed = false;
             }
 
             oldValue = default;
@@ -386,8 +386,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool TryGet([MaybeNullWhen(false)] out TValue existingValue)
         {
-            var valueCopy = value;
-            var hasValue = !ReferenceEquals(valueCopy, Sentinel.Instance);
+            var valueCopy = Volatile.Read(in value);
+            var hasValue = valueCopy != Sentinel.Instance;
             existingValue = hasValue
                 ? Unsafe.As<object, TValue>(ref valueCopy)
                 : default;
@@ -397,7 +397,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override void Unset()
         {
-            if (HasValue)
+            if (value != Sentinel.Instance)
             {
                 Interlocked.Exchange(ref value, Sentinel.Instance);
             }
