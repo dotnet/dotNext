@@ -134,4 +134,16 @@ public sealed class AtomicContainerTests : Test
         Equal(42, atomic.GetOrSet(42, out isSet));
         True(isSet);
     }
+
+    [Fact]
+    public static void WriteLockScope()
+    {
+        var atomic = new Atomic<long>();
+        using (var scope = atomic.EnterLock())
+        {
+            scope.Value = 42L;
+        }
+
+        Equal(42L, atomic.Value);
+    }
 }
