@@ -163,8 +163,8 @@ public abstract partial class ManualResetCompletionSource
 
     /// <inheritdoc cref="IValueTaskSource.OnCompleted"/>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        => OnCompleted(new(continuation, state, flags), token);
+    public void OnCompleted(Action<object?> callback, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+        => OnCompleted(new(callback, state, flags), token);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
