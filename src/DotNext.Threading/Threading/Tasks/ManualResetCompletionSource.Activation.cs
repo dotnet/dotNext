@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
+using Runtime;
+
 partial class ManualResetCompletionSource
 {
     private Action<object?, CancellationToken>? cancellationCallback;
@@ -73,11 +75,11 @@ partial class ManualResetCompletionSource
         {
             if (cachedVersion is null)
             {
-                cachedVersion = value;
+                cachedVersion = BoxedValue<short>.Box(value);
             }
             else
             {
-                Unsafe.Unbox<short>(cachedVersion) = value;
+                cachedVersion.Value = value;
             }
         }
     }

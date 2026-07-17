@@ -9,6 +9,7 @@ namespace DotNext.Threading;
 /// This type should not be used to synchronize access to the I/O intensive resources.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[Obsolete("Use Atomic<T> instead.")]
 public struct ReaderWriterSpinLock
 {
     private const int WriteLockState = int.MinValue;
@@ -55,10 +56,19 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterReadLock()
     {
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+        var spinner = new SpinWait();
+        for (int currentState = state, tmp; ; spinner.SpinOnce(), currentState = tmp)
         {
-            var currentState = state;
-            if (currentState is not WriteLockState and not int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
+            var newState = currentState + 1;
+            if (newState < 0)
+            {
+                // overflow or write lock is acquired
+                tmp = state;
+                continue;
+            }
+            
+            tmp = Interlocked.CompareExchange(ref state, newState, currentState);
+            if (tmp == currentState)
                 break;
         }
     }
@@ -70,10 +80,20 @@ public struct ReaderWriterSpinLock
 
     private bool TryEnterReadLock(in Timeout timeout, TimeProvider provider, CancellationToken token)
     {
-        for (var spinner = new SpinWait(); !timeout.IsExpired(provider); token.ThrowIfCancellationRequested(), spinner.SpinOnce())
+        var spinner = new SpinWait();
+        for (int currentState = state, tmp;
+             !timeout.IsExpired(provider);
+             token.ThrowIfCancellationRequested(), spinner.SpinOnce(), currentState = tmp)
         {
-            var currentState = state;
-            if (currentState is not WriteLockState and not int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
+            var newState = currentState + 1;
+            if (newState < 0)
+            {
+                tmp = state;
+                continue;
+            }
+
+            tmp = Interlocked.CompareExchange(ref state, newState, currentState);
+            if (tmp == currentState)
                 return true;
         }
 

@@ -46,6 +46,7 @@ public sealed class AtomicContainerTests : Test
         True(container.CompareAndSet(Guid.Empty, Guid.NewGuid()));
         NotEqual(Guid.Empty, container.Value);
         False(container.CompareAndSet(Guid.Empty, Guid.NewGuid()));
+        False(container.CompareAndSet(static (x, y) => x == y, Guid.Empty, Guid.NewGuid()));
         NotEqual(Guid.Empty, container.Value);
     }
 
@@ -83,6 +84,7 @@ public sealed class AtomicContainerTests : Test
     {
         var container = new Atomic<decimal> { Value = 42M };
         False(container.CompareExchange(10M, 43M, out var value));
+        False(container.CompareExchange(static (x, y) => x == y, 10M, 43M, out _));
         Equal(42M, value);
         Equal(42M, container.Value);
     }
@@ -106,5 +108,45 @@ public sealed class AtomicContainerTests : Test
         x.Swap(ref y);
         Equal(43, x.Value);
         Equal(42, y.Value);
+    }
+
+    [Fact]
+    public static void TryUpdateValue()
+    {
+        var x = new Atomic<decimal> { Value = 42 };
+        True(x.TryUpdate(static (x, y) => x == y, 42M, 43M));
+        False(x.TryUpdate(42M, 43M));
+    }
+
+    [Fact]
+    public static void OptionalValue()
+    {
+        var atomic = new Atomic<Optional<int>>();
+        True(atomic.IsUndefined);
+
+        True(atomic.TrySet(42));
+        False(atomic.IsUndefined);
+
+        Equal(42, atomic.GetOrSet(43, out var isSet));
+        False(isSet);
+        
+        atomic.Clear();
+        Equal(42, atomic.GetOrSet(42, out isSet));
+        True(isSet);
+    }
+
+    [Fact]
+    public static void WriteLockScope()
+    {
+        var atomic = new Atomic<long>();
+        False(atomic.IsWriteLockHeld);
+        using (var scope = atomic.EnterLock())
+        {
+            True(atomic.IsWriteLockHeld);
+            scope.Value = 42L;
+        }
+
+        False(atomic.IsWriteLockHeld);
+        Equal(42L, atomic.Value);
     }
 }

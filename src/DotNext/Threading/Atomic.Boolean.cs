@@ -41,24 +41,6 @@ public static partial class Atomic
         /// <param name="location">Reference to a value to be modified.</param>
         /// <returns>The original value before negation.</returns>
         public static bool GetAndNegate(ref bool location) => GetAndUpdate(ref location, new Negation());
-
-        internal static void Acquire(ref bool location)
-        {
-            if (Interlocked.Exchange(ref location, true))
-                Contention(ref location);
-
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            static void Contention(ref bool location)
-            {
-                var spinner = new SpinWait();
-                do
-                {
-                    spinner.SpinOnce();
-                } while (Interlocked.Exchange(ref location, true));
-            }
-        }
-
-        internal static void Release(ref bool location) => Volatile.Write(ref location, false);
     }
 
     [StructLayout(LayoutKind.Auto)]

@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
@@ -10,13 +11,13 @@ namespace DotNext.Buffers;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class SpanWriterBenchmark
 {
-    private readonly int[] inputArray = new int[] { 10, 20, 30, 40, 50, 60, 70, 80 };
+    private static ReadOnlySpan<int> InputArray => [10, 20, 30, 40, 50, 60, 70, 80];
 
     [Benchmark]
     public void AddRangeToList()
     {
         var list = new List<int>(10);
-        list.AddRange(inputArray);
+        list.AddRange(InputArray);
         list.Clear();
     }
 
@@ -24,27 +25,27 @@ public class SpanWriterBenchmark
     public void AddRangeToSpanWriter()
     {
         var builder = new SpanWriter<int>(stackalloc int[10]);
-        builder.Write(inputArray);
+        builder.Write(InputArray);
     }
 
     [Benchmark]
     public void AddRangeToBufferWriterSlim()
     {
         using var builder = new BufferWriterSlim<int>(stackalloc int[10]);
-        builder.Write(inputArray);
+        builder.Write(InputArray);
     }
 
     [Benchmark]
     public void AddRangeToArrayWriter()
     {
         using var writer = new PoolingArrayBufferWriter<int> { Capacity = 10 };
-        writer.Write(inputArray);
+        writer.Write(InputArray);
     }
 
     [Benchmark]
     public void AddRangeToSparseBuffer()
     {
         using var writer = new SparseBufferWriter<int>();
-        writer.Write(inputArray);
+        writer.Write(InputArray);
     }
 }

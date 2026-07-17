@@ -325,4 +325,22 @@ public sealed class BufferWriterTests : Test
         
         Equal(expectedData, writer.WrittenMemory.Span);
     }
+
+    [Fact]
+    public static void WrongLimitedCapacity()
+    {
+        Throws<ArgumentOutOfRangeException>(() => new ArrayBufferWriter<byte>().Limit(-1L));
+    }
+
+    [Fact]
+    public static void LimitedCapacity()
+    {
+        var writer = new ArrayBufferWriter<byte>();
+        var limited = writer.Limit(10);
+        limited.Write(new byte[10]);
+        Equal(10, writer.WrittenCount);
+
+        Throws<BufferSizeLimitExceededException>(() => limited.GetSpan(sizeHint: 0));
+        Throws<BufferSizeLimitExceededException>(() => limited.GetSpan(sizeHint: 1));
+    }
 }

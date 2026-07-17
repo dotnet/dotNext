@@ -14,68 +14,22 @@ using Runtime.CompilerServices;
 /// Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
 /// to keep synchronization root in the form of the object, or you need to have volatile field
 /// inside of value type then <see cref="Atomic{T}"/> is the best choice. Its performance is better
-/// than synchronized methods according to benchmarks.
+/// than synchronized methods according to benchmarks. This type provides no contention for read path.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct Atomic<T> : IStrongBox, ICloneable
+public partial struct Atomic<T> : IStrongBox, ICloneable
     where T : struct
 {
-    private interface IEqualityComparer
-    {
-        bool Equals(in T x, in T y);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct BitwiseEqualityComparer : IEqualityComparer
-    {
-        bool IEqualityComparer.Equals(in T x, in T y) => EqualityComparer<T>.Default.Equals(x, y);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct DelegatingEqualityComparer : IEqualityComparer
-    {
-        private readonly Func<T, T, bool> func;
-
-        internal DelegatingEqualityComparer(Func<T, T, bool> func)
-            => this.func = func ?? throw new ArgumentNullException(nameof(func));
-
-        bool IEqualityComparer.Equals(in T x, in T y) => func(x, y);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct EqualityComparer : IEqualityComparer
-    {
-        private readonly delegate*<in T, in T, bool> ptr;
-
-        internal EqualityComparer(delegate*<in T, in T, bool> ptr)
-            => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-
-        bool IEqualityComparer.Equals(in T x, in T y) => ptr(in x, in y);
-    }
-
     /// <summary>
-    /// Represents atomic update action.
+    /// Gets a value indicating that the value of the container is writing.
     /// </summary>
-    /// <remarks>The atomic update action should side-effect free.</remarks>
-    /// <param name="current">The value to update.</param>
-    public delegate void Updater(ref T current);
-
-    /// <summary>
-    /// Represents atomic accumulator.
-    /// </summary>
-    /// <remarks>The atomic accumulator should side-effect free.</remarks>
-    /// <param name="current">The value to update.</param>
-    /// <param name="x">The value to be combined with <paramref name="current"/>.</param>
-    public delegate void Accumulator(ref T current, in T x);
-
-    private T value;
-    private bool lockState;
-
+    public readonly bool IsWriteLockHeld => (Volatile.Read(in version) & 1U) is 1U;
+    
     /// <summary>
     /// Clones this container atomically.
     /// </summary>
     /// <returns>The cloned container.</returns>
-    public Atomic<T> Clone()
+    public readonly Atomic<T> Clone()
     {
         var result = new Atomic<T>();
         Read(out result.value);
@@ -83,17 +37,20 @@ public struct Atomic<T> : IStrongBox, ICloneable
     }
 
     /// <inheritdoc/>
-    object ICloneable.Clone() => Clone();
+    readonly object ICloneable.Clone() => Clone();
 
     /// <summary>
     /// Performs atomic read.
     /// </summary>
+    /// <remarks>
+    /// The read is optimistic: it doesn't block concurrent readers or writers, but retries
+    /// if a concurrent write happens during the copy of the value.
+    /// </remarks>
     /// <param name="result">The result of atomic read.</param>
-    public void Read(out T result)
+    public readonly void Read(out T result)
     {
-        Interlocked.Acquire(ref lockState);
-        RuntimeHelpers.Copy(in value, out result);
-        Interlocked.Release(ref lockState);
+        var spinner = new SpinWait();
+        Read(ref spinner, out result);
     }
 
     /// <summary>
@@ -105,9 +62,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The container for the value.</param>
     public void Swap(ref Atomic<T> other)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         other.Swap(ref value);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -116,9 +73,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="other">The managed pointer to the value to swap.</param>
     public void Swap(ref T other)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Swap(ref value, ref other);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -127,23 +84,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="newValue">The value to be stored into this container.</param>
     public void Write(in T newValue)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Copy(in newValue, out value);
-        Interlocked.Release(ref lockState);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private bool CompareExchange<TComparer>(TComparer comparer, in T update, in T expected, out T result)
-        where TComparer : struct, IEqualityComparer
-    {
-        bool successful;
-        Interlocked.Acquire(ref lockState);
-        var current = value;
-        if (successful = comparer.Equals(in current, in expected))
-            RuntimeHelpers.Copy(in update, out value);
-        RuntimeHelpers.Copy(in current, out result);
-        Interlocked.Release(ref lockState);
-        return successful;
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -154,7 +97,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="result">The origin value stored in this container before modification.</param>
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
     public bool CompareExchange(in T update, in T expected, out T result)
-        => CompareExchange(new BitwiseEqualityComparer(), in update, in expected, out result);
+        => CompareExchange(new DefaultEqualityComparer(), in update, in expected, out result);
 
     /// <summary>
     /// Compares two values of type <typeparamref name="T"/> for equality and, if they are equal, replaces the stored value.
@@ -164,8 +107,13 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="expected">The value that is compared to the stored value.</param>
     /// <param name="result">The origin value stored in this container before modification.</param>
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
     public bool CompareExchange(Func<T, T, bool> comparer, in T update, in T expected, out T result)
-        => CompareExchange(new DelegatingEqualityComparer(comparer), in update, in expected, out result);
+    {
+        ArgumentNullException.ThrowIfNull(comparer);
+
+        return CompareExchange(new DelegatingEqualityComparer(comparer), in update, in expected, out result);
+    }
 
     /// <summary>
     /// Compares two values of type <typeparamref name="T"/> for equality and, if they are equal, replaces the stored value.
@@ -175,28 +123,79 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="expected">The value that is compared to the stored value.</param>
     /// <param name="result">The origin value stored in this container before modification.</param>
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
     [CLSCompliant(false)]
     public unsafe bool CompareExchange(delegate*<in T, in T, bool> comparer, in T update, in T expected, out T result)
-        => CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
-        where TComparer : struct, IEqualityComparer
     {
-        bool result;
-        Interlocked.Acquire(ref lockState);
-        try
-        {
-            // custom comparer may throw exception
-            if (result = comparer.Equals(in value, in expected))
-                RuntimeHelpers.Copy(in update, out value);
-        }
-        finally
-        {
-            Interlocked.Release(ref lockState);
-        }
+        ArgumentNullException.ThrowIfNull(comparer);
 
-        return result;
+        return CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
+    }
+
+    /// <summary>
+    /// Tries to switch the current value with the supplied one.
+    /// </summary>
+    /// <remarks>
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(in T, in T)"/> method,
+    /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
+    /// </remarks>
+    /// <param name="comparisonValue">The value to be compared with the currently stored value.</param>
+    /// <param name="newValue">A new value to be placed to the container.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="newValue"/> is placed to this container successfully;
+    /// <see langword="false"/> if this container is concurrently writing the value,
+    /// or the current value is to equal to <paramref name="comparisonValue"/>.
+    /// </returns>
+    public bool TryUpdate(in T comparisonValue, in T newValue)
+        => TryUpdate(new DefaultEqualityComparer(), in comparisonValue, in newValue);
+
+    /// <summary>
+    /// Tries to switch the current value with the supplied one.
+    /// </summary>
+    /// <remarks>
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(Func{T, T, bool}, in T,in T)"/> method,
+    /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
+    /// In this case, <paramref name="comparer"/> is not called.
+    /// </remarks>
+    /// <param name="comparer">The function representing comparison logic.</param>
+    /// <param name="comparisonValue">The value to be compared with the currently stored value.</param>
+    /// <param name="newValue">A new value to be placed to the container.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="newValue"/> is placed to this container successfully;
+    /// <see langword="false"/> if this container is concurrently writing the value,
+    /// or the current value is to equal to <paramref name="comparisonValue"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
+    public bool TryUpdate(Func<T, T, bool> comparer, in T comparisonValue, in T newValue)
+    {
+        ArgumentNullException.ThrowIfNull(comparer);
+        
+        return TryUpdate(new DelegatingEqualityComparer(comparer), in comparisonValue, in newValue);
+    }
+
+    /// <summary>
+    /// Tries to switch the current value with the supplied one.
+    /// </summary>
+    /// <remarks>
+    /// This method doesn't introduce contention in contrast to <see cref="CompareAndSet(Func{T, T, bool}, in T,in T)"/> method,
+    /// which means that it can fail if the current contain is in writing state concurrently with the caller thread.
+    /// In this case, <paramref name="comparer"/> is not called.
+    /// </remarks>
+    /// <param name="comparer">The function representing comparison logic.</param>
+    /// <param name="comparisonValue">The value to be compared with the currently stored value.</param>
+    /// <param name="newValue">A new value to be placed to the container.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="newValue"/> is placed to this container successfully;
+    /// <see langword="false"/> if this container is concurrently writing the value,
+    /// or the current value is to equal to <paramref name="comparisonValue"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
+    [CLSCompliant(false)]
+    public unsafe bool TryUpdate(delegate*<in T, in T, bool> comparer, in T comparisonValue, in T newValue)
+    {
+        ArgumentNullException.ThrowIfNull(comparer);
+
+        return TryUpdate(new EqualityComparer(comparer), in comparisonValue, in newValue);
     }
 
     /// <summary>
@@ -206,7 +205,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="update">The new value.</param>
     /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
     public bool CompareAndSet(in T expected, in T update)
-        => CompareAndSet(new BitwiseEqualityComparer(), in expected, in update);
+        => CompareAndSet(new DefaultEqualityComparer(), in expected, in update);
 
     /// <summary>
     /// Atomically sets the stored value to the given updated value if the current value == the expected value.
@@ -236,10 +235,10 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="previous">The original stored value before modification.</param>
     public void Exchange(in T update, out T previous)
     {
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         RuntimeHelpers.Copy(in value, out previous);
         RuntimeHelpers.Copy(in update, out value);
-        Interlocked.Release(ref lockState);
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -248,12 +247,11 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void UpdateAndGet(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         try
         {
             // custom updater may throw exception
@@ -262,7 +260,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
     }
 
@@ -273,13 +271,12 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndUpdate(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        Interlocked.Acquire(ref lockState);
-        var previous = value;
+        var stamp = EnterWriteLock();
+        RuntimeHelpers.Copy(in value, out result);
         try
         {
             // custom updater may throw exception
@@ -287,10 +284,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
-
-        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
@@ -304,12 +299,11 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        Interlocked.Acquire(ref lockState);
+        var stamp = EnterWriteLock();
         try
         {
             // custom accumulator may throw exception
@@ -318,7 +312,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
     }
 
@@ -333,13 +327,12 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        Interlocked.Acquire(ref lockState);
-        var previous = value;
+        var stamp = EnterWriteLock();
+        RuntimeHelpers.Copy(in value, out result);
         try
         {
             // custom accumulator may throw exception
@@ -347,22 +340,20 @@ public struct Atomic<T> : IStrongBox, ICloneable
         }
         finally
         {
-            Interlocked.Release(ref lockState);
+            ExitWriteLock(stamp);
         }
-
-        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
     /// Gets or sets value atomically.
     /// </summary>
     /// <remarks>
-    /// To achieve the best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
+    /// To achieve the best performance it is recommended to use <see cref="Read(out T)"/> and <see cref="Write(in T)"/> methods
     /// because they don't cause extra allocation of stack memory for passing value.
     /// </remarks>
     public T Value
     {
-        get
+        readonly get
         {
             Read(out var result);
             return result;
@@ -370,22 +361,56 @@ public struct Atomic<T> : IStrongBox, ICloneable
         set => Write(value);
     }
 
-    /// <inheritdoc/>
-    object? IStrongBox.Value
+    /// <summary>
+    /// Sets the default value and returns the previous value.
+    /// </summary>
+    /// <param name="previousValue">The previous value.</param>
+    public void Clear(out T previousValue)
     {
-        get => Value;
-        set => Value = (T)value!;
+        var stamp = EnterWriteLock();
+        RuntimeHelpers.Copy(in value, out previousValue);
+        value = default;
+        ExitWriteLock(stamp);
     }
 
     /// <summary>
-    /// Converts the stored value into string atomically.
+    /// Sets the default value.
     /// </summary>
-    /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-    public override string? ToString()
+    public void Clear()
+    {
+        var stamp = EnterWriteLock();
+        value = default;
+        ExitWriteLock(stamp);
+    }
+
+    /// <inheritdoc/>
+    object? IStrongBox.Value
+    {
+        readonly get => Value;
+        set => Value = (T)value!;
+    }
+
+    /// <inheritdoc/>
+    public readonly override string? ToString()
     {
         Read(out var result);
         return result.ToString();
     }
+    
+    /// <summary>
+    /// Represents atomic update action.
+    /// </summary>
+    /// <remarks>The atomic update action should side-effect free.</remarks>
+    /// <param name="current">The value to update.</param>
+    public delegate void Updater(ref T current);
+
+    /// <summary>
+    /// Represents atomic accumulator.
+    /// </summary>
+    /// <remarks>The atomic accumulator should side-effect free.</remarks>
+    /// <param name="current">The value to update.</param>
+    /// <param name="x">The value to be combined with <paramref name="current"/>.</param>
+    public delegate void Accumulator(ref T current, in T x);
 }
 
 /// <summary>

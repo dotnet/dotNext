@@ -3,6 +3,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+[Obsolete]
 public sealed class ReaderWriterSpinLockTests : Test
 {
     [Fact]
