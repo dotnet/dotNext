@@ -12,14 +12,12 @@ public class AsyncReaderWriterLockBenchmark
 {
     private ReaderWriterLockSlim rwLock;
     private AsyncReaderWriterLock asyncRwLock;
-    private ReaderWriterSpinLock spinLock;
 
     [GlobalSetup]
     public void Initialize()
     {
         rwLock = new(LockRecursionPolicy.NoRecursion);
         asyncRwLock = new();
-        spinLock = new();
     }
 
     [GlobalCleanup]
@@ -27,7 +25,6 @@ public class AsyncReaderWriterLockBenchmark
     {
         rwLock.Dispose();
         asyncRwLock.Dispose();
-        spinLock = default;
     }
 
     [Benchmark(Description = "ReaderWriterLockSlim acquire/release", Baseline = true)]
@@ -49,12 +46,5 @@ public class AsyncReaderWriterLockBenchmark
     {
         asyncRwLock.EnterWriteLockAsync().GetAwaiter().GetResult();
         asyncRwLock.Release();
-    }
-
-    [Benchmark(Description = "ReaderWriterSpinLock acquire/release")]
-    public void AcquireReleaseRWLockSpin()
-    {
-        spinLock.EnterWriteLock();
-        spinLock.ExitWriteLock();
     }
 }

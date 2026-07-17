@@ -9,6 +9,7 @@ namespace DotNext.Threading;
 /// This type should not be used to synchronize access to the I/O intensive resources.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[Obsolete("Use Atomic<T> instead.")]
 public struct ReaderWriterSpinLock
 {
     private const int WriteLockState = int.MinValue;
