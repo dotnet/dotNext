@@ -82,7 +82,7 @@ partial class AsyncStateTracker
     {
         if (TStrategy.Result)
         {
-            ChangeVersion(ref currentVersion);
+            currentVersion += 1U;
         }
         else
         {
@@ -177,18 +177,5 @@ partial class AsyncStateTracker
             => node.ExpectedVersion <= currentVersion;
 
         static bool ICompletionStrategy.Result => true;
-    }
-    
-    private static void ChangeVersion(ref ulong currentVersion)
-    {
-        if (nuint.Size is sizeof(ulong))
-        {
-            currentVersion += 1UL;
-        }
-        else
-        {
-            ref var truncated = ref Unsafe.As<ulong, uint>(ref currentVersion);
-            truncated += 1U;
-        }
     }
 }
