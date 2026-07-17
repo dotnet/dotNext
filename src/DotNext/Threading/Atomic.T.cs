@@ -8,7 +8,7 @@ using Runtime.CompilerServices;
 partial struct Atomic<T>
 {
     private T value;
-    private uint version; // even = stable, odd = write in progress (seqlock)
+    private nuint version; // even = stable, odd = write in progress (seqlock)
     
     private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
         where TComparer : struct, IEqualityComparer, allows ref struct
@@ -46,13 +46,13 @@ partial struct Atomic<T>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private uint EnterWriteLock()
+    private nuint EnterWriteLock()
     {
         var stamp = version;
         return TryEnterWriteLock(stamp) ? stamp : Contention(ref version);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static uint Contention(ref uint version)
+        static nuint Contention(ref nuint version)
         {
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
@@ -63,15 +63,15 @@ partial struct Atomic<T>
         }
     }
 
-    private static bool TryEnterWriteLock(ref uint version, uint stamp)
+    private static bool TryEnterWriteLock(ref nuint version, nuint stamp)
         => (stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp;
 
-    private bool TryEnterWriteLock(uint stamp) => TryEnterWriteLock(ref version, stamp);
+    private bool TryEnterWriteLock(nuint stamp) => TryEnterWriteLock(ref version, stamp);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ExitWriteLock(uint stamp) => Volatile.Write(ref version, stamp + 2U);
+    private void ExitWriteLock(nuint stamp) => Volatile.Write(ref version, stamp + 2U);
 
-    internal bool TryWrite(uint stamp, in T newValue)
+    internal bool TryWrite(nuint stamp, in T newValue)
     {
         var entered = TryEnterWriteLock(stamp);
         if (entered)
@@ -83,13 +83,13 @@ partial struct Atomic<T>
         return entered;
     }
 
-    internal readonly uint Read(ref SpinWait spinner, out T result)
+    internal readonly nuint Read(ref SpinWait spinner, out T result)
         => Read<T, CopyOperation>(ref spinner, out result);
 
-    internal readonly uint Read<TResult, TOperation>(ref SpinWait spinner, out TResult result)
+    internal readonly nuint Read<TResult, TOperation>(ref SpinWait spinner, out TResult result)
         where TOperation : struct, IReadOperation<TResult>, allows ref struct
     {
-        uint stamp;
+        nuint stamp;
         while (!TryRead<TResult, TOperation>(out result, out stamp))
         {
             spinner.SpinOnce();
@@ -98,7 +98,7 @@ partial struct Atomic<T>
         return stamp;
     }
 
-    private readonly bool TryRead<TResult, TOperation>(out TResult result, out uint stamp)
+    private readonly bool TryRead<TResult, TOperation>(out TResult result, out nuint stamp)
         where TOperation : struct, IReadOperation<TResult>, allows ref struct
     {
         Unsafe.SkipInit(out result);

@@ -18,7 +18,7 @@ partial struct Atomic<T>
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct WriteLockScope : IDisposable
     {
-        private readonly uint stamp;
+        private readonly nuint stamp;
         private readonly ref Atomic<T> atomic;
 
         internal WriteLockScope(ref Atomic<T> atomic)
