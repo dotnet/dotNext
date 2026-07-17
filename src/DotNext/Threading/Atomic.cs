@@ -21,6 +21,11 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
     where T : struct
 {
     /// <summary>
+    /// Gets a value indicating that the value of the container is writing.
+    /// </summary>
+    public readonly bool IsWriteLockHeld => (Volatile.Read(in version) & 1U) is 1U;
+    
+    /// <summary>
     /// Clones this container atomically.
     /// </summary>
     /// <returns>The cloned container.</returns>

@@ -139,11 +139,14 @@ public sealed class AtomicContainerTests : Test
     public static void WriteLockScope()
     {
         var atomic = new Atomic<long>();
+        False(atomic.IsWriteLockHeld);
         using (var scope = atomic.EnterLock())
         {
+            True(atomic.IsWriteLockHeld);
             scope.Value = 42L;
         }
 
+        False(atomic.IsWriteLockHeld);
         Equal(42L, atomic.Value);
     }
 }
