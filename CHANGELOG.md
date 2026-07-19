@@ -1,6 +1,36 @@
 Release Notes
 ====
 
+# 07-19-2026
+<a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
+* Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
+* Introduced write lock scope to `Atomic<T>` data type
+* Improved performance of `ConcurrentTypeMap<TValue>`
+* `ReaderWriterSpinLock` is deprecated in favor of `Atomic<T>` struct
+* Fixed AOT compatibility for `BoxedValue<T>` type
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.5.0">DotNext.Unsafe 6.5.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.5.0">DotNext.Threading 6.5.0</a>
+* Improved performance of `AsyncStateTracker` type
+* Perf improvements: `ManualResetCompletionSource` internals moved to `BoxedValue<T>` type to avoid redundant type check
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.5.0">DotNext.IO 6.5.0</a>
+* Introduced `Limit` extension method for all classes implementing [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface. The method returns the wrapper that limits the capacity of the underlying writer
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.5.0">DotNext.Net.Cluster 6.5.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.5.0">DotNext.AspNetCore.Cluster 6.5.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.4.1">DotNext.MaintenanceServices 1.5.0</a>
+* Updated dependencies
+
 # 07-12-2026
 <a href="https://www.nuget.org/packages/dotnext/6.4.1">DotNext 6.4.1</a>
 * Fixed race conditions occurred in async methods of the streams produced by `StreamSource` factory methods
