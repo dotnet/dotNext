@@ -313,7 +313,11 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        return GetOrCreateStorage().GetOrSet(slot, valueFactory)!;
+        var storage = GetOrCreateStorage();
+        if (!storage.Get(slot).TryGet(out var result))
+            storage.TrySet(slot, result = valueFactory.Invoke());
+
+        return result;
     }
 
     /// <summary>
@@ -352,6 +356,22 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     }
 
     /// <summary>
+    /// Tries to set user data if it's not set already.
+    /// </summary>
+    /// <typeparam name="TValue">Type of data.</typeparam>
+    /// <param name="slot">The slot identifying user data.</param>
+    /// <param name="userData">User data to be saved in this collection.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="userData"/> is set to the slot successfully;
+    /// <see langword="false"/> if <paramref name="slot"/> is already set.
+    /// </returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
+    public bool TrySet<TValue>(UserDataSlot<TValue> slot, [DisallowNull] TValue userData)
+        => slot.IsAllocated
+            ? GetOrCreateStorage().TrySet(slot, userData)
+            : throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
+    /// <summary>
     /// Removes user data slot.
     /// </summary>
     /// <typeparam name="TValue">The type of user data.</typeparam>
@@ -359,12 +379,9 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public bool Remove<TValue>(UserDataSlot<TValue> slot)
-    {
-        if (!slot.IsAllocated)
-            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
-
-        return GetStorage()?.Remove(slot).HasValue ?? false;
-    }
+        => slot.IsAllocated
+            ? GetStorage()?.Remove(slot).HasValue ?? false
+            : throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
     /// <summary>
     /// Removes user data slot.

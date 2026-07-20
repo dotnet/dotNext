@@ -56,30 +56,25 @@ public partial struct UserDataStorage
                     : Optional.None<TValue>();
             }
         }
-        
-        public TValue GetOrAdd<TValue>(int index, TValue value)
-        {
-            lock (syncRoot)
-            {
-                ref var valueRef = ref EnsureSlotAllocated<TValue>(index);
-                if (valueRef.HasValue)
-                {
-                    value = valueRef.ValueOrDefault;
-                }
-                else
-                {
-                    valueRef = value;
-                }
-            }
-
-            return value;
-        }
 
         public void Set<TValue>(int index, TValue value)
         {
             lock (syncRoot)
             {
                 EnsureSlotAllocated<TValue>(index) = value;
+            }
+        }
+
+        public bool TrySet<TValue>(int index, TValue value)
+        {
+            lock (syncRoot)
+            {
+                ref var slot = ref EnsureSlotAllocated<TValue>(index);
+                if (slot.HasValue)
+                    return false;
+
+                slot = value;
+                return true;
             }
         }
 
@@ -234,22 +229,14 @@ public partial struct UserDataStorage
             }
         }
 
-        private TValue? GetOrSet<TValue, TSupplier>(int typeIndex, int valueIndex, TSupplier valueFactory)
-            where TSupplier : struct, ISupplier<TValue>, allows ref struct
-        {
-            ref var valueHolder = ref EnsureSlotAllocated(typeIndex);
-            var result = valueHolder.Get<TValue>(valueIndex);
+        private bool TrySet<TValue>(int typeIndex, int valueIndex, TValue value)
+            => EnsureSlotAllocated(typeIndex).TrySet(valueIndex, value);
 
-            return result.HasValue ? result.ValueOrDefault : valueHolder.GetOrAdd(valueIndex, valueFactory.Invoke());
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
-            where TSupplier : struct, ISupplier<TValue>, allows ref struct
+        public bool TrySet<TValue>(UserDataSlot<TValue> slot, TValue value)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return GetOrSet<TValue, TSupplier>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, valueFactory);
+            return TrySet(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
         }
 
         private void Set<TValue>(int typeIndex, int valueIndex, TValue value)
