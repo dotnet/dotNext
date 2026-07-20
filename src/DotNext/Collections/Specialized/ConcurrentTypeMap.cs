@@ -84,7 +84,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     private Entry GetOrAddEntry(int index)
     {
         var entriesCopy = Volatile.Read(in entries);
-        entriesCopy = index < entriesCopy.Length ? entriesCopy : EnsureCapacity(entriesCopy, index);
+        if ((uint)index >= (uint)entriesCopy.Length)
+            entriesCopy = EnsureCapacity(entriesCopy, index);
+        
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index);
     }
 
@@ -102,7 +104,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             }
 
             entriesCopy = Volatile.Read(in entries);
-        } while (index >= entriesCopy.Length);
+        } while ((uint)index >= (uint)entriesCopy.Length);
 
         return entriesCopy;
     }
@@ -524,11 +526,13 @@ public partial class ConcurrentTypeMap : ITypeMap
             entries = entriesCopy; // write barrier is provided by monitor lock
         }
     }
-    
+
     private Entry GetOrAddEntry(int index)
     {
         var entriesCopy = Volatile.Read(in entries);
-        entriesCopy = index < entriesCopy.Length ? entriesCopy : EnsureCapacity(entriesCopy, index);
+        if ((uint)index >= (uint)entriesCopy.Length)
+            entriesCopy = EnsureCapacity(entriesCopy, index);
+
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index);
     }
 
@@ -538,7 +542,7 @@ public partial class ConcurrentTypeMap : ITypeMap
         {
             Resize(entriesCopy);
             entriesCopy = Volatile.Read(in entries);
-        } while (index >= entriesCopy.Length);
+        } while ((uint)index >= (uint)entriesCopy.Length);
 
         return entriesCopy;
     }
