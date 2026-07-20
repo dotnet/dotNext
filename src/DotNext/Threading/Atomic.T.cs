@@ -105,7 +105,7 @@ partial struct Atomic<T>
         Unsafe.SkipInit(out stamp);
 
         var currentStamp = Volatile.Read(in version);
-        if ((currentStamp & 1U) is not 0U)
+        if ((currentStamp & 1U) is 1U)
             return false;
 
         TOperation.Invoke(in value, out result);
