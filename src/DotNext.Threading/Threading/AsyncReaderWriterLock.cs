@@ -23,13 +23,22 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     public AsyncReaderWriterLock() => state = new();
 
-    private bool IsLockHelpByCurrentThread => lockOwnerState?.Value ?? false;
-
-    private void InitializeLockOwner(bool acquired)
+    private bool IsLockHelpByCurrentThread
     {
-        if (lockOwnerState is null && acquired)
+        get => lockOwnerState?.Value ?? false;
+        set
         {
-            lockOwnerState = new(trackAllValues: false);
+            if (value && lockOwnerState is null)
+                InitializeLockOwner(ref lockOwnerState);
+
+            lockOwnerState?.Value = value;
+
+            static void InitializeLockOwner([NotNull] ref ThreadLocal<bool>? lockOwnerState)
+            {
+                var newState = new ThreadLocal<bool>();
+                if (Interlocked.CompareExchange(ref lockOwnerState, newState, null) is not null)
+                    newState.Dispose();
+            }
         }
     }
 
@@ -86,17 +95,25 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <summary>
     /// Tries to obtain reader lock synchronously without blocking caller thread.
     /// </summary>
+    /// <remarks>
+    /// This method doesn't set thread ownership for this lock. Use <see cref="TryEnterReadLock(TimeSpan, CancellationToken)"/>
+    /// with <see cref="TimeSpan.Zero"/> argument instead.
+    /// </remarks>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryEnterReadLock()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return TryEnter<ReadLockManager>(new(ref state));
+        TryAcquire(new ReadLockManager(ref state), out var lockTaken).Dispose();
+        return lockTaken;
     }
 
     /// <summary>
     /// Tries to obtain reader lock synchronously.
     /// </summary>
+    /// <remarks>
+    /// Do not release the lock acquired by this method in another thread.
+    /// </remarks>
     /// <param name="timeout">The time to wait.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if reader lock is acquired in timely manner; <see langword="false"/> if timed out or canceled.</returns>
@@ -124,15 +141,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
             result = false;
         }
 
-        if (result && lockOwnerState is null)
-        {
-            TryAcquire(new LockOwnerTransition(ref lockOwnerState), out _).Dispose();
-
-            Debug.Assert(lockOwnerState is not null);
-            lockOwnerState.Value = true;
-        }
-
-        return result;
+        return IsLockHelpByCurrentThread = result;
     }
 
     /// <summary>
@@ -211,17 +220,25 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <summary>
     /// Attempts to obtain writer lock synchronously without blocking caller thread.
     /// </summary>
+    /// <remarks>
+    /// This method doesn't set thread ownership for this lock. Use <see cref="TryEnterWriteLock(TimeSpan, CancellationToken)"/>
+    /// with <see cref="TimeSpan.Zero"/> argument instead.
+    /// </remarks>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryEnterWriteLock()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return TryEnter<WriteLockManager>(new(ref state));
+        TryAcquire(new WriteLockManager(ref state), out var lockTaken).Dispose();
+        return lockTaken;
     }
 
     /// <summary>
     /// Tries to obtain writer lock synchronously.
     /// </summary>
+    /// <remarks>
+    /// Do not release the lock acquired by this method in another thread.
+    /// </remarks>
     /// <param name="timeout">The time to wait.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if writer lock is acquired in timely manner; <see langword="false"/> if timed out or canceled.</returns>
@@ -286,9 +303,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// When this method is called, the reader lock is released, and the caller goes to the end of the queue for the writer lock.
     /// Thus, other callers might write to the resource before the caller that requested the upgrade is granted the writer lock.
     /// If this method returns <see langword="false"/>, it doesn't reacquire the reader lock.
+    /// </para>
     /// </remarks>
     /// <example>
     /// See example for <see cref="UpgradeToWriteLockAsync(CancellationToken)"/>
@@ -308,30 +327,13 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
                 throw new SynchronizationLockException();
 
             upgraded = TryUpgradeToWriteLock(ref queue);
-            InitializeLockOwner(upgraded);
         }
         finally
         {
             queue.Dispose();
         }
 
-        lockOwnerState?.Value = upgraded;
-
         return upgraded;
-    }
-
-    private bool TryEnter<TLockManager>(TLockManager manager)
-        where TLockManager : struct, ILockManager, allows ref struct
-    {
-        bool acquired;
-        using (TryAcquire(manager, out acquired))
-        {
-            InitializeLockOwner(acquired);
-        }
-
-        lockOwnerState?.Value = acquired;
-
-        return acquired;
     }
 
     private bool TryUpgradeToWriteLock(ref WaitQueueScope queue)
@@ -345,6 +347,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         if (acquired)
         {
             state.AcquireWriteLock();
+        }
+        else
+        {
+            // Read lock is lost, erase information about the ownership
+            IsLockHelpByCurrentThread = false;
         }
 
         return acquired;
@@ -554,7 +561,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            lockOwnerState?.Value = false;
+            IsLockHelpByCurrentThread = false;
             DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
@@ -723,17 +730,5 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         public static void Initialize(WaitNode node)
             => node.IsWriteLock = true;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockOwnerTransition(ref ThreadLocal<bool>? tls) : ILockManager
-    {
-        private readonly ref ThreadLocal<bool>? tls = ref tls;
-        
-        bool ILockManager.IsLockAllowed => true;
-
-        void ILockManager.AcquireLock() => tls ??= new(trackAllValues: false);
-        
-        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }
