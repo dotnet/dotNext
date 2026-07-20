@@ -11,7 +11,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <returns>The value at the specified location.</returns>
     public static long Read(ref readonly long location)
-        => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
+        => IsAtomic<long>() ? Volatile.Read(in location) : Interlocked.Read(in location);
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
@@ -23,13 +23,13 @@ public static partial class Atomic
     /// <param name="value">The desired value at the specified location.</param>
     public static void Write(ref long location, long value)
     {
-        if (Is32BitProcess)
+        if (IsAtomic<long>())
         {
-            Interlocked.Exchange(ref location, value);
+            Volatile.Write(ref location, value);
         }
         else
         {
-            Volatile.Write(ref location, value);
+            Interlocked.Exchange(ref location, value);
         }
     }
 }

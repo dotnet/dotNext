@@ -418,8 +418,6 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
 /// </summary>
 public static partial class Atomic
 {
-    private static bool Is32BitProcess => nuint.Size < sizeof(ulong);
-    
     private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater>(ref TValue value, TUpdater updater)
         where TUpdater : ISupplier<TValue, TValue>, allows ref struct
     {
