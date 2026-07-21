@@ -182,6 +182,8 @@ public partial struct UserDataStorage
 
         private void CopyFrom(ReadOnlySpan<BackingStorageEntry> source)
         {
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
+            
             var destination = new BackingStorageEntry[source.Length];
 
             for (var i = 0; i < source.Length; i++)
@@ -191,7 +193,7 @@ public partial struct UserDataStorage
                 source[i].CopyTo(ref entry);
             }
 
-            Volatile.Write(ref tables, destination);
+            tables = destination;
         }
 
         // copy must be atomic operation
