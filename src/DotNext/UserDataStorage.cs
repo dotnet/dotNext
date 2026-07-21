@@ -149,7 +149,15 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage GetOrCreateStorage()
-        => source as BackingStorage ?? GetOrCreatePartition(source).GetOrCreateValue(source);
+    {
+        if (source is null)
+            InvalidOperationException.Throw();
+
+        if (source is not BackingStorage storage)
+            storage = GetOrCreatePartition(source).GetOrCreateValue(source);
+
+        return storage;
+    }
 
     /// <summary>
     /// Gets user data.
