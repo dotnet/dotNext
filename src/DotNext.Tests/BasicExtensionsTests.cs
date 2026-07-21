@@ -103,6 +103,13 @@ public sealed class BasicExtensionsTests : Test
         var obj = new object();
         var slot = new UserDataSlot<string>();
         Equal("42", obj.UserData.GetOrSet(slot, 42, ToStr));
+        Equal("42", obj.UserData.GetOrSet(slot, "43", out var isSet));
+        False(isSet);
+        
+        True(obj.UserData.Remove(slot));
+        Equal("43", obj.UserData.GetOrSet(slot, "43", out isSet));
+        True(isSet);
+        Equal("43", obj.UserData.GetOrSet(slot, 42, ToStr));
     }
 
     [Fact]
