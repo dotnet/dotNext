@@ -461,7 +461,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="value">The value to be added.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<T>([DisallowNull] T value)
-        => entries.Get<Entry>(TypeSlot<T>.Index).TrySet(value);
+        => entries.Get(TypeSlot<T>.Index).TrySet(value);
 
     /// <inheritdoc />
     void ITypeMap.Add<T>([DisallowNull] T value)
@@ -472,7 +472,7 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T)"/>
     public void Set<T>([DisallowNull] T value)
-        => entries.Get<Entry>(TypeSlot<T>.Index).Value = value;
+        => entries.Get(TypeSlot<T>.Index).Value = value;
 
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
@@ -489,7 +489,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public T GetOrAdd<T>([DisallowNull] T value, out bool added)
-        => (T)entries.Get<Entry>(TypeSlot<T>.Index).TrySet(value, out added);
+        => (T)entries.Get(TypeSlot<T>.Index).TrySet(value, out added);
 
     /// <summary>
     /// Adds a new value or updates existing one, atomically.
@@ -500,12 +500,12 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<T>([DisallowNull] T value)
-        => entries.Get<Entry>(TypeSlot<T>.Index).Set(value) is null;
+        => entries.Get(TypeSlot<T>.Index).Set(value) is null;
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
     public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
     {
-        if (entries.Get<Entry>(TypeSlot<T>.Index).Set(newValue) is T previous)
+        if (entries.Get(TypeSlot<T>.Index).Set(newValue) is T previous)
         {
             oldValue = previous;
             return true;

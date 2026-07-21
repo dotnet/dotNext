@@ -71,3 +71,10 @@ internal struct ConcurrentGrowableArray<T>()
         public static abstract void Initialize(out T value);
     }
 }
+
+internal static class ConcurrentGrowableArray
+{
+    public static ref T Get<T>(this ref ConcurrentGrowableArray<T> array, int index)
+        where T : ConcurrentGrowableArray<T>.IElementInitializer
+        => ref array.Get<T>(index);
+}

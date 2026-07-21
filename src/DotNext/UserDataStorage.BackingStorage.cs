@@ -13,7 +13,7 @@ public partial struct UserDataStorage
 {
     // provides a storage of typed user data slots
     [StructLayout(LayoutKind.Auto)]
-    private struct BackingStorageEntry()
+    private struct BackingStorageEntry() : ConcurrentGrowableArray<BackingStorageEntry>.IElementInitializer
     {
         private ConcurrentGrowableArray<IAtomic> values = new(); // of type boxed Atomic<Optional<T>>[]
 
@@ -91,10 +91,13 @@ public partial struct UserDataStorage
             static void ConcurrentGrowableArray<IAtomic>.IElementInitializer.Initialize(out IAtomic value)
                 => value = new Atomic<Optional<TValue>>();
         }
+        
+        public static void Initialize(out BackingStorageEntry value)
+            => value = new();
     }
     
     // represents specialized dictionary to store all user data associated with the single object
-    private sealed class BackingStorage : ICloneable, ConcurrentGrowableArray<BackingStorageEntry>.IElementInitializer
+    private sealed class BackingStorage : ICloneable
     {
         // Each element indexed using UserDataSlot<T>.TypeIndex
         // Each element in the inner array indexed using UserDataSlot<T>.ValueIndex
@@ -157,7 +160,7 @@ public partial struct UserDataStorage
                 for (var i = 0; i < source.Length; i++)
                 {
                     ref var entry = ref destination[i];
-                    Initialize(out entry);
+                    BackingStorageEntry.Initialize(out entry);
                     source[i].CopyTo(ref entry);
                 }
 
@@ -184,7 +187,7 @@ public partial struct UserDataStorage
             Debug.Assert(slot.IsAllocated);
 
             return tables
-                .Get<BackingStorage>(UserDataSlot<TValue>.TypeIndex)
+                .Get(UserDataSlot<TValue>.TypeIndex)
                 .GetOrSet(slot.ValueIndex, value, out isSet);
         }
 
@@ -194,7 +197,7 @@ public partial struct UserDataStorage
             Debug.Assert(slot.IsAllocated);
 
             tables
-                .Get<BackingStorage>(UserDataSlot<TValue>.TypeIndex)
+                .Get(UserDataSlot<TValue>.TypeIndex)
                 .Set(slot.ValueIndex, value);
         }
 
@@ -208,9 +211,6 @@ public partial struct UserDataStorage
                 ? Optional<TValue>.None
                 : itemRef.Remove<TValue>(slot.ValueIndex);
         }
-
-        public static void Initialize(out BackingStorageEntry value)
-            => value = new();
     }
 
     /*
