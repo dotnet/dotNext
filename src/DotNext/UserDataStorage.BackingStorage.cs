@@ -288,9 +288,9 @@ public partial struct UserDataStorage
 
     static UserDataStorage()
     {
-        uint size = (uint)Environment.ProcessorCount;
+        var size = (uint)Environment.ProcessorCount;
         size += size / 2U;
-        size = Math.Max(BitOperations.RoundUpToPowerOf2(size), 8U);
+        size = uint.Max(BitOperations.RoundUpToPowerOf2(size), 8U);
         Partitions = new ConditionalWeakTable<object, BackingStorage>?[size];
     }
     
