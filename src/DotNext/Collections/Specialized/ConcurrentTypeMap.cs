@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
+using Concurrent;
 using Threading;
 
 /// <summary>
@@ -12,15 +13,7 @@ using Threading;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private readonly System.Threading.Lock syncRoot;
-
-    // Assuming that the map will not contain hundreds or thousands for entries.
-    // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
-    // As a result, we don't need the concurrency level. Also, we can modify different entries concurrently
-    // and perform resizing in parallel with read/write of individual entry.
-    // For the entry of reference type, we don't even need the lock per entry, because Sentinel and CAS operations
-    // can protect the atomic read/write.
-    private Entry[] entries;
+    private ConcurrentArray<Entry> entries;
 
     /// <summary>
     /// Initializes a new map.
@@ -31,10 +24,12 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        entries = UseReferenceEntry
-            ? CreateEntries<ReferenceEntry>(capacity)
-            : CreateEntries<GenericEntry>(capacity);
-        syncRoot = new();
+        entries = new()
+        {
+            Array = UseReferenceEntry
+                ? CreateEntries<ReferenceEntry>(capacity)
+                : CreateEntries<GenericEntry>(capacity)
+        };
 
         static TEntry[] CreateEntries<TEntry>(int capacity)
             where TEntry : Entry, new()
@@ -53,60 +48,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
     }
 
-    private void Resize<TEntry>(TEntry[] entriesCopy)
-        where TEntry : Entry, new()
-    {
-        lock (syncRoot)
-        {
-            // make sure nobody resized the table while we were waiting for the lock
-            if (!ReferenceEquals(entriesCopy, entries)) // read barrier is provided by monitor lock
-                return;
-
-            // do resize
-            var firstUninitialized = entriesCopy.Length;
-            Array.Resize(ref entriesCopy, ITypeMap.RecommendedCapacity);
-
-            // initializes the rest of the array
-            entriesCopy.AsSpan(firstUninitialized).Initialize();
-
-            // commit resized storage
-            entries = entriesCopy; // write barrier is provided by monitor lock
-        }
-    }
-
     /// <inheritdoc />
     void ITypeMap<TValue>.Add<TKey>(TValue value)
     {
         if (!TryAdd<TKey>(value))
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
-    }
-    
-    private Entry GetOrAddEntry(int index)
-    {
-        var entriesCopy = Volatile.Read(in entries);
-        if ((uint)index >= (uint)entriesCopy.Length)
-            entriesCopy = EnsureCapacity(entriesCopy, index);
-        
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index);
-    }
-
-    private Entry[] EnsureCapacity(Entry[] entriesCopy, int index)
-    {
-        do
-        {
-            if (UseReferenceEntry)
-            {
-                Resize(Unsafe.As<ReferenceEntry[]>(entriesCopy));
-            }
-            else
-            {
-                Resize(Unsafe.As<GenericEntry[]>(entriesCopy));
-            }
-
-            entriesCopy = Volatile.Read(in entries);
-        } while ((uint)index >= (uint)entriesCopy.Length);
-
-        return entriesCopy;
     }
 
     /// <summary>
@@ -118,7 +64,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool TryAdd<TKey>(TValue value)
         where TKey : allows ref struct
     {
-        var entry = GetOrAddEntry(TypeSlot<TKey>.Index);
+        var entry = entries.Get<Initializer>(TypeSlot<TKey>.Index);
         return UseReferenceEntry
             ? Unsafe.As<ReferenceEntry>(entry).TrySet(value)
             : Unsafe.As<GenericEntry>(entry).TrySet(value);
@@ -132,7 +78,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public void Set<TKey>(TValue value)
         where TKey : allows ref struct
     {
-        var entry = GetOrAddEntry(TypeSlot<TKey>.Index);
+        var entry = entries.Get<Initializer>(TypeSlot<TKey>.Index);
         if (UseReferenceEntry)
         {
             Unsafe.As<ReferenceEntry>(entry).Set(value);
@@ -151,7 +97,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
     {
-        return this[TypeSlot<TKey>.Index] is { } entry && HasValue(entry);
+        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
+        return !Unsafe.IsNullRef(ref itemRef) && HasValue(itemRef);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool HasValue(Entry entry)
@@ -169,7 +116,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
         where TKey : allows ref struct
     {
-        var entry = GetOrAddEntry(TypeSlot<TKey>.Index);
+        var entry = entries.Get<Initializer>(TypeSlot<TKey>.Index);
         return UseReferenceEntry
             ? Unsafe.As<ReferenceEntry>(entry).GetOrSet(value, out added)
             : Unsafe.As<GenericEntry>(entry).GetOrSet(value, out added);
@@ -186,7 +133,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool AddOrUpdate<TKey>(TValue value)
         where TKey : allows ref struct
     {
-        var entry = GetOrAddEntry(TypeSlot<TKey>.Index);
+        var entry = entries.Get<Initializer>(TypeSlot<TKey>.Index);
         return UseReferenceEntry
             ? Unsafe.As<ReferenceEntry>(entry).SetOrUpdate(value)
             : Unsafe.As<GenericEntry>(entry).SetOrUpdate(value);
@@ -202,7 +149,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         where TKey : allows ref struct
     {
-        var entry = GetOrAddEntry(TypeSlot<TKey>.Index);
+        var entry = entries.Get<Initializer>(TypeSlot<TKey>.Index);
         return UseReferenceEntry
             ? Unsafe.As<ReferenceEntry>(entry).Set(newValue, out oldValue)
             : Unsafe.As<GenericEntry>(entry).Set(newValue, out oldValue);
@@ -217,15 +164,16 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
     {
-        if (this[TypeSlot<TKey>.Index] is { } entry)
+        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
+        if (Unsafe.IsNullRef(ref itemRef))
         {
-            return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).Unset(out value)
-                : Unsafe.As<GenericEntry>(entry).Unset(out value);
+            value = default;
+            return false;
         }
 
-        value = default;
-        return false;
+        return UseReferenceEntry
+            ? Unsafe.As<ReferenceEntry>(itemRef).Unset(out value)
+            : Unsafe.As<GenericEntry>(itemRef).Unset(out value);
     }
 
     /// <summary>
@@ -246,28 +194,16 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
     {
-        if (this[TypeSlot<TKey>.Index] is { } entry)
+        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
+        if (Unsafe.IsNullRef(ref itemRef))
         {
-            return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).TryGet(out value)
-                : Unsafe.As<GenericEntry>(entry).TryGet(out value);
+            value = default;
+            return false;
         }
 
-        value = default;
-        return false;
-    }
-    
-    private Entry? this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            var entriesCopy = Volatile.Read(in entries);
-
-            return index < entriesCopy.Length
-                ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index)
-                : null;
-        }
+        return UseReferenceEntry
+            ? Unsafe.As<ReferenceEntry>(itemRef).TryGet(out value)
+            : Unsafe.As<GenericEntry>(itemRef).TryGet(out value);
     }
 
     /// <summary>
@@ -275,7 +211,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        var entriesCopy = Volatile.Read(in entries);
+        var entriesCopy = entries.Array;
         if (UseReferenceEntry)
         {
             Array.ForEach(Unsafe.As<ReferenceEntry[]>(entriesCopy), static entry => entry.Unset());
@@ -446,6 +382,15 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool HasValue => !atomic.IsUndefined;
     }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct Initializer : ConcurrentArray<Entry>.IElementInitializer
+    {
+        static void ConcurrentArray<Entry>.IElementInitializer.Initialize(out Entry value)
+            => value = UseReferenceEntry
+                ? new ReferenceEntry()
+                : new GenericEntry();
+    }
 }
 
 /// <summary>
@@ -453,7 +398,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 /// </summary>
 public partial class ConcurrentTypeMap : ITypeMap
 {
-    internal sealed class Entry
+    internal sealed class Entry : ConcurrentArray<Entry>.IElementInitializer
     {
         internal volatile object? Value;
 
@@ -481,10 +426,11 @@ public partial class ConcurrentTypeMap : ITypeMap
         }
 
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
+
+        static void ConcurrentArray<Entry>.IElementInitializer.Initialize(out Entry value) => value = new();
     }
 
-    private readonly System.Threading.Lock syncRoot;
-    private Entry[] entries;
+    private ConcurrentArray<Entry> entries;
 
     /// <summary>
     /// Initializes a new empty set.
@@ -495,8 +441,9 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
-        syncRoot = new();
+        var array = capacity is 0 ? [] : new Entry[capacity];
+        Span.Initialize(array);
+        entries = new() { Array = array };
     }
 
     /// <summary>
@@ -507,59 +454,6 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
     }
 
-    private void Resize(Entry[] entriesCopy)
-    {
-        lock (syncRoot)
-        {
-            // make sure nobody resized the table while we were waiting for the lock
-            if (!ReferenceEquals(entriesCopy, entries)) // read barrier is provided by monitor lock
-                return;
-
-            // do resize
-            var firstUninitialized = entriesCopy.Length;
-            Array.Resize(ref entriesCopy, ITypeMap.RecommendedCapacity);
-
-            // initializes the rest of the array
-            entriesCopy.AsSpan(firstUninitialized).Initialize();
-
-            // commit resized storage
-            entries = entriesCopy; // write barrier is provided by monitor lock
-        }
-    }
-
-    private Entry GetOrAddEntry(int index)
-    {
-        var entriesCopy = Volatile.Read(in entries);
-        if ((uint)index >= (uint)entriesCopy.Length)
-            entriesCopy = EnsureCapacity(entriesCopy, index);
-
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index);
-    }
-
-    private Entry[] EnsureCapacity(Entry[] entriesCopy, int index)
-    {
-        do
-        {
-            Resize(entriesCopy);
-            entriesCopy = Volatile.Read(in entries);
-        } while ((uint)index >= (uint)entriesCopy.Length);
-
-        return entriesCopy;
-    }
-    
-    private Entry? this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            var entriesCopy = Volatile.Read(in entries);
-
-            return index < entriesCopy.Length
-                ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entriesCopy), index)
-                : null;
-        }
-    }
-
     /// <summary>
     /// Attempts to add a new value to this set.
     /// </summary>
@@ -567,7 +461,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="value">The value to be added.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<T>([DisallowNull] T value)
-        => GetOrAddEntry(TypeSlot<T>.Index).TrySet(value);
+        => entries.Get<Entry>(TypeSlot<T>.Index).TrySet(value);
 
     /// <inheritdoc />
     void ITypeMap.Add<T>([DisallowNull] T value)
@@ -578,11 +472,14 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T)"/>
     public void Set<T>([DisallowNull] T value)
-        => GetOrAddEntry(TypeSlot<T>.Index).Value = value;
+        => entries.Get<Entry>(TypeSlot<T>.Index).Value = value;
 
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
-        => this[TypeSlot<T>.Index]?.Value is T;
+    {
+        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
+        return !Unsafe.IsNullRef(ref itemRef) && itemRef.Value is T;
+    }
 
     /// <summary>
     /// Attempts to add a new value or returns existing value, atomically.
@@ -592,7 +489,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public T GetOrAdd<T>([DisallowNull] T value, out bool added)
-        => (T)GetOrAddEntry(TypeSlot<T>.Index).TrySet(value, out added);
+        => (T)entries.Get<Entry>(TypeSlot<T>.Index).TrySet(value, out added);
 
     /// <summary>
     /// Adds a new value or updates existing one, atomically.
@@ -603,12 +500,12 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<T>([DisallowNull] T value)
-        => GetOrAddEntry(TypeSlot<T>.Index).Set(value) is null;
+        => entries.Get<Entry>(TypeSlot<T>.Index).Set(value) is null;
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
     public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
     {
-        if (GetOrAddEntry(TypeSlot<T>.Index).Set(newValue) is T previous)
+        if (entries.Get<Entry>(TypeSlot<T>.Index).Set(newValue) is T previous)
         {
             oldValue = previous;
             return true;
@@ -619,12 +516,17 @@ public partial class ConcurrentTypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
-    public bool Remove<T>() => this[TypeSlot<T>.Index]?.Unset() is T;
+    public bool Remove<T>()
+    {
+        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
+        return !Unsafe.IsNullRef(ref itemRef) && itemRef.Unset() is T;
+    }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
     public bool Remove<T>([NotNullWhen(true)] out T? value)
     {
-        if (this[TypeSlot<T>.Index]?.Unset() is T previous)
+        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
+        if (!Unsafe.IsNullRef(ref itemRef) && itemRef.Unset() is T previous)
         {
             value = previous;
             return true;
@@ -637,7 +539,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="ITypeMap.Clear()"/>
     public void Clear()
     {
-        foreach (var entry in Volatile.Read(in entries))
+        foreach (var entry in entries.Array)
         {
             entry.Value = null;
         }
@@ -646,7 +548,8 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
     public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
     {
-        if (this[TypeSlot<T>.Index]?.Value is T result)
+        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
+        if (!Unsafe.IsNullRef(ref itemRef) && itemRef.Value is T result)
         {
             value = result;
             return true;

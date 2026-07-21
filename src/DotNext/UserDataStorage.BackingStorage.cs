@@ -5,6 +5,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
+using Collections.Concurrent;
 using Runtime;
 using Threading;
 
@@ -14,35 +15,34 @@ public partial struct UserDataStorage
     [StructLayout(LayoutKind.Auto)]
     private struct BackingStorageEntry()
     {
-        private readonly System.Threading.Lock syncRoot = new();
-        private ICloneableBox[] array = []; // of type boxed Atomic<Optional<T>>[]
+        private ConcurrentArray<IAtomic> values = new(); // of type boxed Atomic<Optional<T>>[]
 
         public readonly void CopyTo(int typeIndex, Dictionary<string, object> output)
         {
-            CopyToCore(Volatile.Read(in array), typeIndex, output);
+            CopyToCore(values.Array, typeIndex, output);
 
-            static void CopyToCore(ReadOnlySpan<ICloneableBox> source, int typeIndex, Dictionary<string, object> output)
+            static void CopyToCore(ReadOnlySpan<IAtomic> source, int typeIndex, Dictionary<string, object> output)
             {
                 output.EnsureCapacity(source.Length);
 
                 for (var i = 0; i < source.Length; i++)
                 {
-                    if ((source[i].Value as ISupplier<object?>)?.Invoke() is { } value)
+                    if (source[i].Unwrap() is { } value)
                         output[TypeSlot.ToString(typeIndex, i)] = value;
                 }
             }
         }
         
-        private void CopyFrom(ReadOnlySpan<ICloneableBox> source)
+        private void CopyFrom(ReadOnlySpan<IAtomic> source)
         {
-            Volatile.Write(ref array, source.IsEmpty ? [] : Clone(source));
+            values.Array = source.IsEmpty ? [] : Clone(source);
 
-            static ICloneableBox[] Clone(ReadOnlySpan<ICloneableBox> source)
+            static IAtomic[] Clone(ReadOnlySpan<IAtomic> source)
             {
-                var result = new ICloneableBox[source.Length];
+                var result = new IAtomic[source.Length];
                 for (var i = 0; i < result.Length; i++)
                 {
-                    result[i] = Unsafe.As<ICloneableBox>(source[i].Clone());
+                    result[i] = Unsafe.As<IAtomic>(source[i].Clone());
                 }
 
                 return result;
@@ -50,14 +50,14 @@ public partial struct UserDataStorage
         }
 
         public readonly void CopyTo(ref BackingStorageEntry destination)
-            => destination.CopyFrom(Volatile.Read(in array));
+            => destination.CopyFrom(values.Array);
 
         public readonly Optional<TValue> Get<TValue>(int index)
         {
-            var arrayCopy = Volatile.Read(in array);
-            return (uint)index < (uint)arrayCopy.Length
-                ? UnsafeGet<TValue>(arrayCopy, index).Value
-                : Optional.None<TValue>();
+            ref var itemRef = ref values.TryGet(index);
+            return Unsafe.IsNullRef(ref itemRef)
+                ? Optional.None<TValue>()
+                : BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(itemRef).Value;
         }
 
         public void Set<TValue>(int index, TValue value)
@@ -68,69 +68,37 @@ public partial struct UserDataStorage
 
         public Optional<TValue> Remove<TValue>(int index)
         {
+            ref var itemRef = ref values.TryGet(index);
             Optional<TValue> result;
-            if (Volatile.Read(in array) is { } arrayCopy && (uint)index < (uint)arrayCopy.Length)
+            if (Unsafe.IsNullRef(ref itemRef))
             {
-                UnsafeGet<TValue>(arrayCopy, index).Clear(out result);
+                result = Optional<TValue>.None;
             }
             else
             {
-                result = Optional<TValue>.None;
+                BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(itemRef).Clear(out result);
             }
 
             return result;
         }
 
         private ref Atomic<Optional<TValue>> EnsureSlotAllocated<TValue>(int index)
+            => ref BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(values.Get<OptionalInitializer<TValue>>(index));
+        
+        [StructLayout(LayoutKind.Auto)]
+        private readonly ref struct OptionalInitializer<TValue> : ConcurrentArray<IAtomic>.IElementInitializer
         {
-            var arrayCopy = Volatile.Read(in array);
-            if ((uint)index >= (uint)arrayCopy.Length)
-                arrayCopy = EnsureCapacity<TValue>(index);
-
-            return ref UnsafeGet<TValue>(arrayCopy, index);
-        }
-
-        private static ref Atomic<Optional<TValue>> UnsafeGet<TValue>(ICloneableBox[] array, int index)
-        {
-            var element = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-            return ref BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(element);
-        }
-
-        private ICloneableBox[] EnsureCapacity<TValue>(int index)
-        {
-            ICloneableBox[] arrayCopy;
-            lock (syncRoot)
-            {
-                arrayCopy = array;
-                var length = arrayCopy.Length;
-                if ((uint)index >= (uint)length)
-                {
-                    Array.Resize(ref arrayCopy, index + 1);
-                    Initialize(arrayCopy.AsSpan(length));
-                    array = arrayCopy;
-                }
-            }
-
-            return arrayCopy;
-
-            static void Initialize(Span<ICloneableBox> slots)
-            {
-                foreach (ref var slot in slots)
-                {
-                    slot = new Atomic<Optional<TValue>>();
-                }
-            }
+            static void ConcurrentArray<IAtomic>.IElementInitializer.Initialize(out IAtomic value)
+                => value = new Atomic<Optional<TValue>>();
         }
     }
     
     // represents specialized dictionary to store all user data associated with the single object
-    private sealed class BackingStorage : ICloneable
+    private sealed class BackingStorage : ICloneable, ConcurrentArray<BackingStorageEntry>.IElementInitializer
     {
-        private readonly System.Threading.Lock syncRoot;
-        
         // Each element indexed using UserDataSlot<T>.TypeIndex
         // Each element in the inner array indexed using UserDataSlot<T>.ValueIndex
-        private BackingStorageEntry[] tables;
+        private ConcurrentArray<BackingStorageEntry> tables;
 
         // must be public because CWT dynamically accesses it
         public BackingStorage()
@@ -140,21 +108,24 @@ public partial struct UserDataStorage
 
         private BackingStorage(bool isEmpty)
         {
-            syncRoot = new();
+            BackingStorageEntry[] entries;
             if (isEmpty)
             {
-                tables = [];
+                entries = [];
             }
             else
             {
-                Span.Initialize(tables = new BackingStorageEntry[TypeSlot.Count]);
+                entries = new BackingStorageEntry[TypeSlot.Count];
+                Span.Initialize(entries);
             }
+
+            tables = new() { Array = entries };
         }
         
         public BackingStorage Copy()
         {
             var copy = new BackingStorage(isEmpty: true);
-            copy.CopyFrom(Volatile.Read(in tables));
+            copy.CopyFrom(tables.Array);
             return copy;
         }
 
@@ -162,62 +133,49 @@ public partial struct UserDataStorage
 
         public IReadOnlyDictionary<string, object> Dump()
         {
-            var tablesCopy = Volatile.Read(in tables);
-            var result = new Dictionary<string, object>(tablesCopy.Length);
+            return DumpCore(tables.Array);
 
-            for (var i = 0; i < tablesCopy.Length; i++)
-                tablesCopy[i].CopyTo(i, result);
+            static IReadOnlyDictionary<string, object> DumpCore(ReadOnlySpan<BackingStorageEntry> entries)
+            {
+                var result = new Dictionary<string, object>(entries.Length);
 
-            return result;
+                for (var i = 0; i < entries.Length; i++)
+                    entries[i].CopyTo(i, result);
+
+                return result;
+            }
         }
 
         private void CopyFrom(ReadOnlySpan<BackingStorageEntry> source)
         {
-            var destination = new BackingStorageEntry[source.Length];
+            tables.Array = CopyCore(source);
 
-            for (var i = 0; i < source.Length; i++)
+            static BackingStorageEntry[] CopyCore(ReadOnlySpan<BackingStorageEntry> source)
             {
-                ref var entry = ref destination[i];
-                entry = new();
-                source[i].CopyTo(ref entry);
+                var destination = new BackingStorageEntry[source.Length];
+
+                for (var i = 0; i < source.Length; i++)
+                {
+                    ref var entry = ref destination[i];
+                    Initialize(out entry);
+                    source[i].CopyTo(ref entry);
+                }
+
+                return destination;
             }
-
-            Volatile.Write(ref tables, destination);
         }
-
-        // copy must be atomic operation
-        public void CopyTo(BackingStorage destination) => destination.CopyFrom(Volatile.Read(in tables));
+        
+        public void CopyTo(BackingStorage destination) => destination.CopyFrom(tables.Array);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Optional<TValue> Get<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return GetCore(Volatile.Read(in tables), UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
-            
-            static Optional<TValue> GetCore(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
-                => (uint)typeIndex < (uint)tables.Length
-                    ? tables[typeIndex].Get<TValue>(valueIndex)
-                    : Optional.None<TValue>();
-        }
-
-        private BackingStorageEntry[] Resize(int typeIndex)
-        {
-            BackingStorageEntry[] tablesCopy;
-            lock (syncRoot)
-            {
-                tablesCopy = tables;
-                var length = tablesCopy.Length;
-
-                if ((uint)typeIndex >= (uint)length)
-                {
-                    Array.Resize(ref tablesCopy, typeIndex + 1);
-                    tablesCopy.AsSpan(length).Initialize();
-                    tables = tablesCopy;
-                }
-            }
-
-            return tablesCopy;
+            ref var itemRef = ref tables.TryGet(UserDataSlot<TValue>.TypeIndex);
+            return Unsafe.IsNullRef(ref itemRef)
+                ? Optional<TValue>.None
+                : itemRef.Get<TValue>(slot.ValueIndex);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -225,7 +183,8 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            return EnsureSlotAllocated(UserDataSlot<TValue>.TypeIndex)
+            return tables
+                .Get<BackingStorage>(UserDataSlot<TValue>.TypeIndex)
                 .GetOrSet(slot.ValueIndex, value, out isSet);
         }
 
@@ -234,20 +193,9 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            EnsureSlotAllocated(UserDataSlot<TValue>.TypeIndex)
+            tables
+                .Get<BackingStorage>(UserDataSlot<TValue>.TypeIndex)
                 .Set(slot.ValueIndex, value);
-        }
-
-        private ref BackingStorageEntry EnsureSlotAllocated(int typeIndex)
-            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(EnsureCapacity(typeIndex)), typeIndex);
-
-        private BackingStorageEntry[] EnsureCapacity(int typeIndex)
-        {
-            var tablesCopy = Volatile.Read(in tables);
-            if ((uint)typeIndex >= (uint)tablesCopy.Length)
-                tablesCopy = Resize(typeIndex);
-
-            return tablesCopy;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -255,13 +203,14 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            return RemoveCore(Volatile.Read(in tables), UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
-
-            static Optional<TValue> RemoveCore(BackingStorageEntry[] tables, int typeIndex, int valueIndex)
-                => (uint)typeIndex < (uint)tables.Length
-                    ? tables[typeIndex].Remove<TValue>(valueIndex)
-                    : Optional.None<TValue>();
+            ref var itemRef = ref tables.TryGet(UserDataSlot<TValue>.TypeIndex);
+            return Unsafe.IsNullRef(ref itemRef)
+                ? Optional<TValue>.None
+                : itemRef.Remove<TValue>(slot.ValueIndex);
         }
+
+        public static void Initialize(out BackingStorageEntry value)
+            => value = new();
     }
 
     /*

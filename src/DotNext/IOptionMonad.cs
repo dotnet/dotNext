@@ -113,3 +113,8 @@ public interface IOptionMonad<T, TSelf> : IOptionMonad<T>
     public static virtual TSelf operator |(in TSelf x, in TSelf y)
         => x.HasValue ? x : y;
 }
+
+internal interface IOptionMonad
+{
+    object? Value { get; }
+}

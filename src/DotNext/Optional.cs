@@ -229,7 +229,7 @@ public static class Optional
 /// </summary>
 /// <typeparam name="T">Type of value.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, IOptionMonad<T, Optional<T>>
+public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, IOptionMonad<T, Optional<T>>, IOptionMonad
 {
     private const byte UndefinedValue = 0;
     private const byte NullValue = 1;
@@ -562,6 +562,8 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <inheritdoc />
     object? ISupplier<object?>.Invoke() => HasValue ? value : null;
+
+    object? IOptionMonad.Value => HasValue ? value : null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
