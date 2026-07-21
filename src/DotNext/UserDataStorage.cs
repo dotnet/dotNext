@@ -138,6 +138,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <summary>
     /// Gets a value indicating that this storage is valid.
     /// </summary>
+    [MemberNotNullWhen(true, nameof(source))]
     public bool IsValid => source is not null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
