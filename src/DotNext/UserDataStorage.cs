@@ -330,7 +330,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// Gets existing user data or sets the supplied data and return it.
     /// </summary>
     /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
-    /// <param name="slot"><param name="slot">The slot identifying user data.</param></param>
+    /// <param name="slot">The slot identifying user data.</param>
     /// <param name="value">The value to be associated with the slot if it's empty.</param>
     /// <param name="isSet">
     /// <see langword="true"/> if <paramref name="value"/> is set to the slot;
