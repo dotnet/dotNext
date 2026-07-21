@@ -99,9 +99,7 @@ public partial struct UserDataStorage
         private static ref Atomic<Optional<TValue>> UnsafeGet<TValue>(ICloneableBox[] array, int index)
         {
             var element = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-            Debug.Assert(element is Atomic<Optional<TValue>>);
-            
-            return ref Unsafe.As<BoxedValue<Atomic<Optional<TValue>>>>(element).Value;
+            return ref BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(element);
         }
 
         private ICloneableBox[] EnsureCapacity<TValue>(int index)

@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
+using Runtime;
+
 /// <summary>
 /// Represents fast implementation of <see cref="ITypeMap{TValue}"/>
 /// that is not thread safe.
@@ -428,6 +430,6 @@ public partial class TypeMap : ITypeMap
             exists = false;
         }
 
-        return ref Unsafe.Unbox<T>(holder);
+        return ref BoxedValue<T>.UnsafeUnbox(holder);
     }
 }

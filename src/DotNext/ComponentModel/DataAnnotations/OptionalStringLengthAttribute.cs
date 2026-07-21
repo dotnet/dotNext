@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.ComponentModel.DataAnnotations;
 
+using Runtime;
+
 /// <summary>
 /// Specifies the minimum and maximum length of characters that are allowed in a data field
 /// of type <see cref="Optional{T}"/>.
@@ -15,5 +17,5 @@ public sealed class OptionalStringLengthAttribute(int maximumLength) : StringLen
 {
     /// <inheritdoc/>
     public override bool IsValid(object? value)
-        => base.IsValid(value is Optional<string> ? Unsafe.Unbox<Optional<string>>(value).ValueOrDefault : value);
+        => base.IsValid(value is Optional<string> ? BoxedValue<Optional<string>>.UnsafeUnbox(value).ValueOrDefault : value);
 }
