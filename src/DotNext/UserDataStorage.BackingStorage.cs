@@ -138,7 +138,7 @@ public partial struct UserDataStorage
         
         // Each element indexed using UserDataSlot<T>.TypeIndex
         // Each element in the inner array indexed using UserDataSlot<T>.ValueIndex
-        private volatile BackingStorageEntry[] tables;
+        private BackingStorageEntry[] tables;
 
         // must be public because CWT dynamically accesses it
         public BackingStorage()
@@ -173,7 +173,7 @@ public partial struct UserDataStorage
 
         public IReadOnlyDictionary<string, object> Dump()
         {
-            var tablesCopy = tables;
+            var tablesCopy = Volatile.Read(in tables);
             var result = new Dictionary<string, object>(tablesCopy.Length);
 
             for (var i = 0; i < tablesCopy.Length; i++)
@@ -193,7 +193,7 @@ public partial struct UserDataStorage
                 source[i].CopyTo(ref entry);
             }
 
-            tables = destination;
+            Volatile.Write(ref tables, destination);
         }
 
         // copy must be atomic operation
@@ -205,17 +205,17 @@ public partial struct UserDataStorage
             }
         }
 
-        private static Optional<TValue> Get<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
-            => (uint)typeIndex < (uint)tables.Length
-                ? tables[typeIndex].Get<TValue>(valueIndex)
-                : Optional.None<TValue>();
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Optional<TValue> Get<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Get<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return GetCore(Volatile.Read(in tables), UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            
+            static Optional<TValue> GetCore(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
+                => (uint)typeIndex < (uint)tables.Length
+                    ? tables[typeIndex].Get<TValue>(valueIndex)
+                    : Optional.None<TValue>();
         }
 
         private BackingStorageEntry[] Resize(int typeIndex)
@@ -237,25 +237,22 @@ public partial struct UserDataStorage
             return tablesCopy;
         }
 
-        private TValue GetOrSet<TValue>(int typeIndex, int valueIndex, TValue value, out bool isSet)
-            => EnsureSlotAllocated(typeIndex).GetOrSet(valueIndex, value, out isSet);
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, TValue value, out bool isSet)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return GetOrSet(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value, out isSet);
+            return EnsureSlotAllocated(UserDataSlot<TValue>.TypeIndex)
+                .GetOrSet(slot.ValueIndex, value, out isSet);
         }
-
-        private void Set<TValue>(int typeIndex, int valueIndex, TValue value)
-            => EnsureSlotAllocated(typeIndex).Set(valueIndex, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set<TValue>(UserDataSlot<TValue> slot, TValue value)
         {
             Debug.Assert(slot.IsAllocated);
 
-            Set(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
+            EnsureSlotAllocated(UserDataSlot<TValue>.TypeIndex)
+                .Set(slot.ValueIndex, value);
         }
 
         private ref BackingStorageEntry EnsureSlotAllocated(int typeIndex)
@@ -263,7 +260,7 @@ public partial struct UserDataStorage
 
         private BackingStorageEntry[] EnsureCapacity(int typeIndex)
         {
-            var tablesCopy = tables;
+            var tablesCopy = Volatile.Read(in tables);
             if ((uint)typeIndex >= (uint)tablesCopy.Length)
                 tablesCopy = Resize(typeIndex);
 
@@ -275,7 +272,7 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            return RemoveCore(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return RemoveCore(Volatile.Read(in tables), UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
 
             static Optional<TValue> RemoveCore(BackingStorageEntry[] tables, int typeIndex, int valueIndex)
                 => (uint)typeIndex < (uint)tables.Length
