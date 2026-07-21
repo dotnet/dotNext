@@ -315,7 +315,39 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
 
         var storage = GetOrCreateStorage();
         if (!storage.Get(slot).TryGet(out var result))
-            storage.TrySet(slot, result = valueFactory.Invoke());
+        {
+            result = storage.GetOrSet(slot, valueFactory.Invoke(), out _);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets existing user data or sets the supplied data and return it.
+    /// </summary>
+    /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
+    /// <param name="slot"><param name="slot">The slot identifying user data.</param></param>
+    /// <param name="value">The value to be associated with the slot if it's empty.</param>
+    /// <param name="isSet">
+    /// <see langword="true"/> if <paramref name="value"/> is set to the slot;
+    /// <see langword="false"/> if <paramref name="value"/> is ignored because the slot is assigned already.
+    /// </param>
+    /// <returns>The existing value associated with <paramref name="slot"/>; or <paramref name="value"/>.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, TValue value, out bool isSet)
+    {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+        
+        var storage = GetOrCreateStorage();
+        if (storage.Get(slot).TryGet(out var result))
+        {
+            isSet = false;
+        }
+        else
+        {
+            result = storage.GetOrSet(slot, value, out isSet);
+        }
 
         return result;
     }
@@ -336,7 +368,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (GetStorage() is { } storage)
             return storage.Get(slot).TryGet(out userData);
 
-        userData = default!;
+        userData = default;
         return false;
     }
 
@@ -354,22 +386,6 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
 
         GetOrCreateStorage().Set(slot, userData);
     }
-
-    /// <summary>
-    /// Tries to set user data if it's not set already.
-    /// </summary>
-    /// <typeparam name="TValue">Type of data.</typeparam>
-    /// <param name="slot">The slot identifying user data.</param>
-    /// <param name="userData">User data to be saved in this collection.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="userData"/> is set to the slot successfully;
-    /// <see langword="false"/> if <paramref name="slot"/> is already set.
-    /// </returns>
-    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
-    public bool TrySet<TValue>(UserDataSlot<TValue> slot, [DisallowNull] TValue userData)
-        => slot.IsAllocated
-            ? GetOrCreateStorage().TrySet(slot, userData)
-            : throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
     /// <summary>
     /// Removes user data slot.

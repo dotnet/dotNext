@@ -17,7 +17,7 @@ using Runtime.CompilerServices;
 /// than synchronized methods according to benchmarks. This type provides no contention for read path.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public partial struct Atomic<T> : IStrongBox, ICloneable
+public partial struct Atomic<T> : ICloneableBox
     where T : struct
 {
     /// <summary>
