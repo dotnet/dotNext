@@ -13,7 +13,7 @@ using Threading;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private ConcurrentArray<Entry> entries;
+    private ConcurrentGrowableArray<Entry> entries;
 
     /// <summary>
     /// Initializes a new map.
@@ -384,9 +384,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct Initializer : ConcurrentArray<Entry>.IElementInitializer
+    private readonly ref struct Initializer : ConcurrentGrowableArray<Entry>.IElementInitializer
     {
-        static void ConcurrentArray<Entry>.IElementInitializer.Initialize(out Entry value)
+        static void ConcurrentGrowableArray<Entry>.IElementInitializer.Initialize(out Entry value)
             => value = UseReferenceEntry
                 ? new ReferenceEntry()
                 : new GenericEntry();
@@ -398,7 +398,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 /// </summary>
 public partial class ConcurrentTypeMap : ITypeMap
 {
-    internal sealed class Entry : ConcurrentArray<Entry>.IElementInitializer
+    internal sealed class Entry : ConcurrentGrowableArray<Entry>.IElementInitializer
     {
         internal volatile object? Value;
 
@@ -427,10 +427,10 @@ public partial class ConcurrentTypeMap : ITypeMap
 
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
 
-        static void ConcurrentArray<Entry>.IElementInitializer.Initialize(out Entry value) => value = new();
+        static void ConcurrentGrowableArray<Entry>.IElementInitializer.Initialize(out Entry value) => value = new();
     }
 
-    private ConcurrentArray<Entry> entries;
+    private ConcurrentGrowableArray<Entry> entries;
 
     /// <summary>
     /// Initializes a new empty set.

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Concurrent;
 
 [StructLayout(LayoutKind.Auto)]
-internal struct ConcurrentArray<T>()
+internal struct ConcurrentGrowableArray<T>()
 {
     private readonly Lock syncRoot = new();
     private T[] array = [];
@@ -20,7 +20,7 @@ internal struct ConcurrentArray<T>()
     {
         Debug.Assert(index >= 0);
 
-        var arrayCopy = Volatile.Read(in array);
+        var arrayCopy = Array;
         return ref (uint)index < (uint)arrayCopy.Length
             ? ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index)
             : ref Unsafe.NullRef<T>();
@@ -31,7 +31,7 @@ internal struct ConcurrentArray<T>()
     {
         Debug.Assert(index >= 0);
 
-        var arrayCopy = Volatile.Read(in array);
+        var arrayCopy = Array;
         if ((uint)index >= (uint)arrayCopy.Length)
             arrayCopy = Resize<TInitializer>(index);
 

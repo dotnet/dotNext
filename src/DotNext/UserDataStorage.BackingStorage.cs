@@ -15,7 +15,7 @@ public partial struct UserDataStorage
     [StructLayout(LayoutKind.Auto)]
     private struct BackingStorageEntry()
     {
-        private ConcurrentArray<IAtomic> values = new(); // of type boxed Atomic<Optional<T>>[]
+        private ConcurrentGrowableArray<IAtomic> values = new(); // of type boxed Atomic<Optional<T>>[]
 
         public readonly void CopyTo(int typeIndex, Dictionary<string, object> output)
         {
@@ -86,19 +86,19 @@ public partial struct UserDataStorage
             => ref BoxedValue<Atomic<Optional<TValue>>>.UnsafeUnbox(values.Get<OptionalInitializer<TValue>>(index));
         
         [StructLayout(LayoutKind.Auto)]
-        private readonly ref struct OptionalInitializer<TValue> : ConcurrentArray<IAtomic>.IElementInitializer
+        private readonly ref struct OptionalInitializer<TValue> : ConcurrentGrowableArray<IAtomic>.IElementInitializer
         {
-            static void ConcurrentArray<IAtomic>.IElementInitializer.Initialize(out IAtomic value)
+            static void ConcurrentGrowableArray<IAtomic>.IElementInitializer.Initialize(out IAtomic value)
                 => value = new Atomic<Optional<TValue>>();
         }
     }
     
     // represents specialized dictionary to store all user data associated with the single object
-    private sealed class BackingStorage : ICloneable, ConcurrentArray<BackingStorageEntry>.IElementInitializer
+    private sealed class BackingStorage : ICloneable, ConcurrentGrowableArray<BackingStorageEntry>.IElementInitializer
     {
         // Each element indexed using UserDataSlot<T>.TypeIndex
         // Each element in the inner array indexed using UserDataSlot<T>.ValueIndex
-        private ConcurrentArray<BackingStorageEntry> tables;
+        private ConcurrentGrowableArray<BackingStorageEntry> tables;
 
         // must be public because CWT dynamically accesses it
         public BackingStorage()
