@@ -133,7 +133,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     private readonly object source;
 
     internal UserDataStorage(object source)
-        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(source));
+        => this.source = (source as IContainer)?.Source ?? source;
 
     /// <summary>
     /// Gets a value indicating that this storage is valid.
