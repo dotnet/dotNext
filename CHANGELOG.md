@@ -7,7 +7,8 @@ Release Notes
 * Introduced write lock scope to `Atomic<T>` data type
 * Improved performance of `ConcurrentTypeMap<TValue>`
 * `ReaderWriterSpinLock` is deprecated in favor of `Atomic<T>` struct
-* Fixed AOT compatibility for `BoxedValue<T>` type
+* Fixed AOT compatibility for `BoxedValue<T>` and `UserDataStorage` types
+* Removed lock contention when reading from `UserDataStorage`
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
 * Updated dependencies
