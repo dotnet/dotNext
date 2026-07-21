@@ -17,19 +17,16 @@ public partial struct UserDataStorage
         private readonly System.Threading.Lock syncRoot = new();
         private ICloneableBox[] array = []; // of type boxed Atomic<Optional<T>>[]
 
-        public void CopyTo(int typeIndex, Dictionary<string, object> output)
+        public readonly void CopyTo(int typeIndex, Dictionary<string, object> output)
         {
             lock (syncRoot)
             {
-                if (array is not null)
-                {
-                    output.EnsureCapacity(array.Length);
+                output.EnsureCapacity(array.Length);
 
-                    for (var i = 0; i < array.Length; i++)
-                    {
-                        if ((array[i].Value as ISupplier<object?>)?.Invoke() is { } value)
-                            output[TypeSlot.ToString(typeIndex, i)] = value;
-                    }
+                for (var i = 0; i < array.Length; i++)
+                {
+                    if ((array[i].Value as ISupplier<object?>)?.Invoke() is { } value)
+                        output[TypeSlot.ToString(typeIndex, i)] = value;
                 }
             }
         }
@@ -176,11 +173,11 @@ public partial struct UserDataStorage
 
         public IReadOnlyDictionary<string, object> Dump()
         {
-            var tables = this.tables;
-            var result = new Dictionary<string, object>(tables.Length);
+            var tablesCopy = tables;
+            var result = new Dictionary<string, object>(tablesCopy.Length);
 
-            for (var i = 0; i < tables.Length; i++)
-                tables[i].CopyTo(i, result);
+            for (var i = 0; i < tablesCopy.Length; i++)
+                tablesCopy[i].CopyTo(i, result);
 
             return result;
         }
@@ -266,24 +263,24 @@ public partial struct UserDataStorage
 
         private BackingStorageEntry[] EnsureCapacity(int typeIndex)
         {
-            var tables = this.tables;
-            if ((uint)typeIndex >= (uint)tables.Length)
-                tables = Resize(typeIndex);
+            var tablesCopy = tables;
+            if ((uint)typeIndex >= (uint)tablesCopy.Length)
+                tablesCopy = Resize(typeIndex);
 
-            return tables;
+            return tablesCopy;
         }
-
-        private static Optional<TValue> Remove<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
-            => (uint)typeIndex < (uint)tables.Length
-                ? tables[typeIndex].Remove<TValue>(valueIndex)
-                : Optional.None<TValue>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Optional<TValue> Remove<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Remove<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return RemoveCore(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+
+            static Optional<TValue> RemoveCore(BackingStorageEntry[] tables, int typeIndex, int valueIndex)
+                => (uint)typeIndex < (uint)tables.Length
+                    ? tables[typeIndex].Remove<TValue>(valueIndex)
+                    : Optional.None<TValue>();
         }
     }
 
