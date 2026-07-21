@@ -288,9 +288,22 @@ public partial struct UserDataStorage
 
     static UserDataStorage()
     {
-        var size = (uint)Environment.ProcessorCount;
-        size += size / 2U;
-        size = uint.Max(BitOperations.RoundUpToPowerOf2(size), 8U);
+        const uint minSize = 8U;
+        
+        uint size;
+        if (RuntimeFeature.IsDynamicCodeSupported)
+        {
+            size = (uint)Environment.ProcessorCount;
+            size += size / 2U;
+            size = uint.Max(BitOperations.RoundUpToPowerOf2(size), minSize);
+        }
+        else
+        {
+            // For AOT, we don't want to call Environment.ProcessorCount that cannot be interpreted at compile time,
+            // so the runtime needs to check for type initialization on every access to the class
+            size = minSize;
+        }
+
         Partitions = new ConditionalWeakTable<object, BackingStorage>?[size];
     }
     
