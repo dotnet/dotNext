@@ -19,24 +19,23 @@ public partial struct UserDataStorage
 
         public readonly void CopyTo(int typeIndex, Dictionary<string, object> output)
         {
-            lock (syncRoot)
-            {
-                output.EnsureCapacity(array.Length);
+            CopyToCore(Volatile.Read(in array), typeIndex, output);
 
-                for (var i = 0; i < array.Length; i++)
+            static void CopyToCore(ReadOnlySpan<ICloneableBox> source, int typeIndex, Dictionary<string, object> output)
+            {
+                output.EnsureCapacity(source.Length);
+
+                for (var i = 0; i < source.Length; i++)
                 {
-                    if ((array[i].Value as ISupplier<object?>)?.Invoke() is { } value)
+                    if ((source[i].Value as ISupplier<object?>)?.Invoke() is { } value)
                         output[TypeSlot.ToString(typeIndex, i)] = value;
                 }
             }
         }
         
-        private void CopyFrom(ICloneableBox[] source)
+        private void CopyFrom(ReadOnlySpan<ICloneableBox> source)
         {
-            lock (syncRoot)
-            {
-                array = source.Length > 0 ? Clone(source) : [];
-            }
+            Volatile.Write(ref array, source.IsEmpty ? [] : Clone(source));
 
             static ICloneableBox[] Clone(ReadOnlySpan<ICloneableBox> source)
             {
@@ -49,14 +48,9 @@ public partial struct UserDataStorage
                 return result;
             }
         }
-        
+
         public readonly void CopyTo(ref BackingStorageEntry destination)
-        {
-            lock (syncRoot)
-            {
-                destination.CopyFrom(array);
-            }
-        }
+            => destination.CopyFrom(Volatile.Read(in array));
 
         public readonly Optional<TValue> Get<TValue>(int index)
         {
@@ -159,12 +153,9 @@ public partial struct UserDataStorage
         
         public BackingStorage Copy()
         {
-            lock (syncRoot)
-            {
-                var copy = new BackingStorage(isEmpty: true);
-                copy.CopyFrom(tables);
-                return copy;
-            }
+            var copy = new BackingStorage(isEmpty: true);
+            copy.CopyFrom(Volatile.Read(in tables));
+            return copy;
         }
 
         object ICloneable.Clone() => Copy();
@@ -182,8 +173,6 @@ public partial struct UserDataStorage
 
         private void CopyFrom(ReadOnlySpan<BackingStorageEntry> source)
         {
-            Debug.Assert(syncRoot.IsHeldByCurrentThread);
-            
             var destination = new BackingStorageEntry[source.Length];
 
             for (var i = 0; i < source.Length; i++)
@@ -193,17 +182,11 @@ public partial struct UserDataStorage
                 source[i].CopyTo(ref entry);
             }
 
-            tables = destination;
+            Volatile.Write(ref tables, destination);
         }
 
         // copy must be atomic operation
-        public void CopyTo(BackingStorage destination)
-        {
-            lock (syncRoot)
-            {
-                destination.CopyFrom(tables);
-            }
-        }
+        public void CopyTo(BackingStorage destination) => destination.CopyFrom(Volatile.Read(in tables));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Optional<TValue> Get<TValue>(UserDataSlot<TValue> slot)
