@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Specialized;
 
 using Concurrent;
+using Runtime;
 using Threading;
 
 /// <summary>
@@ -400,32 +401,16 @@ public partial class ConcurrentTypeMap : ITypeMap
 {
     internal sealed class Entry : ConcurrentGrowableArray<Entry>.IElementInitializer
     {
-        internal volatile object? Value;
+        private IAtomic? atomic;
 
-        internal bool TrySet(object newValue)
-            => Interlocked.CompareExchange(ref Value, newValue, null) is null;
+        public ref Atomic<Optional<T>> Get<T>()
+            => ref BoxedValue<Atomic<Optional<T>>>.UnsafeUnbox(atomic is { } result
+                ? result
+                : Interlocked.CompareExchange(ref atomic, result = new Atomic<Optional<T>>(), null) ?? result);
 
-        internal object? Unset() => Interlocked.Exchange(ref Value, null);
+        public void Clear() => Interlocked.Exchange(ref atomic, null)?.Reset();
 
-        internal object TrySet(object value, out bool isSet)
-        {
-            var valueCopy = Value;
-            if (valueCopy is null)
-            {
-                valueCopy = Interlocked.CompareExchange(ref Value, value, null);
-
-                if (valueCopy is null)
-                {
-                    isSet = true;
-                    return value;
-                }
-            }
-
-            isSet = false;
-            return valueCopy;
-        }
-
-        internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
+        public object? Unwrap() => atomic?.Unwrap();
 
         static void ConcurrentGrowableArray<Entry>.IElementInitializer.Initialize(out Entry value) => value = new();
     }
@@ -461,7 +446,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="value">The value to be added.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<T>([DisallowNull] T value)
-        => entries.Get(TypeSlot<T>.Index).TrySet(value);
+        => entries.Get(TypeSlot<T>.Index).Get<T>().TrySet(value);
 
     /// <inheritdoc />
     void ITypeMap.Add<T>([DisallowNull] T value)
@@ -472,13 +457,13 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T)"/>
     public void Set<T>([DisallowNull] T value)
-        => entries.Get(TypeSlot<T>.Index).Value = value;
+        => entries.Get(TypeSlot<T>.Index).Get<T>().Value = value;
 
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
     {
         ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        return !Unsafe.IsNullRef(ref itemRef) && itemRef.Value is T;
+        return !Unsafe.IsNullRef(ref itemRef) && !itemRef.Get<T>().IsUndefined;
     }
 
     /// <summary>
@@ -489,7 +474,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public T GetOrAdd<T>([DisallowNull] T value, out bool added)
-        => (T)entries.Get(TypeSlot<T>.Index).TrySet(value, out added);
+        => entries.Get(TypeSlot<T>.Index).Get<T>().GetOrSet(value, out added);
 
     /// <summary>
     /// Adds a new value or updates existing one, atomically.
@@ -500,40 +485,40 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<T>([DisallowNull] T value)
-        => entries.Get(TypeSlot<T>.Index).Set(value) is null;
+    {
+        var optional = new Optional<T>(value);
+        entries.Get(TypeSlot<T>.Index).Get<T>().Swap(ref optional);
+        return optional.IsUndefined;
+    }
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
     public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
     {
-        if (entries.Get(TypeSlot<T>.Index).Set(newValue) is T previous)
-        {
-            oldValue = previous;
-            return true;
-        }
-
-        oldValue = default;
-        return false;
+        var optional = new Optional<T>(newValue);
+        entries.Get(TypeSlot<T>.Index).Get<T>().Swap(ref optional);
+        return optional.TryGet(out oldValue);
     }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
-    public bool Remove<T>()
-    {
-        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        return !Unsafe.IsNullRef(ref itemRef) && itemRef.Unset() is T;
-    }
+    public bool Remove<T>() => RemoveCore<T>().HasValue;
 
     /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
-    public bool Remove<T>([NotNullWhen(true)] out T? value)
+    public bool Remove<T>([NotNullWhen(true)] out T? value) => RemoveCore<T>().TryGet(out value);
+
+    private Optional<T> RemoveCore<T>()
     {
+        Optional<T> result;
         ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        if (!Unsafe.IsNullRef(ref itemRef) && itemRef.Unset() is T previous)
+        if (Unsafe.IsNullRef(ref itemRef))
         {
-            value = previous;
-            return true;
+            result = Optional<T>.None;
+        }
+        else
+        {
+            itemRef.Get<T>().Clear(out result);
         }
 
-        value = default;
-        return false;
+        return result;
     }
 
     /// <inheritdoc cref="ITypeMap.Clear()"/>
@@ -541,7 +526,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         foreach (var entry in entries.Array)
         {
-            entry.Value = null;
+            entry.Clear();
         }
     }
 
@@ -549,13 +534,16 @@ public partial class ConcurrentTypeMap : ITypeMap
     public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
     {
         ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        if (!Unsafe.IsNullRef(ref itemRef) && itemRef.Value is T result)
+        Optional<T> optional;
+        if (Unsafe.IsNullRef(ref itemRef))
         {
-            value = result;
-            return true;
+            optional = Optional<T>.None;
+        }
+        else
+        {
+            itemRef.Get<T>().Read(out optional);
         }
 
-        value = default;
-        return false;
+        return optional.TryGet(out value);
     }
 }

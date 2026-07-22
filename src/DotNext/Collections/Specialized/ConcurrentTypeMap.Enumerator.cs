@@ -95,7 +95,7 @@ public partial class ConcurrentTypeMap
         {
             while (entries is not null && index < entries.Length)
             {
-                current = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index++).Value;
+                current = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index++).Unwrap();
                 if (current is not null)
                     return true;
             }
