@@ -154,8 +154,8 @@ public static partial class List
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <param name="item">The object to insert into the list.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
-        /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the receiver.</exception>
+        /// <exception cref="NotSupportedException">The receiver is read-only.</exception>
         public void Insert(Index index, T item)
             => list.Insert(index.GetOffset(list.Count), item);
 
@@ -163,15 +163,14 @@ public static partial class List
         /// Removes the item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
-        /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the receiver.</exception>
+        /// <exception cref="NotSupportedException">The receiver is read-only.</exception>
         public void RemoveAt(Index index)
             => list.RemoveAt(index.GetOffset(list.Count));
 
         /// <summary>
         /// Returns slice of the list.
         /// </summary>
-        /// <typeparam name="T">The type of elements in the list.</typeparam>
         /// <param name="range">The range of elements in the list.</param>
         /// <returns>The section of the list.</returns>
         public ListSegment<T> Slice(Range range)
