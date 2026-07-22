@@ -5,13 +5,13 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
 * Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
 * Introduced write lock scope to `Atomic<T>` data type
-* Improved performance of `ConcurrentTypeMap<TValue>`
 * `ReaderWriterSpinLock` is deprecated in favor of `Atomic<T>` struct
 * Fixed AOT compatibility for `BoxedValue<T>` and `UserDataStorage` types
 * Removed lock contention when reading from `UserDataStorage`
+* Improved performance of `TypeMap` and `ConcurrentTypeMap` types
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
-* Updated dependencies
+* All methods accepting variadic arguments as `params Expression[] args` now changed to `params IEnumerable<Expression> args`
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/6.5.0">DotNext.Unsafe 6.5.0</a>
 * Updated dependencies
