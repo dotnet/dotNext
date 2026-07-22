@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -324,6 +325,7 @@ public static partial class List
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 file readonly struct ReadOnlyList<T>(IList<T> list) : IReadOnlyList<T>
 {
     public IEnumerator<T> GetEnumerator() => list.GetEnumerator();
