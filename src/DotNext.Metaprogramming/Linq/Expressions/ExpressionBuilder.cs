@@ -860,7 +860,7 @@ public static partial class ExpressionBuilder
         if (expression is BlockExpression block)
         {
             variables = block.Variables;
-            result = block.Expressions.Concat(instructions);
+            result = block.Expressions.Append(instructions);
         }
         else
         {
@@ -881,10 +881,11 @@ public static partial class ExpressionBuilder
     /// <param name="args">The list of arguments to be passed into constructor.</param>
     /// <returns>Instantiation expression.</returns>
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
-    public static MethodCallExpression New(this Expression type, params Expression[] args)
+    public static MethodCallExpression New(this Expression type, params IEnumerable<Expression> args)
     {
         var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), [typeof(Type), typeof(object[])]);
         Debug.Assert(activate is not null);
+        
         return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
     }
 
@@ -1111,9 +1112,7 @@ public static partial class ExpressionBuilder
             return Expression.MakeIndex(target, null, args);
 
         // not an array, looking for DefaultMemberAttribute
-        var attribute = target.Type.GetCustomAttribute<DefaultMemberAttribute>(true);
-        if (attribute is null)
-            throw new NotSupportedException();
+        var attribute = target.Type.GetCustomAttribute<DefaultMemberAttribute>(true) ?? throw new NotSupportedException();
 
         return Expression.Property(target, attribute.MemberName, args);
     }
