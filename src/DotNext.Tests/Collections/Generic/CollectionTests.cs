@@ -326,8 +326,19 @@ public sealed class CollectionTests : Test
         }
     }
 
-    static IEnumerable<T> EmptyEnumerable<T>()
+    private static IEnumerable<T> EmptyEnumerable<T>()
     {
         yield break;
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static void SequenceHashCode(bool salted)
+    {
+        ImmutableList<int> list = [1, 4, 5];
+        ImmutableArray<int> array = [..list];
+
+        True(list.SequenceHashCode(salted) == array.SequenceHashCode(salted));
     }
 }
