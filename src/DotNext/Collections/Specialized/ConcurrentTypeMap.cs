@@ -399,7 +399,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 /// </summary>
 public partial class ConcurrentTypeMap : ITypeMap
 {
-    internal sealed class Entry : ConcurrentGrowableArray<Entry>.IElementInitializer
+    internal sealed class Entry
     {
         private IAtomic? atomic;
 
@@ -413,8 +413,6 @@ public partial class ConcurrentTypeMap : ITypeMap
         public void Clear() => Interlocked.Exchange(ref atomic, null)?.Reset();
 
         public object? Unwrap() => atomic?.Unwrap();
-
-        static void ConcurrentGrowableArray<Entry>.IElementInitializer.Initialize(out Entry value) => value = new();
     }
 
     private ConcurrentGrowableArray<Entry> entries;

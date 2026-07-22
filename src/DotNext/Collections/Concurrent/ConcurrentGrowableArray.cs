@@ -75,6 +75,13 @@ internal struct ConcurrentGrowableArray<T>()
 internal static class ConcurrentGrowableArray
 {
     public static ref T Get<T>(this ref ConcurrentGrowableArray<T> array, int index)
-        where T : ConcurrentGrowableArray<T>.IElementInitializer
-        => ref array.Get<T>(index);
+        where T : new()
+        => ref array.Get<DefaultInitializer<T>>(index);
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct DefaultInitializer<T> : ConcurrentGrowableArray<T>.IElementInitializer
+    where T : new()
+{
+    static void ConcurrentGrowableArray<T>.IElementInitializer.Initialize(out T value) => value = new();
 }

@@ -13,7 +13,7 @@ public partial struct UserDataStorage
 {
     // provides a storage of typed user data slots
     [StructLayout(LayoutKind.Auto)]
-    private struct BackingStorageEntry() : ConcurrentGrowableArray<BackingStorageEntry>.IElementInitializer
+    private struct BackingStorageEntry()
     {
         private ConcurrentGrowableArray<IAtomic> values = new(); // of type boxed Atomic<Optional<T>>[]
 
@@ -91,9 +91,6 @@ public partial struct UserDataStorage
             static void ConcurrentGrowableArray<IAtomic>.IElementInitializer.Initialize(out IAtomic value)
                 => value = new Atomic<Optional<TValue>>();
         }
-        
-        public static void Initialize(out BackingStorageEntry value)
-            => value = new();
     }
     
     // represents specialized dictionary to store all user data associated with the single object
@@ -160,7 +157,7 @@ public partial struct UserDataStorage
                 for (var i = 0; i < source.Length; i++)
                 {
                     ref var entry = ref destination[i];
-                    BackingStorageEntry.Initialize(out entry);
+                    entry = new();
                     source[i].CopyTo(ref entry);
                 }
 
