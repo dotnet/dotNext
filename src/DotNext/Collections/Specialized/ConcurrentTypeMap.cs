@@ -404,9 +404,11 @@ public partial class ConcurrentTypeMap : ITypeMap
         private IAtomic? atomic;
 
         public ref Atomic<Optional<T>> Get<T>()
-            => ref BoxedValue<Atomic<Optional<T>>>.UnsafeUnbox(atomic is { } result
-                ? result
-                : Interlocked.CompareExchange(ref atomic, result = new Atomic<Optional<T>>(), null) ?? result);
+        {
+            IAtomic newAtomic;
+            return ref BoxedValue<Atomic<Optional<T>>>.UnsafeUnbox(
+                atomic ?? Interlocked.CompareExchange(ref atomic, newAtomic = new Atomic<Optional<T>>(), null) ?? newAtomic);
+        }
 
         public void Clear() => Interlocked.Exchange(ref atomic, null)?.Reset();
 

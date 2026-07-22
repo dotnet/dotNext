@@ -165,7 +165,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         static Bucket EnsureInitialized(ref Bucket? bucket)
         {
             Bucket newBucket;
-            return Volatile.Read(in bucket) ?? Interlocked.CompareExchange(ref bucket, newBucket = new(), null) ?? newBucket;
+            return bucket ?? Interlocked.CompareExchange(ref bucket, newBucket = new(), null) ?? newBucket;
         }
     }
     
