@@ -43,7 +43,15 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
         => entries = new Entry[ITypeMap.RecommendedCapacity];
 
     private ref Entry this[int index]
-        => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            Debug.Assert((uint)index < (uint)entries.Length);
+            
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        }
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref Entry EnsureSlotAllocated<TKey>()
@@ -249,6 +257,7 @@ public partial class TypeMap : ITypeMap
 
     private ref object? this[int index]
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             Debug.Assert((uint)index < (uint)entries.Length);
