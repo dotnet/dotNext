@@ -3,6 +3,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
+using Collections.Generic;
+
 partial class ExpressionBuilder
 {
     /// <summary>
@@ -28,12 +30,12 @@ partial class ExpressionBuilder
         /// </remarks>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
         /// <returns>Instantiation expression.</returns>
-        public NewExpression New(params Expression[] args)
+        public NewExpression New(params IReadOnlyCollection<Expression> args)
         {
-            if (args is [])
+            if (args.Count is 0)
                 return Expression.New(type);
 
-            return type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type)) is { } ctor
+            return type.GetConstructor(args.Select(ExpressionBuilder.GetType).ToArray()) is { } ctor
                 ? Expression.New(ctor, args)
                 : throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName);
         }
