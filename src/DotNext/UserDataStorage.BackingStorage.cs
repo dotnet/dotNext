@@ -42,7 +42,7 @@ public partial struct UserDataStorage
                 var result = new IAtomic[source.Length];
                 for (var i = 0; i < result.Length; i++)
                 {
-                    result[i] = Unsafe.As<IAtomic>(source[i].Clone());
+                    result[i] = source[i].Clone();
                 }
 
                 return result;

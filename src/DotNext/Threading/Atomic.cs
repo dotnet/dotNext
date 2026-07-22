@@ -45,7 +45,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     }
 
     /// <inheritdoc/>
-    readonly object ICloneable.Clone() => Clone();
+    readonly IAtomic IAtomic.Clone() => Clone();
 
     /// <summary>
     /// Performs atomic read.
