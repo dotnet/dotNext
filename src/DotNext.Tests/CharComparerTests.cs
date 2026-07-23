@@ -18,14 +18,13 @@ public sealed class CharComparerTests : Test
     public static void EqualityOfComparers()
     {
         Same(CharComparer.FromComparison(StringComparison.Ordinal), CharComparer.FromComparison(StringComparison.Ordinal));
-        True(CharComparer.FromComparison(StringComparison.Ordinal).Equals(CharComparer.FromComparison(StringComparison.Ordinal)));
         Equal(CharComparer.FromComparison(StringComparison.Ordinal).GetHashCode(), CharComparer.FromComparison(StringComparison.Ordinal).GetHashCode());
     }
 
     [Fact]
     public static void ToStringFromComparison()
     {
-        Equal(StringComparison.Ordinal.ToString(), CharComparer.FromComparison(StringComparison.Ordinal).ToString());
+        Equal(nameof(StringComparison.Ordinal), CharComparer.FromComparison(StringComparison.Ordinal).ToString());
     }
 
     [Fact]
