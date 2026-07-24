@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
+using Buffers.Binary;
 using IO;
 
 partial class ClusterConfigurationStorage<TAddress>

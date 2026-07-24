@@ -6,6 +6,8 @@ using System.Numerics;
 namespace DotNext.Net.Http;
 
 using Buffers;
+using static Buffers.Binary.ByteBuffer;
+using static Buffers.Text.CharBuffer;
 
 /// <summary>
 /// Represents HTTP endpoint.

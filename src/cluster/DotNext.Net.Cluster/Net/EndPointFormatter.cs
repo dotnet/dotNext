@@ -8,6 +8,7 @@ using System.Text;
 namespace DotNext.Net;
 
 using Buffers;
+using Buffers.Binary;
 using Numerics;
 using Patterns;
 using HttpEndPoint = Http.HttpEndPoint;

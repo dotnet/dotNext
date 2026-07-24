@@ -6,6 +6,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Buffers;
 
 using Binary;
+using Text;
 using IO;
 using static DotNext.Text.EncodingExtensions;
 

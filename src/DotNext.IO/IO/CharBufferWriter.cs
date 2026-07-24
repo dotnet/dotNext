@@ -5,7 +5,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
 
-using Buffers;
+using Buffers.Text;
 
 internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, TWriter>
     where TWriter : class, IBufferWriter<char>

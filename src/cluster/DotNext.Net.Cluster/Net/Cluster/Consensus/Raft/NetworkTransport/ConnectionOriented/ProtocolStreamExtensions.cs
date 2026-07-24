@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented;
 
 using Buffers;
+using Buffers.Binary;
 using IO;
 using Runtime.Serialization;
 

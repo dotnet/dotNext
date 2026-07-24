@@ -4,6 +4,7 @@ using System.Text;
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Text;
 
 internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWriter>
     where TWriter : class, IBufferWriter<byte>

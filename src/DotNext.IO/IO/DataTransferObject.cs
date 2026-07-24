@@ -6,6 +6,7 @@ using System.Text;
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
 /// <summary>

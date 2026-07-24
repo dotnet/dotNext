@@ -8,6 +8,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented;
 
 using Buffers;
+using Buffers.Binary;
 
 internal abstract partial class Server : Disposable, IServer
 {

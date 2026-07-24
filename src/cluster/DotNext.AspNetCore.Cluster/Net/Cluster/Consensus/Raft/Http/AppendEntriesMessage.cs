@@ -15,6 +15,7 @@ using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Buffers;
+using Buffers.Text;
 using IO;
 using IO.Log;
 using static IO.Pipelines.PipeExtensions;

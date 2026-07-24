@@ -3,6 +3,7 @@
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 
 /// <summary>
 /// Represents the structured data unit that can be transferred over wire.

@@ -3,9 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Text.Unicode;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
-using Binary;
 using Numerics;
 
 /// <summary>

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented;
 
 using IO;
-using static Buffers.ByteBuffer;
+using static Buffers.Binary.ByteBuffer;
 
 internal partial class Client
 {
