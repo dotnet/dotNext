@@ -294,7 +294,7 @@ internal struct SkippingReader(long length) : IBufferReader
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<TReader>
+internal struct ProxyReader<TReader>(in TReader reader) : IBufferReader, ISupplier<TReader>
     where TReader : struct, IBufferReader
 {
     private TReader reader = reader;
@@ -311,5 +311,5 @@ internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    public static implicit operator ProxyReader<TReader>(TReader reader) => new(reader);
+    public static implicit operator ProxyReader<TReader>(in TReader reader) => new(reader);
 }
