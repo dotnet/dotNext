@@ -27,8 +27,10 @@ public interface IBufferReader : IConsumer<ReadOnlySpan<byte>>
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct MemoryBlockReader(Memory<byte> destination) : IBufferReader
+internal struct MemoryBlockReader(in Memory<byte> destination) : IBufferReader
 {
+    private Memory<byte> destination = destination;
+    
     readonly int IBufferReader.RemainingBytes => destination.Length;
 
     void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
@@ -39,8 +41,9 @@ internal struct MemoryBlockReader(Memory<byte> destination) : IBufferReader
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct MemoryReader(Memory<byte> destination) : IBufferReader, ISupplier<int>
+internal struct MemoryReader(in Memory<byte> destination) : IBufferReader, ISupplier<int>
 {
+    private Memory<byte> destination = destination;
     private int bytesWritten;
 
     internal readonly int BytesWritten => bytesWritten;
@@ -68,6 +71,19 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
     private T? buffer;
     private int writtenBytes;
 
+    public static bool IsApplicable
+    {
+        get
+        {
+            var type = typeof(T);
+            return type.IsPrimitive
+                   || type == typeof(UInt128)
+                   || type == typeof(Int128)
+                   || type == typeof(Half)
+                   || type == typeof(NFloat);
+        }
+    }
+
     private Span<byte> Buffer => MemoryMarshal.CreateSpan(ref Unsafe.As<T?, byte>(ref buffer), Unsafe.SizeOf<T>());
 
     readonly int IBufferReader.RemainingBytes => Unsafe.SizeOf<T>() - writtenBytes;
@@ -82,9 +98,9 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
 
     T ISupplier<T>.Invoke() => parser(Buffer, Number.get_IsSigned<T>() is false);
 
-    internal static WellKnownIntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
+    internal static WellKnownIntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static WellKnownIntegerReader<T> BigEndian() => new(&T.ReadBigEndian);
+    internal static WellKnownIntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -114,9 +130,9 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    internal static IntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
+    internal static IntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static IntegerReader<T> BigEndian() => new(&T.ReadBigEndian);
+    internal static IntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -197,7 +213,7 @@ internal struct CharBufferDecodingReader(in DecodingContext context, int length,
 [StructLayout(LayoutKind.Auto)]
 internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer) : IBufferReader, ISupplier<int>
 {
-    private int writtenChars;
+    private int writtenChars, length = length;
 
     public readonly int RemainingBytes => Math.Min(length, buffer.Length);
 
@@ -269,12 +285,15 @@ internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnly
 [StructLayout(LayoutKind.Auto)]
 internal struct SkippingReader(long length) : IBufferReader
 {
+    private long length = length;
+    
     readonly int IBufferReader.RemainingBytes => int.CreateSaturating(length);
 
     void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
         => length -= source.Length;
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<TReader>
     where TReader : struct, IBufferReader
 {

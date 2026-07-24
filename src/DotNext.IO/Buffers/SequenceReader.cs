@@ -95,15 +95,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public T ReadLittleEndian<T>()
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        if (WellKnownIntegerReader<T>.IsApplicable)
         {
-            var parser = WellKnownIntegerReader<T>.LittleEndian();
+            var parser = WellKnownIntegerReader<T>.LittleEndian;
             return Read<T, WellKnownIntegerReader<T>>(ref parser);
         }
         else
         {
-            var parser = IntegerReader<T>.LittleEndian();
+            var parser = IntegerReader<T>.LittleEndian;
             return Read<T, IntegerReader<T>>(ref parser);
         }
     }
@@ -117,15 +116,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public T ReadBigEndian<T>()
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        if (WellKnownIntegerReader<T>.IsApplicable)
         {
-            var parser = WellKnownIntegerReader<T>.BigEndian();
+            var parser = WellKnownIntegerReader<T>.BigEndian;
             return Read<T, WellKnownIntegerReader<T>>(ref parser);
         }
         else
         {
-            var parser = IntegerReader<T>.BigEndian();
+            var parser = IntegerReader<T>.BigEndian;
             return Read<T, IntegerReader<T>>(ref parser);
         }
     }

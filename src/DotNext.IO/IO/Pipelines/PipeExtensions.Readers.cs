@@ -124,10 +124,9 @@ partial class PipeExtensions
     public static ValueTask<T> ReadLittleEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
-            ? ReadAsync<T, WellKnownIntegerReader<T>>(reader, WellKnownIntegerReader<T>.LittleEndian(), token)
-            : ReadAsync<T, IntegerReader<T>>(reader, IntegerReader<T>.LittleEndian(), token);
+        return WellKnownIntegerReader<T>.IsApplicable
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(reader, WellKnownIntegerReader<T>.LittleEndian, token)
+            : ReadAsync<T, IntegerReader<T>>(reader, IntegerReader<T>.LittleEndian, token);
     }
 
     /// <summary>
@@ -142,10 +141,9 @@ partial class PipeExtensions
     public static ValueTask<T> ReadBigEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
-            ? ReadAsync<T, WellKnownIntegerReader<T>>(reader, WellKnownIntegerReader<T>.BigEndian(), token)
-            : ReadAsync<T, IntegerReader<T>>(reader, IntegerReader<T>.BigEndian(), token);
+        return WellKnownIntegerReader<T>.IsApplicable
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(reader, WellKnownIntegerReader<T>.BigEndian, token)
+            : ReadAsync<T, IntegerReader<T>>(reader, IntegerReader<T>.BigEndian, token);
     }
 
     private static ValueTask<int> ReadLengthAsync(this PipeReader reader, LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
