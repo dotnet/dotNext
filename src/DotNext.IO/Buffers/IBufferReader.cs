@@ -17,7 +17,7 @@ using DecodingContext = DotNext.Text.DecodingContext;
 public interface IBufferReader : IConsumer<ReadOnlySpan<byte>>
 {
     /// <summary>
-    /// The expected number of bytes to be consumed this reader.
+    /// The expected number of bytes to be consumed by this reader.
     /// </summary>
     int RemainingBytes { get; }
 
