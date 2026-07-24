@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO.Pipelines;
 
 using Buffers;
+using Buffers.Binary;
 using Text;
 
 [StructLayout(LayoutKind.Auto)]

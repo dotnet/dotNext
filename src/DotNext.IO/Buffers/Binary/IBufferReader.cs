@@ -3,9 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
-using Binary;
 using Numerics;
 using Runtime;
 using Runtime.CompilerServices;

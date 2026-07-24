@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
 internal static class BufferReader
 {

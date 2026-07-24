@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 
 partial class PoolingBufferedStream : IAsyncBinaryReader
 {
