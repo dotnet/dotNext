@@ -159,7 +159,7 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
         return T.Parse(source.Slice(0, writtenBytes));
     }
 
-    internal static int MaxSize => Unsafe.SizeOf<Buffer256>();
+    internal static unsafe int MaxSize => sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -252,7 +252,7 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    internal static int MaxSize => Unsafe.SizeOf<Buffer256>();
+    internal static int MaxSize => sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]
