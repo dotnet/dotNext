@@ -52,7 +52,13 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// </summary>
     public readonly SequencePosition Position => position;
 
-    private void Read<TParser>(ref TParser parser)
+    /// <summary>
+    /// Consumes and parser this sequence.
+    /// </summary>
+    /// <param name="parser">The parser that consumes the sequence.</param>
+    /// <typeparam name="TParser">The type of the parser.</typeparam>
+    /// <exception cref="EndOfStreamException"><paramref name="parser"/> requires more data.</exception>
+    public void Read<TParser>(ref TParser parser)
         where TParser : struct, IBufferReader, allows ref struct
     {
         position = parser.Append(RemainingSequence);
