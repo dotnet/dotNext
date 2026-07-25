@@ -27,7 +27,8 @@ public static partial class StreamExtensions
                 break;
         }
 
-        return parser.EndOfStream<TResult, TParser>();
+        parser.EndOfStream();
+        return parser.Invoke();
     }
 
     /// <summary>

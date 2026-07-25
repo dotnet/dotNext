@@ -27,7 +27,8 @@ public partial class FileReader : IAsyncBinaryReader
     {
         while (await ReadAsync(token).ConfigureAwait(false) && !Read(ref parser)) ;
 
-        return parser.EndOfStream<TResult, TParser>();
+        parser.EndOfStream();
+        return parser.Invoke();
     }
 
     private ValueTask ReadAsync<TParser>(TParser parser, CancellationToken token)

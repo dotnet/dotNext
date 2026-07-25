@@ -28,8 +28,4 @@ internal static class BufferReader
                 throw new EndOfStreamException();
         }
     }
-
-    internal static TResult EndOfStream<TResult, TParser>(this ref TParser parser)
-        where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
-        => parser.RemainingBytes is 0 || !TParser.ThrowOnPartialData ? parser.Invoke() : throw new EndOfStreamException();
 }

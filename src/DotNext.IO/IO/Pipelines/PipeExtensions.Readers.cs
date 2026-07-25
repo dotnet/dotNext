@@ -40,7 +40,8 @@ partial class PipeExtensions
                 consumed = parser.Append(buffer);
             }
 
-            return parser.EndOfStream<TResult, TParser>();
+            parser.EndOfStream();
+            return parser.Invoke();
         }
     }
 
