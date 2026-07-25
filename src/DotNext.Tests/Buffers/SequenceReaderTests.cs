@@ -9,7 +9,7 @@ using Binary;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-public sealed class SequenceBinaryReaderTests : Test
+public sealed class SequenceReaderTests : Test
 {
     [Fact]
     public static async Task ReadMemory()
