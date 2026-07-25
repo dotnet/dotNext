@@ -40,6 +40,7 @@ Release Date: 07-19-2026
 * Fixed AOT compatibility for `BoxedValue<T>` and `UserDataStorage` types
 * Removed lock contention when reading from `UserDataStorage`
 * Improved performance of `TypeMap` and `ConcurrentTypeMap` types
+* `BufferWriterSlim<T>` can be constructed with a fixed capacity
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
 * All methods accepting variadic arguments as `params Expression[] args` now changed to `params IEnumerable<Expression> args`
@@ -53,14 +54,15 @@ Release Date: 07-19-2026
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.5.0">DotNext.IO 6.5.0</a>
 * Introduced `Limit` extension method for all classes implementing [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface. The method returns the wrapper that limits the capacity of the underlying writer
+* `EndPointFormatter` type is moved from `DotNext.Net.Cluster` library
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.5.0">DotNext.Net.Cluster 6.5.0</a>
-* Updated dependencies
+* `EndPointFormatter` type is moved to `DotNext.IO` library
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.5.0">DotNext.AspNetCore.Cluster 6.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.4.1">DotNext.MaintenanceServices 1.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.5.0">DotNext.MaintenanceServices 1.5.0</a>
 * Updated dependencies
 
 # Release & Support Policy
