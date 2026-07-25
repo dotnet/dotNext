@@ -16,7 +16,7 @@ using Runtime.CompilerServices;
 /// This type is similar to <see cref="PoolingArrayBufferWriter{T}"/> and <see cref="PoolingBufferWriter{T}"/>
 /// classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
 /// memory as an initial buffer used for writing. If builder requires more space then pooled
-/// memory used.
+/// memory is used.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
 /// <seealso cref="PoolingArrayBufferWriter{T}"/>
