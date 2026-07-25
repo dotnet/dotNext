@@ -71,6 +71,23 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         allocator = MemoryAllocator<T>.Default;
     }
 
+    /// <summary>
+    /// Get a value indicating that the internal buffer can't grow.
+    /// </summary>
+    /// <remarks>
+    /// If this property is <see langword="true"/> then any method suitable for writing elements
+    /// can potentially throw <see cref="BufferSizeLimitExceededException"/>.
+    /// </remarks>
+    public bool IsBounded
+    {
+        readonly get => ReferenceEquals(allocator, MemoryAllocator<T>.Throwable);
+        init
+        {
+            if (value)
+                allocator = MemoryAllocator<T>.Throwable;
+        }
+    }
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     private readonly int Overflow => int.Max(0, position - initialBuffer.Length);
