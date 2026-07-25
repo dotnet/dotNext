@@ -98,9 +98,9 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
 
     T ISupplier<T>.Invoke() => parser(Buffer, Number.get_IsSigned<T>() is false);
 
-    internal static WellKnownIntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
+    public static WellKnownIntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static WellKnownIntegerReader<T> BigEndian => new(&T.ReadBigEndian);
+    public static WellKnownIntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -130,9 +130,9 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    internal static IntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
+    public static IntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static IntegerReader<T> BigEndian => new(&T.ReadBigEndian);
+    public static IntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -158,8 +158,8 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
         ReadOnlySpan<byte> source = buffer;
         return T.Parse(source.Slice(0, writtenBytes));
     }
-
-    internal static unsafe int MaxSize => sizeof(Buffer256);
+    
+    public static unsafe bool IsApplicable => T.Size <= sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -252,7 +252,7 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    internal static int MaxSize => sizeof(Buffer256);
+    public static bool IsApplicable(int length) => length <= sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]

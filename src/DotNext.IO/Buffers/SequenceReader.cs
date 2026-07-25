@@ -74,7 +74,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public T Read<T>()
         where T : IBinaryFormattable<T>
     {
-        if (T.Size <= BinaryFormattable256Reader<T>.MaxSize)
+        if (BinaryFormattable256Reader<T>.IsApplicable)
         {
             var parser = new BinaryFormattable256Reader<T>();
             return Read<T, BinaryFormattable256Reader<T>>(ref parser);
@@ -390,7 +390,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         if (length is 0)
             return parser([], arg);
 
-        if (length <= Parsing256Reader<IFormatProvider?, TResult>.MaxSize)
+        if (Parsing256Reader<IFormatProvider?, TResult>.IsApplicable(length))
         {
             var reader = new Parsing256Reader<TArg, TResult>(arg, parser, length);
             return Read<TResult, Parsing256Reader<TArg, TResult>>(ref reader);

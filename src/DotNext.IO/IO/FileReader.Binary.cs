@@ -79,7 +79,7 @@ public partial class FileReader : IAsyncBinaryReader
     public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        return T.Size <= BinaryFormattable256Reader<T>.MaxSize
+        return BinaryFormattable256Reader<T>.IsApplicable
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(new(), token)
             : ReadAsync<T, BinaryFormattableReader<T>>(new(), token);
     }

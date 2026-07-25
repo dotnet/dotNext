@@ -290,11 +290,11 @@ file static class UriEndPoint
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Uri")]
     private static extern Uri GetUriUnsafe([UnsafeAccessorType(FullyQualifiedName)] object endPoint);
 
-    internal static Uri GetUri(EndPoint endPoint) => GetUriUnsafe(endPoint);
+    public static Uri GetUri(EndPoint endPoint) => GetUriUnsafe(endPoint);
     
     [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
     [return: UnsafeAccessorType(FullyQualifiedName)]
     private static extern object CreateUnsafe(Uri uri);
 
-    internal static EndPoint Create(Uri uri) => (EndPoint)CreateUnsafe(uri);
+    public static EndPoint Create(Uri uri) => (EndPoint)CreateUnsafe(uri);
 }

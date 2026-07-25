@@ -107,7 +107,7 @@ partial class PipeExtensions
     public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        return T.Size <= BinaryFormattable256Reader<T>.MaxSize
+        return BinaryFormattable256Reader<T>.IsApplicable
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(reader, new(), token)
             : ReadAsync<T, BinaryFormattableReader<T>>(reader, new(), token);
     }
