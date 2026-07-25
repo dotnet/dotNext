@@ -84,7 +84,7 @@ public static class EndPointFormatter
             case null:
                 throw new ArgumentNullException(nameof(endPoint));
             case IPEndPoint ip:
-                WriteIP(bufferWriter, ip);
+                WriteIp(bufferWriter, ip);
                 return;
             case HttpEndPoint http:
                 WriteHttp(bufferWriter, http);
@@ -106,7 +106,7 @@ public static class EndPointFormatter
                 throw new ArgumentOutOfRangeException(nameof(endPoint));
         }
 
-        static void WriteIP(TWriter bufferWriter, IPEndPoint ip)
+        static void WriteIp(TWriter bufferWriter, IPEndPoint ip)
         {
             // the format is:
             // IP endpoint type = 1 byte
@@ -118,7 +118,7 @@ public static class EndPointFormatter
             writer.WriteLittleEndian(ip.Port);
             bufferWriter.Advance(writer.WrittenCount);
 
-            Serialize(bufferWriter, ip.Address);
+            SerializeAddress(bufferWriter, ip.Address);
         }
 
         static void WriteHttp(TWriter bufferWriter, HttpEndPoint endPoint)
@@ -137,7 +137,7 @@ public static class EndPointFormatter
             writer.WriteLittleEndian<Enum<AddressFamily>>(new(endPoint.AddressFamily));
             bufferWriter.Advance(writer.WrittenCount);
 
-            Serialize(bufferWriter, endPoint.Host);
+            SerializeHost(bufferWriter, endPoint.Host);
         }
 
         static void WriteDns(TWriter bufferWriter, DnsEndPoint endPoint)
@@ -154,7 +154,7 @@ public static class EndPointFormatter
             writer.WriteLittleEndian<Enum<AddressFamily>>(new(endPoint.AddressFamily));
             bufferWriter.Advance(writer.WrittenCount);
 
-            Serialize(bufferWriter, endPoint.Host);
+            SerializeHost(bufferWriter, endPoint.Host);
         }
 
         static void WriteUds(TWriter bufferWriter, UnixDomainSocketEndPoint endPoint)
@@ -166,7 +166,7 @@ public static class EndPointFormatter
             bufferWriter.GetSpan()[0] = DomainSocketEndPointPrefix;
             bufferWriter.Advance(prefixSize);
 
-            Serialize(bufferWriter, endPoint.ToString());
+            SerializeHost(bufferWriter, endPoint.ToString());
         }
 
         static void WriteUri(TWriter bufferWriter, EndPoint endPoint)
@@ -178,31 +178,29 @@ public static class EndPointFormatter
             bufferWriter.GetSpan()[0] = UriEndPointPrefix;
             bufferWriter.Advance(prefixSize);
 
-            Serialize(bufferWriter, UriEndPoint.GetUri(endPoint).ToString());
+            SerializeHost(bufferWriter, UriEndPoint.GetUri(endPoint).ToString());
         }
-    }
 
-    private static void Serialize<TWriter>(TWriter bufferWriter, IPAddress address)
-        where TWriter : IBufferWriter<byte>, allows ref struct
-    {
-        var buffer = bufferWriter.GetSpan(IPv6AddressSize + 1);
+        static void SerializeAddress(TWriter bufferWriter, IPAddress address)
+        {
+            var buffer = bufferWriter.GetSpan(IPv6AddressSize + 1);
 
-        if (!address.TryWriteBytes(buffer[1..], out var bytesWritten))
-            throw new NotSupportedException();
+            if (!address.TryWriteBytes(buffer[1..], out var bytesWritten))
+                throw new NotSupportedException();
 
-        buffer[0] = (byte)bytesWritten;
-        bufferWriter.Advance(bytesWritten + 1);
-    }
+            buffer[0] = (byte)bytesWritten;
+            bufferWriter.Advance(bytesWritten + 1);
+        }
 
-    private static void Serialize<TWriter>(TWriter bufferWriter, ReadOnlySpan<char> hostName)
-        where TWriter : IBufferWriter<byte>, allows ref struct
-    {
-        var count = HostNameEncoding.GetByteCount(hostName);
-        var writer = new SpanWriter<byte>(bufferWriter.GetSpan(sizeof(int) + count));
-        writer.WriteLittleEndian(count);
-        writer.Advance(HostNameEncoding.GetBytes(hostName, writer.RemainingSpan));
+        static void SerializeHost(TWriter bufferWriter, ReadOnlySpan<char> hostName)
+        {
+            var count = HostNameEncoding.GetByteCount(hostName);
+            var writer = new SpanWriter<byte>(bufferWriter.GetSpan(sizeof(int) + count));
+            writer.WriteLittleEndian(count);
+            writer.Advance(HostNameEncoding.GetBytes(hostName, writer.RemainingSpan));
 
-        bufferWriter.Advance(writer.WrittenCount);
+            bufferWriter.Advance(writer.WrittenCount);
+        }
     }
 
     /// <summary>
@@ -210,52 +208,65 @@ public static class EndPointFormatter
     /// </summary>
     /// <param name="reader">The binary reader.</param>
     /// <returns>The deserialized network endpoint address.</returns>
-    public static EndPoint ReadEndPoint(this ref SequenceReader reader) => reader.ReadByte() switch
+    public static EndPoint ReadEndPoint(this ref SequenceReader reader)
     {
-        IPEndPointPrefix => DeserializeIP(ref reader),
-        DnsEndPointPrefix => DeserializeHost(ref reader),
-        HttpEndPointPrefix => DeserializeHttp(ref reader),
-        DomainSocketEndPointPrefix => DeserializeDomainSocket(ref reader),
-        UriEndPointPrefix => DeserializeUri(ref reader),
-        _ => throw new NotSupportedException(),
-    };
+        return reader.ReadByte() switch
+        {
+            IPEndPointPrefix => ReadIp(ref reader),
+            DnsEndPointPrefix => ReadDns(ref reader),
+            HttpEndPointPrefix => ReadHttp(ref reader),
+            DomainSocketEndPointPrefix => ReadDomainSocket(ref reader),
+            UriEndPointPrefix => ReadUri(ref reader),
+            _ => throw new NotSupportedException(),
+        };
+        
+        static UnixDomainSocketEndPoint ReadDomainSocket(ref SequenceReader reader)
+        {
+            var length = reader.ReadLittleEndian<int>();
 
-    private static UnixDomainSocketEndPoint DeserializeDomainSocket(ref SequenceReader reader)
-    {
-        var length = reader.ReadLittleEndian<int>();
+            using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+                ? stackalloc byte[length]
+                : new SpanOwner<byte>(length);
 
-        using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
-            ? stackalloc byte[length]
-            : new SpanOwner<byte>(length);
+            reader.Read(pathBuffer.Span);
+            return new(HostNameEncoding.GetString(pathBuffer.Span));
+        }
+        
+        static EndPoint ReadUri(ref SequenceReader reader)
+        {
+            var length = reader.ReadLittleEndian<int>();
 
-        reader.Read(pathBuffer.Span);
-        return new(HostNameEncoding.GetString(pathBuffer.Span));
+            using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+                ? stackalloc byte[length]
+                : new SpanOwner<byte>(length);
+
+            reader.Read(pathBuffer.Span);
+            return UriEndPoint.Create(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
+        }
+        
+        [SkipLocalsInit]
+        static IPEndPoint ReadIp(ref SequenceReader reader)
+        {
+            var port = reader.ReadLittleEndian<int>();
+            var bytesCount = reader.ReadByte();
+
+            Span<byte> bytes = stackalloc byte[bytesCount];
+            reader.Read(bytes);
+
+            return new(new IPAddress(bytes), port);
+        }
+
+        static DnsEndPoint ReadDns(ref SequenceReader reader)
+            => new(reader.DeserializeHost(out var port, out var family), port, family);
+
+        static HttpEndPoint ReadHttp(ref SequenceReader reader)
+        {
+            var secure = Unsafe.BitCast<byte, bool>(reader.ReadByte());
+            return new(reader.DeserializeHost(out var port, out var family), port, secure, family);
+        }
     }
 
-    private static EndPoint DeserializeUri(ref SequenceReader reader)
-    {
-        var length = reader.ReadLittleEndian<int>();
-
-        using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
-            ? stackalloc byte[length]
-            : new SpanOwner<byte>(length);
-
-        reader.Read(pathBuffer.Span);
-        return UriEndPoint.Create(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
-    }
-
-    private static IPEndPoint DeserializeIP(ref SequenceReader reader)
-    {
-        var port = reader.ReadLittleEndian<int>();
-        var bytesCount = reader.ReadByte();
-
-        Span<byte> bytes = stackalloc byte[bytesCount];
-        reader.Read(bytes);
-
-        return new(new IPAddress(bytes), port);
-    }
-
-    private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
+    private static string DeserializeHost(this ref SequenceReader reader, out int port, out AddressFamily family)
     {
         port = reader.ReadLittleEndian<int>();
         family = reader.ReadLittleEndian<Enum<AddressFamily>>();
@@ -265,20 +276,7 @@ public static class EndPointFormatter
             ? stackalloc byte[length]
             : new SpanOwner<byte>(length);
         reader.Read(hostNameBuffer.Span);
-        hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
-    }
-
-    private static DnsEndPoint DeserializeHost(ref SequenceReader reader)
-    {
-        DeserializeHost(ref reader, out var hostName, out var port, out var family);
-        return new(hostName, port, family);
-    }
-
-    private static HttpEndPoint DeserializeHttp(ref SequenceReader reader)
-    {
-        var secure = Unsafe.BitCast<byte, bool>(reader.ReadByte());
-        DeserializeHost(ref reader, out var hostName, out var port, out var family);
-        return new(hostName, port, secure, family);
+        return HostNameEncoding.GetString(hostNameBuffer.Span);
     }
 }
 
