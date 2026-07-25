@@ -95,7 +95,7 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
             if (ReadBuffer % parser.RemainingBytes is not { IsEmpty: false } buffer)
                 return false;
 
-            parser.Invoke(buffer.Span);
+            parser.Apply(buffer.Span);
             AdvanceReader(buffer.Length);
         }
         while (parser.RemainingBytes > 0);

@@ -65,7 +65,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         parser.EndOfStream();
     }
 
-    private TResult Read<TResult, TParser>(ref TParser parser)
+    private TResult Read<TResult, TParser>(scoped ref TParser parser)
         where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
     {
         Read(ref parser);

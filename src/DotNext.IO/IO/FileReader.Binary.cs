@@ -60,7 +60,7 @@ public partial class FileReader : IAsyncBinaryReader
             if (buffer.IsEmpty)
                 return false;
 
-            parser.Invoke(buffer.Span);
+            parser.Apply(buffer.Span);
             ConsumeUnsafe(buffer.Length);
             length -= buffer.Length;
         }

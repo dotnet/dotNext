@@ -15,7 +15,7 @@ internal static class BufferReader
                  position = input.GetPosition(consumedBytes, position))
             {
                 block %= remainingBytes;
-                parser.Invoke(block.Span);
+                parser.Apply(block.Span);
                 consumedBytes = block.Length;
             }
 
