@@ -56,7 +56,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 // services
 builder.Services
-    .AddSingleton<RumorSpreadingManager>(static sp => new RumorSpreadingManager(EndPointFormatter.UriEndPointComparer))
+    .AddSingleton<RumorSpreadingManager>(static sp => new RumorSpreadingManager(UriEndPoint.Comparer))
     .AddSingleton<IPeerLifetime, HyParViewPeerLifetime>()
     .AddSingleton<IHttpMessageHandlerFactory, HyParViewClientHandlerFactory>();
 
@@ -162,7 +162,7 @@ file sealed class RumorSender : Disposable, IRumorSender
     Task IRumorSender.SendAsync(EndPoint peer, CancellationToken token)
     {
         var client = mesh.TryGetPeer(peer);
-        return client is not null && !EndPointFormatter.UriEndPointComparer.Equals(new UriEndPoint(senderAddress), peer)
+        return client is not null && !UriEndPoint.Comparer.Equals(new UriEndPoint(senderAddress), peer)
             ? SendAsync(client, token)
             : Task.CompletedTask;
     }

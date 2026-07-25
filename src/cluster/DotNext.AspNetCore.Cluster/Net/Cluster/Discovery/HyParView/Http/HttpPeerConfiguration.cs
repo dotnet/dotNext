@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
@@ -68,5 +69,5 @@ public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
     }
 
     /// <inheritdoc />
-    IEqualityComparer<EndPoint> IPeerConfiguration.EndPointComparer => EndPointFormatter.UriEndPointComparer;
+    IEqualityComparer<EndPoint> IPeerConfiguration.EndPointComparer => UriEndPoint.Comparer;
 }

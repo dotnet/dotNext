@@ -25,8 +25,8 @@ public sealed class EndPointFormatterTests : Test
         rows.Add(new HttpEndPoint(new IPEndPoint(ip, 8080), false), EqualityComparer<EndPoint>.Default);
         rows.Add(new HttpEndPoint("host", 3262, true), EqualityComparer<EndPoint>.Default);
         rows.Add(new HttpEndPoint("host", 3262, false), EqualityComparer<EndPoint>.Default);
-        rows.Add(new UriEndPoint(new Uri("http://host:3262/")), EndPointFormatter.UriEndPointComparer);
-        rows.Add(new UriEndPoint(new Uri("http://host/path/to/resource")), EndPointFormatter.UriEndPointComparer);
+        rows.Add(new UriEndPoint(new Uri("http://host:3262/")), UriEndPoint.Comparer);
+        rows.Add(new UriEndPoint(new Uri("http://host/path/to/resource")), UriEndPoint.Comparer);
 
         if (Socket.OSSupportsUnixDomainSockets)
         {
