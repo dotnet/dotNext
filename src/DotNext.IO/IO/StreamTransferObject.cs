@@ -44,9 +44,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <summary>
     /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
     /// </summary>
-    public virtual bool IsReusable => false;
-
-    private bool IsResettable => IsReusable && content.CanSeek;
+    public virtual bool IsReusable => content.CanSeek;
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => content.CanSeek ? content.Length : null;
@@ -54,7 +52,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
-        return IsResettable
+        return IsReusable
             ? WriteAndResetAsync(content, writer, token)
             : writer.CopyFromAsync(content, count: null, token);
 
@@ -62,13 +60,14 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
         {
             Debug.Assert(input.CanSeek);
 
+            var position = input.Position;
             try
             {
                 await writer.CopyFromAsync(input, count: null, token).ConfigureAwait(false);
             }
             finally
             {
-                input.Seek(0, SeekOrigin.Begin);
+                input.Seek(position, SeekOrigin.Begin);
             }
         }
     }
@@ -85,7 +84,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
         where TTransformation : IDataTransferObject.ITransformation<TResult>
     {
-        return IsResettable
+        return IsReusable
             ? TransformAndResetAsync(content, transformation, token)
             : IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, token);
 
@@ -93,6 +92,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
         {
             Debug.Assert(input.CanSeek);
 
+            var position = input.Position;
             try
             {
                 return await IDataTransferObject
@@ -101,7 +101,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
             }
             finally
             {
-                input.Seek(0, SeekOrigin.Begin);
+                input.Seek(position, SeekOrigin.Begin);
             }
         }
     }
