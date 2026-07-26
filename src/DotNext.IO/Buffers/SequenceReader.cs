@@ -80,17 +80,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The parsed value.</returns>
     public T Read<T>()
         where T : IBinaryFormattable<T>
+        => BinaryFormattable256Reader<T>.IsApplicable
+            ? Read<T, BinaryFormattable256Reader<T>>()
+            : Read<T, BinaryFormattableReader<T>>();
+    
+    private TResult Read<TResult, TParser>()
+        where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
     {
-        if (BinaryFormattable256Reader<T>.IsApplicable)
-        {
-            var parser = new BinaryFormattable256Reader<T>();
-            return Read<T, BinaryFormattable256Reader<T>>(ref parser);
-        }
-        else
-        {
-            var parser = new BinaryFormattableReader<T>();
-            return Read<T, BinaryFormattableReader<T>>(ref parser);
-        }
+        var parser = new TParser();
+        return Read<TResult, TParser>(ref parser);
     }
 
     /// <summary>
@@ -291,17 +289,11 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public ReadOnlySequence<byte> ReadBlock(LengthFormat lengthFormat)
         => Read(ReadLength(lengthFormat));
 
-    private int Read7BitEncodedInt32()
-    {
-        var parser = new SevenBitEncodedIntReader();
-        return Read<int, SevenBitEncodedIntReader>(ref parser);
-    }
-
     private int ReadLength(LengthFormat lengthFormat) => lengthFormat switch
     {
         LengthFormat.LittleEndian => ReadLittleEndian<int>(),
         LengthFormat.BigEndian => ReadBigEndian<int>(),
-        LengthFormat.Compressed => Read7BitEncodedInt32(),
+        LengthFormat.Compressed => Read<int, SevenBitEncodedIntReader>(),
         _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
     };
 
