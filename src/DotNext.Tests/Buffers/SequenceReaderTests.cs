@@ -189,6 +189,26 @@ public sealed class SequenceReaderTests : Test
     }
 
     [Fact]
+    public static void ReadBytes()
+    {
+        var reader = new SequenceReader(new byte[] { 42, byte.MaxValue });
+        Equal(42, reader.ReadByte());
+        Equal(byte.MaxValue, reader.ReadByte());
+        
+        var exceptionThrown = false;
+        try
+        {
+            reader.ReadByte();
+        }
+        catch (EndOfStreamException)
+        {
+            exceptionThrown = true;
+        }
+
+        True(exceptionThrown);
+    }
+
+    [Fact]
     public static void UseBufferReader()
     {
         var reader = new SequenceReader(new byte[] { 42, 43 });

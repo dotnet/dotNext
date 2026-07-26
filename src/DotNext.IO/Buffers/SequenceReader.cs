@@ -153,9 +153,9 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public byte ReadByte()
     {
-        Unsafe.SkipInit(out byte result);
-        Read(new Span<byte>(ref result));
-        return result;
+        var parser = new ByteReader();
+        Read(ref parser);
+        return parser.Result;
     }
 
     /// <summary>
@@ -1016,4 +1016,17 @@ file ref struct SpanReader(Span<byte> buffer) : IBufferReader
     readonly int IBufferReader.RemainingBytes => writer.FreeCapacity;
 
     void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer) => writer += buffer;
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct ByteReader() : IBufferReader
+{
+    private int value = int.MinValue;
+
+    public byte Result => (byte)value;
+
+    readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(value < 0);
+
+    void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer)
+        => value = MemoryMarshal.GetReference(buffer);
 }
