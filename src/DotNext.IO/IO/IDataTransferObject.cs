@@ -69,7 +69,6 @@ public interface IDataTransferObject
     /// </summary>
     /// <param name="input">The stream to decode.</param>
     /// <param name="transformation">The decoder.</param>
-    /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
     /// <param name="buffer">The temporary buffer.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TResult">The type of result.</typeparam>
@@ -77,33 +76,13 @@ public interface IDataTransferObject
     /// <returns>The decoded stream.</returns>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream,
+    protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation,
         Memory<byte> buffer, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        if (buffer.IsEmpty)
-            return ValueTask.FromException<TResult>(ArgumentException.BufferTooSmall(nameof(buffer)));
-
-        return resetStream && input.CanSeek
-            ? TransformAndResetAsync(input, transformation, buffer, token)
+        return buffer.IsEmpty
+            ? ValueTask.FromException<TResult>(ArgumentException.BufferTooSmall(nameof(buffer)))
             : transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer), token);
-
-        static async ValueTask<TResult> TransformAndResetAsync(Stream input,
-            TTransformation transformation,
-            Memory<byte> buffer,
-            CancellationToken token)
-        {
-            ArgumentException.ThrowIfEmpty(buffer);
-
-            try
-            {
-                return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer), token).ConfigureAwait(false);
-            }
-            finally
-            {
-                input.Seek(0L, SeekOrigin.Begin);
-            }
-        }
     }
 
     /// <summary>
@@ -111,14 +90,13 @@ public interface IDataTransferObject
     /// </summary>
     /// <param name="input">The stream to decode.</param>
     /// <param name="transformation">The decoder.</param>
-    /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
     /// <param name="allocator">The allocator of temporary buffer.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TResult">The type of result.</typeparam>
     /// <typeparam name="TTransformation">The type of parser.</typeparam>
     /// <returns>The decoded stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
+    protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
         var buffer = allocator.DefaultIfNull.AllocateAtLeast(DefaultBufferSize);
@@ -129,8 +107,6 @@ public interface IDataTransferObject
         finally
         {
             buffer.Dispose();
-            if (resetStream && input.CanSeek)
-                input.Seek(0L, SeekOrigin.Begin);
         }
     }
 
@@ -139,15 +115,14 @@ public interface IDataTransferObject
     /// </summary>
     /// <param name="input">The stream to decode.</param>
     /// <param name="transformation">The decoder.</param>
-    /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TResult">The type of result.</typeparam>
     /// <typeparam name="TTransformation">The type of parser.</typeparam>
     /// <returns>The decoded stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
+    protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, CancellationToken token)
         where TTransformation : ITransformation<TResult>
-        => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, default(MemoryAllocator<byte>), token);
+        => TransformAsync<TResult, TTransformation>(input, transformation, default(MemoryAllocator<byte>), token);
 
     /// <summary>
     /// Decodes the data using pipe reader.

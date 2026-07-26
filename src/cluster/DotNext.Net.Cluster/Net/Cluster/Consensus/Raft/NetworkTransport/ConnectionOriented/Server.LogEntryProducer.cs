@@ -80,7 +80,7 @@ internal partial class Server
         {
             consumed = true;
             buffer ??= new byte[128];
-            return IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer, token);
+            return IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, buffer, token);
         }
 
         ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;

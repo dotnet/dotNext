@@ -1,4 +1,6 @@
-﻿namespace DotNext.IO;
+﻿using System.Diagnostics;
+
+namespace DotNext.IO;
 
 /// <summary>
 /// Represents object which content is represented by <see cref="Stream"/>.
@@ -42,22 +44,32 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <summary>
     /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
     /// </summary>
-    public virtual bool IsReusable => content.CanSeek;
+    public virtual bool IsReusable => false;
+
+    private bool IsResettable => IsReusable && content.CanSeek;
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => content.CanSeek ? content.Length : null;
 
     /// <inheritdoc/>
-    async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
-        try
+        return IsResettable
+            ? WriteAndResetAsync(content, writer, token)
+            : writer.CopyFromAsync(content, count: null, token);
+
+        static async ValueTask WriteAndResetAsync(Stream input, TWriter writer, CancellationToken token)
         {
-            await writer.CopyFromAsync(content, count: null, token).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (IsReusable)
-                content.Seek(0, SeekOrigin.Begin);
+            Debug.Assert(input.CanSeek);
+
+            try
+            {
+                await writer.CopyFromAsync(input, count: null, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                input.Seek(0, SeekOrigin.Begin);
+            }
         }
     }
 
@@ -72,7 +84,27 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
         where TTransformation : IDataTransferObject.ITransformation<TResult>
-        => IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
+    {
+        return IsResettable
+            ? TransformAndResetAsync(content, transformation, token)
+            : IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, token);
+
+        static async ValueTask<TResult> TransformAndResetAsync(Stream input, TTransformation transformation, CancellationToken token)
+        {
+            Debug.Assert(input.CanSeek);
+
+            try
+            {
+                return await IDataTransferObject
+                    .TransformAsync<TResult, TTransformation>(input, transformation, token)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                input.Seek(0, SeekOrigin.Begin);
+            }
+        }
+    }
 
     /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
