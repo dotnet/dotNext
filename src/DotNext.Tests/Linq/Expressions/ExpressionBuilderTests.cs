@@ -517,6 +517,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void CachedBindingRegression()
     {
         BinaryExpression expr1 = 42.Quoted.AsDynamic() > 2;
@@ -527,6 +528,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void LateBindConstant()
     {
         object value = 42.Quoted;
@@ -542,6 +544,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void LateBindMetaConstant()
     {
         dynamic right = 42.Quoted.AsDynamic();
@@ -550,6 +553,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicMethodCallExpr()
     {
         MethodCallExpression expr = 43.Quoted.AsDynamic().ToString(InvariantCulture);
@@ -557,6 +561,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicMemberGetter()
     {
         MemberExpression expr = "Hello, world!".Quoted.AsDynamic().Length;
@@ -564,6 +569,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicArrayGetElement()
     {
         IndexExpression expr = Array.Empty<int>().Quoted.AsDynamic()[1];
@@ -571,6 +577,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicListGetElement()
     {
         IndexExpression expr = ImmutableList<int>.Empty.Quoted.AsDynamic()[1];
@@ -578,6 +585,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicUnaryOperator()
     {
         UnaryExpression expr = ~42.Quoted.AsDynamic();
@@ -585,6 +593,7 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void DynamicConvertOperator()
     {
         dynamic result = 42.Quoted.AsDynamic();
@@ -638,7 +647,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRecordStruct()
     {
-        MutationExpression mut = typeof(RecordStruct).New(42.Quoted).With(new MemberBindings
+        var mut = typeof(RecordStruct).New(42.Quoted).With(new MemberBindings
             {
                 { nameof(RecordStruct.A), 52.Quoted }
             });

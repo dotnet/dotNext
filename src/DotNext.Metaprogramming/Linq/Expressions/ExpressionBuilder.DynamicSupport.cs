@@ -11,9 +11,11 @@ public static partial class ExpressionBuilder
     /// </summary>
     /// <param name="expression">The expression to be converted to dynamic expression builder.</param>
     /// <returns>The dynamic representation of expression.</returns>
+    [Obsolete("Use overloaded extension operators and quoted expressions instead.")]
     public static dynamic AsDynamic(this Expression? expression) => new MetaExpressionProvider(expression);
 }
 
+[Obsolete]
 file sealed class MetaExpressionProvider(Expression? expression) : ISupplier<Expression>, IDynamicMetaObjectProvider
 {
     private readonly Expression expression = expression ?? Expression.Empty();

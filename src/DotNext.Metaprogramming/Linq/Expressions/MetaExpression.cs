@@ -6,6 +6,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions;
 
+[Obsolete]
 internal sealed class MetaExpression : DynamicMetaObject
 {
     private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;
