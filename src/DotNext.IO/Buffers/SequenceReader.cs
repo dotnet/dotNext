@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -140,7 +141,10 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="output">The block of memory to fill.</param>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public void Read(Span<byte> output)
-        => Read(output.Length).CopyTo(output);
+    {
+        var parser = new SpanReader(output);
+        Read(ref parser);
+    }
 
     /// <summary>
     /// Reads single byte.
@@ -148,7 +152,11 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>A byte.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public byte ReadByte()
-        => MemoryMarshal.GetReference(Read(1).FirstSpan);
+    {
+        Unsafe.SkipInit(out byte result);
+        Read(new Span<byte>(ref result));
+        return result;
+    }
 
     /// <summary>
     /// Reads the specified number of bytes.
@@ -998,4 +1006,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
         return charsWritten;
     }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct SpanReader(Span<byte> buffer) : IBufferReader
+{
+    private SpanWriter<byte> writer = new(buffer);
+
+    readonly int IBufferReader.RemainingBytes => writer.FreeCapacity;
+
+    void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer) => writer += buffer;
 }
