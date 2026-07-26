@@ -31,7 +31,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-19-2026
+Release Date: 07-26-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
 * Improved performance of `Atomic<T>` type: multiple readers don't contend anymore

@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-19-2026
+# 07-26-2026
 <a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
 * Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
 * Introduced write lock scope to `Atomic<T>` data type
