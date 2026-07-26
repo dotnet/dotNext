@@ -64,6 +64,12 @@ public interface IDataTransferObject
     ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         where TWriter : IAsyncBinaryWriter;
 
+    private static void ResetStream(Stream stream, bool resetStream)
+    {
+        if (resetStream && stream.CanSeek)
+            stream.Seek(0L, SeekOrigin.Begin);
+    }
+
     /// <summary>
     /// Decodes the stream.
     /// </summary>
@@ -77,12 +83,20 @@ public interface IDataTransferObject
     /// <returns>The decoded stream.</returns>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream,
-        Memory<byte> buffer, CancellationToken token)
+    protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
         where TTransformation : ITransformation<TResult>
-        => buffer.IsEmpty
-            ? ValueTask.FromException<TResult>(ArgumentException.BufferTooSmall(nameof(buffer)))
-            : transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer), token);
+    {
+        ArgumentException.ThrowIfEmpty(buffer);
+
+        try
+        {
+            return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer), token).ConfigureAwait(false);
+        }
+        finally
+        {
+            ResetStream(input, resetStream);
+        }
+    }
 
     /// <summary>
     /// Decodes the stream.
@@ -107,6 +121,7 @@ public interface IDataTransferObject
         finally
         {
             buffer.Dispose();
+            ResetStream(input, resetStream);
         }
     }
 
