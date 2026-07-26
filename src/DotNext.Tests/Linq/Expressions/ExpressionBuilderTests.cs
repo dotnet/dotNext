@@ -618,10 +618,10 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRecordClass1()
     {
-        MutationExpression mut = typeof(RecordClass).New(42.Quoted).With(new MemberBindings()
-            {
-                { nameof(RecordClass.A), 52.Quoted }
-            });
+        var mut = typeof(RecordClass).New(42.Quoted).With(new MemberBindings
+        {
+            [nameof(RecordClass.A)] = 52.Quoted,
+        });
 
         Contains(mut.Bindings, static item => nameof(RecordClass.A) == item.Member.Name);
         Equal(typeof(RecordClass), mut.Reduce().Type);
@@ -631,10 +631,10 @@ public sealed class ExpressionBuilderTests : Test
     public static void MutateRecordClass2()
     {
         var constructExpr = typeof(RecordClass).New(42.Quoted);
-        var bindings = new MemberBindings()
-            {
-                { nameof(RecordClass.A), 52.Quoted }
-            };
+        var bindings = new MemberBindings
+        {
+            [nameof(RecordClass.A)] = 52.Quoted,
+        };
 
         MutationExpression mut = MutationExpression.Create(constructExpr, bindings.Bind(constructExpr.Type));
 
@@ -648,9 +648,9 @@ public sealed class ExpressionBuilderTests : Test
     public static void MutateRecordStruct()
     {
         var mut = typeof(RecordStruct).New(42.Quoted).With(new MemberBindings
-            {
-                { nameof(RecordStruct.A), 52.Quoted }
-            });
+        {
+            [nameof(RecordStruct.A)] = 52.Quoted,
+        });
 
         Contains(mut.Bindings, static item => nameof(RecordStruct.A) == item.Member.Name);
         Equal(typeof(RecordStruct), mut.Reduce().Type);
@@ -659,10 +659,10 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRegularStruct()
     {
-        MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New().With(new MemberBindings
-            {
-                {nameof(Net.Cluster.Consensus.Raft.Result<>.Value), false.Quoted}
-            });
+        var mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New().With(new MemberBindings
+        {
+            [nameof(Net.Cluster.Consensus.Raft.Result<>.Value)] = false.Quoted,
+        });
 
         Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<>.Value) == item.Member.Name);
         Equal(typeof(Net.Cluster.Consensus.Raft.Result<bool>), mut.Reduce().Type);
