@@ -14,5 +14,5 @@ internal struct SevenBitEncodedIntReader() : IBufferReader, ISupplier<int>
     void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => incompleted = decoder.Append(MemoryMarshal.GetReference(source));
 
-    readonly int ISupplier<int>.Invoke() => (int)decoder.Value;
+    readonly int ISupplier<int>.Invoke() => int.CreateChecked(decoder.Value);
 }
