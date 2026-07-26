@@ -537,7 +537,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void EarlyBindConstant()
     {
-        BinaryExpression expr = 43.Quoted.AsDynamic() > 42.Quoted;
+        var expr = 43.Quoted > 42.Quoted;
         IsType<ConstantExpression>(expr.Right);
     }
 

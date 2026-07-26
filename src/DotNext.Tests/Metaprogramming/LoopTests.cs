@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace DotNext.Metaprogramming;
 
 using Linq.Expressions;
@@ -37,7 +35,7 @@ public sealed class LoopTests : Test
         {
             ForEach(fun[0], item =>
             {
-                Assign(result, result.AsDynamic() + item);
+                Assign(result, result + item);
             });
         })
         .Compile();
@@ -51,7 +49,7 @@ public sealed class LoopTests : Test
         {
             ForEach(fun[0], item =>
             {
-                Assign(result, result.AsDynamic() + item);
+                Assign(result, result + item);
             });
         })
         .Compile();
@@ -67,7 +65,7 @@ public sealed class LoopTests : Test
         {
             AwaitForEach(fun[0], item =>
             {
-                Assign(result, result.AsDynamic() + item);
+                Assign(result, result + item);
             }, configureAwait: configureAwait);
         })
         .Compile();
@@ -103,10 +101,10 @@ public sealed class LoopTests : Test
         var sum = Lambda<Func<long, long>>((fun, result) =>
         {
             var arg = fun[0];
-            DoWhile((Expression)(arg.AsDynamic() > 0L), () =>
+            DoWhile(arg > 0L.Quoted, () =>
             {
-                Assign(result, arg.AsDynamic() + result);
-                Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+                Assign(result, arg + result);
+                Assign(arg, arg - 1L.Quoted);
             });
         })
         .Compile();
@@ -119,9 +117,9 @@ public sealed class LoopTests : Test
         var sum = Lambda<Func<long, long>>((fun, result) =>
         {
             var arg = fun[0];
-            For(0L.Quoted, i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
+            For(0L.Quoted, i => i < arg, PostIncrementAssign, loopVar =>
             {
-                Assign(result, result.AsDynamic() + loopVar);
+                Assign(result, result + loopVar);
             });
         })
         .Compile();
@@ -135,10 +133,10 @@ public sealed class LoopTests : Test
         {
             var arg = fun[0];
             Assign(result, 1L.Quoted);
-            While((Expression)(arg.AsDynamic() > 1L), () =>
+            While(arg > 1L.Quoted, () =>
             {
-                Assign(result, result.AsDynamic() * arg);
-                Assign(arg, arg.AsDynamic() - 1L);
+                Assign(result, result * arg);
+                Assign(arg, arg - 1L.Quoted);
             });
         })
         .Compile();
@@ -154,11 +152,11 @@ public sealed class LoopTests : Test
             Assign(result, 1L.Quoted);
             Loop(() =>
             {
-                If((Expression)(arg.AsDynamic() > 1L))
+                If(arg > 1L.Quoted)
                     .Then(() =>
                     {
-                        Assign(result, result.AsDynamic() * arg);
-                        Assign(arg, arg.AsDynamic() - 1L);
+                        Assign(result, result * arg);
+                        Assign(arg, arg - 1L.Quoted);
                     })
                     .Else(Break)
                 .End();

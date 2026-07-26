@@ -12,9 +12,7 @@ using static Threading.Tasks.Synchronization;
 public sealed class LambdaTests : Test
 {
     private static long Fact(long value)
-    {
-        return value > 1L ? value * Fact(value - 1) : value;
-    }
+        => value > 1L ? value * Fact(value - 1) : value;
 
     [Fact]
     public static void Recursion()
@@ -22,7 +20,7 @@ public sealed class LambdaTests : Test
         var fact = Lambda<Func<long, long>>(static fun =>
         {
             var arg = fun[0];
-            If((Expression)(arg.AsDynamic() > 1L)).Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L)).Else(arg).OfType<long>().End();
+            If(arg > 1L.Quoted).Then(arg * fun.Invoke(arg - 1L.Quoted)).Else(arg).OfType<long>().End();
         })
         .Compile();
         Equal(120, Fact(5));
@@ -35,7 +33,7 @@ public sealed class LambdaTests : Test
         var lambda = Lambda<Func<int, int, Task<int>>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
-            Assign(result, new AsyncResultExpression(arg1.AsDynamic() + arg2, false));
+            Assign(result, new AsyncResultExpression(arg1 + arg2, false));
         });
         Equal(42, lambda.Compile().Invoke(40, 2).GetResult(TimeSpan.FromMinutes(1)));
     }
@@ -57,7 +55,7 @@ public sealed class LambdaTests : Test
             })
             .Finally(() =>
             {
-                Assign(Expression.Field(fun[0], "Value"), 45.Quoted);
+                Assign(fun[0].Field("Value"), 45.Quoted);
             })
             .End();
         }).Compile();
@@ -72,7 +70,7 @@ public sealed class LambdaTests : Test
         var lambda = Lambda<Func<int, int, ValueTask<int>>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
-            Assign(result, new AsyncResultExpression(arg1.AsDynamic() + arg2, true));
+            Assign(result, new AsyncResultExpression(arg1 + arg2, true));
         });
         Equal(42, lambda.Compile().Invoke(40, 2).AsTask().GetResult(TimeSpan.FromMinutes(1)));
     }
@@ -93,7 +91,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             var temp = DeclareVariable<long>("tmp");
             Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-            Return(temp.AsDynamic() + 20L);
+            Return(temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
         Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
@@ -112,7 +110,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             var temp = DeclareVariable<long>("tmp");
             Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-            Return(temp.AsDynamic() + 20L);
+            Return(temp + 20L.Quoted);
         });
         var fn = lambda.Compile() as Func<long, long, Task<long>>;
         NotNull(fn);
@@ -149,7 +147,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             var temp = DeclareVariable<long>("tmp");
             Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-            Assign(result, temp.AsDynamic() + 20L);
+            Assign(result, temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
         Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
@@ -166,7 +164,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             var temp = DeclareVariable<long>("tmp");
             Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-            Assign(result, temp.AsDynamic() + 20L);
+            Assign(result, temp + 20L.Quoted);
             Return();
         });
         var fn = lambda.Compile();
@@ -184,7 +182,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             var temp = DeclareVariable<long>("tmp");
             Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
-            Return(temp.AsDynamic() + 20L);
+            Return(temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
         Equal(35L, fn(5L, 10L).AsTask().GetResult(TimeSpan.FromMinutes(1)));
@@ -199,7 +197,7 @@ public sealed class LambdaTests : Test
         var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
         {
             var arg = fun[0];
-            If((Expression)(arg.AsDynamic() > 10L))
+            If(arg > 10L.Quoted)
                 .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Quoted).Await()))
                 .Else(() =>
                 {
@@ -225,7 +223,7 @@ public sealed class LambdaTests : Test
             var result = DeclareVariable<long>("accumulator");
             ForEach(fun[0], item =>
             {
-                If(((Expression)(item.AsDynamic() == 0L))).Then(Break).End();
+                If((item.Equal(0L.Quoted))).Then(Break).End();
                 Assign(result, Expression.Call(null, sumMethod, result, item).Await(true));
             });
             Return(result);
@@ -265,8 +263,8 @@ public sealed class LambdaTests : Test
             var arg = fun[0];
             Try(() =>
             {
-                If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
-                If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
+                If(arg < 0L.Quoted).Then(Throw<InvalidOperationException>).End();
+                If(arg > 10L.Quoted).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
             })
             .Catch<ArgumentException>(() => Return((-42L).Quoted))
             .Catch<InvalidOperationException>(Rethrow)
@@ -284,13 +282,13 @@ public sealed class LambdaTests : Test
     {
         var lambda = AsyncLambda<Func<long[], Task<string>>>(static fun =>
         {
-            For(0.Quoted, i => i.AsDynamic() < fun[0].CollectionLength, PostIncrementAssign, static _ =>
+            For(0.Quoted, i => i < fun[0].CollectionLength, PostIncrementAssign, static _ =>
             {
                 Using(typeof(MemoryStream).New(), Break);
             });
         });
         var fn = lambda.Compile();
-        Null(fn(new[] { 1L }).GetResult(TimeSpan.FromMinutes(1)).Value);
+        Null(fn([1L]).GetResult(TimeSpan.FromMinutes(1)).Value);
     }
 
     [Fact]
