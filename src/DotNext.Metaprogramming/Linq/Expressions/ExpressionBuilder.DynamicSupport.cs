@@ -14,12 +14,9 @@ public static partial class ExpressionBuilder
     public static dynamic AsDynamic(this Expression? expression) => new MetaExpressionProvider(expression);
 }
 
-file sealed class MetaExpressionProvider : ISupplier<Expression>, IDynamicMetaObjectProvider
+file sealed class MetaExpressionProvider(Expression? expression) : ISupplier<Expression>, IDynamicMetaObjectProvider
 {
-    private readonly Expression expression;
-
-    internal MetaExpressionProvider(Expression? expression)
-        => this.expression = expression ?? Expression.Empty();
+    private readonly Expression expression = expression ?? Expression.Empty();
 
     /// <inheritdoc/>
     Expression ISupplier<Expression>.Invoke() => expression;
