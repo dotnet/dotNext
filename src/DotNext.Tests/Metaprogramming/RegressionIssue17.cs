@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace DotNext.Metaprogramming;
 
@@ -12,13 +11,14 @@ public sealed class RegressionIssue17 : Test
     [InlineData(true)]
     public static async Task Regression(bool useCompilerGeneratedExpression)
     {
-        PropertyInfo _propertyInfo = typeof(TestClass).GetProperty(nameof(TestClass.TestString));
+        var propertyInfo = typeof(TestClass).GetProperty(nameof(TestClass.TestString));
+        NotNull(propertyInfo);
         var innerExp = GetTestExpression(useCompilerGeneratedExpression);
 
         var outerExp = CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
         {
             var output = innerExp.Invoke(context[0]).Await();
-            CodeGenerator.Assign(output, _propertyInfo, Expression.Constant("updated", typeof(string)));
+            CodeGenerator.Assign(output, propertyInfo, Expression.Constant("updated", typeof(string)));
             CodeGenerator.Return(output);
         });
 
@@ -31,7 +31,7 @@ public sealed class RegressionIssue17 : Test
     {
         if (useCompilerGeneratedExpression)
         {
-            return v => Task.FromResult(v);
+            return static v => Task.FromResult(v);
         }
 
         return CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>

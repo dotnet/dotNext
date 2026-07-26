@@ -14,6 +14,8 @@ namespace DotNext.Buffers;
 using Binary;
 using Collections.Generic;
 using IO;
+using Runtime;
+using Runtime.CompilerServices;
 using static IO.Pipelines.PipeExtensions;
 using DecodingContext = DotNext.Text.DecodingContext;
 
@@ -66,7 +68,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         parser.EndOfStream();
     }
 
-    private TResult Read<TResult, TParser>(scoped ref TParser parser)
+    private TResult Read<TResult, TParser>(ref TParser parser)
         where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
     {
         Read(ref parser);
@@ -149,12 +151,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// </summary>
     /// <returns>A byte.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    public byte ReadByte()
-    {
-        var parser = new ByteReader();
-        Read(ref parser);
-        return parser.Result;
-    }
+    public byte ReadByte() => Read<byte, ByteReader>();
 
     /// <summary>
     /// Reads the specified number of bytes.
@@ -1011,14 +1008,17 @@ file ref struct SpanReader(Span<byte> buffer) : IBufferReader
 }
 
 [StructLayout(LayoutKind.Auto)]
-file ref struct ByteReader() : IBufferReader
+file ref struct ByteReader() : IBufferReader, ISupplier<byte>
 {
     private int value = int.MinValue;
-
-    public byte Result => (byte)value;
 
     readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(value < 0);
 
     void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer)
         => value = MemoryMarshal.GetReference(buffer);
+
+    byte ISupplier<byte>.Invoke() => (byte)value;
+
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
