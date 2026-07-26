@@ -13,6 +13,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
 * All methods accepting variadic arguments as `params Expression[] args` now changed to `params IEnumerable<Expression> args`
+* `AsDynamic()` extension method is deprecated in favor of `Quoted` extension property and extension operators
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/6.5.0">DotNext.Unsafe 6.5.0</a>
 * Updated dependencies
