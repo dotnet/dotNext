@@ -12,7 +12,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <summary>
     /// Represents the underlying stream.
     /// </summary>
-    protected readonly Stream content = content;
+    protected readonly Stream content = content ?? throw new ArgumentNullException(nameof(content));
     
     /// <summary>
     /// Loads the content from another data transfer object.
