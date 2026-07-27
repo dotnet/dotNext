@@ -6,7 +6,7 @@ using Buffers;
 
 internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<UriEndPoint>
 {
-    protected override IEqualityComparer<UriEndPoint> Comparer => EndPointFormatter.UriEndPointComparer;
+    protected override IEqualityComparer<UriEndPoint> Comparer => UriEndPoint.Comparer;
 
     protected override void Encode(UriEndPoint address, ref BufferWriterSlim<byte> writer)
         => writer.WriteEndPoint(address);

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 
 partial class PoolingBufferedStream : IAsyncBinaryReader
 {
@@ -94,7 +95,7 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
             if (ReadBuffer % parser.RemainingBytes is not { IsEmpty: false } buffer)
                 return false;
 
-            parser.Invoke(buffer.Span);
+            parser.Apply(buffer.Span);
             AdvanceReader(buffer.Length);
         }
         while (parser.RemainingBytes > 0);

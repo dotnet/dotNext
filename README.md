@@ -31,34 +31,39 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-12-2026
+Release Date: 07-26-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.4.1">DotNext 6.4.1</a>
-* Fixed race conditions occurred in async methods of the streams produced by `StreamSource` factory methods
+<a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
+* Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
+* Introduced write lock scope to `Atomic<T>` data type
+* `ReaderWriterSpinLock` is deprecated in favor of `Atomic<T>` struct
+* Fixed AOT compatibility for `BoxedValue<T>` and `UserDataStorage` types
+* Removed lock contention when reading from `UserDataStorage`
+* Improved performance of `TypeMap` and `ConcurrentTypeMap` types
+* `BufferWriterSlim<T>` can be constructed with a fixed capacity
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
+* All methods accepting variadic arguments as `params Expression[] args` now changed to `params IEnumerable<Expression> args`
+* `AsDynamic()` extension method is deprecated in favor of `Quoted` extension property and extension operators
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.5.0">DotNext.Unsafe 6.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.4.1">DotNext.Metaprogramming 6.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/6.5.0">DotNext.Threading 6.5.0</a>
+* Improved performance of `AsyncStateTracker` type
+* Perf improvements: `ManualResetCompletionSource` internals moved to `BoxedValue<T>` type to avoid redundant type check
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.5.0">DotNext.IO 6.5.0</a>
+* Introduced `Limit` extension method for all classes implementing [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface. The method returns the wrapper that limits the capacity of the underlying writer
+* `EndPointFormatter` type is moved from `DotNext.Net.Cluster` library
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.5.0">DotNext.Net.Cluster 6.5.0</a>
+* `EndPointFormatter` type is moved to `DotNext.IO` library
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.5.0">DotNext.AspNetCore.Cluster 6.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.4.1">DotNext.Unsafe 6.4.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/6.4.1">DotNext.Threading 6.4.1</a>
-* Reduced memory allocations in `ManualResetCompletionSource` class. **short** version token is no longer allocated on every `Reset` call. Additionally, even if timeout is happened, the internal timer can be reused again. It means that `ManualResetCompletionSource` class, it's derived classes and async locks do not allocate on all execution paths including worst cases
-* `ManualResetCompletionSource.Reset` now throws an exception when the caller tries to reuse the completion source in the invalid state. Check `Reset` method remarks for more information
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.4.1">DotNext.IO 6.4.1</a>
-* Fixed race conditions occurred in async methods of `FileReader` and `FileWriter` classes
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.4.1">DotNext.Net.Cluster 6.4.1</a>
-* Replication loop on leader doesn't allocate memory anymore when heartbeat timeout is happened. This is possible due to performance improvements in `ManualResetCompletionSource` class mentioned above
-* Fixed issue when TCP multiplexer can hang
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.4.1">DotNext.AspNetCore.Cluster 6.4.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.4.1">DotNext.MaintenanceServices 1.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.5.0">DotNext.MaintenanceServices 1.5.0</a>
 * Updated dependencies
 
 # Release & Support Policy

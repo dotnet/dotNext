@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents fast implementation of <see cref="ITypeMap{TValue}"/>
 /// that is not thread safe.
@@ -40,22 +43,25 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
         => entries = new Entry[ITypeMap.RecommendedCapacity];
 
     private ref Entry this[int index]
-        => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-
-    private ref Entry EnsureSlotAllocated(int index)
     {
-        if ((uint)index >= (uint)entries.Length)
-            Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
-
-        return ref this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            Debug.Assert((uint)index < (uint)entries.Length);
+            
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        }
     }
 
-    private ref TValue? GetValueRefOrAddDefault(int index, out bool exists)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private ref Entry EnsureSlotAllocated<TKey>()
+        where TKey : allows ref struct
     {
-        ref var holder = ref EnsureSlotAllocated(index);
-        exists = holder.HasValue;
-        holder.HasValue = true;
-        return ref holder.Value;
+        var index = TypeSlot<TKey>.Index;
+        if ((uint)index >= (uint)entries.Length)
+            Array.Resize(ref entries, index + 1);
+
+        return ref this[index];
     }
 
     /// <summary>
@@ -65,17 +71,11 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="exists"><see langword="true"/> if the association exists; <see langword="false"/> if the association is created.</param>
     /// <returns>The reference to the value associated with the type.</returns>
     public ref TValue? GetValueRefOrAddDefault<TKey>(out bool exists)
-        => ref GetValueRefOrAddDefault(TypeSlot<TKey>.Index, out exists);
-
-    private bool TryAdd(int index, TValue value)
     {
-        ref var holder = ref EnsureSlotAllocated(index);
-        if (holder.HasValue)
-            return false;
-
-        holder.Value = value;
+        ref var holder = ref EnsureSlotAllocated<TKey>();
+        exists = holder.HasValue;
         holder.HasValue = true;
-        return true;
+        return ref holder.Value;
     }
 
     /// <summary>
@@ -87,13 +87,10 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     public void Add<TKey>(TValue value)
         where TKey : allows ref struct
     {
-        if (!TryAdd(TypeSlot<TKey>.Index, value))
+        ref var holder = ref EnsureSlotAllocated<TKey>();
+        if (holder.HasValue)
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
-    }
 
-    private void Set(int index, TValue value)
-    {
-        ref var holder = ref EnsureSlotAllocated(index);
         holder.Value = value;
         holder.HasValue = true;
     }
@@ -105,14 +102,26 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
         where TKey : allows ref struct
-        => Set(TypeSlot<TKey>.Index, value);
-
-    private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
-        ref var holder = ref EnsureSlotAllocated(index);
+        ref var holder = ref EnsureSlotAllocated<TKey>();
+        holder.Value = value;
+        holder.HasValue = true;
+    }
 
-        bool result;
-        if (result = holder.HasValue)
+    /// <summary>
+    /// Replaces the existing value with a new value.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="newValue">A new value.</param>
+    /// <param name="oldValue">The replaced value.</param>
+    /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
+    public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        where TKey : allows ref struct
+    {
+        ref var holder = ref EnsureSlotAllocated<TKey>();
+
+        var result = holder.HasValue;
+        if (result)
         {
             oldValue = holder.Value;
         }
@@ -127,30 +136,26 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     }
 
     /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="newValue">A new value.</param>
-    /// <param name="oldValue">The replaced value.</param>
-    /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
-    public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
-        where TKey : allows ref struct
-        => Set(TypeSlot<TKey>.Index, newValue, out oldValue);
-
-    /// <summary>
     /// Determines whether the map has association between the value and the specified type.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
-        => Contains(TypeSlot<TKey>.Index);
-
-    private bool Contains(int index)
-        => (uint)index < (uint)entries.Length && this[index].HasValue;
-
-    private bool Remove(int index)
     {
+        var index = TypeSlot<TKey>.Index;
+        return (uint)index < (uint)entries.Length && this[index].HasValue;
+    }
+
+    /// <summary>
+    /// Attempts to remove the value from the map.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
+    public bool Remove<TKey>()
+        where TKey : allows ref struct
+    {
+        var index = TypeSlot<TKey>.Index;
         if ((uint)index >= (uint)entries.Length)
             goto fail;
 
@@ -162,7 +167,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
             return true;
         }
 
-    fail:
+        fail:
         return false;
     }
 
@@ -170,13 +175,12 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>()
+    public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
-        => Remove(TypeSlot<TKey>.Index);
-
-    private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
+        var index = TypeSlot<TKey>.Index;
         bool result;
 
         if ((uint)index < (uint)entries.Length)
@@ -199,17 +203,15 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     }
 
     /// <summary>
-    /// Attempts to remove the value from the map.
+    /// Attempts to get the value associated with the specified type.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">The value of the removed element.</param>
-    /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
+    /// <param name="value">The value associated with the type.</param>
+    /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
+    public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
-        => Remove(TypeSlot<TKey>.Index, out value);
-
-    private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
+        var index = TypeSlot<TKey>.Index;
         if ((uint)index < (uint)entries.Length)
         {
             ref var holder = ref this[index];
@@ -220,16 +222,6 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
         value = default;
         return false;
     }
-
-    /// <summary>
-    /// Attempts to get the value associated with the specified type.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">The value associated with the type.</param>
-    /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
-    public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
-        where TKey : allows ref struct
-        => TryGetValue(TypeSlot<TKey>.Index, out value);
 
     /// <summary>
     /// Removes all elements from this map.
@@ -265,6 +257,7 @@ public partial class TypeMap : ITypeMap
 
     private ref object? this[int index]
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             Debug.Assert((uint)index < (uint)entries.Length);
@@ -276,43 +269,26 @@ public partial class TypeMap : ITypeMap
     /// <inheritdoc cref="ITypeMap.Add{T}(T)"/>
     public void Add<T>([DisallowNull] T value)
     {
-        if (!TryAdd(TypeSlot<T>.Index, value))
-            throw new GenericArgumentException<T>(ExceptionMessages.KeyAlreadyExists);
-    }
-
-    private bool TryAdd(int index, object value)
-    {
-        EnsureCapacity(index);
-        ref var holder = ref this[index];
+        ref var holder = ref this[EnsureCapacity<T>()];
         if (holder is not null)
-            return false;
+            throw new GenericArgumentException<T>(ExceptionMessages.KeyAlreadyExists);
 
         holder = value;
-        return true;
     }
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T)"/>
     public void Set<T>([DisallowNull] T value)
-        => Set(TypeSlot<T>.Index, value);
-
-    private void Set(int index, object value)
-    {
-        EnsureCapacity(index);
-        this[index] = value;
-    }
+        => this[EnsureCapacity<T>()] = value;
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
     public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
-        => Set(TypeSlot<T>.Index, newValue, out oldValue);
-
-    private bool Set<T>(int index, T newValue, [NotNullWhen(true)] out T? oldValue)
     {
-        EnsureCapacity(index);
-        ref var holder = ref this[index];
+        ref var holder = ref this[EnsureCapacity<T>()];
 
-        bool result;
-        oldValue = (result = holder is T)
-            ? (T)holder!
+        var currentValue = holder;
+        var result = currentValue is T;
+        oldValue = result
+            ? currentValue!.UnboxAny<T>()
             : default;
 
         holder = newValue;
@@ -329,8 +305,10 @@ public partial class TypeMap : ITypeMap
         return (uint)index < (uint)entries.Length && this[index] is T;
     }
 
-    private bool Remove(int index)
+    /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
+    public bool Remove<T>()
     {
+        var index = TypeSlot<T>.Index;
         bool result;
         if ((uint)index < (uint)entries.Length)
         {
@@ -346,19 +324,18 @@ public partial class TypeMap : ITypeMap
         return result;
     }
 
-    /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
-    public bool Remove<T>()
-        => Remove(TypeSlot<T>.Index);
-
-    private bool Remove<T>(int index, [NotNullWhen(true)] out T? value)
+    /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
+    public bool Remove<T>([NotNullWhen(true)] out T? value)
     {
+        var index = TypeSlot<T>.Index;
         if ((uint)index < (uint)entries.Length)
         {
             ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var currentValue = holder;
 
-            if (holder is T)
+            if (currentValue is T)
             {
-                value = (T)holder;
+                value = currentValue.UnboxAny<T>();
                 Debug.Assert(value is not null);
                 
                 holder = null;
@@ -370,18 +347,16 @@ public partial class TypeMap : ITypeMap
         return false;
     }
 
-    /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
-    public bool Remove<T>([NotNullWhen(true)] out T? value)
-        => Remove(TypeSlot<T>.Index, out value);
-
-    private bool TryGetValue<T>(int index, [NotNullWhen(true)] out T? value)
+    /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
+    public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
     {
+        var index = TypeSlot<T>.Index;
         if ((uint)index < (uint)entries.Length)
         {
             var holder = this[index];
             if (holder is T)
             {
-                value = (T)holder;
+                value = holder.UnboxAny<T>();
                 Debug.Assert(value is not null);
                 
                 return true;
@@ -392,15 +367,14 @@ public partial class TypeMap : ITypeMap
         return false;
     }
 
-    /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
-    public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
-        => TryGetValue(TypeSlot<T>.Index, out value);
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EnsureCapacity(int index)
+    private int EnsureCapacity<T>()
     {
+        var index = TypeSlot<T>.Index;
         if ((uint)index >= (uint)entries.Length)
-            Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
+            Array.Resize(ref entries, index + 1);
+
+        return index;
     }
 
     /// <summary>
@@ -411,13 +385,8 @@ public partial class TypeMap : ITypeMap
     /// <returns>The reference to the value associated with the type.</returns>
     public ref T GetValueRefOrAddDefault<T>(out bool exists)
         where T : struct
-        => ref GetValueRefOrAddDefault<T>(TypeSlot<T>.Index, out exists);
-
-    private ref T GetValueRefOrAddDefault<T>(int index, out bool exists)
-        where T : struct
     {
-        EnsureCapacity(index);
-        ref var holder = ref this[index];
+        ref var holder = ref this[EnsureCapacity<T>()];
         if (holder is T)
         {
             exists = true;
@@ -428,6 +397,6 @@ public partial class TypeMap : ITypeMap
             exists = false;
         }
 
-        return ref Unsafe.Unbox<T>(holder);
+        return ref BoxedValue<T>.UnsafeUnbox(holder);
     }
 }

@@ -5,6 +5,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;
 
+using Binary;
+using Text;
 using IO;
 using DecodingContext = DotNext.Text.DecodingContext;
 using EncodingContext = DotNext.Text.EncodingContext;

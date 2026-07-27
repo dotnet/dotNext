@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -13,6 +14,8 @@ namespace DotNext.Buffers;
 using Binary;
 using Collections.Generic;
 using IO;
+using Runtime;
+using Runtime.CompilerServices;
 using static IO.Pipelines.PipeExtensions;
 using DecodingContext = DotNext.Text.DecodingContext;
 
@@ -52,7 +55,13 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// </summary>
     public readonly SequencePosition Position => position;
 
-    private void Read<TParser>(ref TParser parser)
+    /// <summary>
+    /// Consumes and parser this sequence.
+    /// </summary>
+    /// <param name="parser">The parser that consumes the sequence.</param>
+    /// <typeparam name="TParser">The type of the parser.</typeparam>
+    /// <exception cref="EndOfStreamException"><paramref name="parser"/> requires more data.</exception>
+    public void Read<TParser>(ref TParser parser)
         where TParser : struct, IBufferReader, allows ref struct
     {
         position = parser.Append(RemainingSequence);
@@ -62,8 +71,8 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     private TResult Read<TResult, TParser>(ref TParser parser)
         where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
     {
-        position = parser.Append(RemainingSequence);
-        return parser.EndOfStream<TResult, TParser>();
+        Read(ref parser);
+        return parser.Invoke();
     }
 
     /// <summary>
@@ -73,17 +82,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The parsed value.</returns>
     public T Read<T>()
         where T : IBinaryFormattable<T>
+        => BinaryFormattable256Reader<T>.IsApplicable
+            ? Read<T, BinaryFormattable256Reader<T>>()
+            : Read<T, BinaryFormattableReader<T>>();
+    
+    private TResult Read<TResult, TParser>()
+        where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
     {
-        if (T.Size <= BinaryFormattable256Reader<T>.MaxSize)
-        {
-            var parser = new BinaryFormattable256Reader<T>();
-            return Read<T, BinaryFormattable256Reader<T>>(ref parser);
-        }
-        else
-        {
-            var parser = new BinaryFormattableReader<T>();
-            return Read<T, BinaryFormattableReader<T>>(ref parser);
-        }
+        var parser = new TParser();
+        return Read<TResult, TParser>(ref parser);
     }
 
     /// <summary>
@@ -95,15 +102,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public T ReadLittleEndian<T>()
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        if (WellKnownIntegerReader<T>.IsApplicable)
         {
-            var parser = WellKnownIntegerReader<T>.LittleEndian();
+            var parser = WellKnownIntegerReader<T>.LittleEndian;
             return Read<T, WellKnownIntegerReader<T>>(ref parser);
         }
         else
         {
-            var parser = IntegerReader<T>.LittleEndian();
+            var parser = IntegerReader<T>.LittleEndian;
             return Read<T, IntegerReader<T>>(ref parser);
         }
     }
@@ -117,15 +123,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public T ReadBigEndian<T>()
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        if (WellKnownIntegerReader<T>.IsApplicable)
         {
-            var parser = WellKnownIntegerReader<T>.BigEndian();
+            var parser = WellKnownIntegerReader<T>.BigEndian;
             return Read<T, WellKnownIntegerReader<T>>(ref parser);
         }
         else
         {
-            var parser = IntegerReader<T>.BigEndian();
+            var parser = IntegerReader<T>.BigEndian;
             return Read<T, IntegerReader<T>>(ref parser);
         }
     }
@@ -136,15 +141,17 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="output">The block of memory to fill.</param>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public void Read(Span<byte> output)
-        => Read(output.Length).CopyTo(output);
+    {
+        var parser = new SpanReader(output);
+        Read(ref parser);
+    }
 
     /// <summary>
     /// Reads single byte.
     /// </summary>
     /// <returns>A byte.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    public byte ReadByte()
-        => MemoryMarshal.GetReference(Read(1).FirstSpan);
+    public byte ReadByte() => Read<byte, ByteReader>();
 
     /// <summary>
     /// Reads the specified number of bytes.
@@ -279,17 +286,11 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public ReadOnlySequence<byte> ReadBlock(LengthFormat lengthFormat)
         => Read(ReadLength(lengthFormat));
 
-    private int Read7BitEncodedInt32()
-    {
-        var parser = new SevenBitEncodedIntReader();
-        return Read<int, SevenBitEncodedIntReader>(ref parser);
-    }
-
     private int ReadLength(LengthFormat lengthFormat) => lengthFormat switch
     {
         LengthFormat.LittleEndian => ReadLittleEndian<int>(),
         LengthFormat.BigEndian => ReadBigEndian<int>(),
-        LengthFormat.Compressed => Read7BitEncodedInt32(),
+        LengthFormat.Compressed => Read<int, SevenBitEncodedIntReader>(),
         _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
     };
 
@@ -392,7 +393,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         if (length is 0)
             return parser([], arg);
 
-        if (length <= Parsing256Reader<IFormatProvider?, TResult>.MaxSize)
+        if (Parsing256Reader<IFormatProvider?, TResult>.IsApplicable(length))
         {
             var reader = new Parsing256Reader<TArg, TResult>(arg, parser, length);
             return Read<TResult, Parsing256Reader<TArg, TResult>>(ref reader);
@@ -994,4 +995,30 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
         return charsWritten;
     }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct SpanReader(Span<byte> buffer) : IBufferReader
+{
+    private SpanWriter<byte> writer = new(buffer);
+
+    readonly int IBufferReader.RemainingBytes => writer.FreeCapacity;
+
+    void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer) => writer += buffer;
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct ByteReader() : IBufferReader, ISupplier<byte>
+{
+    private int value = int.MinValue;
+
+    readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(value < 0);
+
+    void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer)
+        => value = MemoryMarshal.GetReference(buffer);
+
+    byte ISupplier<byte>.Invoke() => (byte)value;
+
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }

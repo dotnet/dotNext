@@ -7,6 +7,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Buffers;
+using Buffers.Binary;
 
 internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
 {

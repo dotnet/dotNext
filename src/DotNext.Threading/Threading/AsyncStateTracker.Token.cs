@@ -10,16 +10,11 @@ partial class AsyncStateTracker
     [StructLayout(LayoutKind.Auto)]
     public readonly record struct Token
     {
-        internal readonly ulong Version;
+        internal readonly nuint Version;
 
-        internal Token(ulong version) => Version = version;
+        internal Token(nuint version) => Version = version;
 
-        internal Token Next()
-        {
-            var version = Version;
-            ChangeVersion(ref version);
-            return new(version);
-        }
+        internal Token Next() => new(Version + 1U);
 
         /// <inheritdoc/>
         public override string ToString() => Version.ToString();

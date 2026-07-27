@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Text;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Text;
 
 using IInterpolatedStringHandler = DotNext.Text.IInterpolatedStringHandler;
 

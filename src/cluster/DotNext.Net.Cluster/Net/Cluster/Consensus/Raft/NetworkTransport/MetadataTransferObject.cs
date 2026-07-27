@@ -6,6 +6,7 @@ using System.Text;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport;
 
 using Buffers;
+using Buffers.Binary;
 using Collections.Generic;
 using IO;
 using Runtime.Serialization;

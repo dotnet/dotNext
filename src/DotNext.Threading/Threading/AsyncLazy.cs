@@ -124,17 +124,30 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <returns><see langword="true"/> if previous value is removed successfully; <see langword="false"/> if value is still computing or this instance is not resettable.</returns>
     public bool Reset()
     {
-        bool result;
-        if (result = resettable && Volatile.Read(in task) is null or { IsCompleted: true })
+        if (resettable)
         {
-            lock (syncRoot)
+            switch (task)
             {
-                if (result = task is null or { IsCompleted: true })
-                    task = null;
+                case null:
+                    return true;
+                case { IsCompleted: true }:
+                    lock (syncRoot)
+                    {
+                        switch (task)
+                        {
+                            case null:
+                                return true;
+                            case { IsCompleted: true }:
+                                task = null;
+                                goto case null;
+                        }
+                    }
+
+                    break;
             }
         }
 
-        return result;
+        return false;
     }
 
     /// <inheritdoc/>

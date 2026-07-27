@@ -6,7 +6,7 @@ using Buffers;
 
 internal sealed class PersistentClusterConfigurationStorage(string fileName) : PersistentClusterConfigurationStorage<UriEndPoint>(fileName)
 {
-    protected override IEqualityComparer<UriEndPoint> Comparer => EndPointFormatter.UriEndPointComparer;
+    protected override IEqualityComparer<UriEndPoint> Comparer => UriEndPoint.Comparer;
 
     protected override void Encode(UriEndPoint address, ref BufferWriterSlim<byte> writer)
         => writer.WriteEndPoint(address);

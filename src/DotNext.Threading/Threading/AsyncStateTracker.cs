@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
@@ -13,7 +12,7 @@ namespace DotNext.Threading;
 public partial class AsyncStateTracker
 {
     private readonly bool respectStaleCallers;
-    private ulong currentVersion;
+    private nuint currentVersion;
     private bool completed;
 
     /// <summary>
@@ -64,18 +63,7 @@ public partial class AsyncStateTracker
     /// <summary>
     /// Gets the token that represents the current state.
     /// </summary>
-    public Token CurrentState
-    {
-        get
-        {
-            var result = nuint.Size is sizeof(ulong)
-                ? currentVersion
-                : Unsafe.As<ulong, uint>(ref currentVersion);
-
-            Volatile.ReadBarrier();
-            return new(result);
-        }
-    }
+    public Token CurrentState => new(Volatile.Read(in currentVersion));
 
     /// <summary>
     /// Waits for the state token next after <paramref name="stateToken"/>.

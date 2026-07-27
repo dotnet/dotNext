@@ -19,7 +19,7 @@ public static partial class StreamExtensions
     internal static async ValueTask<TResult> ReadAsync<TResult, TParser>(Stream stream, TParser parser, Memory<byte> buffer, CancellationToken token)
         where TParser : struct, IBufferReader, ISupplier<TResult>
     {
-        for (int count; (count = parser.RemainingBytes) > 0; parser.Invoke(buffer.Span.Slice(0, count)))
+        for (int count; (count = parser.RemainingBytes) > 0; parser.Apply(buffer.Span.Slice(0, count)))
         {
             count = await stream.ReadAsync(buffer % count, token).ConfigureAwait(false);
 
@@ -27,7 +27,8 @@ public static partial class StreamExtensions
                 break;
         }
 
-        return parser.EndOfStream<TResult, TParser>();
+        parser.EndOfStream();
+        return parser.Invoke();
     }
 
     /// <summary>

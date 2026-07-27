@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 using Pipelines;
 using Text;
 

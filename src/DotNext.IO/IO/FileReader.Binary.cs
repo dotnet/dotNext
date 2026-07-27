@@ -27,7 +27,8 @@ public partial class FileReader : IAsyncBinaryReader
     {
         while (await ReadAsync(token).ConfigureAwait(false) && !Read(ref parser)) ;
 
-        return parser.EndOfStream<TResult, TParser>();
+        parser.EndOfStream();
+        return parser.Invoke();
     }
 
     private ValueTask ReadAsync<TParser>(TParser parser, CancellationToken token)
@@ -59,7 +60,7 @@ public partial class FileReader : IAsyncBinaryReader
             if (buffer.IsEmpty)
                 return false;
 
-            parser.Invoke(buffer.Span);
+            parser.Apply(buffer.Span);
             ConsumeUnsafe(buffer.Length);
             length -= buffer.Length;
         }
@@ -79,7 +80,7 @@ public partial class FileReader : IAsyncBinaryReader
     public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        return T.Size <= BinaryFormattable256Reader<T>.MaxSize
+        return BinaryFormattable256Reader<T>.IsApplicable
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(new(), token)
             : ReadAsync<T, BinaryFormattableReader<T>>(new(), token);
     }
@@ -95,10 +96,9 @@ public partial class FileReader : IAsyncBinaryReader
     public ValueTask<T> ReadLittleEndianAsync<T>(CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
-            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.LittleEndian(), token)
-            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.LittleEndian(), token);
+        return WellKnownIntegerReader<T>.IsApplicable
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.LittleEndian, token)
+            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.LittleEndian, token);
     }
 
     /// <summary>
@@ -112,10 +112,9 @@ public partial class FileReader : IAsyncBinaryReader
     public ValueTask<T> ReadBigEndianAsync<T>(CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        var type = typeof(T);
-        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
-            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.BigEndian(), token)
-            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.BigEndian(), token);
+        return WellKnownIntegerReader<T>.IsApplicable
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.BigEndian, token)
+            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.BigEndian, token);
     }
 
     /// <inheritdoc/>

@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented;
 
-using Buffers;
+using Buffers.Binary;
 
 internal partial class Client
 {

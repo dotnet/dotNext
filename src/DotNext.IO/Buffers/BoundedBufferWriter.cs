@@ -52,7 +52,7 @@ internal sealed class BoundedBufferWriter<T> : IBufferWriter<T>
                 return result;
         }
 
-        throw new BufferSizeLimitExceededException(maxCapacity);
+        throw new BufferSizeLimitExceededException();
     }
 
     private interface IMemoryView<out TSelf>

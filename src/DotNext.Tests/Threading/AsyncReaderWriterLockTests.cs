@@ -221,7 +221,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryEnterReadLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        await ThrowsAsync<ObjectDisposedException>(t);
+        await ThrowsAnyAsync<ObjectDisposedException>(t);
     }
 
     [Fact]
@@ -262,13 +262,13 @@ public sealed class AsyncReaderWriterLockTests : Test
     public static void ReentrantLock()
     {
         using var l = new AsyncReaderWriterLock();
-        True(l.TryEnterReadLock());
+        True(l.TryEnterReadLock(TimeSpan.Zero, TestToken));
 
-        Throws<LockRecursionException>(() => l.TryEnterReadLock(InfiniteTimeSpan, TestToken));
-        Throws<LockRecursionException>(() => l.TryEnterWriteLock(InfiniteTimeSpan, TestToken));
+        Throws<LockRecursionException>(() => l.TryEnterReadLock(TimeSpan.Zero, TestToken));
+        Throws<LockRecursionException>(() => l.TryEnterWriteLock(TimeSpan.Zero, TestToken));
         
         l.Release();
-        True(l.TryEnterReadLock(InfiniteTimeSpan, TestToken));
+        True(l.TryEnterReadLock(TimeSpan.Zero, TestToken));
     }
 
     [Fact]
@@ -332,5 +332,21 @@ public sealed class AsyncReaderWriterLockTests : Test
 
         await task2;
         l.Release();
+    }
+
+    [Fact]
+    public static void ReleaseInAnotherThread()
+    {
+        using var l = new AsyncReaderWriterLock();
+        True(l.TryEnterWriteLock());
+        var threadId = Environment.CurrentManagedThreadId;
+        Task.Run(() =>
+            {
+                NotEqual(threadId, Environment.CurrentManagedThreadId);
+                l.Release();
+            }, TestToken)
+            .Wait(TestToken);
+
+        True(l.TryEnterWriteLock(TimeSpan.Zero, TestToken));
     }
 }

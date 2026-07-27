@@ -133,23 +133,27 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     private readonly object source;
 
     internal UserDataStorage(object source)
-        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(source));
+        => this.source = (source as IContainer)?.Source ?? source;
 
     /// <summary>
     /// Gets a value indicating that this storage is valid.
     /// </summary>
+    [MemberNotNullWhen(true, nameof(source))]
     public bool IsValid => source is not null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage? GetStorage()
-        => source is not null &&
-           (source is BackingStorage storage || (Volatile.Read(in GetPartition(source))?.TryGetValue(source, out storage!) ?? false))
+        => source is not null && (source is BackingStorage storage ||
+                                  (Volatile.Read(in GetPartition(source))?.TryGetValue(source, out storage!) ?? false))
             ? storage
             : null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage GetOrCreateStorage()
     {
+        if (source is null)
+            InvalidOperationException.Throw();
+
         if (source is not BackingStorage storage)
             storage = GetOrCreatePartition(source).GetOrCreateValue(source);
 
@@ -313,7 +317,43 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        return GetOrCreateStorage().GetOrSet(slot, valueFactory)!;
+        var storage = GetOrCreateStorage();
+        if (!storage.Get(slot).TryGet(out var result))
+        {
+            result = storage.GetOrSet(slot, valueFactory.Invoke(), out _);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets existing user data or sets the supplied data and return it.
+    /// </summary>
+    /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
+    /// <param name="slot">The slot identifying user data.</param>
+    /// <param name="value">The value to be associated with the slot if it's empty.</param>
+    /// <param name="isSet">
+    /// <see langword="true"/> if <paramref name="value"/> is set to the slot;
+    /// <see langword="false"/> if <paramref name="value"/> is ignored because the slot is assigned already.
+    /// </param>
+    /// <returns>The existing value associated with <paramref name="slot"/>; or <paramref name="value"/>.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, TValue value, out bool isSet)
+    {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+        
+        var storage = GetOrCreateStorage();
+        if (storage.Get(slot).TryGet(out var result))
+        {
+            isSet = false;
+        }
+        else
+        {
+            result = storage.GetOrSet(slot, value, out isSet);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -332,7 +372,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (GetStorage() is { } storage)
             return storage.Get(slot).TryGet(out userData);
 
-        userData = default!;
+        userData = default;
         return false;
     }
 
@@ -359,12 +399,9 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public bool Remove<TValue>(UserDataSlot<TValue> slot)
-    {
-        if (!slot.IsAllocated)
-            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
-
-        return GetStorage()?.Remove(slot).HasValue ?? false;
-    }
+        => slot.IsAllocated
+            ? GetStorage()?.Remove(slot).HasValue ?? false
+            : throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
     /// <summary>
     /// Removes user data slot.

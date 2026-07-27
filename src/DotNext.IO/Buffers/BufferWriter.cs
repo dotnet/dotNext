@@ -5,6 +5,7 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
+using Binary;
 using IO;
 using EncodingContext = DotNext.Text.EncodingContext;
 

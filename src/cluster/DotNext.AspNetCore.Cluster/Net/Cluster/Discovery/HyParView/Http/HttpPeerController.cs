@@ -68,7 +68,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         this.server = server;
 
         // various init
-        clientCache = new(EndPointFormatter.UriEndPointComparer);
+        clientCache = new(UriEndPoint.Comparer);
     }
 
     protected override bool IsLocalNode(EndPoint peer) => PeerComparer.Equals(localNode, peer);

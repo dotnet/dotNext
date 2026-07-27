@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.ComponentModel.DataAnnotations;
 
+using Runtime;
+
 /// <summary>
 /// Checks whether the data field of type <see cref="Optional{T}"/> has a value.
 /// </summary>
@@ -24,7 +26,7 @@ public sealed class RequiredAttribute<T> : RequiredAttribute
         switch (value)
         {
             case Optional<T>:
-                ref var optional = ref Unsafe.Unbox<Optional<T>>(value);
+                ref var optional = ref BoxedValue<Optional<T>>.UnsafeUnbox(value);
                 return optional.IsNull ? AllowNull : optional.HasValue;
             default:
                 return false;

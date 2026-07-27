@@ -111,6 +111,16 @@ public static partial class Memory
                     => new(ArrayPool<T>.Shared, length, exactSize: false);
             }
         }
+
+        internal static MemoryAllocator<T> Throwable
+        {
+            get
+            {
+                return Throw;
+
+                static MemoryOwner<T> Throw(int size) => throw new BufferSizeLimitExceededException();
+            }
+        }
     }
 
     /// <summary>

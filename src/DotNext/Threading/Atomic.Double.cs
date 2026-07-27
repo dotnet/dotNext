@@ -16,9 +16,9 @@ public static partial class Atomic
     /// <returns>The value at the specified location.</returns>
     [CLSCompliant(false)]
     public static double Read(ref readonly double location)
-        => Is32BitProcess
-            ? Interlocked.Read(in Unsafe.InToRef<double, long>(in location))
-            : Volatile.Read(in location);
+        => IsAtomic<double>()
+            ? Volatile.Read(in location)
+            : Interlocked.Read(in Unsafe.InToRef<double, long>(in location));
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
@@ -31,13 +31,13 @@ public static partial class Atomic
     [CLSCompliant(false)]
     public static void Write(ref double location, double value)
     {
-        if (Is32BitProcess)
+        if (IsAtomic<double>())
         {
-            Interlocked.Exchange(ref Unsafe.As<double, long>(ref location), BitConverter.DoubleToInt64Bits(value));
+            Volatile.Write(ref location, value);
         }
         else
         {
-            Volatile.Write(ref location, value);
+            Interlocked.Exchange(ref Unsafe.As<double, long>(ref location), BitConverter.DoubleToInt64Bits(value));
         }
     }
 }

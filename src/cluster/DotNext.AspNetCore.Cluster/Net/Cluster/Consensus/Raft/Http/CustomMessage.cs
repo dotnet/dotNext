@@ -80,7 +80,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
             => writer.CopyFromAsync(requestStream, count: null, token);
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, false, token);
+            => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, token);
     }
 
     internal const string MessageType = "CustomMessage";

@@ -6,6 +6,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions;
 
+[Obsolete]
 internal sealed class MetaExpression : DynamicMetaObject
 {
     private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;
@@ -169,9 +170,8 @@ internal sealed class MetaExpression : DynamicMetaObject
     public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
     {
         var binding = PrepareExpression();
-        BindingRestrictions restrictions;
         binding = Expression is ConstantExpression { Value: ConstantExpression { Value: Type } constExpr } ?
-            Expression.Call(NewMethod, constExpr, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out restrictions))) :
+            Expression.Call(NewMethod, constExpr, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out var restrictions))) :
             Expression.Call(ActivateMethod, binding, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out restrictions)));
 
         return new MetaExpression(binding, CreateRestrictions().Merge(restrictions));

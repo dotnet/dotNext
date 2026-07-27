@@ -229,12 +229,12 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// </summary>
     /// <remarks>
     /// This method doesn't add invocation expression as a statement.
-    /// To add recursive call as statement, use <see cref="CodeGenerator.Invoke(Expression, Expression[])"/> instead.
+    /// To add recursive call as statement, use <see cref="CodeGenerator.Invoke(Expression, IEnumerable{Expression})"/> instead.
     /// </remarks>
     /// <param name="args">The arguments to be passed into function.</param>
     /// <returns>The invocation expression.</returns>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
-    public InvocationExpression Invoke(params Expression[] args) => Expression.Invoke(Lambda.Self, args);
+    public InvocationExpression Invoke(params IEnumerable<Expression> args) => Expression.Invoke(Lambda.Self, args);
 
     /// <inheritdoc/>
     int IReadOnlyCollection<ParameterExpression>.Count => Lambda.Parameters.Count;

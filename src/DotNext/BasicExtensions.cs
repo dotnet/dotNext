@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using static System.Globalization.CultureInfo;
 
 namespace DotNext;
 
@@ -78,11 +77,6 @@ public static class BasicExtensions
     public static T As<T>(this T obj)
         where T : class?
         => obj;
-
-    internal static TOutput ChangeType<TInput, TOutput>(this TInput input)
-        where TInput : struct, IConvertible
-        where TOutput : struct, IConvertible
-        => (TOutput)input.ToType(typeof(TOutput), InvariantCulture);
 
     /// <summary>
     /// Attempts to get value from nullable container.

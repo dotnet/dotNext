@@ -14,8 +14,8 @@ public sealed class TryCatchTests : Test
         {
             var (arg1, arg2) = fun;
             Assign(result, true.Quoted);
-            Try((Expression)(arg1.AsDynamic() / arg2))
-                .Fault(new Action(() => Assign(result, false.Quoted)))
+            Try(arg1 / arg2)
+                .Fault(() => Assign(result, false.Quoted))
                 .End();
         })
         .Compile();
@@ -30,8 +30,8 @@ public sealed class TryCatchTests : Test
         {
             var (arg1, arg2) = fun;
             Assign(result, true.Quoted);
-            Try((Expression)(arg1.AsDynamic() / arg2))
-                .Catch<DivideByZeroException>(new Action(() => Assign(result, false.Quoted)))
+            Try(arg1 / arg2)
+                .Catch<DivideByZeroException>(() => Assign(result, false.Quoted))
                 .End();
         })
         .Compile();
@@ -46,8 +46,8 @@ public sealed class TryCatchTests : Test
         var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
         {
             var (arg1, arg2) = fun;
-            Try((Expression)(arg1.AsDynamic() / arg2))
-                .Catch<DivideByZeroException>(new Action(() => Return(false.Quoted)))
+            Try(arg1 / arg2)
+                .Catch<DivideByZeroException>(() => Return(false.Quoted))
                 .End();
             Return(true.Quoted);
         })
@@ -63,7 +63,7 @@ public sealed class TryCatchTests : Test
         var lambda = Lambda<Func<long, long, bool>>(static fun =>
         {
             var (arg1, arg2) = fun;
-            Try(Expression.Block((Expression)(arg1.AsDynamic() / arg2), true.Quoted))
+            Try(Expression.Block(arg1 / arg2, true.Quoted))
                 .Catch(typeof(Exception), static e => e.InstanceOf<DivideByZeroException>(), static e => InPlaceValue(false))
                 .OfType<bool>()
                 .End();

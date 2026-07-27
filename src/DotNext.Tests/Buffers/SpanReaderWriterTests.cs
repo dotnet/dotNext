@@ -4,6 +4,7 @@ using System.Text;
 namespace DotNext.Buffers;
 
 using Binary;
+using Text;
 using IO;
 
 public sealed class SpanReaderTests : Test

@@ -103,6 +103,13 @@ public sealed class BasicExtensionsTests : Test
         var obj = new object();
         var slot = new UserDataSlot<string>();
         Equal("42", obj.UserData.GetOrSet(slot, 42, ToStr));
+        Equal("42", obj.UserData.GetOrSet(slot, "43", out var isSet));
+        False(isSet);
+        
+        True(obj.UserData.Remove(slot));
+        Equal("43", obj.UserData.GetOrSet(slot, "43", out isSet));
+        True(isSet);
+        Equal("43", obj.UserData.GetOrSet(slot, 42, ToStr));
     }
 
     [Fact]
@@ -143,7 +150,7 @@ public sealed class BasicExtensionsTests : Test
     }
 
     [Fact]
-    public static void ResuzeSlotsOfDifferentTypes()
+    public static void ResizeSlotsOfDifferentTypes()
     {
         var slot1 = new UserDataSlot<ulong>();
         var slot2 = new UserDataSlot<ushort>();
@@ -255,5 +262,26 @@ public sealed class BasicExtensionsTests : Test
         
         CheckZeroBytes<UInt128>();
         CheckZeroBytes<Int128>();
+    }
+
+    [Fact]
+    public static void DefaultUserDataStorage()
+    {
+        var slot = new UserDataSlot<long>();
+        var storage = default(UserDataStorage);
+        False(storage.IsValid);
+        False(storage.TryGet(slot, out _));
+
+        var exceptionThrown = false;
+        try
+        {
+            storage.Set(slot, 42L);
+        }
+        catch (InvalidOperationException)
+        {
+            exceptionThrown = true;
+        }
+        
+        True(exceptionThrown);
     }
 }

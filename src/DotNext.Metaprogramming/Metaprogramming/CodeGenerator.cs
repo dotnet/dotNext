@@ -282,7 +282,7 @@ public static class CodeGenerator
     /// <param name="delegate">The expression providing delegate to be invoked.</param>
     /// <param name="arguments">Delegate invocation arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments)
+    public static void Invoke(Expression @delegate, params IEnumerable<Expression> arguments)
         => Statement(Expression.Invoke(@delegate, arguments));
 
     /// <summary>
@@ -291,25 +291,8 @@ public static class CodeGenerator
     /// <param name="delegate">The expression providing delegate to be invoked.</param>
     /// <param name="arguments">Delegate invocation arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void NullSafeInvoke(Expression @delegate, IEnumerable<Expression> arguments)
+    public static void NullSafeInvoke(Expression @delegate, params IEnumerable<Expression> arguments)
         => Statement(@delegate.IfNotNull(target => Expression.Invoke(target, arguments)));
-
-    /// <summary>
-    /// Adds invocation statement.
-    /// </summary>
-    /// <param name="delegate">The expression providing delegate to be invoked.</param>
-    /// <param name="arguments">Delegate invocation arguments.</param>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void Invoke(Expression @delegate, params Expression[] arguments) => Invoke(@delegate, (IEnumerable<Expression>)arguments);
-
-    /// <summary>
-    /// Adds invocation statement which is not invoked if <paramref name="delegate"/> is <see langword="null"/>.
-    /// </summary>
-    /// <param name="delegate">The expression providing delegate to be invoked.</param>
-    /// <param name="arguments">Delegate invocation arguments.</param>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void NullSafeInvoke(Expression @delegate, params Expression[] arguments)
-        => NullSafeInvoke(@delegate, (IEnumerable<Expression>)arguments);
 
     /// <summary>
     /// Inserts expression tree as a statement.
@@ -317,7 +300,7 @@ public static class CodeGenerator
     /// <typeparam name="TDelegate">The type of the delegate describing lambda call site.</typeparam>
     /// <param name="lambda">The expression to be inserted as statement.</param>
     /// <param name="arguments">The arguments used to replace lambda parameters.</param>
-    public static void Embed<TDelegate>(Expression<TDelegate> lambda, params Expression[] arguments)
+    public static void Embed<TDelegate>(Expression<TDelegate> lambda, params IReadOnlyList<Expression> arguments)
         where TDelegate : MulticastDelegate
         => Statement(ExpressionBuilder.Fragment(lambda, arguments));
 
@@ -328,7 +311,7 @@ public static class CodeGenerator
     /// <param name="method">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+    public static void Call(Expression instance, MethodInfo method, params IEnumerable<Expression> arguments)
         => Statement(Expression.Call(instance, method, arguments));
 
     /// <summary>
@@ -338,28 +321,8 @@ public static class CodeGenerator
     /// <param name="method">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void NullSafeCall(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+    public static void NullSafeCall(Expression instance, MethodInfo method, params IEnumerable<Expression> arguments)
         => Statement(instance.IfNotNull(target => Expression.Call(target, method, arguments)));
-
-    /// <summary>
-    /// Adds instance method call statement.
-    /// </summary>
-    /// <param name="instance"><c>this</c> argument.</param>
-    /// <param name="method">The method to be called.</param>
-    /// <param name="arguments">Method call arguments.</param>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void Call(Expression instance, MethodInfo method, params Expression[] arguments)
-        => Call(instance, method, (IEnumerable<Expression>)arguments);
-
-    /// <summary>
-    /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
-    /// </summary>
-    /// <param name="instance"><c>this</c> argument.</param>
-    /// <param name="method">The method to be called.</param>
-    /// <param name="arguments">Method call arguments.</param>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void NullSafeCall(Expression instance, MethodInfo method, params Expression[] arguments)
-        => NullSafeCall(instance, method, (IEnumerable<Expression>)arguments);
 
     /// <summary>
     /// Adds instance method call statement.
@@ -368,7 +331,7 @@ public static class CodeGenerator
     /// <param name="methodName">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void Call(Expression instance, string methodName, params Expression[] arguments)
+    public static void Call(Expression instance, string methodName, params IEnumerable<Expression> arguments)
         => Statement(instance.Call(methodName, arguments));
 
     /// <summary>
@@ -378,7 +341,7 @@ public static class CodeGenerator
     /// <param name="methodName">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void NullSafeCall(Expression instance, string methodName, params Expression[] arguments)
+    public static void NullSafeCall(Expression instance, string methodName, params IEnumerable<Expression> arguments)
         => Statement(instance.IfNotNull(target => target.Call(methodName, arguments)));
 
     /// <summary>
@@ -387,17 +350,8 @@ public static class CodeGenerator
     /// <param name="method">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic(MethodInfo method, IEnumerable<Expression> arguments)
+    public static void CallStatic(MethodInfo method, params IEnumerable<Expression> arguments)
         => Statement(Expression.Call(null, method, arguments));
-
-    /// <summary>
-    /// Adds static method call statement.
-    /// </summary>
-    /// <param name="method">The method to be called.</param>
-    /// <param name="arguments">Method call arguments.</param>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic(MethodInfo method, params Expression[] arguments)
-        => CallStatic(method, (IEnumerable<Expression>)arguments);
 
     /// <summary>
     /// Adds static method call.
@@ -406,7 +360,7 @@ public static class CodeGenerator
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic(Type type, string methodName, params Expression[] arguments)
+    public static void CallStatic(Type type, string methodName, params IEnumerable<Expression> arguments)
         => Statement(type.CallStatic(methodName, arguments));
 
     /// <summary>
@@ -416,7 +370,7 @@ public static class CodeGenerator
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic<T>(string methodName, params Expression[] arguments)
+    public static void CallStatic<T>(string methodName, params IEnumerable<Expression> arguments)
         => CallStatic(typeof(T), methodName, arguments);
 
     /// <summary>

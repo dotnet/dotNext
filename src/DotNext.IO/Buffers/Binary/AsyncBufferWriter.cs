@@ -3,7 +3,7 @@ using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using DotNext.Text;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
 using IO;
 using static IO.Pipelines.PipeExtensions;

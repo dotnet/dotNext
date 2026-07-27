@@ -57,4 +57,6 @@ internal static class ExceptionMessages
     internal static string BufferTooSmall => GetResourceString();
 
     internal static string EmptyCollection => GetResourceString();
+
+    internal static string BufferSizeLimitExceeded => GetResourceString();
 }

@@ -1,4 +1,6 @@
-﻿namespace DotNext.IO;
+﻿using System.Diagnostics;
+
+namespace DotNext.IO;
 
 /// <summary>
 /// Represents object which content is represented by <see cref="Stream"/>.
@@ -10,7 +12,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <summary>
     /// Represents the underlying stream.
     /// </summary>
-    protected readonly Stream content = content;
+    protected readonly Stream content = content ?? throw new ArgumentNullException(nameof(content));
     
     /// <summary>
     /// Loads the content from another data transfer object.
@@ -48,16 +50,25 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     long? IDataTransferObject.Length => content.CanSeek ? content.Length : null;
 
     /// <inheritdoc/>
-    async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
-        try
+        return IsReusable
+            ? WriteAndResetAsync(content, writer, token)
+            : writer.CopyFromAsync(content, count: null, token);
+
+        static async ValueTask WriteAndResetAsync(Stream input, TWriter writer, CancellationToken token)
         {
-            await writer.CopyFromAsync(content, count: null, token).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (IsReusable)
-                content.Seek(0, SeekOrigin.Begin);
+            Debug.Assert(input.CanSeek);
+
+            var position = input.Position;
+            try
+            {
+                await writer.CopyFromAsync(input, count: null, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                input.Seek(position, SeekOrigin.Begin);
+            }
         }
     }
 
@@ -72,7 +83,28 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
         where TTransformation : IDataTransferObject.ITransformation<TResult>
-        => IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
+    {
+        return IsReusable
+            ? TransformAndResetAsync(content, transformation, token)
+            : IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, token);
+
+        static async ValueTask<TResult> TransformAndResetAsync(Stream input, TTransformation transformation, CancellationToken token)
+        {
+            Debug.Assert(input.CanSeek);
+
+            var position = input.Position;
+            try
+            {
+                return await IDataTransferObject
+                    .TransformAsync<TResult, TTransformation>(input, transformation, token)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                input.Seek(position, SeekOrigin.Begin);
+            }
+        }
+    }
 
     /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)

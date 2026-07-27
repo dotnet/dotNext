@@ -235,13 +235,13 @@ public sealed class AsyncExclusiveLockTests : Test
     public static void ReentrantLock()
     {
         using var l = new AsyncExclusiveLock();
-        True(l.TryAcquire());
+        True(l.TryAcquire(TimeSpan.Zero, TestToken));
         False(l.TryAcquire());
 
-        Throws<LockRecursionException>(() => l.TryAcquire(InfiniteTimeSpan, TestToken));
+        Throws<LockRecursionException>(() => l.TryAcquire(TimeSpan.Zero, TestToken));
         
         l.Release();
-        True(l.TryAcquire(InfiniteTimeSpan, TestToken));
+        True(l.TryAcquire(TimeSpan.Zero, TestToken));
     }
 
     [Fact]
@@ -259,5 +259,22 @@ public sealed class AsyncExclusiveLockTests : Test
         False(task.IsCompleted);
         
         await ThrowsAsync<ConcurrencyLimitReachedException > (l.AcquireAsync(TestToken).AsTask);
+    }
+    
+    [Fact]
+    public static void ReleaseInAnotherThread()
+    {
+        using var l = new AsyncExclusiveLock();
+        True(l.TryAcquire());
+        var threadId = Environment.CurrentManagedThreadId;
+        
+        Task.Run(() =>
+            {
+                NotEqual(threadId, Environment.CurrentManagedThreadId);
+                l.Release();
+            }, TestToken)
+            .Wait(TestToken);
+        
+        True(l.TryAcquire(TimeSpan.Zero, TestToken));
     }
 }

@@ -62,21 +62,21 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void IsAtomicWrite()
     {
-        True(Atomic.IsAtomic<byte>());
-        True(Atomic.IsAtomic<sbyte>());
-        True(Atomic.IsAtomic<bool>());
-        True(Atomic.IsAtomic<short>());
-        True(Atomic.IsAtomic<ushort>());
-        True(Atomic.IsAtomic<int>());
-        True(Atomic.IsAtomic<uint>());
-        True(Atomic.IsAtomic<long>());
-        True(Atomic.IsAtomic<ulong>());
-        True(Atomic.IsAtomic<nint>());
-        True(Atomic.IsAtomic<nuint>());
-        True(Atomic.IsAtomic<object>());
-        True(Atomic.IsAtomic<ValueTuple<object>>());
+        True(Interlocked.IsAtomic<byte>());
+        True(Interlocked.IsAtomic<sbyte>());
+        True(Interlocked.IsAtomic<bool>());
+        True(Interlocked.IsAtomic<short>());
+        True(Interlocked.IsAtomic<ushort>());
+        True(Interlocked.IsAtomic<int>());
+        True(Interlocked.IsAtomic<uint>());
+        True(Interlocked.IsAtomic<long>());
+        True(Interlocked.IsAtomic<ulong>());
+        True(Interlocked.IsAtomic<nint>());
+        True(Interlocked.IsAtomic<nuint>());
+        True(Interlocked.IsAtomic<object>());
+        True(Interlocked.IsAtomic<ValueTuple<object>>());
 
-        False(Atomic.IsAtomic<ValueTuple<byte, long>>());
-        False(Atomic.IsAtomic<Guid>());
+        False(Interlocked.IsAtomic<ValueTuple<byte, long>>());
+        False(Interlocked.IsAtomic<Guid>());
     }
 }

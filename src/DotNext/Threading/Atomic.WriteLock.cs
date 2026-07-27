@@ -23,8 +23,8 @@ partial struct Atomic<T>
 
         internal WriteLockScope(ref Atomic<T> atomic)
         {
-            stamp = atomic.EnterWriteLock();
             this.atomic = ref atomic;
+            stamp = atomic.EnterWriteLock();
         }
 
         /// <summary>

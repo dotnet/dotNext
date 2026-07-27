@@ -17,7 +17,7 @@ using Runtime.CompilerServices;
 /// than synchronized methods according to benchmarks. This type provides no contention for read path.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public partial struct Atomic<T> : IStrongBox, ICloneable
+public partial struct Atomic<T> : IAtomic, IStrongBox
     where T : struct
 {
     /// <summary>
@@ -36,8 +36,16 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
         return result;
     }
 
+    readonly object? IAtomic.Unwrap()
+    {
+        Read(out var result);
+        return result is IOptionMonad
+            ? ((IOptionMonad)result).Value
+            : result;
+    }
+
     /// <inheritdoc/>
-    readonly object ICloneable.Clone() => Clone();
+    readonly IAtomic IAtomic.Clone() => Clone();
 
     /// <summary>
     /// Performs atomic read.
@@ -384,6 +392,9 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
     }
 
     /// <inheritdoc/>
+    void IResettable.Reset() => Clear();
+
+    /// <inheritdoc/>
     object? IStrongBox.Value
     {
         readonly get => Value;
@@ -418,8 +429,6 @@ public partial struct Atomic<T> : IStrongBox, ICloneable
 /// </summary>
 public static partial class Atomic
 {
-    private static bool Is32BitProcess => nuint.Size < sizeof(ulong);
-    
     private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater>(ref TValue value, TUpdater updater)
         where TUpdater : ISupplier<TValue, TValue>, allows ref struct
     {

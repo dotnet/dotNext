@@ -10,25 +10,24 @@ public sealed class ListTests : Test
         True(array.SequenceEqual(new[] { "10", "40", "100" }));
     }
 
-    private static int Compare(long x, long y) => x.CompareTo(y);
-
     [Fact]
-    public static void OrderedInsertion()
+    public static unsafe void OrderedInsertion()
     {
-        Comparison<long> comparer = Compare;
-        var list = new List<long> { 2L };
-        list.InsertOrdered(1L, comparer);
+        List<long> list = [2L];
+        Equal(0, list.InsertOrdered(1L, Compare));
         Equal(1L, list[0]);
         Equal(2L, list[1]);
 
-        list = new List<long> { 1L };
-        list.InsertOrdered(3L, comparer);
+        list = [1L];
+        Equal(1, list.InsertOrdered(3L, Comparer<long>.Default));
         Equal(1L, list[0]);
         Equal(3L, list[1]);
 
-        list = new List<long> { 1L, 3L, 7L };
-        Equal(2L, list.InsertOrdered(4L, comparer));
+        list = [1L, 3L, 7L];
+        Equal(2L, list.InsertOrdered(4L, &Compare));
         list.RemoveRange(0, 0);
+        
+        static int Compare(long x, long y) => x.CompareTo(y);
     }
 
     [Fact]

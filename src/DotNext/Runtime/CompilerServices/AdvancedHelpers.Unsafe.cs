@@ -77,6 +77,15 @@ partial class AdvancedHelpers
         internal static ref byte GetRawData(object obj)
             => ref Unsafe.As<RawData>(obj).Data;
     }
+
+    internal static T UnboxAny<T>(this object obj)
+    {
+        Debug.Assert(obj is T);
+
+        return typeof(T).IsValueType
+            ? Unsafe.As<byte, T>(ref GetRawData(obj))
+            : Unsafe.As<object, T>(ref obj);
+    }
 }
 
 file abstract class RawData

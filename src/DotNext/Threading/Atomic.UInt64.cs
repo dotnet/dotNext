@@ -12,7 +12,7 @@ public static partial class Atomic
     /// <returns>The value at the specified location.</returns>
     [CLSCompliant(false)]
     public static ulong Read(ref readonly ulong location)
-        => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
+        => IsAtomic<ulong>() ? Volatile.Read(in location) : Interlocked.Read(in location);
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
@@ -25,13 +25,13 @@ public static partial class Atomic
     [CLSCompliant(false)]
     public static void Write(ref ulong location, ulong value)
     {
-        if (Is32BitProcess)
+        if (IsAtomic<ulong>())
         {
-            Interlocked.Exchange(ref location, value);
+            Volatile.Write(ref location, value);
         }
         else
         {
-            Volatile.Write(ref location, value);
+            Interlocked.Exchange(ref location, value);
         }
     }
 }

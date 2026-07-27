@@ -3,9 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Text.Unicode;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
-using Binary;
 using Numerics;
 
 /// <summary>
@@ -224,8 +223,8 @@ public static class ByteBuffer
     public static bool TryWrite<T>(this ref SpanWriter<byte> writer, T value)
         where T : IBinaryFormattable<T>
     {
-        bool result;
-        if (result = writer.TrySlide(T.Size, out var segment))
+        var result = writer.TrySlide(T.Size, out var segment);
+        if (result)
             value.Format(segment);
 
         return result;
@@ -280,8 +279,8 @@ public static class ByteBuffer
     /// </returns>
     public static bool TryWrite(this ref SpanWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
     {
-        bool result;
-        if (result = value.TryWriteBytes(writer.RemainingSpan, out var bytesWritten, isUnsigned, isBigEndian))
+        var result = value.TryWriteBytes(writer.RemainingSpan, out var bytesWritten, isUnsigned, isBigEndian);
+        if (result)
             writer.Advance(bytesWritten);
 
         return result;
@@ -302,8 +301,8 @@ public static class ByteBuffer
     public static bool TryFormat<T>(this ref SpanWriter<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : IUtf8SpanFormattable
     {
-        bool result;
-        if (result = value.TryFormat(writer.RemainingSpan, out var bytesWritten, format, provider))
+        var result = value.TryFormat(writer.RemainingSpan, out var bytesWritten, format, provider);
+        if (result)
             writer.Advance(bytesWritten);
 
         return result;
@@ -317,8 +316,9 @@ public static class ByteBuffer
     /// <returns><see langword="true"/> if <paramref name="input"/> is encoded successfully; otherwise, <see langword="false"/>.</returns>
     public static bool TryEncodeAsUtf8(this ref SpanWriter<byte> writer, ReadOnlySpan<char> input)
     {
-        bool result;
-        if (result = Utf8.FromUtf16(input, writer.RemainingSpan, out _, out var bytesWritten, replaceInvalidSequences: false) is OperationStatus.Done)
+        var result = Utf8.FromUtf16(input, writer.RemainingSpan, out _, out var bytesWritten,
+            replaceInvalidSequences: false) is OperationStatus.Done;
+        if (result)
             writer.Advance(bytesWritten);
 
         return result;
@@ -404,8 +404,8 @@ public static class ByteBuffer
     public static bool TryRead<T>(this ref SpanReader<byte> reader, [NotNullWhen(true)] out T? value)
         where T : IBinaryFormattable<T>
     {
-        bool result;
-        value = (result = reader.TryRead(T.Size, out var segment))
+        var result = reader.TryRead(T.Size, out var segment);
+        value = result
             ? T.Parse(segment)
             : default;
 

@@ -6,4 +6,3 @@ FileHandleClosed=The file handle is closed
 ReadBufferNotEmpty=The internal buffer has unconsumed data to read
 WriteBufferNotEmpty=The internal buffer has data to flush
 StreamOverflow=The internal buffer is full
-BufferSizeLimitExceeded=The maximum buffer size limit '{0}' is exceeded

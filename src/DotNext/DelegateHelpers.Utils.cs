@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext;
@@ -10,7 +9,7 @@ public static partial class DelegateHelpers
     [StructLayout(LayoutKind.Auto)]
     private readonly struct TargetRewriter(object target) : ISupplier<Delegate, object?>
     {
-        object? ISupplier<Delegate, object?>.Invoke(Delegate d) => target;
+        object ISupplier<Delegate, object?>.Invoke(Delegate d) => target;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -64,14 +63,7 @@ public static partial class DelegateHelpers
         where TResult : allows ref struct
         => default;
 
-    private static T UnboxAny<T>(this object obj)
-        => typeof(T).IsValueType
-            ? Unsafe.As<byte, T>(ref Unsafe.GetRawData(obj))
-            : Unsafe.As<object, T>(ref obj);
-
     private static TResult UnboxAny<T, TResult>(this object obj, T arg)
         where T : allows ref struct
-        => typeof(TResult).IsValueType
-            ? Unsafe.As<byte, TResult>(ref Unsafe.GetRawData(obj))
-            : Unsafe.As<object, TResult>(ref obj);
+        => obj.UnboxAny<TResult>();
 }

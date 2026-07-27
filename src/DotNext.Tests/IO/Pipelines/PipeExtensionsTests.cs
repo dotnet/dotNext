@@ -5,6 +5,7 @@ using System.Text;
 namespace DotNext.IO.Pipelines;
 
 using Buffers;
+using Buffers.Binary;
 
 public sealed class PipeExtensionsTests : Test
 {

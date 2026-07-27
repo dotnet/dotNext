@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DotNext.Metaprogramming;
@@ -70,9 +69,9 @@ public sealed class BlockTests : Test
     {
         var lambda = Lambda<Func<int, int>>(static fun =>
         {
-            With((Expression)(fun[0].AsDynamic() + 10), static scopeVar =>
+            With(fun[0] + 10.Quoted, static scopeVar =>
             {
-                Assign(scopeVar, scopeVar.AsDynamic() * 2);
+                Assign(scopeVar, scopeVar * 2.Quoted);
             });
         })
         .Compile();

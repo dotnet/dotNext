@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -70,5 +71,5 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
     }
 
     /// <inheritdoc />
-    IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointFormatter.UriEndPointComparer;
+    IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => UriEndPoint.Comparer;
 }

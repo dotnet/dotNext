@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
 internal static class BufferReader
 {
@@ -15,7 +15,7 @@ internal static class BufferReader
                  position = input.GetPosition(consumedBytes, position))
             {
                 block %= remainingBytes;
-                parser.Invoke(block.Span);
+                parser.Apply(block.Span);
                 consumedBytes = block.Length;
             }
 
@@ -28,8 +28,4 @@ internal static class BufferReader
                 throw new EndOfStreamException();
         }
     }
-
-    internal static TResult EndOfStream<TResult, TParser>(this ref TParser parser)
-        where TParser : struct, IBufferReader, ISupplier<TResult>, allows ref struct
-        => parser.RemainingBytes is 0 || !TParser.ThrowOnPartialData ? parser.Invoke() : throw new EndOfStreamException();
 }

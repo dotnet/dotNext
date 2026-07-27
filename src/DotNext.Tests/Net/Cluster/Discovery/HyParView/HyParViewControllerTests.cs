@@ -39,7 +39,7 @@ public sealed class HyParViewControllerTests : Test
     private sealed class TransportLayer : Dictionary<EndPoint, TestPeerControllerBase>
     {
         internal TransportLayer()
-            : base(EndPointFormatter.UriEndPointComparer)
+            : base(UriEndPoint.Comparer)
         {
         }
     }
@@ -92,7 +92,7 @@ public sealed class HyParViewControllerTests : Test
         var listener = new TaskCompletionSource();
         Action<PeerController, PeerEventArgs> handler = (c, a) =>
         {
-            if (EndPointFormatter.UriEndPointComparer.Equals(peer, a.PeerAddress))
+            if (UriEndPoint.Comparer.Equals(peer, a.PeerAddress))
                 listener.SetResult();
         };
         controller.PeerDiscovered += handler;

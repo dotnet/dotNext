@@ -8,6 +8,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Runtime.CompilerServices;
 
 using Buffers;
+using Buffers.Text;
 using Text;
 
 /// <summary>

@@ -9,7 +9,7 @@ using Binary;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-public sealed class SequenceBinaryReaderTests : Test
+public sealed class SequenceReaderTests : Test
 {
     [Fact]
     public static async Task ReadMemory()
@@ -186,5 +186,68 @@ public sealed class SequenceBinaryReaderTests : Test
 
         var reader = new SequenceReader(writer.WrittenMemory);
         Equal(expected, new BigInteger(reader.ReadToEnd().FirstSpan));
+    }
+
+    [Fact]
+    public static void ReadBytes()
+    {
+        var reader = new SequenceReader(new byte[] { 42, byte.MaxValue });
+        Equal(42, reader.ReadByte());
+        Equal(byte.MaxValue, reader.ReadByte());
+        
+        var exceptionThrown = false;
+        try
+        {
+            reader.ReadByte();
+        }
+        catch (EndOfStreamException)
+        {
+            exceptionThrown = true;
+        }
+
+        True(exceptionThrown);
+    }
+
+    [Fact]
+    public static void UseBufferReader()
+    {
+        var reader = new SequenceReader(new byte[] { 42, 43 });
+        
+        var parser = new ByteParser();
+        reader.Read(ref parser);
+        Equal(42, parser.Value);
+
+        parser = default;
+        reader.Read(ref parser);
+        Equal(43, parser.Value);
+
+        var exceptionThrown = false;
+        try
+        {
+            parser = default;
+            reader.Read(ref parser);
+        }
+        catch (EndOfStreamException)
+        {
+            exceptionThrown = true;
+        }
+
+        True(exceptionThrown);
+    }
+
+    private ref struct ByteParser : IBufferReader
+    {
+        public byte Value { get; private set; }
+        private bool written;
+
+        void IBufferReader.Apply(scoped ReadOnlySpan<byte> buffer)
+        {
+            Value = buffer[0];
+            written = true;
+        }
+
+        readonly int IBufferReader.RemainingBytes => written ? 0 : 1;
+
+        static bool IBufferReader.ThrowOnPartialData => true;
     }
 }

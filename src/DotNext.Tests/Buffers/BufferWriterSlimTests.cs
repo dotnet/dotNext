@@ -6,6 +6,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Buffers;
 
 using Binary;
+using Text;
 using IO;
 using static DotNext.Text.EncodingExtensions;
 
@@ -15,6 +16,7 @@ public sealed class BufferWriterSlimTests : Test
     public static void GrowableBuffer()
     {
         using var builder = new BufferWriterSlim<int>(stackalloc int[2]);
+        False(builder.IsBounded);
         Equal(0, builder.WrittenCount);
         Equal(2, builder.Capacity);
         Equal(2, builder.FreeCapacity);
@@ -516,5 +518,46 @@ public sealed class BufferWriterSlimTests : Test
         {
             writer.Dispose();
         }
+    }
+
+    [Fact]
+    public static void SizeLimitWithStackBuffer()
+    {
+        const int maxSize = 4;
+        var writer = new BufferWriterSlim<byte>(stackalloc byte[maxSize]) { IsBounded = true };
+        True(writer.IsBounded);
+        writer.Write(RandomBytes(maxSize));
+
+        var exceptionThrown = false;
+        try
+        {
+            writer.GetSpan();
+        }
+        catch (BufferSizeLimitExceededException)
+        {
+            exceptionThrown = true;
+        }
+        
+        True(exceptionThrown);
+    }
+
+    [Fact]
+    public static void SizeLimitWithPoolingBuffer()
+    {
+        var writer = new BufferWriterSlim<byte>(initialCapacity: 4) { IsBounded = true };
+        True(writer.IsBounded);
+        writer.Write(RandomBytes(writer.FreeCapacity));
+        
+        var exceptionThrown = false;
+        try
+        {
+            writer.GetSpan();
+        }
+        catch (BufferSizeLimitExceededException)
+        {
+            exceptionThrown = true;
+        }
+        
+        True(exceptionThrown);
     }
 }

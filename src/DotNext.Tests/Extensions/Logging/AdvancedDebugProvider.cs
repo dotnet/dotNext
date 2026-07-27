@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace DotNext.Extensions.Logging;
 
 using Buffers;
+using Buffers.Text;
 using Diagnostics;
 using Text;
 

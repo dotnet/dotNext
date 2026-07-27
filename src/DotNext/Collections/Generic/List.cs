@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -36,6 +36,32 @@ public static partial class List
                 Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
                 return Return<Func<int, T>>();
             }
+        }
+        
+        /// <summary>
+        /// Constructs read-only list with a single item in it.
+        /// </summary>
+        /// <param name="item">An item to be placed into list.</param>
+        /// <returns>Read-only list containing single item.</returns>
+        public static IReadOnlyList<T> Singleton(T item) => new Specialized.SingletonList<T> { Item = item };
+
+        /// <summary>
+        /// Generates a list that contains one repeated value.
+        /// </summary>
+        /// <param name="item">The item to be returned from the list.</param>
+        /// <param name="count">The number of elements in the list.</param>
+        /// <returns>A list that contains a repeated value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+        public static IReadOnlyList<T> Repeat(T item, int count)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+            return count switch
+            {
+                0 => [],
+                1 => Singleton(item),
+                _ => new RepeatList<T>(item, count),
+            };
         }
     }
 
@@ -79,20 +105,76 @@ public static partial class List
                 return Return<Action<int, T>>();
             }
         }
-    }
 
-    private static TOutput[] ToArray<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
-        where TConverter : struct, ISupplier<TInput, TOutput>
-    {
-        var count = input.Count;
-        if (count is 0)
-            return [];
+        /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// </remarks>
+        /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        public int InsertOrdered<TComparer>(T item, TComparer comparer)
+            where TComparer : IComparer<T>
+        {
+            var index = GetInsertionPosition(new ReadOnlyList<T>(list), item, comparer);
+            list.Insert(index, item);
+            return index;
+        }
 
-        var output = GC.AllocateUninitializedArray<TOutput>(count);
-        for (var i = 0; i < count; i++)
-            output[i] = mapper.Invoke(input[i]);
+        /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// </remarks>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        public int InsertOrdered(T item, Comparison<T?> comparer)
+            => InsertOrdered<T, DelegatingComparer<T>>(list, item, comparer);
 
-        return output;
+        /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// </remarks>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        [CLSCompliant(false)]
+        public unsafe int InsertOrdered(T item, delegate*<T?, T?, int> comparer)
+            => InsertOrdered<T, ComparerWrapper<T>>(list, item, comparer);
+        
+        /// <summary>
+        /// Inserts an item to the list at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="item">The object to insert into the list.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the receiver.</exception>
+        /// <exception cref="NotSupportedException">The receiver is read-only.</exception>
+        public void Insert(Index index, T item)
+            => list.Insert(index.GetOffset(list.Count), item);
+
+        /// <summary>
+        /// Removes the item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the receiver.</exception>
+        /// <exception cref="NotSupportedException">The receiver is read-only.</exception>
+        public void RemoveAt(Index index)
+            => list.RemoveAt(index.GetOffset(list.Count));
+
+        /// <summary>
+        /// Returns slice of the list.
+        /// </summary>
+        /// <param name="range">The range of elements in the list.</param>
+        /// <returns>The section of the list.</returns>
+        public ListSegment<T> Slice(Range range)
+            => new(list, range);
     }
 
     /// <summary>
@@ -105,7 +187,7 @@ public static partial class List
     /// <param name="mapper">Element mapping function.</param>
     /// <returns>An array of list items.</returns>
     public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper)
-        => ToArray<TInput, TOutput, DelegatingConverter<TInput, TOutput>>(input, mapper);
+        => ToArray<TInput, ReadOnlyList<TInput>, TOutput, DelegatingConverter<TInput, TOutput>>(new(input), mapper);
 
     /// <summary>
     /// Converts list into array and perform mapping for each
@@ -118,18 +200,7 @@ public static partial class List
     /// <returns>An array of list items.</returns>
     [CLSCompliant(false)]
     public static unsafe TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<TInput, TOutput> mapper)
-        => ToArray<TInput, TOutput, Supplier<TInput, TOutput>>(input, mapper);
-
-    private static TOutput[] ToArrayWithIndex<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
-        where TConverter : struct, ISupplier<int, TInput, TOutput>
-    {
-        var count = input.Count;
-        var output = GC.AllocateUninitializedArray<TOutput>(count);
-        for (var i = 0; i < count; i++)
-            output[i] = mapper.Invoke(i, input[i]);
-
-        return output;
-    }
+        => ToArray<TInput, ReadOnlyList<TInput>, TOutput, Supplier<TInput, TOutput>>(new(input), mapper);
 
     /// <summary>
     /// Converts list into array and perform mapping for each
@@ -141,7 +212,7 @@ public static partial class List
     /// <param name="mapper">Index-aware element mapping function.</param>
     /// <returns>An array of list items.</returns>
     public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Func<int, TInput, TOutput> mapper)
-        => ToArrayWithIndex<TInput, TOutput, DelegatingSupplier<int, TInput, TOutput>>(input, mapper);
+        => ToArrayWithIndex<TInput, ReadOnlyList<TInput>, TOutput, DelegatingSupplier<int, TInput, TOutput>>(new(input), mapper);
 
     /// <summary>
     /// Converts list into array and perform mapping for each
@@ -154,7 +225,7 @@ public static partial class List
     /// <returns>An array of list items.</returns>
     [CLSCompliant(false)]
     public static unsafe TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<int, TInput, TOutput> mapper)
-        => ToArrayWithIndex<TInput, TOutput, Supplier<int, TInput, TOutput>>(input, mapper);
+        => ToArrayWithIndex<TInput, ReadOnlyList<TInput>, TOutput, Supplier<int, TInput, TOutput>>(new(input), mapper);
 
     /// <summary>
     /// Returns lazily converted read-only list.
@@ -168,85 +239,47 @@ public static partial class List
         => new(list, converter);
 
     /// <summary>
-    /// Extends <see cref="IReadOnlyList{T}"/> type.
+    /// Extends <see cref="List{T}"/> type.
     /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    extension<T>(IReadOnlyList<T>)
+    /// <param name="list">The list to insert into.</param>
+    /// <typeparam name="T">The type of the items in the list.</typeparam>
+    extension<T>(List<T> list)
     {
         /// <summary>
-        /// Constructs read-only list with a single item in it.
+        /// Inserts the item into sorted list.
         /// </summary>
-        /// <param name="item">An item to be placed into list.</param>
-        /// <returns>Read-only list containing single item.</returns>
-        public static IReadOnlyList<T> Singleton(T item) => new Specialized.SingletonList<T> { Item = item };
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// This version method is specially optimized for <see cref="List{T}"/> data type
+        /// while <see cref="InsertOrdered{T, TComparer}(IList{T}, T, TComparer)"/>
+        /// is for generic list of unknown type.
+        /// </remarks>
+        /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        public int InsertOrdered<TComparer>(T item, TComparer comparer)
+            where TComparer : IComparer<T>
+        {
+            var index = GetInsertionPosition(list, item, comparer);
+            list.Insert(index, item);
+            return index;
+        }
 
         /// <summary>
-        /// Generates a list that contains one repeated value.
+        /// Removes a range of elements from list.
         /// </summary>
-        /// <param name="item">The item to be returned from the list.</param>
-        /// <param name="count">The number of elements in the list.</param>
-        /// <returns>A list that contains a repeated value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
-        public static IReadOnlyList<T> Repeat(T item, int count)
+        /// <param name="range">The range of elements to be removed.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
+        public void RemoveRange(Range range)
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(count);
-
-            return count switch
-            {
-                0 => [],
-                1 => Singleton(item),
-                _ => new RepeatList<T>(item, count),
-            };
+            var (start, length) = range.GetOffsetAndLength(list.Count);
+            list.RemoveRange(start, length);
         }
     }
-
-    /// <summary>
-    /// Inserts the item into sorted list.
-    /// </summary>
-    /// <remarks>
-    /// Time complexity of this operation is O(log N), where N is a size of the list.
-    /// This version method is specially optimized for <see cref="List{T}"/> data type
-    /// while <see cref="InsertOrdered{T, TComparer}(IList{T}, T, TComparer)"/>
-    /// is for generic list of unknown type.
-    /// </remarks>
-    /// <typeparam name="T">The type of the items in the list.</typeparam>
-    /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
-    /// <param name="list">The list to insert into.</param>
-    /// <param name="item">The item to be added into the list.</param>
-    /// <param name="comparer">The comparer function.</param>
-    /// <returns>The actual index of the inserted item.</returns>
-    public static int InsertOrdered<T, TComparer>(this List<T> list, T item, TComparer comparer)
-        where TComparer : IComparer<T>
-    {
-        var span = CollectionsMarshal.AsSpan(list);
-        var low = 0;
-        for (var high = span.Length; low < high;)
-        {
-            var mid = (low + high) / 2;
-            var cmp = comparer.Compare(Unsafe.Add(ref MemoryMarshal.GetReference(span), mid), item);
-            if (cmp > 0)
-                high = mid;
-            else
-                low = mid + 1;
-        }
-
-        list.Insert(low, item);
-        return low;
-    }
-
-    /// <summary>
-    /// Inserts the item into sorted list.
-    /// </summary>
-    /// <remarks>
-    /// Time complexity of this operation is O(log N), where N is a size of the list.
-    /// </remarks>
-    /// <typeparam name="T">The type of the items in the list.</typeparam>
-    /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
-    /// <param name="list">The list to insert into.</param>
-    /// <param name="item">The item to be added into the list.</param>
-    /// <param name="comparer">The comparer function.</param>
-    /// <returns>The actual index of the inserted item.</returns>
-    public static int InsertOrdered<T, TComparer>(this IList<T> list, T item, TComparer comparer)
+    
+    private static int GetInsertionPosition<T, TList, TComparer>(TList list, T item, TComparer comparer)
+        where TList : IReadOnlyList<T>
         where TComparer : IComparer<T>
     {
         var low = 0;
@@ -260,82 +293,68 @@ public static partial class List
                 low = mid + 1;
         }
 
-        list.Insert(low, item);
         return low;
     }
 
-    /// <summary>
-    /// Inserts the item into sorted list.
-    /// </summary>
-    /// <remarks>
-    /// Time complexity of this operation is O(log N), where N is a size of the list.
-    /// </remarks>
-    /// <typeparam name="T">The type of the items in the list.</typeparam>
-    /// <param name="list">The list to insert into.</param>
-    /// <param name="item">The item to be added into the list.</param>
-    /// <param name="comparer">The comparer function.</param>
-    /// <returns>The actual index of the inserted item.</returns>
-    public static int InsertOrdered<T>(this IList<T> list, T item, Comparison<T?> comparer)
-        => InsertOrdered<T, DelegatingComparer<T>>(list, item, comparer);
-
-    /// <summary>
-    /// Inserts the item into sorted list.
-    /// </summary>
-    /// <remarks>
-    /// Time complexity of this operation is O(log N), where N is a size of the list.
-    /// </remarks>
-    /// <typeparam name="T">The type of the items in the list.</typeparam>
-    /// <param name="list">The list to insert into.</param>
-    /// <param name="item">The item to be added into the list.</param>
-    /// <param name="comparer">The comparer function.</param>
-    /// <returns>The actual index of the inserted item.</returns>
-    [CLSCompliant(false)]
-    public static unsafe int InsertOrdered<T>(this IList<T> list, T item, delegate*<T?, T?, int> comparer)
-        => InsertOrdered<T, ComparerWrapper<T>>(list, item, comparer);
-
-    /// <summary>
-    /// Removes a range of elements from list.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="list">The list to modify.</param>
-    /// <param name="range">The range of elements to be removed.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
-    public static void RemoveRange<T>(this List<T> list, Range range)
+    private static TOutput[] ToArray<TInput, TList, TOutput, TConverter>(TList list, TConverter mapper)
+        where TList : IReadOnlyList<TInput>
+        where TConverter : struct, ISupplier<TInput, TOutput>
     {
-        var (start, length) = range.GetOffsetAndLength(list.Count);
-        list.RemoveRange(start, length);
+        var count = list.Count;
+        if (count is 0)
+            return [];
+
+        var output = GC.AllocateUninitializedArray<TOutput>(count);
+        for (var i = 0; i < count; i++)
+            output[i] = mapper.Invoke(list[i]);
+
+        return output;
     }
 
-    /// <summary>
-    /// Inserts an item to the list at the specified index.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="list">The list to modify.</param>
-    /// <param name="index">The zero-based index at which item should be inserted.</param>
-    /// <param name="item">The object to insert into the list.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
-    /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
-    public static void Insert<T>(this IList<T> list, Index index, T item)
-        => list.Insert(index.GetOffset(list.Count), item);
+    private static TOutput[] ToArrayWithIndex<TInput, TList, TOutput, TConverter>(TList list, TConverter mapper)
+        where TList : IReadOnlyList<TInput>
+        where TConverter : struct, ISupplier<int, TInput, TOutput>
+    {
+        var count = list.Count;
+        var output = GC.AllocateUninitializedArray<TOutput>(count);
+        for (var i = 0; i < count; i++)
+            output[i] = mapper.Invoke(i, list[i]);
 
-    /// <summary>
-    /// Removes the item at the specified index.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="list">The list to modify.</param>
-    /// <param name="index">The zero-based index of the item to remove.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
-    /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
-    public static void RemoveAt<T>(this IList<T> list, Index index)
-        => list.RemoveAt(index.GetOffset(list.Count));
+        return output;
+    }
+}
 
-    /// <summary>
-    /// Returns slice of the list.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the list.</typeparam>
-    /// <param name="list">The list of elements.</param>
-    /// <param name="range">The range of elements in the list.</param>
-    /// <returns>The section of the list.</returns>
-    public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
-        => new(list, range);
+[StructLayout(LayoutKind.Auto)]
+file readonly struct ReadOnlyList<T>(IList<T> list) : IReadOnlyList<T>
+{
+    public IEnumerator<T> GetEnumerator() => list.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int Count => list.Count;
+
+    public T this[int index] => list[index];
+}
+
+file sealed class RepeatList<T>(T item, int count) : IReadOnlyList<T>
+{
+    public IEnumerator<T> GetEnumerator()
+    {
+        for (var i = 0; i < count; i++)
+            yield return item;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int Count => count;
+
+    public T this[int index]
+    {
+        get
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)count, nameof(index));
+
+            return item;
+        }
+    }
 }

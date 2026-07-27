@@ -239,16 +239,6 @@ public static partial class Collection
     }
 
     /// <summary>
-    /// Skip <see langword="null"/> values in the collection.
-    /// </summary>
-    /// <typeparam name="T">Type of elements in the collection.</typeparam>
-    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
-    /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-    public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
-        where T : class
-        => new NotNullEnumerable<T>(collection);
-
-    /// <summary>
     /// Concatenates each element from the collection into single string.
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
@@ -266,7 +256,7 @@ public static partial class Collection
     /// <param name="collection">The collection to be concatenated with the items.</param>
     /// <param name="items">The items to be added to the beginning of the collection.</param>
     /// <returns>The concatenated collection.</returns>
-    public static IEnumerable<T> Prepend<T>(this IEnumerable<T> collection, params T[] items)
+    public static IEnumerable<T> Prepend<T>(this IEnumerable<T> collection, params IEnumerable<T> items)
         => items.Concat(collection);
 
     /// <summary>
@@ -276,7 +266,7 @@ public static partial class Collection
     /// <param name="collection">The collection to be concatenated with the items.</param>
     /// <param name="items">The items to be added to the end of the collection.</param>
     /// <returns>The concatenated collection.</returns>
-    public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params T[] items)
+    public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params IEnumerable<T> items)
         => collection.Concat(items);
 
     /// <summary>

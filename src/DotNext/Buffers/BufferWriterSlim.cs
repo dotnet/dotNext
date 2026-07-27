@@ -16,7 +16,7 @@ using Runtime.CompilerServices;
 /// This type is similar to <see cref="PoolingArrayBufferWriter{T}"/> and <see cref="PoolingBufferWriter{T}"/>
 /// classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
 /// memory as an initial buffer used for writing. If builder requires more space then pooled
-/// memory used.
+/// memory is used.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
 /// <seealso cref="PoolingArrayBufferWriter{T}"/>
@@ -69,6 +69,23 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     public BufferWriterSlim()
     {
         allocator = MemoryAllocator<T>.Default;
+    }
+
+    /// <summary>
+    /// Get a value indicating that the internal buffer can't grow.
+    /// </summary>
+    /// <remarks>
+    /// If this property is <see langword="true"/> then any method suitable for writing elements
+    /// can potentially throw <see cref="BufferSizeLimitExceededException"/>.
+    /// </remarks>
+    public bool IsBounded
+    {
+        readonly get => ReferenceEquals(allocator, MemoryAllocator<T>.Throwable);
+        init
+        {
+            if (value)
+                allocator = MemoryAllocator<T>.Throwable;
+        }
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

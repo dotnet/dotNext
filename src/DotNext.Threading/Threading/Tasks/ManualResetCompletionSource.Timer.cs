@@ -6,9 +6,6 @@ namespace DotNext.Threading.Tasks;
 
 partial class ManualResetCompletionSource
 {
-    [SuppressMessage("Performance", "CA1823", Justification = "False positive")]
-    private const string TimerQueueTimerType = "System.Threading.TimerQueueTimer, System.Private.CoreLib";
-    
     // written inside the Completing window; read and cleared at reset time
     private bool completedByTimeout;
     
@@ -29,75 +26,99 @@ partial class ManualResetCompletionSource
         {
             timer.Change(timeout, InfiniteTimeSpan);
         }
+
+        static ITimer CreateTimer(TimerCallback timerCallback,
+            object? state,
+            TimeSpan dueTime)
+            => TimerQueueTimer.Create(timerCallback, state, dueTime, InfiniteTimeSpan, flowExecutionContext: false)
+               ?? TimeProvider.System.CreateTimer(timerCallback, state, dueTime, InfiniteTimeSpan);
     }
-    
+
     private static bool TryReset(ITimer timer, bool completedByTimeout)
-        => timer.Change(InfiniteTimeSpan, InfiniteTimeSpan) && TryResetCore(timer, completedByTimeout);
-
-    private static bool TryResetCore(ITimer timer, bool completedByTimeout)
     {
-        ref var everQueued = ref Unsafe.NullRef<bool>();
-        try
-        {
-            everQueued = ref IsEverQueued(timer);
-        }
-        catch (Exception e) when (e is BadImageFormatException or InvalidCastException)
-        {
-            // BadImageFormatException: the accessor failed to bind because the runtime internals drifted.
-            // InvalidCastException: the timer is the TimeProvider.System fallback, not a TimerQueueTimer;
-            // the UnsafeAccessorType parameter is type-checked (castclass) at the call.
-            return false;
-        }
+        return timer.Change(InfiniteTimeSpan, InfiniteTimeSpan) && TryResetCore(timer, completedByTimeout);
 
-        if (!everQueued)
+        static bool TryResetCore(ITimer timer, bool completedByTimeout)
         {
-            // the timer never fired, nothing to do
-        }
-        else if (completedByTimeout)
-        {
-            // The fired callback is our own completed timeout: it unboxed the version at entry,
-            // causally before the completion/consumption that led here, so it can never observe
-            // the reused version box again. Safe to reuse even if the callback is still unwinding.
-            everQueued = false;
-        }
-        else
-        {
-            // The timer fired, but the task was completed by something else: the callback may still
-            // be queued or in-flight and hasn't read the version box yet. Reusing the box would let
-            // the stale callback observe the fresh version and time out the next task spuriously.
-            return false;
-        }
+            ref var everQueued = ref TimerQueueTimer.IsEverQueued(timer);
+            if (Unsafe.IsNullRef(in everQueued))
+            {
+                return false;
+            }
+            else if (!everQueued)
+            {
+                // the timer never fired, nothing to do
+            }
+            else if (completedByTimeout)
+            {
+                // The fired callback is our own completed timeout: it unboxed the version at entry,
+                // causally before the completion/consumption that led here, so it can never observe
+                // the reused version box again. Safe to reuse even if the callback is still unwinding.
+                everQueued = false;
+            }
+            else
+            {
+                // The timer fired, but the task was completed by something else: the callback may still
+                // be queued or in-flight and hasn't read the version box yet. Reusing the box would let
+                // the stale callback observe the fresh version and time out the next task spuriously.
+                return false;
+            }
 
-        return true;
-            
-        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_everQueued")]
-        static extern ref bool IsEverQueued(
-            [UnsafeAccessorType(TimerQueueTimerType)]
-            object timer);
+            return true;
+        }
     }
-    
-    private static ITimer CreateTimer(TimerCallback timerCallback,
+}
+
+file static class TimerQueueTimer
+{
+    private const string TypeName = "System.Threading.TimerQueueTimer, System.Private.CoreLib";
+
+    public static ITimer? Create(TimerCallback timerCallback,
         object? state,
-        TimeSpan dueTime)
+        TimeSpan dueTime,
+        TimeSpan period,
+        bool flowExecutionContext)
     {
         ITimer? result;
         try
         {
-            result = Create(timerCallback, state, dueTime, InfiniteTimeSpan, flowExecutionContext: false) as ITimer;
+            result = CreateUnsafe(timerCallback, state, dueTime, period, flowExecutionContext) as ITimer;
         }
         catch (BadImageFormatException)
         {
             result = null;
         }
 
-        return result ?? TimeProvider.System.CreateTimer(timerCallback, state, dueTime, InfiniteTimeSpan);
-
-        [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
-        [return: UnsafeAccessorType(TimerQueueTimerType)]
-        static extern object Create(TimerCallback timerCallback,
-            object? state,
-            TimeSpan dueTime,
-            TimeSpan period,
-            bool flowExecutionContext);
+        return result;
     }
+    
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    [return: UnsafeAccessorType(TypeName)]
+    private static extern object CreateUnsafe(TimerCallback timerCallback,
+        object? state,
+        TimeSpan dueTime,
+        TimeSpan period,
+        bool flowExecutionContext);
+
+    public static ref bool IsEverQueued(ITimer timer)
+    {
+        ref var everQueued = ref Unsafe.NullRef<bool>();
+        try
+        {
+            everQueued = ref IsEverQueuedUnsafe(timer);
+        }
+        catch (Exception e) when (e is BadImageFormatException or InvalidCastException)
+        {
+            // BadImageFormatException: the accessor failed to bind because the runtime internals drifted.
+            // InvalidCastException: the timer is the TimeProvider.System fallback, not a TimerQueueTimer;
+            // the UnsafeAccessorType parameter is type-checked (castclass) at the call.
+        }
+
+        return ref everQueued;
+    }
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_everQueued")]
+    private static extern ref bool IsEverQueuedUnsafe(
+        [UnsafeAccessorType(TypeName)]
+        object timer);
 }

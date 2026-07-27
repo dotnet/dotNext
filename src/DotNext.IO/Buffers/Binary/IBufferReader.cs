@@ -3,23 +3,26 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
-using Binary;
 using Numerics;
-using Runtime;
-using Runtime.CompilerServices;
 using DecodingContext = DotNext.Text.DecodingContext;
 
 /// <summary>
 /// Represents buffer reader.
 /// </summary>
-public interface IBufferReader : IConsumer<ReadOnlySpan<byte>>
+public interface IBufferReader
 {
     /// <summary>
-    /// The expected number of bytes to be consumed this reader.
+    /// The expected number of bytes to be consumed by this reader.
     /// </summary>
     int RemainingBytes { get; }
+
+    /// <summary>
+    /// Consumes a buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to consume.</param>
+    void Apply(scoped ReadOnlySpan<byte> buffer);
 
     /// <summary>
     /// Gets a value indicating that reader doesn't support decoding of partial data.
@@ -28,36 +31,33 @@ public interface IBufferReader : IConsumer<ReadOnlySpan<byte>>
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct MemoryBlockReader(Memory<byte> destination) : IBufferReader
+internal struct MemoryBlockReader(in Memory<byte> destination) : IBufferReader
 {
+    private Memory<byte> destination = destination;
+    
     readonly int IBufferReader.RemainingBytes => destination.Length;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => destination = destination.Slice(source >>> destination.Span);
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct MemoryReader(Memory<byte> destination) : IBufferReader, ISupplier<int>
+internal struct MemoryReader(in Memory<byte> destination) : IBufferReader, ISupplier<int>
 {
+    private Memory<byte> destination = destination;
     private int bytesWritten;
 
     internal readonly int BytesWritten => bytesWritten;
 
     readonly int IBufferReader.RemainingBytes => destination.Length;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
     {
         bytesWritten += source >>> destination.Span;
         destination = default;
     }
 
     readonly int ISupplier<int>.Invoke() => BytesWritten;
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 
     static bool IBufferReader.ThrowOnPartialData => false;
 }
@@ -69,23 +69,31 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
     private T? buffer;
     private int writtenBytes;
 
+    public static bool IsApplicable
+    {
+        get
+        {
+            var type = typeof(T);
+            return type.IsPrimitive
+                   || type == typeof(UInt128)
+                   || type == typeof(Int128)
+                   || type == typeof(Half)
+                   || type == typeof(NFloat);
+        }
+    }
+
     private Span<byte> Buffer => MemoryMarshal.CreateSpan(ref Unsafe.As<T?, byte>(ref buffer), Unsafe.SizeOf<T>());
 
     readonly int IBufferReader.RemainingBytes => Unsafe.SizeOf<T>() - writtenBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
-    {
-        writtenBytes += source >>> Buffer.Slice(writtenBytes);
-    }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
+        => writtenBytes += source >>> Buffer.Slice(writtenBytes);
 
     T ISupplier<T>.Invoke() => parser(Buffer, Number.get_IsSigned<T>() is false);
 
-    internal static WellKnownIntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
+    public static WellKnownIntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static WellKnownIntegerReader<T> BigEndian() => new(&T.ReadBigEndian);
+    public static WellKnownIntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -97,7 +105,7 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
 
     readonly int IBufferReader.RemainingBytes => buffer.Length - writtenBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => writtenBytes += source >>> buffer.Span.Slice(writtenBytes);
 
     T ISupplier<T>.Invoke()
@@ -111,13 +119,10 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
             buffer.Dispose();
         }
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 
-    internal static IntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
+    public static IntegerReader<T> LittleEndian => new(&T.ReadLittleEndian);
 
-    internal static IntegerReader<T> BigEndian() => new(&T.ReadBigEndian);
+    public static IntegerReader<T> BigEndian => new(&T.ReadBigEndian);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -129,22 +134,19 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
 
     readonly int IBufferReader.RemainingBytes => T.Size - writtenBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
     {
         Span<byte> destination = buffer;
         writtenBytes += source >>> destination.Slice(writtenBytes);
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 
     readonly T ISupplier<T>.Invoke()
     {
         ReadOnlySpan<byte> source = buffer;
         return T.Parse(source.Slice(0, writtenBytes));
     }
-
-    internal static int MaxSize => Unsafe.SizeOf<Buffer256>();
+    
+    public static unsafe bool IsApplicable => T.Size <= sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -156,7 +158,7 @@ internal struct BinaryFormattableReader<T>() : IBufferReader, ISupplier<T>
 
     readonly int IBufferReader.RemainingBytes => T.Size - writtenBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => writtenBytes += source >>> buffer.Span.Slice(writtenBytes);
 
     T ISupplier<T>.Invoke()
@@ -170,9 +172,6 @@ internal struct BinaryFormattableReader<T>() : IBufferReader, ISupplier<T>
             buffer.Dispose();
         }
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -185,33 +184,27 @@ internal struct CharBufferDecodingReader(in DecodingContext context, int length,
 
     readonly int IBufferReader.RemainingBytes => remainingBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> bytes)
+    void IBufferReader.Apply(ReadOnlySpan<byte> bytes)
     {
         remainingBytes -= bytes.Length;
         writtenChars += decoder.GetChars(bytes, buffer.Span.Slice(writtenChars), remainingBytes is 0);
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
 internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer) : IBufferReader, ISupplier<int>
 {
-    private int writtenChars;
+    private int writtenChars, length = length;
 
     public readonly int RemainingBytes => Math.Min(length, buffer.Length);
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
     {
         writtenChars = decoder.GetChars(source, buffer.Span, length <= source.Length);
         length = 0;
     }
 
     readonly int ISupplier<int>.Invoke() => writtenChars;
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -222,7 +215,7 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
 
     readonly int IBufferReader.RemainingBytes => length - consumedBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
     {
         Span<byte> destination = buffer;
         consumedBytes += source >>> destination.Slice(consumedBytes);
@@ -233,11 +226,8 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
         ReadOnlySpan<byte> source = buffer;
         return parser(source.Slice(0, consumedBytes), arg);
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 
-    internal static int MaxSize => Unsafe.SizeOf<Buffer256>();
+    public static bool IsApplicable(int length) => length <= sizeof(Buffer256);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -248,7 +238,7 @@ internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnly
 
     readonly int IBufferReader.RemainingBytes => buffer.Length - consumedBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => consumedBytes += source >>> buffer.Span.Slice(consumedBytes);
 
     TResult ISupplier<TResult>.Invoke()
@@ -262,36 +252,33 @@ internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnly
             buffer.Dispose();
         }
     }
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
 internal struct SkippingReader(long length) : IBufferReader
 {
+    private long length = length;
+    
     readonly int IBufferReader.RemainingBytes => int.CreateSaturating(length);
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
+    void IBufferReader.Apply(ReadOnlySpan<byte> source)
         => length -= source.Length;
 }
 
-internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<TReader>
+[StructLayout(LayoutKind.Auto)]
+internal struct ProxyReader<TReader>(in TReader reader) : IBufferReader, ISupplier<TReader>
     where TReader : struct, IBufferReader
 {
     private TReader reader = reader;
     
     int IBufferReader.RemainingBytes => reader.RemainingBytes;
 
-    void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> source)
-        => reader.Invoke(source);
+    void IBufferReader.Apply(scoped ReadOnlySpan<byte> source)
+        => reader.Apply(source);
 
     static bool IBufferReader.ThrowOnPartialData => TReader.ThrowOnPartialData;
 
     readonly TReader ISupplier<TReader>.Invoke() => reader;
-    
-    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
-        => throw new NotSupportedException();
 
-    public static implicit operator ProxyReader<TReader>(TReader reader) => new(reader);
+    public static implicit operator ProxyReader<TReader>(in TReader reader) => new(reader);
 }

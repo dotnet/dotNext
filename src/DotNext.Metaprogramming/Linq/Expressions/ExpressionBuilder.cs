@@ -5,12 +5,14 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
+using Collections.Generic;
+
 /// <summary>
 /// Provides extension methods to simplify construction of complex expressions.
 /// </summary>
 public static partial class ExpressionBuilder
 {
-    private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
+    private static MethodCallExpression Concat(IReadOnlyList<Expression> strings) => strings.Count switch
     {
         2 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]),
         3 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]),
@@ -24,7 +26,7 @@ public static partial class ExpressionBuilder
     /// <param name="first">The first string to concatenate.</param>
     /// <param name="other">Other strings to concatenate.</param>
     /// <returns>An expression presenting concatenation.</returns>
-    public static MethodCallExpression Concat(this Expression first, params Expression[] other)
+    public static MethodCallExpression Concat(this Expression first, params IEnumerable<Expression> other)
         => Concat([first, .. other]);
 
     /// <summary>
@@ -411,7 +413,7 @@ public static partial class ExpressionBuilder
     /// <param name="delegate">The expression representing delegate.</param>
     /// <param name="arguments">Invocation arguments.</param>
     /// <returns>Invocation expression.</returns>
-    public static InvocationExpression Invoke(this Expression @delegate, params Expression[] arguments)
+    public static InvocationExpression Invoke(this Expression @delegate, params IEnumerable<Expression> arguments)
         => Expression.Invoke(@delegate, arguments);
 
     /// <summary>
@@ -421,13 +423,13 @@ public static partial class ExpressionBuilder
     /// <param name="lambda">The lambda expression.</param>
     /// <param name="arguments">The arguments used to replace lambda parameters.</param>
     /// <returns>The body of lambda expression.</returns>
-    public static Expression Fragment<TDelegate>(Expression<TDelegate> lambda, params Expression[] arguments)
+    public static Expression Fragment<TDelegate>(Expression<TDelegate> lambda, params IReadOnlyList<Expression> arguments)
         where TDelegate : MulticastDelegate
     {
-        if (lambda.Parameters.Count != arguments.LongLength)
+        if (lambda.Parameters.Count != arguments.Count)
             throw new ArgumentException(ExceptionMessages.InvalidFragmentRendering);
         var replacer = new Runtime.CompilerServices.Replacer();
-        for (var i = 0; i < arguments.Length; i++)
+        for (var i = 0; i < arguments.Count; i++)
             replacer.Replace(lambda.Parameters[i], arguments[i]);
         return replacer.Visit(lambda.Body);
     }
@@ -442,7 +444,7 @@ public static partial class ExpressionBuilder
     /// <param name="method">The method to be called.</param>
     /// <param name="arguments">The method arguments.</param>
     /// <returns>The method call expression.</returns>
-    public static MethodCallExpression Call(this Expression instance, MethodInfo method, params Expression[] arguments)
+    public static MethodCallExpression Call(this Expression instance, MethodInfo method, params IEnumerable<Expression> arguments)
         => Expression.Call(instance, method, arguments);
 
     /// <summary>
@@ -455,7 +457,7 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the method to be called.</param>
     /// <param name="arguments">The method arguments.</param>
     /// <returns>The method call expression.</returns>
-    public static MethodCallExpression Call(this Expression instance, string methodName, params Expression[] arguments)
+    public static MethodCallExpression Call(this Expression instance, string methodName, params IEnumerable<Expression> arguments)
         => instance.Call(instance.Type, methodName, arguments);
 
     private static Type GetType(Expression expr) => expr.Type;
@@ -471,12 +473,12 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
     /// <param name="arguments">The method arguments.</param>
     /// <returns>The method call expression.</returns>
-    public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params Expression[] arguments)
+    public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params IEnumerable<Expression> arguments)
     {
         if (!interfaceType.IsAssignableFrom(instance.Type))
             throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
 
-        return interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType)) is { } method
+        return interfaceType.GetMethod(methodName, arguments.Select(GetType).ToArray()) is { } method
             ? instance.Call(method, arguments)
             : throw new MissingMethodException(interfaceType.FullName, methodName);
     }
@@ -488,9 +490,9 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <returns>An expression representing static method call.</returns>
-    public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
+    public static MethodCallExpression CallStatic(this Type type, string methodName, params IEnumerable<Expression> arguments)
     {
-        return type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null) is { } method
+        return type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, arguments.Select(GetType).ToArray(), null) is { } method
             ? Expression.Call(method, arguments)
             : throw new MissingMethodException(type.FullName, methodName);
     }
@@ -518,7 +520,7 @@ public static partial class ExpressionBuilder
     /// <param name="index0">The first index.</param>
     /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, PropertyInfo property, Expression index0, params Expression[] indices)
+    public static IndexExpression Property(this Expression instance, PropertyInfo property, Expression index0, params IEnumerable<Expression> indices)
         => Expression.Property(instance, property, indices.Prepend(index0));
 
     /// <summary>
@@ -550,7 +552,7 @@ public static partial class ExpressionBuilder
     /// <param name="index0">The first index.</param>
     /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params Expression[] indices)
+    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params IEnumerable<Expression> indices)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
             ? Property(instance, property, index0, indices)
@@ -580,7 +582,7 @@ public static partial class ExpressionBuilder
     /// <param name="index0">The first index.</param>
     /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indices)
+    public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params IEnumerable<Expression> indices)
         => Expression.Property(instance, propertyName, [index0, .. indices]);
 
     /// <summary>
@@ -616,7 +618,7 @@ public static partial class ExpressionBuilder
     /// <param name="array">The array expression.</param>
     /// <param name="indices">Array element indices.</param>
     /// <returns>Array element access expression.</returns>
-    public static IndexExpression ElementAt(this Expression array, params Expression[] indices)
+    public static IndexExpression ElementAt(this Expression array, params IEnumerable<Expression> indices)
         => Expression.ArrayAccess(array, indices);
 
     /// <summary>
@@ -839,7 +841,7 @@ public static partial class ExpressionBuilder
     public static MemberInitExpression Init(this NewExpression expression, MemberBindings bindings)
         => Expression.MemberInit(expression, bindings.Bind(expression.Type));
 
-    internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
+    internal static Expression AddPrologue(this Expression expression, bool inferType, params IReadOnlyCollection<Expression> instructions)
     {
         if (instructions.Count == 0)
             return expression;
@@ -848,9 +850,9 @@ public static partial class ExpressionBuilder
         return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Append(expression));
     }
 
-    internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
+    internal static Expression AddEpilogue(this Expression expression, bool inferType, params IReadOnlyCollection<Expression> instructions)
     {
-        if (instructions.Count == 0)
+        if (instructions.Count is 0)
             return expression;
 
         IEnumerable<Expression> result;
@@ -858,7 +860,7 @@ public static partial class ExpressionBuilder
         if (expression is BlockExpression block)
         {
             variables = block.Variables;
-            result = block.Expressions.Concat(instructions);
+            result = block.Expressions.Append(instructions);
         }
         else
         {
@@ -868,12 +870,6 @@ public static partial class ExpressionBuilder
 
         return Expression.Block(inferType ? result.Last().Type : typeof(void), variables, result);
     }
-
-    internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
-        => AddPrologue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
-
-    internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
-        => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
 
     /// <summary>
     /// Constructs type instantiation expression.
@@ -885,10 +881,11 @@ public static partial class ExpressionBuilder
     /// <param name="args">The list of arguments to be passed into constructor.</param>
     /// <returns>Instantiation expression.</returns>
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
-    public static MethodCallExpression New(this Expression type, params Expression[] args)
+    public static MethodCallExpression New(this Expression type, params IEnumerable<Expression> args)
     {
         var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), [typeof(Type), typeof(object[])]);
         Debug.Assert(activate is not null);
+        
         return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
     }
 
@@ -1115,9 +1112,7 @@ public static partial class ExpressionBuilder
             return Expression.MakeIndex(target, null, args);
 
         // not an array, looking for DefaultMemberAttribute
-        var attribute = target.Type.GetCustomAttribute<DefaultMemberAttribute>(true);
-        if (attribute is null)
-            throw new NotSupportedException();
+        var attribute = target.Type.GetCustomAttribute<DefaultMemberAttribute>(true) ?? throw new NotSupportedException();
 
         return Expression.Property(target, attribute.MemberName, args);
     }

@@ -125,4 +125,12 @@ public sealed class BoxedValue<T> // do not add any interfaces or base types
 
     /// <inheritdoc />
     public override string? ToString() => data.ToString();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ref T UnsafeUnbox(object boxedValue)
+    {
+        Debug.Assert(boxedValue is T);
+
+        return ref Unsafe.As<BoxedValue<T>>(boxedValue).Value;
+    }
 }

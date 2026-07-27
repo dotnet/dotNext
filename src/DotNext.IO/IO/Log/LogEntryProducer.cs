@@ -6,20 +6,11 @@ namespace DotNext.IO.Log;
 /// </summary>
 /// <typeparam name="TEntry">The type of the supplied entries.</typeparam>
 /// <param name="entries">The list of the log entries to be returned by the producer.</param>
-public sealed class LogEntryProducer<TEntry>(IReadOnlyList<TEntry> entries) : ILogEntryProducer<TEntry>, IResettable
+public sealed class LogEntryProducer<TEntry>(params IReadOnlyList<TEntry> entries) : ILogEntryProducer<TEntry>, IResettable
     where TEntry : ILogEntry
 {
     private const int InitialPosition = -1;
     private int currentIndex = InitialPosition;
-
-    /// <summary>
-    /// Initializes a new producer of the log entries passed as array.
-    /// </summary>
-    /// <param name="entries">The log entries to be returned by the producer.</param>
-    public LogEntryProducer(params TEntry[] entries)
-        : this(entries.As<IReadOnlyList<TEntry>>())
-    {
-    }
 
     /// <summary>
     /// Initializes a new empty producer of the log entries.

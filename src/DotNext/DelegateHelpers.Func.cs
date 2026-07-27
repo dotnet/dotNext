@@ -6,6 +6,8 @@ using static InlineIL.TypeRef;
 
 namespace DotNext;
 
+using Runtime.CompilerServices;
+
 partial class DelegateHelpers
 {
     /// <summary>

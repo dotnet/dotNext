@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
+
 namespace DotNext.Collections.Generic;
 
 /// <summary>
@@ -100,6 +103,14 @@ public static partial class AsyncEnumerable
 
             return Optional<T>.None;
         }
+        
+        /// <summary>
+        /// Constructs read-only sequence with a single item in it.
+        /// </summary>
+        /// <param name="item">An item to be placed into list.</param>
+        /// <returns>Read-only list containing single item.</returns>
+        public static IAsyncEnumerable<T> Singleton(T item)
+            => new Specialized.SingletonList<T> { Item = item };
     }
 
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
@@ -136,29 +147,24 @@ public static partial class AsyncEnumerable
             return result;
         }
     }
+}
 
-    /// <summary>
-    /// Skip <see langword="null"/> values in the collection.
-    /// </summary>
-    /// <typeparam name="T">Type of elements in the collection.</typeparam>
-    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
-    /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-    public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
-        where T : class
-        => new NotNullEnumerable<T>(collection);
-
-    /// <summary>
-    /// Extends <see cref="IAsyncEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    extension<T>(IAsyncEnumerable<T>)
+file sealed class ThrowingEnumerator<T>(Exception exception) : IAsyncEnumerator<T>, IAsyncEnumerable<T>
+    where T : allows ref struct
+{
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public T Current
     {
-        /// <summary>
-        /// Constructs read-only sequence with a single item in it.
-        /// </summary>
-        /// <param name="item">An item to be placed into list.</param>
-        /// <returns>Read-only list containing single item.</returns>
-        public static IAsyncEnumerable<T> Singleton(T item)
-            => new Specialized.SingletonList<T> { Item = item };
+        get
+        {
+            ExceptionDispatchInfo.Throw(exception);
+            return default;
+        }
     }
+
+    ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync() => ValueTask.FromException<bool>(exception);
+
+    IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken cancellationToken) => this;
+
+    ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
 }
