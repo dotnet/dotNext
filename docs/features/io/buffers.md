@@ -150,7 +150,7 @@ string result = buffer.ToString();
 
 Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Text.BufferWriterSlimInterpolatedStringHandler), [BufferWriterInterpolatedStringHandler](xref:DotNext.Text.BufferWriterInterpolatedStringHandler), and [PoolingInterpolatedStringHandler](xref:DotNext.Text.PoolingInterpolatedStringHandler) data types.
 
-[CharBuffer](xref:DotNext.Buffers.CharBuffer) class offers extension methods for efficient concatenation of strings:
+[CharBuffer](xref:DotNext.Buffers.Text.CharBuffer) class offers extension methods for efficient concatenation of strings:
 ```csharp
 using DotNext.Buffers;
 
