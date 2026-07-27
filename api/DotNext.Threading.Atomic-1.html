@@ -75,8 +75,9 @@
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icloneable">ICloneable</a></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -100,7 +101,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_Atomic_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Atomic&lt;T&gt; : IStrongBox, ICloneable where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Atomic&lt;T&gt; : ICloneable, IResettable, IStrongBox where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -122,13 +123,41 @@
   <div class="markdown level0 remarks"><p>Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
 to keep synchronization root in the form of the object, or you need to have volatile field
 inside of value type then <a class="xref" href="DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> is the best choice. Its performance is better
-than synchronized methods according to benchmarks.</p>
+than synchronized methods according to benchmarks. This type provides no contention for read path.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_IsWriteLockHeld_" data-uid="DotNext.Threading.Atomic`1.IsWriteLockHeld*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_IsWriteLockHeld" data-uid="DotNext.Threading.Atomic`1.IsWriteLockHeld">IsWriteLockHeld</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that the value of the container is writing.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool IsWriteLockHeld { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Value_" data-uid="DotNext.Threading.Atomic`1.Value*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Value" data-uid="DotNext.Threading.Atomic`1.Value">Value</h4>
@@ -137,7 +166,7 @@ than synchronized methods according to benchmarks.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Value { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public T Value { readonly get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -162,7 +191,7 @@ because they don't cause extra allocation of stack memory for passing value.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_AccumulateAndGet_" data-uid="DotNext.Threading.Atomic`1.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_Atomic_1_AccumulateAndGet__0__DotNext_Threading_Atomic__0__Accumulator__0__" data-uid="DotNext.Threading.Atomic`1.AccumulateAndGet(`0@,DotNext.Threading.Atomic{`0}.Accumulator,`0@)">AccumulateAndGet(in T, Accumulator, out T)</h4>
@@ -225,7 +254,51 @@ to the current and given values, returning the original value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_Clear_" data-uid="DotNext.Threading.Atomic`1.Clear*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_Clear" data-uid="DotNext.Threading.Atomic`1.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Sets the default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_Clear_" data-uid="DotNext.Threading.Atomic`1.Clear*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_Clear__0__" data-uid="DotNext.Threading.Atomic`1.Clear(`0@)">Clear(out T)</h4>
+  <div class="markdown level1 summary"><p>Sets the default value and returns the previous value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear(out T previousValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">previousValue</span></td>
+        <td><p>The previous value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Clone_" data-uid="DotNext.Threading.Atomic`1.Clone*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Clone" data-uid="DotNext.Threading.Atomic`1.Clone">Clone()</h4>
@@ -234,7 +307,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Atomic&lt;T&gt; Clone()</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly Atomic&lt;T&gt; Clone()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -254,7 +327,7 @@ to the current and given values, returning the original value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareAndSet_" data-uid="DotNext.Threading.Atomic`1.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareAndSet___0___0__" data-uid="DotNext.Threading.Atomic`1.CompareAndSet(,`0@,`0@)">CompareAndSet(delegate*&lt;in T, in T, bool&gt;, in T, in T)</h4>
@@ -314,7 +387,7 @@ public bool CompareAndSet(delegate*&lt;in T, in T, bool&gt; comparer, in T expec
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareAndSet_" data-uid="DotNext.Threading.Atomic`1.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareAndSet_System_Func__0__0_System_Boolean___0___0__" data-uid="DotNext.Threading.Atomic`1.CompareAndSet(System.Func{`0,`0,System.Boolean},`0@,`0@)">CompareAndSet(Func&lt;T, T, bool&gt;, in T, in T)</h4>
@@ -373,7 +446,7 @@ public bool CompareAndSet(delegate*&lt;in T, in T, bool&gt; comparer, in T expec
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareAndSet_" data-uid="DotNext.Threading.Atomic`1.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareAndSet__0___0__" data-uid="DotNext.Threading.Atomic`1.CompareAndSet(`0@,`0@)">CompareAndSet(in T, in T)</h4>
@@ -426,7 +499,7 @@ public bool CompareAndSet(delegate*&lt;in T, in T, bool&gt; comparer, in T expec
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareExchange_" data-uid="DotNext.Threading.Atomic`1.CompareExchange*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareExchange___0___0___0__" data-uid="DotNext.Threading.Atomic`1.CompareExchange(,`0@,`0@,`0@)">CompareExchange(delegate*&lt;in T, in T, bool&gt;, in T, in T, out T)</h4>
@@ -490,9 +563,25 @@ public bool CompareExchange(delegate*&lt;in T, in T, bool&gt; comparer, in T upd
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">comparer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareExchange_" data-uid="DotNext.Threading.Atomic`1.CompareExchange*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareExchange_System_Func__0__0_System_Boolean___0___0___0__" data-uid="DotNext.Threading.Atomic`1.CompareExchange(System.Func{`0,`0,System.Boolean},`0@,`0@,`0@)">CompareExchange(Func&lt;T, T, bool&gt;, in T, in T, out T)</h4>
@@ -555,9 +644,25 @@ public bool CompareExchange(delegate*&lt;in T, in T, bool&gt; comparer, in T upd
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">comparer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_CompareExchange_" data-uid="DotNext.Threading.Atomic`1.CompareExchange*"></a>
   <h4 id="DotNext_Threading_Atomic_1_CompareExchange__0___0___0__" data-uid="DotNext.Threading.Atomic`1.CompareExchange(`0@,`0@,`0@)">CompareExchange(in T, in T, out T)</h4>
@@ -616,7 +721,37 @@ public bool CompareExchange(delegate*&lt;in T, in T, bool&gt; comparer, in T upd
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.WriteLock.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_EnterLock_" data-uid="DotNext.Threading.Atomic`1.EnterLock*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_EnterLock" data-uid="DotNext.Threading.Atomic`1.EnterLock">EnterLock()</h4>
+  <div class="markdown level1 summary"><p>Enters write lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[UnscopedRef]
+public Atomic&lt;T&gt;.WriteLockScope EnterLock()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Atomic-1.html">Atomic</a>&lt;T&gt;.<a class="xref" href="DotNext.Threading.Atomic-1.WriteLockScope.html">WriteLockScope</a></td>
+        <td><p>The scope of the write lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Exchange_" data-uid="DotNext.Threading.Atomic`1.Exchange*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Exchange__0___0__" data-uid="DotNext.Threading.Atomic`1.Exchange(`0@,`0@)">Exchange(in T, out T)</h4>
@@ -653,7 +788,7 @@ public bool CompareExchange(delegate*&lt;in T, in T, bool&gt; comparer, in T upd
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_GetAndAccumulate_" data-uid="DotNext.Threading.Atomic`1.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_Atomic_1_GetAndAccumulate__0__DotNext_Threading_Atomic__0__Accumulator__0__" data-uid="DotNext.Threading.Atomic`1.GetAndAccumulate(`0@,DotNext.Threading.Atomic{`0}.Accumulator,`0@)">GetAndAccumulate(in T, Accumulator, out T)</h4>
@@ -716,7 +851,7 @@ to the current and given values, returning the updated value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_GetAndUpdate_" data-uid="DotNext.Threading.Atomic`1.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_Atomic_1_GetAndUpdate_DotNext_Threading_Atomic__0__Updater__0__" data-uid="DotNext.Threading.Atomic`1.GetAndUpdate(DotNext.Threading.Atomic{`0}.Updater,`0@)">GetAndUpdate(Updater, out T)</h4>
@@ -770,7 +905,7 @@ of applying the given function, returning the original value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Read_" data-uid="DotNext.Threading.Atomic`1.Read*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Read__0__" data-uid="DotNext.Threading.Atomic`1.Read(`0@)">Read(out T)</h4>
@@ -779,7 +914,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Read(out T result)</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly void Read(out T result)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -799,9 +934,13 @@ of applying the given function, returning the original value.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_Atomic_1_Read__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The read is optimistic: it doesn't block concurrent readers or writers, but retries
+if a concurrent write happens during the copy of the value.</p>
+</div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Swap_" data-uid="DotNext.Threading.Atomic`1.Swap*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Swap_DotNext_Threading_Atomic__0___" data-uid="DotNext.Threading.Atomic`1.Swap(DotNext.Threading.Atomic{`0}@)">Swap(ref Atomic&lt;T&gt;)</h4>
@@ -835,7 +974,7 @@ of applying the given function, returning the original value.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Swap_" data-uid="DotNext.Threading.Atomic`1.Swap*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Swap__0__" data-uid="DotNext.Threading.Atomic`1.Swap(`0@)">Swap(ref T)</h4>
@@ -866,16 +1005,15 @@ of applying the given function, returning the original value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_ToString_" data-uid="DotNext.Threading.Atomic`1.ToString*"></a>
   <h4 id="DotNext_Threading_Atomic_1_ToString" data-uid="DotNext.Threading.Atomic`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Converts the stored value into string atomically.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly string? ToString()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -888,8 +1026,7 @@ of applying the given function, returning the original value.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The string returned from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">ToString()</a> method called on the stored value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -897,7 +1034,231 @@ of applying the given function, returning the original value.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_TryUpdate_" data-uid="DotNext.Threading.Atomic`1.TryUpdate*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_TryUpdate___0___0__" data-uid="DotNext.Threading.Atomic`1.TryUpdate(,`0@,`0@)">TryUpdate(delegate*&lt;in T, in T, bool&gt;, in T, in T)</h4>
+  <div class="markdown level1 summary"><p>Tries to switch the current value with the supplied one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public bool TryUpdate(delegate*&lt;in T, in T, bool&gt; comparer, in T comparisonValue, in T newValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>delegate*&lt;in T, in T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The function representing comparison logic.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">comparisonValue</span></td>
+        <td><p>The value to be compared with the currently stored value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>A new value to be placed to the container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">newValue</code> is placed to this container successfully;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if this container is concurrently writing the value,
+or the current value is to equal to <code class="paramref">comparisonValue</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Atomic_1_TryUpdate___0___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't introduce contention in contrast to <a class="xref" href="DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_CompareAndSet_System_Func__0__0_System_Boolean___0___0__">CompareAndSet(Func&lt;T, T, bool&gt;, in T, in T)</a> method,
+which means that it can fail if the current contain is in writing state concurrently with the caller thread.
+In this case, <code class="paramref">comparer</code> is not called.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">comparer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_TryUpdate_" data-uid="DotNext.Threading.Atomic`1.TryUpdate*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_TryUpdate_System_Func__0__0_System_Boolean___0___0__" data-uid="DotNext.Threading.Atomic`1.TryUpdate(System.Func{`0,`0,System.Boolean},`0@,`0@)">TryUpdate(Func&lt;T, T, bool&gt;, in T, in T)</h4>
+  <div class="markdown level1 summary"><p>Tries to switch the current value with the supplied one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryUpdate(Func&lt;T, T, bool&gt; comparer, in T comparisonValue, in T newValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The function representing comparison logic.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">comparisonValue</span></td>
+        <td><p>The value to be compared with the currently stored value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>A new value to be placed to the container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">newValue</code> is placed to this container successfully;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if this container is concurrently writing the value,
+or the current value is to equal to <code class="paramref">comparisonValue</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Atomic_1_TryUpdate_System_Func__0__0_System_Boolean___0___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't introduce contention in contrast to <a class="xref" href="DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_CompareAndSet_System_Func__0__0_System_Boolean___0___0__">CompareAndSet(Func&lt;T, T, bool&gt;, in T, in T)</a> method,
+which means that it can fail if the current contain is in writing state concurrently with the caller thread.
+In this case, <code class="paramref">comparer</code> is not called.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">comparer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_1_TryUpdate_" data-uid="DotNext.Threading.Atomic`1.TryUpdate*"></a>
+  <h4 id="DotNext_Threading_Atomic_1_TryUpdate__0___0__" data-uid="DotNext.Threading.Atomic`1.TryUpdate(`0@,`0@)">TryUpdate(in T, in T)</h4>
+  <div class="markdown level1 summary"><p>Tries to switch the current value with the supplied one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryUpdate(in T comparisonValue, in T newValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">comparisonValue</span></td>
+        <td><p>The value to be compared with the currently stored value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>A new value to be placed to the container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">newValue</code> is placed to this container successfully;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if this container is concurrently writing the value,
+or the current value is to equal to <code class="paramref">comparisonValue</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Atomic_1_TryUpdate__0___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't introduce contention in contrast to <a class="xref" href="DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_CompareAndSet__0___0__">CompareAndSet(in T, in T)</a> method,
+which means that it can fail if the current contain is in writing state concurrently with the caller thread.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_UpdateAndGet_" data-uid="DotNext.Threading.Atomic`1.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_Atomic_1_UpdateAndGet_DotNext_Threading_Atomic__0__Updater__0__" data-uid="DotNext.Threading.Atomic`1.UpdateAndGet(DotNext.Threading.Atomic{`0}.Updater,`0@)">UpdateAndGet(Updater, out T)</h4>
@@ -950,7 +1311,7 @@ of applying the given function, returning the original value.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_1_Write_" data-uid="DotNext.Threading.Atomic`1.Write*"></a>
   <h4 id="DotNext_Threading_Atomic_1_Write__0__" data-uid="DotNext.Threading.Atomic`1.Write(`0@)">Write(in T)</h4>
@@ -981,10 +1342,13 @@ of applying the given function, returning the original value.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icloneable">ICloneable</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icloneable">ICloneable</a>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -1005,7 +1369,7 @@ of applying the given function, returning the original value.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Threading/Atomic.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Threading/Atomic.T.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

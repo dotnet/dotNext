@@ -84,9 +84,6 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
@@ -97,7 +94,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_BoxedValue_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class BoxedValue&lt;T&gt; where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class BoxedValue&lt;T&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -126,11 +123,42 @@ int value = Unbox(boxed);</code></pre>
 <p>Additionally, it means that <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">GetType()</a> returns type information for <code class="typeparamref">T</code> type,
 not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T&gt;</a>.</p>
 </div>
+  <h3 id="properties">Properties
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_BoxedValue_1_Value_" data-uid="DotNext.Runtime.BoxedValue`1.Value*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_1_Value" data-uid="DotNext.Runtime.BoxedValue`1.Value">Value</h4>
+  <div class="markdown level1 summary"><p>Unboxes the value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ref T Value { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>A reference to the boxed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_Box_" data-uid="DotNext.Runtime.BoxedValue`1.Box*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_Box__0_" data-uid="DotNext.Runtime.BoxedValue`1.Box(`0)">Box(T)</h4>
@@ -139,7 +167,8 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static BoxedValue&lt;T&gt; Box(T value)</code></pre>
+    <pre><code class="lang-csharp hljs">[DynamicDependency((DynamicallyAccessedMemberTypes)-1, typeof(BoxedValue&lt;&gt;))]
+public static BoxedValue&lt;T&gt; Box(T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -177,7 +206,36 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_BoxedValue_1_Copy_" data-uid="DotNext.Runtime.BoxedValue`1.Copy*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_1_Copy" data-uid="DotNext.Runtime.BoxedValue`1.Copy">Copy()</h4>
+  <div class="markdown level1 summary"><p>Creates a bitwise copy of the boxed value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BoxedValue&lt;T&gt; Copy()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue</a>&lt;T&gt;</td>
+        <td><p>A reference to bitwise copy of the boxed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_Equals_" data-uid="DotNext.Runtime.BoxedValue`1.Equals*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_Equals_System_Object_" data-uid="DotNext.Runtime.BoxedValue`1.Equals(System.Object)">Equals(object?)</h4>
@@ -185,7 +243,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override abstract bool Equals(object? obj)</code></pre>
+    <pre><code class="lang-csharp hljs">public override bool Equals(object? obj)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -223,7 +281,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_GetHashCode_" data-uid="DotNext.Runtime.BoxedValue`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_GetHashCode" data-uid="DotNext.Runtime.BoxedValue`1.GetHashCode">GetHashCode()</h4>
@@ -231,7 +289,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override abstract int GetHashCode()</code></pre>
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -252,7 +310,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_GetTypedReference_" data-uid="DotNext.Runtime.BoxedValue`1.GetTypedReference*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_GetTypedReference_System_Object_" data-uid="DotNext.Runtime.BoxedValue`1.GetTypedReference(System.Object)">GetTypedReference(object?)</h4>
@@ -261,7 +319,8 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static BoxedValue&lt;T&gt;? GetTypedReference(object? boxedValue)</code></pre>
+    <pre><code class="lang-csharp hljs">[DynamicDependency((DynamicallyAccessedMemberTypes)-1, typeof(BoxedValue&lt;&gt;))]
+public static BoxedValue&lt;T&gt;? GetTypedReference(object? boxedValue)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -318,7 +377,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_ToString_" data-uid="DotNext.Runtime.BoxedValue`1.ToString*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_ToString" data-uid="DotNext.Runtime.BoxedValue`1.ToString">ToString()</h4>
@@ -326,7 +385,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override abstract string ToString()</code></pre>
+    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -347,7 +406,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_TryBox_" data-uid="DotNext.Runtime.BoxedValue`1.TryBox*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_TryBox_System_Nullable__0___" data-uid="DotNext.Runtime.BoxedValue`1.TryBox(System.Nullable{`0}@)">TryBox(in T?)</h4>
@@ -356,7 +415,8 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static BoxedValue&lt;T&gt;? TryBox(in T? value)</code></pre>
+    <pre><code class="lang-csharp hljs">[DynamicDependency((DynamicallyAccessedMemberTypes)-1, typeof(BoxedValue&lt;&gt;))]
+public static BoxedValue&lt;T&gt;? TryBox(in T? value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -396,7 +456,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Explicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Explicit_System_Nullable__0____DotNext_Runtime_BoxedValue__0_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit(System.Nullable{`0}@)~DotNext.Runtime.BoxedValue{`0}">explicit operator BoxedValue&lt;T&gt;?(in T?)</h4>
@@ -443,7 +503,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Explicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Explicit__0__DotNext_Runtime_BoxedValue__0_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit(`0)~DotNext.Runtime.BoxedValue{`0}">explicit operator BoxedValue&lt;T&gt;(T)</h4>
@@ -490,7 +550,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Implicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0___DotNext_Runtime_ValueReference__0_" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~DotNext.Runtime.ValueReference{`0}">implicit operator ValueReference&lt;T&gt;(BoxedValue&lt;T&gt;)</h4>
@@ -537,7 +597,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Implicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0___System_ValueType" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~System.ValueType">implicit operator ValueType?(BoxedValue&lt;T&gt;?)</h4>
@@ -584,7 +644,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Implicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0____0" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~`0">implicit operator T(BoxedValue&lt;T&gt;)</h4>
@@ -638,9 +698,6 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.BoxedValue.html#DotNext_Runtime_BoxedValue_Copy__1_DotNext_Runtime_BoxedValue___0__">BoxedValue.Copy&lt;T&gt;(BoxedValue&lt;T&gt;)</a>
-  </div>
 
 </article>
           </div>
@@ -650,7 +707,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext/Runtime/BoxedValue.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Runtime/BoxedValue.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

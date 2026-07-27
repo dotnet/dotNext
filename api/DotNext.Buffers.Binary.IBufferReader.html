@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Scheduler.DelayedTask | .NEXT </title>
+    <title>Interface IBufferReader | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Scheduler.DelayedTask | .NEXT ">
+    <meta name="title" content="Interface IBufferReader | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,64 +65,34 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Scheduler.DelayedTask">
+            <article class="content wrap" id="_content" data-uid="DotNext.Buffers.Binary.IBufferReader">
 
 
 
-  <h1 id="DotNext_Threading_Scheduler_DelayedTask" data-uid="DotNext.Threading.Scheduler.DelayedTask" class="text-break">Class Scheduler.DelayedTask</h1>
-  <div class="markdown level0 summary"><p>Represents a task with delayed completion.</p>
+  <h1 id="DotNext_Buffers_Binary_IBufferReader" data-uid="DotNext.Buffers.Binary.IBufferReader" class="text-break">Interface IBufferReader</h1>
+  <div class="markdown level0 summary"><p>Represents buffer reader.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">Scheduler.DelayedTask</span></div>
-      <div class="level2"><a class="xref" href="DotNext.Threading.Scheduler.DelayedTask-1.html">Scheduler.DelayedTask&lt;TResult&gt;</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_Scheduler_DelayedTask_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a>.<a class="xref" href="DotNext.Buffers.Binary.html">Binary</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_Buffers_Binary_IBufferReader_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class Scheduler.DelayedTask</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IBufferReader</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Buffers/Binary/IBufferReader.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_Scheduler_DelayedTask_Task_" data-uid="DotNext.Threading.Scheduler.DelayedTask.Task*"></a>
-  <h4 id="DotNext_Threading_Scheduler_DelayedTask_Task" data-uid="DotNext.Threading.Scheduler.DelayedTask.Task">Task</h4>
-  <div class="markdown level1 summary"><p>Gets delayed task.</p>
+  <a id="DotNext_Buffers_Binary_IBufferReader_RemainingBytes_" data-uid="DotNext.Buffers.Binary.IBufferReader.RemainingBytes*"></a>
+  <h4 id="DotNext_Buffers_Binary_IBufferReader_RemainingBytes" data-uid="DotNext.Buffers.Binary.IBufferReader.RemainingBytes">RemainingBytes</h4>
+  <div class="markdown level1 summary"><p>The expected number of bytes to be consumed by this reader.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract Task Task { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">int RemainingBytes { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -134,42 +104,53 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_Scheduler_DelayedTask_Task_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.Threading.Scheduler.html">Scheduler</a>.<a class="xref" href="DotNext.Threading.Scheduler.DelayedTaskCanceledException.html">DelayedTaskCanceledException</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Buffers/Binary/IBufferReader.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Binary_IBufferReader_ThrowOnPartialData_" data-uid="DotNext.Buffers.Binary.IBufferReader.ThrowOnPartialData*"></a>
+  <h4 id="DotNext_Buffers_Binary_IBufferReader_ThrowOnPartialData" data-uid="DotNext.Buffers.Binary.IBufferReader.ThrowOnPartialData">ThrowOnPartialData</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that reader doesn't support decoding of partial data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool ThrowOnPartialData { get; }</code></pre>
   </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Buffers/Binary/IBufferReader.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_Scheduler_DelayedTask_Cancel_" data-uid="DotNext.Threading.Scheduler.DelayedTask.Cancel*"></a>
-  <h4 id="DotNext_Threading_Scheduler_DelayedTask_Cancel" data-uid="DotNext.Threading.Scheduler.DelayedTask.Cancel">Cancel()</h4>
-  <div class="markdown level1 summary"><p>Cancels scheduled task.</p>
+  <a id="DotNext_Buffers_Binary_IBufferReader_Apply_" data-uid="DotNext.Buffers.Binary.IBufferReader.Apply*"></a>
+  <h4 id="DotNext_Buffers_Binary_IBufferReader_Apply_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.Buffers.Binary.IBufferReader.Apply(System.ReadOnlySpan{System.Byte})">Apply(scoped ReadOnlySpan&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Consumes a buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Cancel()</code></pre>
-  </div>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Scheduler_DelayedTask_ConfigureAwait_" data-uid="DotNext.Threading.Scheduler.DelayedTask.ConfigureAwait*"></a>
-  <h4 id="DotNext_Threading_Scheduler_DelayedTask_ConfigureAwait_System_Boolean_" data-uid="DotNext.Threading.Scheduler.DelayedTask.ConfigureAwait(System.Boolean)">ConfigureAwait(bool)</h4>
-  <div class="markdown level1 summary"><p>Configures an awaiter used to await this task.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConfiguredTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)</code></pre>
+    <pre><code class="lang-csharp hljs">void Apply(scoped ReadOnlySpan&lt;byte&gt; buffer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -182,55 +163,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">continueOnCapturedContext</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to attempt to marshal the continuation back to the original context captured;
-otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.configuredtaskawaitable">ConfiguredTaskAwaitable</a></td>
-        <td><p>An awaiter instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Scheduler_DelayedTask_GetAwaiter_" data-uid="DotNext.Threading.Scheduler.DelayedTask.GetAwaiter*"></a>
-  <h4 id="DotNext_Threading_Scheduler_DelayedTask_GetAwaiter" data-uid="DotNext.Threading.Scheduler.DelayedTask.GetAwaiter">GetAwaiter()</h4>
-  <div class="markdown level1 summary"><p>Gets an awaiter used to await this task.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TaskAwaiter GetAwaiter()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.taskawaiter">TaskAwaiter</a></td>
-        <td><p>An awaiter instance.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The buffer to consume.</p>
 </td>
       </tr>
     </tbody>
@@ -254,7 +189,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/05db49d1ef2d7c1e45c001069a468c4a19af2b37/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Buffers/Binary/IBufferReader.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

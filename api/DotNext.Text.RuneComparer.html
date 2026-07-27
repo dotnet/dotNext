@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CharComparer | .NEXT </title>
+    <title>Class RuneComparer | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CharComparer | .NEXT ">
+    <meta name="title" content="Class RuneComparer | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,24 +65,24 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.CharComparer">
+            <article class="content wrap" id="_content" data-uid="DotNext.Text.RuneComparer">
 
 
 
-  <h1 id="DotNext_CharComparer" data-uid="DotNext.CharComparer" class="text-break">Class CharComparer</h1>
-  <div class="markdown level0 summary"><p>Represents a character comparison operation that uses specific case and culture-based
+  <h1 id="DotNext_Text_RuneComparer" data-uid="DotNext.Text.RuneComparer" class="text-break">Class RuneComparer</h1>
+  <div class="markdown level0 summary"><p>Represents <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a> comparison operation that uses specific case and culture-based
 or ordinal comparison rules.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">CharComparer</span></div>
+    <div class="level1"><span class="xref">RuneComparer</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icomparer-1">IComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icomparer-1">IComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -108,41 +108,41 @@ or ordinal comparison rules.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Text.html">Text</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_CharComparer_syntax">Syntax</h5>
+  <h5 id="DotNext_Text_RuneComparer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class CharComparer : IEqualityComparer&lt;char&gt;, IComparer&lt;char&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class RuneComparer : IEqualityComparer&lt;Rune&gt;, IComparer&lt;Rune&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer__ctor_" data-uid="DotNext.CharComparer.#ctor*"></a>
-  <h4 id="DotNext_CharComparer__ctor" data-uid="DotNext.CharComparer.#ctor">CharComparer()</h4>
+  <a id="DotNext_Text_RuneComparer__ctor_" data-uid="DotNext.Text.RuneComparer.#ctor*"></a>
+  <h4 id="DotNext_Text_RuneComparer__ctor" data-uid="DotNext.Text.RuneComparer.#ctor">RuneComparer()</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of comparer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected CharComparer()</code></pre>
+    <pre><code class="lang-csharp hljs">protected RuneComparer()</code></pre>
   </div>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_Compare_" data-uid="DotNext.CharComparer.Compare*"></a>
-  <h4 id="DotNext_CharComparer_Compare_System_Char_System_Char_" data-uid="DotNext.CharComparer.Compare(System.Char,System.Char)">Compare(char, char)</h4>
-  <div class="markdown level1 summary"><p>Compares two characters and returns an indication of their relative sort order.</p>
+  <a id="DotNext_Text_RuneComparer_Compare_" data-uid="DotNext.Text.RuneComparer.Compare*"></a>
+  <h4 id="DotNext_Text_RuneComparer_Compare_System_Text_Rune_System_Text_Rune_" data-uid="DotNext.Text.RuneComparer.Compare(System.Text.Rune,System.Text.Rune)">Compare(Rune, Rune)</h4>
+  <div class="markdown level1 summary"><p>Compares two runes and returns an indication of their relative sort order.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract int Compare(char x, char y)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract int Compare(Rune x, Rune y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -155,15 +155,15 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">x</span></td>
-        <td><p>The first character to compare.</p>
+        <td><p>The first rune to compare.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">y</span></td>
-        <td><p>The second character to compare.</p>
+        <td><p>The second rune to compare.</p>
 </td>
       </tr>
     </tbody>
@@ -179,23 +179,23 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>A number indicating relative sort order of the characters.</p>
+        <td><p>A number indicating relative sort order of the runes.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_Compare_" data-uid="DotNext.CharComparer.Compare*"></a>
-  <h4 id="DotNext_CharComparer_Compare_System_Char_System_Char_System_StringComparison_" data-uid="DotNext.CharComparer.Compare(System.Char,System.Char,System.StringComparison)">Compare(char, char, StringComparison)</h4>
-  <div class="markdown level1 summary"><p>Compares two characters and returns an indication of their relative sort order.</p>
+  <a id="DotNext_Text_RuneComparer_Compare_" data-uid="DotNext.Text.RuneComparer.Compare*"></a>
+  <h4 id="DotNext_Text_RuneComparer_Compare_System_Text_Rune_System_Text_Rune_System_StringComparison_" data-uid="DotNext.Text.RuneComparer.Compare(System.Text.Rune,System.Text.Rune,System.StringComparison)">Compare(Rune, Rune, StringComparison)</h4>
+  <div class="markdown level1 summary"><p>Compares two runes and returns an indication of their relative sort order.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Compare(char x, char y, StringComparison comparisonType)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Compare(Rune x, Rune y, StringComparison comparisonType)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -208,15 +208,15 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">x</span></td>
-        <td><p>The first character to compare.</p>
+        <td><p>The first rune to compare.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">y</span></td>
-        <td><p>The second character to compare.</p>
+        <td><p>The second rune to compare.</p>
 </td>
       </tr>
       <tr>
@@ -238,23 +238,23 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>A number indicating relative sort order of the characters.</p>
+        <td><p>A number indicating relative sort order of the runes.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_Create_" data-uid="DotNext.CharComparer.Create*"></a>
-  <h4 id="DotNext_CharComparer_Create_System_Globalization_CultureInfo_System_Globalization_CompareOptions_" data-uid="DotNext.CharComparer.Create(System.Globalization.CultureInfo,System.Globalization.CompareOptions)">Create(CultureInfo, CompareOptions)</h4>
-  <div class="markdown level1 summary"><p>Creates character comparer for the specified culture.</p>
+  <a id="DotNext_Text_RuneComparer_Create_" data-uid="DotNext.Text.RuneComparer.Create*"></a>
+  <h4 id="DotNext_Text_RuneComparer_Create_System_Globalization_CultureInfo_System_Globalization_CompareOptions_" data-uid="DotNext.Text.RuneComparer.Create(System.Globalization.CultureInfo,System.Globalization.CompareOptions)">Create(CultureInfo, CompareOptions)</h4>
+  <div class="markdown level1 summary"><p>Creates rune comparer for the specified culture.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static CharComparer Create(CultureInfo culture, CompareOptions options)</code></pre>
+    <pre><code class="lang-csharp hljs">public static RuneComparer Create(CultureInfo culture, CompareOptions options)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -290,7 +290,7 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.CharComparer.html">CharComparer</a></td>
+        <td><a class="xref" href="DotNext.Text.RuneComparer.html">RuneComparer</a></td>
         <td><p>Culture-specific comparer.</p>
 </td>
       </tr>
@@ -314,16 +314,16 @@ or ordinal comparison rules.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_Equals_" data-uid="DotNext.CharComparer.Equals*"></a>
-  <h4 id="DotNext_CharComparer_Equals_System_Char_System_Char_" data-uid="DotNext.CharComparer.Equals(System.Char,System.Char)">Equals(char, char)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the two characters are equal.</p>
+  <a id="DotNext_Text_RuneComparer_Equals_" data-uid="DotNext.Text.RuneComparer.Equals*"></a>
+  <h4 id="DotNext_Text_RuneComparer_Equals_System_Text_Rune_System_Text_Rune_" data-uid="DotNext.Text.RuneComparer.Equals(System.Text.Rune,System.Text.Rune)">Equals(Rune, Rune)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the two runes are equal.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract bool Equals(char x, char y)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract bool Equals(Rune x, Rune y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -336,15 +336,15 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">x</span></td>
-        <td><p>The first character to compare.</p>
+        <td><p>The first rune to compare.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">y</span></td>
-        <td><p>The second character to compare.</p>
+        <td><p>The second rune to compare.</p>
 </td>
       </tr>
     </tbody>
@@ -360,23 +360,23 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if both characters are equal; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if both runes are equal; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_Equals_" data-uid="DotNext.CharComparer.Equals*"></a>
-  <h4 id="DotNext_CharComparer_Equals_System_Char_System_Char_System_StringComparison_" data-uid="DotNext.CharComparer.Equals(System.Char,System.Char,System.StringComparison)">Equals(char, char, StringComparison)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the two characters are equal.</p>
+  <a id="DotNext_Text_RuneComparer_Equals_" data-uid="DotNext.Text.RuneComparer.Equals*"></a>
+  <h4 id="DotNext_Text_RuneComparer_Equals_System_Text_Rune_System_Text_Rune_System_StringComparison_" data-uid="DotNext.Text.RuneComparer.Equals(System.Text.Rune,System.Text.Rune,System.StringComparison)">Equals(Rune, Rune, StringComparison)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the two runes are equal.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Equals(char x, char y, StringComparison comparisonType)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool Equals(Rune x, Rune y, StringComparison comparisonType)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -389,15 +389,15 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">x</span></td>
-        <td><p>The first character to compare.</p>
+        <td><p>The first rune to compare.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
         <td><span class="parametername">y</span></td>
-        <td><p>The second character to compare.</p>
+        <td><p>The second rune to compare.</p>
 </td>
       </tr>
       <tr>
@@ -419,23 +419,23 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if both characters are equal; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if both runes are equal; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_FromComparison_" data-uid="DotNext.CharComparer.FromComparison*"></a>
-  <h4 id="DotNext_CharComparer_FromComparison_System_StringComparison_" data-uid="DotNext.CharComparer.FromComparison(System.StringComparison)">FromComparison(StringComparison)</h4>
-  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.stringcomparison">StringComparison</a> to <a class="xref" href="DotNext.CharComparer.html">CharComparer</a>.</p>
+  <a id="DotNext_Text_RuneComparer_FromComparison_" data-uid="DotNext.Text.RuneComparer.FromComparison*"></a>
+  <h4 id="DotNext_Text_RuneComparer_FromComparison_System_StringComparison_" data-uid="DotNext.Text.RuneComparer.FromComparison(System.StringComparison)">FromComparison(StringComparison)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.stringcomparison">StringComparison</a> to <a class="xref" href="DotNext.Text.RuneComparer.html">RuneComparer</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static CharComparer FromComparison(StringComparison comparison)</code></pre>
+    <pre><code class="lang-csharp hljs">public static RuneComparer FromComparison(StringComparison comparison)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -450,7 +450,7 @@ or ordinal comparison rules.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.stringcomparison">StringComparison</a></td>
         <td><span class="parametername">comparison</span></td>
-        <td><p>A character comparer instance to convert.</p>
+        <td><p>A rune comparer instance to convert.</p>
 </td>
       </tr>
     </tbody>
@@ -465,7 +465,7 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.CharComparer.html">CharComparer</a></td>
+        <td><a class="xref" href="DotNext.Text.RuneComparer.html">RuneComparer</a></td>
         <td><p>A comparer representing the specified comparison type.</p>
 </td>
       </tr>
@@ -489,16 +489,16 @@ or ordinal comparison rules.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_GetHashCode_" data-uid="DotNext.CharComparer.GetHashCode*"></a>
-  <h4 id="DotNext_CharComparer_GetHashCode_System_Char_" data-uid="DotNext.CharComparer.GetHashCode(System.Char)">GetHashCode(char)</h4>
-  <div class="markdown level1 summary"><p>Gets the hash code for the specified character.</p>
+  <a id="DotNext_Text_RuneComparer_GetHashCode_" data-uid="DotNext.Text.RuneComparer.GetHashCode*"></a>
+  <h4 id="DotNext_Text_RuneComparer_GetHashCode_System_Text_Rune_" data-uid="DotNext.Text.RuneComparer.GetHashCode(System.Text.Rune)">GetHashCode(Rune)</h4>
+  <div class="markdown level1 summary"><p>Gets the hash code for the specified rune.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract int GetHashCode(char ch)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract int GetHashCode(Rune rune)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -511,9 +511,9 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
-        <td><span class="parametername">ch</span></td>
-        <td><p>A character.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
+        <td><span class="parametername">rune</span></td>
+        <td><p>A rune.</p>
 </td>
       </tr>
     </tbody>
@@ -529,23 +529,23 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>A hash code of the character.</p>
+        <td><p>A hash code of the rune.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs">View Source</a>
   </span>
-  <a id="DotNext_CharComparer_GetHashCode_" data-uid="DotNext.CharComparer.GetHashCode*"></a>
-  <h4 id="DotNext_CharComparer_GetHashCode_System_Char_System_StringComparison_" data-uid="DotNext.CharComparer.GetHashCode(System.Char,System.StringComparison)">GetHashCode(char, StringComparison)</h4>
-  <div class="markdown level1 summary"><p>Gets the hash code for the specified character.</p>
+  <a id="DotNext_Text_RuneComparer_GetHashCode_" data-uid="DotNext.Text.RuneComparer.GetHashCode*"></a>
+  <h4 id="DotNext_Text_RuneComparer_GetHashCode_System_Text_Rune_System_StringComparison_" data-uid="DotNext.Text.RuneComparer.GetHashCode(System.Text.Rune,System.StringComparison)">GetHashCode(Rune, StringComparison)</h4>
+  <div class="markdown level1 summary"><p>Gets the hash code for the specified rune.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetHashCode(char ch, StringComparison comparisonType)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetHashCode(Rune rune, StringComparison comparisonType)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -558,9 +558,9 @@ or ordinal comparison rules.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
-        <td><span class="parametername">ch</span></td>
-        <td><p>A character.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.rune">Rune</a></td>
+        <td><span class="parametername">rune</span></td>
+        <td><p>A rune.</p>
 </td>
       </tr>
       <tr>
@@ -582,7 +582,7 @@ or ordinal comparison rules.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>A hash code of the character.</p>
+        <td><p>A hash code of the rune.</p>
 </td>
       </tr>
     </tbody>
@@ -604,10 +604,6 @@ or ordinal comparison rules.</p>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
-  <h3 id="seealso">See Also</h3>
-  <div class="seealso">
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.stringcomparer">StringComparer</a></div>
-  </div>
 
 </article>
           </div>
@@ -617,7 +613,7 @@ or ordinal comparison rules.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/CharComparer.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Text/RuneComparer.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

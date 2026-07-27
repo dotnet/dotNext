@@ -115,7 +115,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Item_" data-uid="DotNext.Metaprogramming.LambdaContext.Item*"></a>
   <h4 id="DotNext_Metaprogramming_LambdaContext_Item_System_Int32_" data-uid="DotNext.Metaprogramming.LambdaContext.Item(System.Int32)">this[int]</h4>
@@ -180,16 +180,16 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Invoke_" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Linq_Expressions_Expression___" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke(System.Linq.Expressions.Expression[])">Invoke(params Expression[])</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression})">Invoke(params IEnumerable&lt;Expression&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes function recursively.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public InvocationExpression Invoke(params Expression[] args)</code></pre>
+    <pre><code class="lang-csharp hljs">public InvocationExpression Invoke(params IEnumerable&lt;Expression&gt; args)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -202,7 +202,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>[]</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;</td>
         <td><span class="parametername">args</span></td>
         <td><p>The arguments to be passed into function.</p>
 </td>
@@ -225,9 +225,9 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Linq_Expressions_Expression____remarks">Remarks</h5>
+  <h5 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method doesn't add invocation expression as a statement.
-To add recursive call as statement, use <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Invoke_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression___">Invoke(Expression, params Expression[])</a> instead.</p>
+To add recursive call as statement, use <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Invoke_System_Linq_Expressions_Expression_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__">Invoke(Expression, params IEnumerable&lt;Expression&gt;)</a> instead.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -280,7 +280,7 @@ To add recursive call as statement, use <a class="xref" href="DotNext.Metaprogra
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

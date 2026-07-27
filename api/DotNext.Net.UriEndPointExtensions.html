@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class LockExtensions | .NEXT </title>
+    <title>Class UriEndPointExtensions | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class LockExtensions | .NEXT ">
+    <meta name="title" content="Class UriEndPointExtensions | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,18 +65,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.LockExtensions">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.UriEndPointExtensions">
 
 
 
-  <h1 id="DotNext_Threading_LockExtensions" data-uid="DotNext.Threading.LockExtensions" class="text-break">Class LockExtensions</h1>
-  <div class="markdown level0 summary"><p>Extends <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.monitor">Monitor</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.lock">Lock</a> types.</p>
+  <h1 id="DotNext_Net_UriEndPointExtensions" data-uid="DotNext.Net.UriEndPointExtensions" class="text-break">Class UriEndPointExtensions</h1>
+  <div class="markdown level0 summary"><p>Extends <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a> type.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">LockExtensions</span></div>
+    <div class="level1"><span class="xref">UriEndPointExtensions</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -102,64 +102,27 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_Threading_LockExtensions_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_UriEndPointExtensions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class LockExtensions</code></pre>
+    <pre><code class="lang-csharp hljs">public static class UriEndPointExtensions</code></pre>
   </div>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/LockExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/cluster/DotNext.Net.Cluster/Net/UriEndPointExtensions.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockExtensions_TryEnter_" data-uid="DotNext.Threading.LockExtensions.TryEnter*"></a>
-  <h4 id="DotNext_Threading_LockExtensions_TryEnter_System_Threading_Lock_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.LockExtensions.TryEnter(System.Threading.Lock,System.TimeSpan,System.Threading.CancellationToken,System.Boolean)">TryEnter(Lock, TimeSpan, CancellationToken, bool)</h4>
-  <div class="markdown level1 summary"><p>Tries to acquire an exclusive lock on the specified object with cancellation support.</p>
+  <a id="DotNext_Net_UriEndPointExtensions_get_Comparer_" data-uid="DotNext.Net.UriEndPointExtensions.get_Comparer*"></a>
+  <h4 id="DotNext_Net_UriEndPointExtensions_get_Comparer" data-uid="DotNext.Net.UriEndPointExtensions.get_Comparer">get_Comparer()</h4>
+  <div class="markdown level1 summary"><p>Gets comparer for <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a> type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryEnter(this Lock @lock, TimeSpan timeout, CancellationToken token, bool throwOnCancellation = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEqualityComparer&lt;EndPoint&gt; get_Comparer()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.lock">Lock</a></td>
-        <td><span class="parametername">lock</span></td>
-        <td><p>The object on which to acquire the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>Time to wait for the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">throwOnCancellation</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> if <code class="paramref">token</code> is canceled during the lock acquisition;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -170,35 +133,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the monitor acquired successfully; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if timeout occurred or <code class="paramref">token</code> canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">timeout</code> is invalid.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p><code class="paramref">token</code> interrupts lock acquisition and <code class="paramref">throwOnCancellation</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a>&gt;</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -211,7 +147,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/LockExtensions.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/cluster/DotNext.Net.Cluster/Net/UriEndPointExtensions.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

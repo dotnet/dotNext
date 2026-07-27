@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class WriteAheadLog.IntegrityException | .NEXT </title>
+    <title>Class BufferSizeLimitExceededException | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class WriteAheadLog.IntegrityException | .NEXT ">
+    <meta name="title" content="Class BufferSizeLimitExceededException | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,22 +65,21 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.IntegrityException">
+            <article class="content wrap" id="_content" data-uid="DotNext.Buffers.BufferSizeLimitExceededException">
 
 
 
-  <h1 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_IntegrityException" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.IntegrityException" class="text-break">Class WriteAheadLog.IntegrityException</h1>
-  <div class="markdown level0 summary"><p>Represents catastrophic WAL failure.</p>
+  <h1 id="DotNext_Buffers_BufferSizeLimitExceededException" data-uid="DotNext.Buffers.BufferSizeLimitExceededException" class="text-break">Class BufferSizeLimitExceededException</h1>
+  <div class="markdown level0 summary"><p>Indicates that the buffer capacity exceeded.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></div>
-    <div class="level2"><span class="xref">WriteAheadLog.IntegrityException</span></div>
-      <div class="level3"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.HashMismatchException.html">WriteAheadLog.HashMismatchException</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MissingPageException.html">WriteAheadLog.MissingPageException</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.UnsupportedCheckpointVersionException.html">WriteAheadLog.UnsupportedCheckpointVersionException</a></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.systemexception">SystemException</a></div>
+    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></div>
+    <div class="level4"><span class="xref">BufferSizeLimitExceededException</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
@@ -122,12 +121,6 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.stacktrace">Exception.StackTrace</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.serializeobjectstate">Exception.SerializeObjectState</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
     <div>
@@ -140,11 +133,26 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.html">StateMachine</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_IntegrityException_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Buffers_BufferSizeLimitExceededException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class WriteAheadLog.IntegrityException : Exception, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class BufferSizeLimitExceededException : OutOfMemoryException, ISerializable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Buffers/BufferSizeLimitExceededException.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferSizeLimitExceededException__ctor_" data-uid="DotNext.Buffers.BufferSizeLimitExceededException.#ctor*"></a>
+  <h4 id="DotNext_Buffers_BufferSizeLimitExceededException__ctor" data-uid="DotNext.Buffers.BufferSizeLimitExceededException.#ctor">BufferSizeLimitExceededException()</h4>
+  <div class="markdown level1 summary"><p>Indicates that the buffer capacity exceeded.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BufferSizeLimitExceededException()</code></pre>
   </div>
   <h3 id="implements">Implements</h3>
   <div>
@@ -169,7 +177,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/abf843e0b6c78da31f25d67cdabedfce29714c83/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Applier.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext/Buffers/BufferSizeLimitExceededException.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

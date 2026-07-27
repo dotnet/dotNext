@@ -103,51 +103,20 @@
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Net_EndPointFormatter_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class EndPointFormatter</code></pre>
   </div>
   <h5 id="DotNext_Net_EndPointFormatter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>List of supported endpoint types: <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.ipendpoint">IPEndPoint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.dnsendpoint">DnsEndPoint</a>,
-<a class="xref" href="DotNext.Net.Http.HttpEndPoint.html">HttpEndPoint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.sockets.unixdomainsocketendpoint">UnixDomainSocketEndPoint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a>.</p>
+<a class="xref" href="DotNext.Net.Http.HttpEndPoint.html">HttpEndPoint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.sockets.unixdomainsocketendpoint">UnixDomainSocketEndPoint</a>, <code>UriEndPoint</code>.</p>
 </div>
-  <h3 id="properties">Properties
-</h3>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs">View Source</a>
-  </span>
-  <a id="DotNext_Net_EndPointFormatter_UriEndPointComparer_" data-uid="DotNext.Net.EndPointFormatter.UriEndPointComparer*"></a>
-  <h4 id="DotNext_Net_EndPointFormatter_UriEndPointComparer" data-uid="DotNext.Net.EndPointFormatter.UriEndPointComparer">UriEndPointComparer</h4>
-  <div class="markdown level1 summary"><p>Gets comparer for <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static IEqualityComparer&lt;EndPoint&gt; UriEndPointComparer { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Net/EndPointFormatter.cs">View Source</a>
   </span>
   <a id="DotNext_Net_EndPointFormatter_GetBytes_" data-uid="DotNext.Net.EndPointFormatter.GetBytes*"></a>
   <h4 id="DotNext_Net_EndPointFormatter_GetBytes_System_Net_EndPoint_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Net.EndPointFormatter.GetBytes(System.Net.EndPoint,DotNext.Buffers.MemoryAllocator{System.Byte})">GetBytes(EndPoint, MemoryAllocator&lt;byte&gt;?)</h4>
@@ -200,7 +169,7 @@ public static IEqualityComparer&lt;EndPoint&gt; UriEndPointComparer { get; }</co
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Net/EndPointFormatter.cs">View Source</a>
   </span>
   <a id="DotNext_Net_EndPointFormatter_ReadEndPoint_" data-uid="DotNext.Net.EndPointFormatter.ReadEndPoint*"></a>
   <h4 id="DotNext_Net_EndPointFormatter_ReadEndPoint_DotNext_Buffers_SequenceReader__" data-uid="DotNext.Net.EndPointFormatter.ReadEndPoint(DotNext.Buffers.SequenceReader@)">ReadEndPoint(ref SequenceReader)</h4>
@@ -247,7 +216,7 @@ public static IEqualityComparer&lt;EndPoint&gt; UriEndPointComparer { get; }</co
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Net/EndPointFormatter.cs">View Source</a>
   </span>
   <a id="DotNext_Net_EndPointFormatter_WriteEndPoint_" data-uid="DotNext.Net.EndPointFormatter.WriteEndPoint*"></a>
   <h4 id="DotNext_Net_EndPointFormatter_WriteEndPoint_DotNext_Buffers_BufferWriterSlim_System_Byte___System_Net_EndPoint_" data-uid="DotNext.Net.EndPointFormatter.WriteEndPoint(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.Net.EndPoint)">WriteEndPoint(ref BufferWriterSlim&lt;byte&gt;, EndPoint)</h4>
@@ -300,7 +269,7 @@ public static IEqualityComparer&lt;EndPoint&gt; UriEndPointComparer { get; }</co
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Net/EndPointFormatter.cs">View Source</a>
   </span>
   <a id="DotNext_Net_EndPointFormatter_WriteEndPoint_" data-uid="DotNext.Net.EndPointFormatter.WriteEndPoint*"></a>
   <h4 id="DotNext_Net_EndPointFormatter_WriteEndPoint_System_Buffers_IBufferWriter_System_Byte__System_Net_EndPoint_" data-uid="DotNext.Net.EndPointFormatter.WriteEndPoint(System.Buffers.IBufferWriter{System.Byte},System.Net.EndPoint)">WriteEndPoint(IBufferWriter&lt;byte&gt;, EndPoint)</h4>
@@ -360,7 +329,7 @@ public static IEqualityComparer&lt;EndPoint&gt; UriEndPointComparer { get; }</co
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/cluster/DotNext.Net.Cluster/Net/EndPointFormatter.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/Net/EndPointFormatter.Impl.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

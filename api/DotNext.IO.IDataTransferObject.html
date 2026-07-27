@@ -87,7 +87,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_Empty_" data-uid="DotNext.IO.IDataTransferObject.Empty*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_Empty" data-uid="DotNext.IO.IDataTransferObject.Empty">Empty</h4>
@@ -115,7 +115,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_IsReusable_" data-uid="DotNext.IO.IDataTransferObject.IsReusable*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_IsReusable" data-uid="DotNext.IO.IDataTransferObject.IsReusable">IsReusable</h4>
@@ -143,7 +143,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_Length_" data-uid="DotNext.IO.IDataTransferObject.Length*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_Length" data-uid="DotNext.IO.IDataTransferObject.Length">Length</h4>
@@ -176,7 +176,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Pipelines_PipeReader___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Pipelines.PipeReader,``1,System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(PipeReader, TTransformation, CancellationToken)</h4>
@@ -272,16 +272,16 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync*"></a>
-  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_System_Boolean_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,System.Boolean,DotNext.Buffers.MemoryAllocator{System.Byte},System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, bool, MemoryAllocator&lt;byte&gt;?, CancellationToken)</h4>
+  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,DotNext.Buffers.MemoryAllocator{System.Byte},System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, MemoryAllocator&lt;byte&gt;?, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Decodes the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator&lt;byte&gt;? allocator, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, MemoryAllocator&lt;byte&gt;? allocator, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -303,12 +303,6 @@
         <td><span class="xref">TTransformation</span></td>
         <td><span class="parametername">transformation</span></td>
         <td><p>The decoder.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">resetStream</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reset stream position after decoding.</p>
 </td>
       </tr>
       <tr>
@@ -380,16 +374,16 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync*"></a>
-  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_System_Boolean_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,System.Boolean,System.Memory{System.Byte},System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, bool, Memory&lt;byte&gt;, CancellationToken)</h4>
+  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,System.Memory{System.Byte},System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, Memory&lt;byte&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Decodes the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, Memory&lt;byte&gt; buffer, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, Memory&lt;byte&gt; buffer, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -411,12 +405,6 @@
         <td><span class="xref">TTransformation</span></td>
         <td><span class="parametername">transformation</span></td>
         <td><p>The decoder.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">resetStream</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reset stream position after decoding.</p>
 </td>
       </tr>
       <tr>
@@ -493,16 +481,16 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync*"></a>
-  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,System.Boolean,System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, bool, CancellationToken)</h4>
+  <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2_System_IO_Stream___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(System.IO.Stream,``1,System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(Stream, TTransformation, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Decodes the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">protected static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, CancellationToken token) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -524,12 +512,6 @@
         <td><span class="xref">TTransformation</span></td>
         <td><span class="parametername">transformation</span></td>
         <td><p>The decoder.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">resetStream</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reset stream position after decoding.</p>
 </td>
       </tr>
       <tr>
@@ -595,7 +577,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_TransformAsync__2___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.TransformAsync``2(``1,System.Threading.CancellationToken)">TransformAsync&lt;TResult, TTransformation&gt;(TTransformation, CancellationToken)</h4>
@@ -689,7 +671,7 @@ before parsing.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_TryGetMemory_" data-uid="DotNext.IO.IDataTransferObject.TryGetMemory*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_TryGetMemory_System_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.IDataTransferObject.TryGetMemory(System.ReadOnlyMemory{System.Byte}@)">TryGetMemory(out ReadOnlyMemory&lt;byte&gt;)</h4>
@@ -736,7 +718,7 @@ before parsing.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IDataTransferObject_WriteToAsync_" data-uid="DotNext.IO.IDataTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_IDataTransferObject_WriteToAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IDataTransferObject.WriteToAsync``1(``0,System.Threading.CancellationToken)">WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
@@ -867,7 +849,7 @@ before parsing.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/729eb9a0b1998f38810deda9b0428c6142dd01fc/src/DotNext.IO/IO/IDataTransferObject.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/fa617bb2d10d82c6136247d07ae26b33611eacbf/src/DotNext.IO/IO/IDataTransferObject.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
