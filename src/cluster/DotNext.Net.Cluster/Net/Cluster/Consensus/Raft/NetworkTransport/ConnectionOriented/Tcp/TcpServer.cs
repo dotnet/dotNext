@@ -104,8 +104,8 @@ internal sealed class TcpServer : Server, ITcpTransport
             }
             catch (Exception e)
             {
-                ssl.Dispose();
-                transport.Dispose();
+                await ssl.DisposeAsync().ConfigureAwait(false);
+                await transport.DisposeAsync().ConfigureAwait(false);
                 logger.TlsHandshakeFailed(clientAddress, e);
                 return;
             }
@@ -153,8 +153,9 @@ internal sealed class TcpServer : Server, ITcpTransport
         }
         finally
         {
-            protocol.Dispose();
-            (protocol.BaseStream as SslStream)?.Dispose();
+            await protocol.DisposeAsync().ConfigureAwait(false);
+            if (protocol.BaseStream is SslStream ssl)
+                await ssl.DisposeAsync().ConfigureAwait(false);
             timeoutSource.Dispose();
             transport.Close(GracefulShutdownTimeout);
             if (Interlocked.Decrement(ref connections) <= 0 && IsDisposingOrDisposed)

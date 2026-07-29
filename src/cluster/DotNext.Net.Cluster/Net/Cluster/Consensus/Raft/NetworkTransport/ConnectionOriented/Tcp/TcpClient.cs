@@ -53,15 +53,21 @@ internal sealed class TcpClient : Client, ITcpTransport
             {
                 if (protocol.BaseStream is SslStream ssl)
                 {
-                    using (ssl)
+                    try
+                    {
                         await ssl.ShutdownAsync().ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        await ssl.DisposeAsync().ConfigureAwait(false);
+                    }
                 }
             }
             finally
             {
-                protocol.Dispose();
+                await protocol.DisposeAsync().ConfigureAwait(false);
                 transport.Close(CloseTimeout);
-                transport.Dispose();
+                await transport.DisposeAsync().ConfigureAwait(false);
             }
         }
 
