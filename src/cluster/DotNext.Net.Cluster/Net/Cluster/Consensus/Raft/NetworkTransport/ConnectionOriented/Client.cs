@@ -28,6 +28,7 @@ internal abstract partial class Client : RaftClusterMember
 
     private readonly AsyncExclusiveLock accessLock;
     private readonly TimeSpan connectTimeout;
+    private readonly CancellationTokenMultiplexer multiplexer;
 
     // connection context and its devirtualized members
     private IConnectionContext? context;
@@ -46,6 +47,9 @@ internal abstract partial class Client : RaftClusterMember
         };
 
         connectTimeout = TimeSpan.FromSeconds(1);
+        
+        // We do not expect a large amount of concurrent calls
+        multiplexer = new() { MaximumRetained = 4 };
     }
 
     internal TimeSpan ConnectTimeout
@@ -64,10 +68,9 @@ internal abstract partial class Client : RaftClusterMember
         var timeStamp = new Timestamp();
         var lockTaken = false;
 
-        var requestDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var requestDurationTracker = multiplexer.Combine(RequestTimeout, token);
         try
         {
-            requestDurationTracker.CancelAfter(RequestTimeout);
             await accessLock.AcquireAsync(requestDurationTracker.Token).ConfigureAwait(false);
             lockTaken = true;
 
@@ -89,11 +92,11 @@ internal abstract partial class Client : RaftClusterMember
             Touch();
             return result;
         }
-        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        catch (OperationCanceledException e) when (e.CausedBy(requestDurationTracker, token))
         {
             // canceled by caller
             ClearContext();
-            throw;
+            throw new OperationCanceledException(e.Message, e, token); // restore original token
         }
         catch (Exception e)
         {
@@ -114,7 +117,7 @@ internal abstract partial class Client : RaftClusterMember
                 new(IRaftClusterMember.MessageTypeAttributeName, TExchange.Name),
                 cachedRemoteAddressAttribute);
 
-            requestDurationTracker.Dispose();
+            await requestDurationTracker.DisposeAsync().ConfigureAwait(false);
         }
     }
 

@@ -236,7 +236,12 @@ public partial class RaftCluster
             => new(localMember, endPoint, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
 
         internal override GenericServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
+            => new(HostEndPoint, localMember, LoggerFactory)
+            {
+                BufferAllocator = MemoryAllocator,
+                ListenerFactory = serverFactory,
+                ReceiveTimeout = RequestTimeout
+            };
     }
 
     /// <summary>
@@ -356,8 +361,9 @@ public partial class RaftCluster
             };
 
         internal override TcpServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, ServerBacklog, localMember, MemoryAllocator, LoggerFactory)
+            => new(HostEndPoint, ServerBacklog, localMember, LoggerFactory)
             {
+                BufferAllocator = MemoryAllocator,
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 ReceiveTimeout = RequestTimeout,

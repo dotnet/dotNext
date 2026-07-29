@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Tcp;
 
-using Buffers;
 using Reflection;
+using Threading;
 
 internal sealed class TcpServer : Server, ITcpTransport
 {
@@ -19,12 +19,13 @@ internal sealed class TcpServer : Server, ITcpTransport
     private readonly LingerOption linger;
     private readonly int gracefulShutdownTimeout;
     private readonly TaskCompletionSource noPendingConnectionsEvent;
+    private readonly CancellationTokenMultiplexer multiplexer;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? transmissionState;
     private volatile int connections;
 
-    internal TcpServer(EndPoint address, int backlog, ILocalMember localMember, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
+    internal TcpServer(EndPoint address, int backlog, ILocalMember localMember, ILoggerFactory loggerFactory)
         : base(address, localMember, loggerFactory)
     {
         socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -32,11 +33,11 @@ internal sealed class TcpServer : Server, ITcpTransport
         transmissionState = new();
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         linger = ITcpTransport.CreateDefaultLingerOption();
-        BufferAllocator = allocator;
         gracefulShutdownTimeout = 1000;
         ttl = ITcpTransport.DefaultTtl;
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         noPendingConnectionsEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        multiplexer = new() { MaximumRetained = backlog };
     }
 
     public override TimeSpan ReceiveTimeout
@@ -54,8 +55,6 @@ internal sealed class TcpServer : Server, ITcpTransport
         get;
         init;
     }
-
-    private protected override MemoryAllocator<byte> BufferAllocator { get; }
 
     public int TransmissionBlockSize
     {
@@ -86,18 +85,18 @@ internal sealed class TcpServer : Server, ITcpTransport
         var clientAddress = remoteClient.RemoteEndPoint;
         var transport = new TcpStream(remoteClient, owns: true);
         TcpProtocolStream protocol;
-        CancellationTokenSource timeoutSource;
+        CancellationTokenMultiplexer.Scope timeoutSource;
 
         // TLS handshake
         if (SslOptions is null)
         {
             protocol = new(transport, BufferAllocator, transmissionBlockSize);
+            timeoutSource = default;
         }
         else
         {
             var ssl = new SslStream(transport, leaveInnerStreamOpen: true);
-            timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
-            timeoutSource.CancelAfter(receiveTimeout);
+            timeoutSource = multiplexer.Combine(receiveTimeout, lifecycleToken);
             try
             {
                 await ssl.AuthenticateAsServerAsync(SslOptions, timeoutSource.Token).ConfigureAwait(false);
@@ -111,30 +110,32 @@ internal sealed class TcpServer : Server, ITcpTransport
             }
             finally
             {
-                timeoutSource.Dispose();
+                await timeoutSource.DisposeAsync().ConfigureAwait(false);
             }
 
             protocol = new(ssl, BufferAllocator, transmissionBlockSize);
         }
 
         Interlocked.Increment(ref connections);
-        timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
         try
         {
             // message processing loop
-            while (transport.Connected && !IsDisposingOrDisposed && !lifecycleToken.IsCancellationRequested)
+            for (; transport.Connected && !IsDisposingOrDisposed && !lifecycleToken.IsCancellationRequested; protocol.Reset())
             {
                 var messageType = await protocol.ReadMessageTypeAsync(lifecycleToken).ConfigureAwait(false);
                 if (messageType is MessageType.None)
                     break;
 
-                timeoutSource.CancelAfter(receiveTimeout);
-                await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
-                protocol.Reset();
-
-                // reset cancellation token
-                timeoutSource.Dispose();
-                timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
+                timeoutSource = multiplexer.Combine(receiveTimeout, lifecycleToken);
+                try
+                {
+                    await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    // reset cancellation token
+                    await timeoutSource.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
         catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } or { InnerException: SocketException { SocketErrorCode: SocketError.ConnectionReset } })
@@ -144,7 +145,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         catch (OperationCanceledException e)
         {
             // if lifecycleToken is canceled then shutdown socket gracefully without logging
-            if (!lifecycleToken.IsCancellationRequested)
+            if (e.CausedByTimeout(timeoutSource))
                 logger.RequestTimedOut(clientAddress, e);
         }
         catch (Exception e)
@@ -156,7 +157,6 @@ internal sealed class TcpServer : Server, ITcpTransport
             await protocol.DisposeAsync().ConfigureAwait(false);
             if (protocol.BaseStream is SslStream ssl)
                 await ssl.DisposeAsync().ConfigureAwait(false);
-            timeoutSource.Dispose();
             transport.Close(GracefulShutdownTimeout);
             if (Interlocked.Decrement(ref connections) <= 0 && IsDisposingOrDisposed)
                 noPendingConnectionsEvent.TrySetResult();

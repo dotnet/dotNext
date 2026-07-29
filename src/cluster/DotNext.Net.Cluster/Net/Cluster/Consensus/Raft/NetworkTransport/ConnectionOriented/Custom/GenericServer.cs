@@ -3,7 +3,6 @@ using System.Net;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.Logging;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Custom;
 
@@ -12,7 +11,6 @@ using Threading;
 
 internal sealed class GenericServer : Server
 {
-    private readonly IConnectionListenerFactory factory;
     private readonly CancellationToken lifecycleToken;
     private readonly CancellationTokenMultiplexer multiplexer;
 
@@ -20,27 +18,22 @@ internal sealed class GenericServer : Server
     private volatile CancellationTokenSource? transmissionState;
     private volatile Task? listenerTask;
 
-    internal GenericServer(EndPoint address, IConnectionListenerFactory listenerFactory, ILocalMember localMember, MemoryAllocator<byte> defaultAllocator, ILoggerFactory loggerFactory)
+    internal GenericServer(EndPoint address, ILocalMember localMember, ILoggerFactory loggerFactory)
         : base(address, localMember, loggerFactory)
     {
-        Debug.Assert(listenerFactory is not null);
-        Debug.Assert(defaultAllocator is not null);
-
         transmissionState = new();
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
-        factory = listenerFactory;
-        BufferAllocator = defaultAllocator;
 
         multiplexer = new() { MaximumRetained = 100 };
     }
+    
+    public required IConnectionListenerFactory ListenerFactory { get; init; }
 
     public override TimeSpan ReceiveTimeout
     {
         get;
         init;
     }
-
-    private protected override MemoryAllocator<byte> BufferAllocator { get; }
 
     private async void HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
     {
@@ -134,7 +127,7 @@ internal sealed class GenericServer : Server
     }
 
     public override async ValueTask StartAsync(CancellationToken token)
-        => listenerTask = Listen(await factory.BindAsync(Address, token).ConfigureAwait(false));
+        => listenerTask = Listen(await ListenerFactory.BindAsync(Address, token).ConfigureAwait(false));
 
     private void CleanUp()
     {
@@ -160,11 +153,11 @@ internal sealed class GenericServer : Server
 
     private sealed class ConnectionHandler : Tuple<ConnectionContext, int, EndPoint?, MemoryAllocator<byte>>, IThreadPoolWorkItem
     {
-        private readonly WeakReference<GenericServer> server;
+        private readonly WeakReference<GenericServer> serverRef;
 
         internal ConnectionHandler(GenericServer server, ConnectionContext connection)
             : base(connection, GetTransmissionSize(connection), connection.RemoteEndPoint, GetMemoryAllocator(server, connection))
-            => this.server = new(server, trackResurrection: false);
+            => serverRef = new(server, trackResurrection: false);
 
         private static int GetTransmissionSize(ConnectionContext connection)
             => connection.Transport.Output.GetSpan().Length;
@@ -178,7 +171,7 @@ internal sealed class GenericServer : Server
 
         void IThreadPoolWorkItem.Execute()
         {
-            if (this.server.TryGetTarget(out var server))
+            if (serverRef.TryGetTarget(out var server))
                 server.HandleConnection(Item1, Item2, Item3, Item4);
         }
     }

@@ -34,7 +34,7 @@ internal abstract partial class Server : Disposable, IServer
 
     public EndPoint Address { get; }
 
-    private protected abstract MemoryAllocator<byte> BufferAllocator { get; }
+    public required MemoryAllocator<byte> BufferAllocator { get; init; }
 
     public abstract ValueTask StartAsync(CancellationToken token);
 
