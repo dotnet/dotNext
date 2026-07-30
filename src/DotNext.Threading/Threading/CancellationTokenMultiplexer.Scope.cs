@@ -11,13 +11,11 @@ using MultiplexerOrToken = ValueTuple<object>;
 
 partial struct CancellationTokenMultiplexer
 {
-    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSourceWithTimeout, IAsyncDisposable;
-    
     /// <summary>
     /// Represents a scope that controls the lifetime of the multiplexed cancellation token.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Scope : IMultiplexedTokenScope
+    public readonly struct Scope : IMultiplexedCancellationTokenSourceWithTimeout, IAsyncDisposable
     {
         // CancellationToken is just a wrapper over CancellationTokenSource.
         // For optimization purposes, if only one token is passed to the scope, we can inline the underlying CTS
@@ -116,7 +114,7 @@ partial struct CancellationTokenMultiplexer
     /// Represents a scope that controls the lifetime of the multiplexed cancellation token and allows to specify the timeout.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ScopeWithTimeout : IMultiplexedTokenScope
+    public readonly struct ScopeWithTimeout : IMultiplexedCancellationTokenSourceWithTimeout, IAsyncDisposable
     {
         private readonly Scope scope;
 
