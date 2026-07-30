@@ -1,10 +1,8 @@
-using System.Buffers;
 using System.Collections.Immutable;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport;
 
-using Buffers;
 using IO;
 using IO.Log;
 using StateMachine;
@@ -153,8 +151,6 @@ public abstract class TransportTestSuite : RaftTest
 
         public IReadOnlyDictionary<string, string> Metadata { get; }
     }
-
-    private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
     private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);
     private protected delegate RaftClusterMember ClientFactory(EndPoint address, ILocalMember localMember, TimeSpan timeout);

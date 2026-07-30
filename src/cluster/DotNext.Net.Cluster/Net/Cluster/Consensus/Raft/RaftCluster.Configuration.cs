@@ -232,13 +232,17 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
-        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint)
-            => new(localMember, endPoint, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint) => new(localMember, endPoint)
+        {
+            DefaultAllocator = MemoryAllocator,
+            ConnectTimeout = ConnectTimeout,
+            ConnectionFactory = clientFactory,
+        };
 
         internal override GenericServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, localMember, LoggerFactory)
             {
-                BufferAllocator = MemoryAllocator,
+                MemoryAllocator = MemoryAllocator,
                 ListenerFactory = serverFactory,
                 ReceiveTimeout = RequestTimeout
             };
@@ -350,8 +354,9 @@ public partial class RaftCluster
         }
 
         internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint)
-            => new(localMember, endPoint, MemoryAllocator)
+            => new(localMember, endPoint)
             {
+                MemoryAllocator = MemoryAllocator,
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
@@ -363,7 +368,7 @@ public partial class RaftCluster
         internal override TcpServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, ServerBacklog, localMember, LoggerFactory)
             {
-                BufferAllocator = MemoryAllocator,
+                MemoryAllocator = MemoryAllocator,
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 ReceiveTimeout = RequestTimeout,

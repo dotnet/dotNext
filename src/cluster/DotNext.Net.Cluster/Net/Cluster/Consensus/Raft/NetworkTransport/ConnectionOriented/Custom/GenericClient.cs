@@ -21,7 +21,7 @@ internal sealed class GenericClient : Client
 
             var bufferSize = context.Transport.Output.GetSpan().Length;
             var allocator = context.Features.Get<MemoryAllocator<byte>>()
-                ?? context.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
+                ?? context.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
                 ?? defaultAllocator;
             buffer = allocator(bufferSize);
             transport = context;
@@ -62,18 +62,14 @@ internal sealed class GenericClient : Client
         public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 
-    private readonly MemoryAllocator<byte> defaultAllocator;
-    private readonly IConnectionFactory factory;
-
-    internal GenericClient(ILocalMember localMember, EndPoint endPoint, IConnectionFactory factory, MemoryAllocator<byte> defaultAllocator)
+    internal GenericClient(ILocalMember localMember, EndPoint endPoint)
         : base(localMember, endPoint)
     {
-        Debug.Assert(factory is not null);
-        Debug.Assert(defaultAllocator is not null);
-
-        this.factory = factory;
-        this.defaultAllocator = defaultAllocator;
     }
+    
+    public required MemoryAllocator<byte> DefaultAllocator { get; init; }
+    
+    public required IConnectionFactory ConnectionFactory { get; init; }
 
     private protected override async ValueTask<IConnectionContext> ConnectAsync(CancellationToken token)
     {
@@ -82,13 +78,13 @@ internal sealed class GenericClient : Client
         ConnectionContext transport;
         try
         {
-            transport = await factory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false);
+            transport = await ConnectionFactory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false);
         }
         finally
         {
             await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
         }
 
-        return new GenericConnectionContext(transport, defaultAllocator);
+        return new GenericConnectionContext(transport, DefaultAllocator);
     }
 }

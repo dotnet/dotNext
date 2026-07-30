@@ -6,6 +6,8 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Custom;
 
+using Buffers;
+
 [Collection(TestCollections.Raft)]
 public sealed class CustomTransportTests : TransportTestSuite
 {
@@ -76,11 +78,20 @@ public sealed class CustomTransportTests : TransportTestSuite
     public Task RequestSynchronization()
         => SendingSynchronizationRequestTest(CreateServer, CreateClient);
 
-    private static GenericClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout)
-        => new(member, address, CreateClientFactory(), DefaultAllocator) { ConnectTimeout = timeout };
+    private static GenericClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
+    {
+        ConnectionFactory = CreateClientFactory(),
+        DefaultAllocator = MemoryAllocator<byte>.Default,
+        ConnectTimeout = timeout
+    };
 
     private static GenericServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout)
-        => new(address, CreateServerFactory(), member, DefaultAllocator, NullLoggerFactory.Instance) { ReceiveTimeout = timeout };
+        => new(address, member, NullLoggerFactory.Instance)
+        {
+            ListenerFactory = CreateServerFactory(),
+            ReceiveTimeout = timeout,
+            MemoryAllocator = MemoryAllocator<byte>.Default
+        };
 
     private static SocketTransportFactory CreateServerFactory()
     {

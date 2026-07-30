@@ -90,7 +90,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         // TLS handshake
         if (SslOptions is null)
         {
-            protocol = new(transport, BufferAllocator, transmissionBlockSize);
+            protocol = new(transport, MemoryAllocator, transmissionBlockSize);
             timeoutSource = default;
         }
         else
@@ -113,7 +113,7 @@ internal sealed class TcpServer : Server, ITcpTransport
                 await timeoutSource.DisposeAsync().ConfigureAwait(false);
             }
 
-            protocol = new(ssl, BufferAllocator, transmissionBlockSize);
+            protocol = new(ssl, MemoryAllocator, transmissionBlockSize);
         }
 
         Interlocked.Increment(ref connections);

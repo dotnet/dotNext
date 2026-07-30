@@ -166,7 +166,7 @@ internal sealed class GenericServer : Server
         {
             return connection.Features.Get<MemoryAllocator<byte>>()
                 ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
-                ?? server.BufferAllocator;
+                ?? server.MemoryAllocator;
         }
 
         void IThreadPoolWorkItem.Execute()

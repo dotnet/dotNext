@@ -74,21 +74,19 @@ internal sealed class TcpClient : Client, ITcpTransport
         public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 
-    private readonly MemoryAllocator<byte> allocator;
     private readonly int transmissionBlockSize;
     private readonly byte ttl;
     private readonly LingerOption linger;
 
-    internal TcpClient(ILocalMember localMember, EndPoint endPoint, MemoryAllocator<byte> allocator)
+    internal TcpClient(ILocalMember localMember, EndPoint endPoint)
         : base(localMember, endPoint)
     {
-        Debug.Assert(allocator is not null);
-
-        this.allocator = allocator;
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         ttl = ITcpTransport.DefaultTtl;
         linger = ITcpTransport.CreateDefaultLingerOption();
     }
+    
+    public required MemoryAllocator<byte> MemoryAllocator { get; init; }
 
     public SslClientAuthenticationOptions? SslOptions
     {
@@ -142,7 +140,7 @@ internal sealed class TcpClient : Client, ITcpTransport
         TcpProtocolStream protocol;
         if (SslOptions is null)
         {
-            protocol = new(transport, allocator, transmissionBlockSize);
+            protocol = new(transport, MemoryAllocator, transmissionBlockSize);
             await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
         }
         else
@@ -164,10 +162,10 @@ internal sealed class TcpClient : Client, ITcpTransport
                 await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
             }
 
-            protocol = new(ssl, allocator, transmissionBlockSize);
+            protocol = new(ssl, MemoryAllocator, transmissionBlockSize);
         }
 
-        return new ConnectionContext(transport, protocol, transmissionBlockSize, allocator)
+        return new ConnectionContext(transport, protocol, transmissionBlockSize, MemoryAllocator)
         {
             CloseTimeout = (int)RequestTimeout.TotalMilliseconds,
         };
