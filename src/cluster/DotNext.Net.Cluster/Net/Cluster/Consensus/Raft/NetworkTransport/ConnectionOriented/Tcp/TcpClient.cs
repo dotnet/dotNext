@@ -121,16 +121,15 @@ internal sealed class TcpClient : Client, ITcpTransport
         var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
 
         // connection has separated timeout
-        var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var connectDurationTracker = CombineTokens(ConnectTimeout, token);
         try
         {
-            connectDurationTracker.CancelAfter(ConnectTimeout);
             await socket.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false);
         }
         catch
         {
             socket.Dispose();
-            connectDurationTracker.Dispose();
+            await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
             throw;
         }
 
@@ -144,7 +143,7 @@ internal sealed class TcpClient : Client, ITcpTransport
         if (SslOptions is null)
         {
             protocol = new(transport, allocator, transmissionBlockSize);
-            connectDurationTracker.Dispose();
+            await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
         }
         else
         {
@@ -162,7 +161,7 @@ internal sealed class TcpClient : Client, ITcpTransport
             }
             finally
             {
-                connectDurationTracker.Dispose();
+                await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
             }
 
             protocol = new(ssl, allocator, transmissionBlockSize);

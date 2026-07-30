@@ -78,8 +78,17 @@ internal sealed class GenericClient : Client
     private protected override async ValueTask<IConnectionContext> ConnectAsync(CancellationToken token)
     {
         // connection has separated timeout
-        using var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
-        connectDurationTracker.CancelAfter(ConnectTimeout);
-        return new GenericConnectionContext(await factory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false), defaultAllocator);
+        var connectDurationTracker = CombineTokens(ConnectTimeout, token);
+        ConnectionContext transport;
+        try
+        {
+            transport = await factory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false);
+        }
+        finally
+        {
+            await connectDurationTracker.DisposeAsync().ConfigureAwait(false);
+        }
+
+        return new GenericConnectionContext(transport, defaultAllocator);
     }
 }

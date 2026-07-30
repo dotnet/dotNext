@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Connections;
 namespace DotNext.Net.Multiplexing;
 
 using Buffers;
+using Threading;
 
 /// <summary>
 /// Represents multiplexed client.
@@ -47,6 +48,11 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
+
+    private protected CancellationTokenMultiplexer.Scope CombineTokens(TimeSpan timeout, params ReadOnlySpan<CancellationToken> tokens)
+        => input.TokenMultiplexer.Combine(timeout, tokens);
+
+    private protected CancellationToken LifetimeToken => input.RootToken;
 
     private Task EnsureConnectedAsync(CancellationToken token)
         => readiness?.Task.WaitAsync(token) ?? Task.CompletedTask;

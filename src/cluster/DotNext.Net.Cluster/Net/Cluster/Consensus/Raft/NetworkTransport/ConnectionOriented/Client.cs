@@ -52,6 +52,9 @@ internal abstract partial class Client : RaftClusterMember
         multiplexer = new() { MaximumRetained = 4 };
     }
 
+    private protected CancellationTokenMultiplexer.Scope CombineTokens(TimeSpan timeout, params ReadOnlySpan<CancellationToken> tokens)
+        => multiplexer.Combine(timeout, tokens);
+
     internal TimeSpan ConnectTimeout
     {
         get => connectTimeout;
@@ -68,7 +71,7 @@ internal abstract partial class Client : RaftClusterMember
         var timeStamp = new Timestamp();
         var lockTaken = false;
 
-        var requestDurationTracker = multiplexer.Combine(RequestTimeout, token);
+        var requestDurationTracker = CombineTokens(RequestTimeout, token);
         try
         {
             await accessLock.AcquireAsync(requestDurationTracker.Token).ConfigureAwait(false);

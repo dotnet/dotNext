@@ -3,6 +3,8 @@ using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
+using Threading;
+
 /// <summary>
 /// Represents a client-side of the multiplexing protocol on top of TCP.
 /// </summary>
@@ -24,8 +26,7 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
         {
             NoDelay = true,
         };
-        var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-        timeoutSource.CancelAfter(connectTimeout);
+        var timeoutSource = CombineTokens(connectTimeout, token, LifetimeToken);
         try
         {
             await socket.ConnectAsync(address, timeoutSource.Token).ConfigureAwait(false);
@@ -34,20 +35,22 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
         {
             socket.Dispose();
 
-            if (e is OperationCanceledException canceledEx
-                && canceledEx.CancellationToken == timeoutSource.Token
-                && token.IsCancellationRequested)
+            if (e is OperationCanceledException canceledEx)
             {
-                throw new OperationCanceledException(token);
+                if (canceledEx.CausedBy(timeoutSource, token))
+                    throw new OperationCanceledException(token);
+
+                if (canceledEx.CausedByTimeout(timeoutSource))
+                    throw new TimeoutException();
+
+                ObjectDisposedException.ThrowIf(canceledEx.CausedBy(timeoutSource, LifetimeToken), this);
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
         finally
         {
-            timeoutSource.Dispose();
+            await timeoutSource.DisposeAsync().ConfigureAwait(false);
         }
 
         return socket;
