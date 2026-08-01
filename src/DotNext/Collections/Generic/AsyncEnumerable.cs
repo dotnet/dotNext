@@ -1,7 +1,11 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 
 namespace DotNext.Collections.Generic;
+
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Provides extension methods for <see cref="IAsyncEnumerable{T}"/> interface.
@@ -36,7 +40,25 @@ public static partial class AsyncEnumerable
             await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
                 await action(item, token).ConfigureAwait(false);
         }
-        
+
+        /// <summary>
+        /// Listens for items in the enumerator.
+        /// </summary>
+        /// <param name="acceptor">
+        /// The callback for the elements returned by the enumerator. If it throws,
+        /// the underlying enumerator disposes and the listener is not able to accept new items.
+        /// </param>
+        /// <param name="token">The token that can be used to cancel the listener.</param>
+        /// <returns>The object that control listener lifetime. Call to <see cref="IAsyncDisposable.DisposeAsync"/>
+        /// stops the listener from receiving items from the enumerator.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="acceptor"/> is <see langword="null"/>.</exception>
+        public IAsyncDisposable Listen(Func<T, CancellationToken, ValueTask> acceptor, CancellationToken token = default)
+        {
+            ArgumentNullException.ThrowIfNull(acceptor);
+
+            return new SequenceListener<T>(collection, acceptor, token);
+        }
+
         /// <summary>
         /// Gets an asynchronous collection that throws the specified exception.
         /// </summary>
@@ -167,4 +189,56 @@ file sealed class ThrowingEnumerator<T>(Exception exception) : IAsyncEnumerator<
     IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken cancellationToken) => this;
 
     ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
+}
+
+file sealed class SequenceListener<T> : IAsyncDisposable
+    where T : allows ref struct
+{
+    private readonly Func<T, CancellationToken, ValueTask> listener;
+    private readonly IAsyncEnumerator<T> enumerator;
+    private readonly Task listenerTask;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private CancellationTokenSource? listenerTokenSource;
+
+    public SequenceListener(IAsyncEnumerable<T> sequence, Func<T, CancellationToken, ValueTask> listener, CancellationToken token)
+    {
+        Debug.Assert(sequence is not null);
+        Debug.Assert(listener is not null);
+
+        token = (listenerTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
+        enumerator = sequence.GetAsyncEnumerator(token);
+        this.listener = listener;
+        listenerTask = ListenAsync(token);
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task ListenAsync(CancellationToken token)
+    {
+        try
+        {
+            while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+            {
+                await listener(enumerator.Current, token).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            await DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask DisposeAsync(CancellationTokenSource cts)
+    {
+        using (cts)
+        {
+            await cts.CancelAsync().ConfigureAwait(false);
+            await listenerTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            await enumerator.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    public ValueTask DisposeAsync() => listenerTokenSource is not null && Interlocked.Exchange(ref listenerTokenSource, null) is { } cts
+        ? DisposeAsync(cts)
+        : ValueTask.CompletedTask;
 }
