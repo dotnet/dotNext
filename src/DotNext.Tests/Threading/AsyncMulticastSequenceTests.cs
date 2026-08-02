@@ -21,7 +21,7 @@ public class AsyncMulticastSequenceTests : Test
         True(sequence.IsCompleted);
         False(await task);
 
-        Equal(0, await sequence.ProduceAsync(42, TestToken));
+        Equal(0, await sequence.WriteAsync(42, TestToken));
     }
 
     [Fact]
@@ -33,14 +33,14 @@ public class AsyncMulticastSequenceTests : Test
             .GetAsyncEnumerator(TestToken);
 
         var consumerTask = listener.MoveNextAsync().AsTask();
-        var producerTask = sequence.ProduceAsync(42, TestToken).AsTask();
+        var producerTask = sequence.WriteAsync(42, TestToken).AsTask();
         True(await consumerTask);
         Equal(42, listener.Current);
         Equal(1, await producerTask);
 
         await listener.DisposeAsync();
         consumerTask = listener.MoveNextAsync().AsTask();
-        await sequence.ProduceAsync(43, TestToken);
+        await sequence.WriteAsync(43, TestToken);
         False(await consumerTask);
     }
 
@@ -63,8 +63,8 @@ public class AsyncMulticastSequenceTests : Test
             return ValueTask.CompletedTask;
         }, TestToken);
 
-        Equal(2, await sequence.ProduceAsync(42, TestToken));
-        Equal(2, await sequence.ProduceAsync(43, TestToken));
+        Equal(2, await sequence.WriteAsync(42, TestToken));
+        Equal(2, await sequence.WriteAsync(43, TestToken));
 
         Equal<int>(bag1, bag2);
         Equal<int>([42, 43], bag1);
@@ -86,7 +86,7 @@ public class AsyncMulticastSequenceTests : Test
             out var completion,
             TestToken);
 
-        await sequence.ProduceAsync(42, TestToken);
+        await sequence.WriteAsync(42, TestToken);
         True(sequence.TryComplete());
         await completion.WaitAsync(TestToken);
         Equal<int>([42], bag);
@@ -96,6 +96,6 @@ public class AsyncMulticastSequenceTests : Test
     public static async Task NoListeners()
     {
         var sequence = new AsyncMulticastSequence<long>();
-        Equal(0, await sequence.ProduceAsync(42, TestToken));
+        Equal(0, await sequence.WriteAsync(42, TestToken));
     }
 }

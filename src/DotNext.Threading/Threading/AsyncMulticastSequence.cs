@@ -51,7 +51,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     /// <param name="value">The value to produce.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>A number of notified listeners.</returns>
-    public ValueTask<int> ProduceAsync(T value, CancellationToken token = default)
+    public ValueTask<int> WriteAsync(T value, CancellationToken token = default)
     {
         var copy = listeners;
         Volatile.ReadBarrier();
