@@ -70,6 +70,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
                 }
                 catch (ChannelClosedException)
                 {
+                    // only listener can close the channel, so the listener is about to be removed from the list
                     continue;
                 }
 
@@ -120,12 +121,18 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
         }
     }
 
-    private void Unregister(AsyncListener listener)
+    private async ValueTask UnregisterAsync(AsyncListener listener)
     {
-        ImmutableInterlocked.Update(ref listeners, Remove, listener);
-
-        static ImmutableArray<AsyncListener> Remove(ImmutableArray<AsyncListener> listeners, AsyncListener listener)
-            => listeners.IsDefault ? listeners : listeners.Remove(listener);
+        for (ImmutableArray<AsyncListener> current = listeners, tmp;; current = tmp, await Task.Yield())
+        {
+            tmp = ImmutableInterlocked.InterlockedCompareExchange(
+                ref listeners,
+                current.IsDefault ? current : current.Remove(listener),
+                current);
+            
+            if (current == tmp)
+                break;
+        }
     }
 
     /// <inheritdoc/>
@@ -159,14 +166,10 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
         protected ValueTask<bool> MoveNextAsync()
             => Volatile.Read(in stream) is null ? ValueTask.FromResult(false) : Reader.WaitToReadAsync(token);
 
-        protected void Complete()
-        {
-            if (stream is not null && Interlocked.Exchange(ref stream, null) is { } detachedStream)
-            {
-                detachedStream.Unregister(this);
-                Writer.TryComplete();
-            }
-        }
+        protected ValueTask CompleteAsync()
+            => stream is not null && Interlocked.Exchange(ref stream, null) is { } detachedStream && Writer.TryComplete()
+                ? detachedStream.UnregisterAsync(this)
+                : ValueTask.CompletedTask;
     }
     
     private sealed class AsyncListener<TStrategy>(AsyncMulticastSequence<T> stream, CancellationToken token) : AsyncListener(stream, token), IAsyncEnumerator<T>
@@ -177,8 +180,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             strategy = default;
-            Complete();
-            return ValueTask.CompletedTask;
+            return CompleteAsync();
         }
 
         ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync()

@@ -98,4 +98,17 @@ public class AsyncMulticastSequenceTests : Test
         var sequence = new AsyncMulticastSequence<long>();
         Equal(0, await sequence.WriteAsync(42, TestToken));
     }
+    
+    [Fact]
+    public static async Task Unsubscribe()
+    {
+        var sequence = new AsyncMulticastSequence<long>();
+        var enumerator = sequence.As<IAsyncEnumerable<long>>().GetAsyncEnumerator(TestToken);
+        
+        var producerTask = sequence.WriteAsync(42L, TestToken);
+        False(producerTask.IsCompleted);
+
+        await enumerator.DisposeAsync();
+        Equal(0, await producerTask);
+    }
 }
