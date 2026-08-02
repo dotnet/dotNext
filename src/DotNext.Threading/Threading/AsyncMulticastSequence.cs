@@ -50,17 +50,18 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     /// </remarks>
     /// <param name="value">The value to produce.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the method.</returns>
-    public ValueTask ProduceAsync(T value, CancellationToken token = default)
+    /// <returns>A number of notified listeners.</returns>
+    public ValueTask<int> ProduceAsync(T value, CancellationToken token = default)
     {
         var copy = listeners;
         Volatile.ReadBarrier();
         return copy.IsDefaultOrEmpty
-            ? ValueTask.CompletedTask
+            ? ValueTask.FromResult(0)
             : BroadcastAsync(ImmutableCollectionsMarshal.AsArray(copy)!, value, token);
 
-        static async ValueTask BroadcastAsync(AsyncListener[] listeners, T value, CancellationToken token)
+        static async ValueTask<int> BroadcastAsync(AsyncListener[] listeners, T value, CancellationToken token)
         {
+            var count = 0;
             foreach (var listener in listeners)
             {
                 try
@@ -69,9 +70,13 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
                 }
                 catch (ChannelClosedException)
                 {
-                    // ignore exception
+                    continue;
                 }
+
+                count++;
             }
+
+            return count;
         }
     }
 
@@ -126,8 +131,8 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     /// <inheritdoc/>
     IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
         => NotifyListenersSequentially
-            ? Subscribe(new AsyncListener<SynchronousStrategy>(this, token))
-            : Subscribe(new AsyncListener<AsynchronousStrategy>(this, token));
+            ? Subscribe(new AsyncListener<SequentialStrategy>(this, token))
+            : Subscribe(new AsyncListener<ParallelStrategy>(this, token));
 
     private IAsyncEnumerator<T> Subscribe<TListener>(TListener listener)
         where TListener : AsyncListener, IAsyncEnumerator<T>
@@ -193,7 +198,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct SynchronousStrategy : IConsumerStrategy
+    private struct SequentialStrategy : IConsumerStrategy
     {
         private bool hasValue;
         private T? current;
@@ -220,7 +225,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct AsynchronousStrategy : IConsumerStrategy
+    private struct ParallelStrategy : IConsumerStrategy
     {
         private bool hasValue;
         private T? current;

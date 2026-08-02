@@ -20,6 +20,8 @@ public class AsyncMulticastSequenceTests : Test
         True(sequence.TryComplete());
         True(sequence.IsCompleted);
         False(await task);
+
+        Equal(0, await sequence.ProduceAsync(42, TestToken));
     }
 
     [Fact]
@@ -34,7 +36,7 @@ public class AsyncMulticastSequenceTests : Test
         var producerTask = sequence.ProduceAsync(42, TestToken).AsTask();
         True(await consumerTask);
         Equal(42, listener.Current);
-        await producerTask;
+        Equal(1, await producerTask);
 
         await listener.DisposeAsync();
         consumerTask = listener.MoveNextAsync().AsTask();
@@ -61,8 +63,8 @@ public class AsyncMulticastSequenceTests : Test
             return ValueTask.CompletedTask;
         }, TestToken);
 
-        await sequence.ProduceAsync(42, TestToken);
-        await sequence.ProduceAsync(43, TestToken);
+        Equal(2, await sequence.ProduceAsync(42, TestToken));
+        Equal(2, await sequence.ProduceAsync(43, TestToken));
 
         Equal<int>(bag1, bag2);
         Equal<int>([42, 43], bag1);
@@ -88,5 +90,12 @@ public class AsyncMulticastSequenceTests : Test
         True(sequence.TryComplete());
         await completion.WaitAsync(TestToken);
         Equal<int>([42], bag);
+    }
+
+    [Fact]
+    public static async Task NoListeners()
+    {
+        var sequence = new AsyncMulticastSequence<long>();
+        Equal(0, await sequence.ProduceAsync(42, TestToken));
     }
 }
