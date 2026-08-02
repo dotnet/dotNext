@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace DotNext.Threading;
 
 using Collections.Generic;
