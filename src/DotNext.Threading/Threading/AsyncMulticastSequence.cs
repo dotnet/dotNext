@@ -85,13 +85,10 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     /// </returns>
     public bool TryComplete(Exception? e = null)
     {
-        var copy = default(ImmutableArray<AsyncListener>);
-        var reference = new LocalReference<ImmutableArray<AsyncListener>>(ref copy);
-
-        var result = ImmutableInterlocked.Update(ref listeners, Erase, reference) && !copy.IsDefault;
+        var result = UnregisterAll(out var detachedListeners);
         if (result)
         {
-            Complete(copy.AsSpan(), e);
+            Complete(detachedListeners.AsSpan(), e);
         }
 
         return result;
@@ -103,7 +100,14 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
                 listener.Writer.TryComplete(e);
             }
         }
+    }
 
+    private bool UnregisterAll(out ImmutableArray<AsyncListener> detachedListeners)
+    {
+        detachedListeners = default;
+        var reference = new LocalReference<ImmutableArray<AsyncListener>>(ref detachedListeners);
+        return ImmutableInterlocked.Update(ref listeners, Erase, reference);
+        
         static ImmutableArray<AsyncListener> Erase(ImmutableArray<AsyncListener> listeners, LocalReference<ImmutableArray<AsyncListener>> output)
         {
             output.Value = listeners;
