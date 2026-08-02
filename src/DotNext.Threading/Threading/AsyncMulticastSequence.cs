@@ -40,7 +40,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
     /// signal the producer about consumption, and the producer can emit a new value without waiting
     /// for the next call to <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.
     /// </value>
-    public bool IsSequential { get; init; }
+    public bool NotifyListenersSequentially { get; init; }
 
     /// <summary>
     /// Sends the value to all attached listeners.
@@ -121,7 +121,7 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
 
     /// <inheritdoc/>
     IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
-        => IsSequential
+        => NotifyListenersSequentially
             ? Subscribe(new AsyncListener<SynchronousStrategy>(this, token))
             : Subscribe(new AsyncListener<AsynchronousStrategy>(this, token));
 

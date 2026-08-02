@@ -47,7 +47,7 @@ public class AsyncMulticastSequenceTests : Test
     {
         var bag1 = new List<int>();
         var bag2 = new List<int>();
-        var sequence = new AsyncMulticastSequence<int> { IsSequential = true };
+        var sequence = new AsyncMulticastSequence<int> { NotifyListenersSequentially = true };
         
         await using var listener1 = sequence.ForEach((item, _) =>
         {
@@ -73,7 +73,7 @@ public class AsyncMulticastSequenceTests : Test
     [InlineData(false)]
     public static async Task ProduceAndComplete(bool isSequential)
     {
-        var sequence = new AsyncMulticastSequence<int>() { IsSequential = isSequential };
+        var sequence = new AsyncMulticastSequence<int>() { NotifyListenersSequentially = isSequential };
         var bag = new List<int>();
 
         await using var listener1 = sequence.ForEach((item, _) =>
