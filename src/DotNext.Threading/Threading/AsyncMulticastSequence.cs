@@ -11,7 +11,7 @@ namespace DotNext.Threading;
 /// The subscription can be created by calling <see cref="IAsyncEnumerable{T}.GetAsyncEnumerator(CancellationToken)"/> method.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-/// <seealso cref="Collections.Generic.AsyncEnumerable.Listen"/>
+/// <seealso cref="Collections.Generic.AsyncEnumerable.ForEach{T}(IAsyncEnumerable{T},Func{T,CancellationToken,ValueTask},CancellationToken)"/>
 public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
 {
     private ImmutableArray<AsyncListener> listeners = ImmutableArray<AsyncListener>.Empty;

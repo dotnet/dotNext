@@ -42,22 +42,20 @@ public class AsyncMulticastSequenceTests : Test
         False(await consumerTask);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public static async Task ListenAsync(bool isSequential)
+    [Fact]
+    public static async Task ListenAsync()
     {
         var bag1 = new List<int>();
         var bag2 = new List<int>();
-        var sequence = new AsyncMulticastSequence<int> { IsSequential = isSequential };
+        var sequence = new AsyncMulticastSequence<int> { IsSequential = true };
         
-        await using var listener1 = sequence.Listen((item, _) =>
+        await using var listener1 = sequence.ForEach((item, _) =>
         {
             bag1.Add(item);
             return ValueTask.CompletedTask;
         }, TestToken);
         
-        await using var listener2 = sequence.Listen((item, _) =>
+        await using var listener2 = sequence.ForEach((item, _) =>
         {
             bag2.Add(item);
             return ValueTask.CompletedTask;
@@ -68,5 +66,27 @@ public class AsyncMulticastSequenceTests : Test
 
         Equal<int>(bag1, bag2);
         Equal<int>([42, 43], bag1);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public static async Task ProduceAndComplete(bool isSequential)
+    {
+        var sequence = new AsyncMulticastSequence<int>() { IsSequential = isSequential };
+        var bag = new List<int>();
+
+        await using var listener1 = sequence.ForEach((item, _) =>
+            {
+                bag.Add(item);
+                return ValueTask.CompletedTask;
+            },
+            out var completion,
+            TestToken);
+
+        await sequence.ProduceAsync(42, TestToken);
+        True(sequence.TryComplete());
+        await completion.WaitAsync(TestToken);
+        Equal<int>([42], bag);
     }
 }

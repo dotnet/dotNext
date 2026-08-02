@@ -42,7 +42,7 @@ public static partial class AsyncEnumerable
         }
 
         /// <summary>
-        /// Listens for items in the enumerator.
+        /// Starts background task that listens for the items returned by the enumerator.
         /// </summary>
         /// <param name="acceptor">
         /// The callback for the elements returned by the enumerator. If it throws,
@@ -52,11 +52,33 @@ public static partial class AsyncEnumerable
         /// <returns>The object that control listener lifetime. Call to <see cref="IAsyncDisposable.DisposeAsync"/>
         /// stops the listener from receiving items from the enumerator.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="acceptor"/> is <see langword="null"/>.</exception>
-        public IAsyncDisposable Listen(Func<T, CancellationToken, ValueTask> acceptor, CancellationToken token = default)
+        public IAsyncDisposable ForEach(Func<T, CancellationToken, ValueTask> acceptor, CancellationToken token = default)
         {
             ArgumentNullException.ThrowIfNull(acceptor);
 
             return new SequenceListener<T>(collection, acceptor, token);
+        }
+
+        /// <summary>
+        /// Starts background task that listens for the items returned by the enumerator.
+        /// </summary>
+        /// <param name="acceptor">
+        /// The callback for the elements returned by the enumerator. If it throws,
+        /// the underlying enumerator disposes and the listener is not able to accept new items.
+        /// </param>
+        /// <param name="token">The token that can be used to cancel the listener.</param>
+        /// <param name="completion">A task that turns into completed state when the underlying enumerator
+        /// has no more elements; or when <see cref="IAsyncDisposable.DisposeAsync()"/> is called on the returned object.</param>
+        /// <returns>The object that control listener lifetime. Call to <see cref="IAsyncDisposable.DisposeAsync"/>
+        /// stops the listener from receiving items from the enumerator.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="acceptor"/> is <see langword="null"/>.</exception>
+        public IAsyncDisposable ForEach(Func<T, CancellationToken, ValueTask> acceptor, out Task completion, CancellationToken token = default)
+        {
+            ArgumentNullException.ThrowIfNull(acceptor);
+
+            var listener = new SequenceListener<T>(collection, acceptor, token);
+            completion = listener.Completion;
+            return listener;
         }
 
         /// <summary>
@@ -196,7 +218,6 @@ file sealed class SequenceListener<T> : IAsyncDisposable
 {
     private readonly Func<T, CancellationToken, ValueTask> listener;
     private readonly IAsyncEnumerator<T> enumerator;
-    private readonly Task listenerTask;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private CancellationTokenSource? listenerTokenSource;
@@ -209,8 +230,10 @@ file sealed class SequenceListener<T> : IAsyncDisposable
         token = (listenerTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
         enumerator = sequence.GetAsyncEnumerator(token);
         this.listener = listener;
-        listenerTask = ListenAsync(token);
+        Completion = ListenAsync(token);
     }
+
+    public Task Completion { get; }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ListenAsync(CancellationToken token)
@@ -233,7 +256,7 @@ file sealed class SequenceListener<T> : IAsyncDisposable
         using (cts)
         {
             await cts.CancelAsync().ConfigureAwait(false);
-            await listenerTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            await Completion.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
             await enumerator.DisposeAsync().ConfigureAwait(false);
         }
     }
