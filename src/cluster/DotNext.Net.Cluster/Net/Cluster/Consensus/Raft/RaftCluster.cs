@@ -33,9 +33,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly CancellationTokenMultiplexer cancellationTokens;
     private readonly int replicationLag;
 
-    private volatile RaftState<TMember> state;
-    private volatile TaskCompletionSource<TMember> electionEvent;
-    private volatile TaskCompletionSource<LeaderState<TMember>> leadershipEvent;
+    private RaftState<TMember> state;
+    private TaskCompletionSource<TMember> electionEvent;
+    private TaskCompletionSource<LeaderState<TMember>> leadershipEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
@@ -144,7 +144,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IRaftCluster.TryGetLeaseToken(out CancellationToken)"/>
     public bool TryGetLeaseToken(out CancellationToken token)
     {
-        if (state is LeaderState<TMember> leader)
+        if (Volatile.Read(in state) is LeaderState<TMember> leader)
             return leader.TryGetLeaseToken(out token);
 
         token = new(canceled: true);
@@ -152,7 +152,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => state switch
+    public CancellationToken LeadershipToken => Volatile.Read(in state) switch
     {
         LeaderState<TMember> leaderState when AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier => leaderState.Token,
         ZombieState zombieState => throw zombieState.CreateException(),
@@ -160,7 +160,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     };
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
-    public CancellationToken ConsensusToken => state switch
+    public CancellationToken ConsensusToken => Volatile.Read(in state) switch
     {
         ConsensusState<TMember> consensusState => consensusState.Token,
         ZombieState zombieState => throw zombieState.CreateException(),
@@ -168,7 +168,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private LeaderState<TMember> LeaderStateOrException => state as LeaderState<TMember> ?? throw new NotLeaderException();
+    private LeaderState<TMember> LeaderStateOrException
+        => Volatile.Read(in state) as LeaderState<TMember> ?? throw new NotLeaderException();
 
     /// <summary>
     /// Associates audit trail with the current instance.
@@ -235,7 +236,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     public TMember? Leader
     {
-        get => electionEvent.Task is { IsCompletedSuccessfully: true } task ? task.Result : null;
+        get => Volatile.Read(in electionEvent).Task is { IsCompletedSuccessfully: true } task ? task.Result : null;
         private set
         {
             var electionEventCopy = electionEvent;
@@ -278,7 +279,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IRaftCluster.WaitForLeadershipAsync(CancellationToken)"/>
     public async Task<CancellationToken> WaitForLeadershipAsync(CancellationToken token = default)
     {
-        var leaderState = await leadershipEvent.Task.WaitAsync(token).ConfigureAwait(false);
+        var leaderState = await Volatile.Read(in leadershipEvent).Task.WaitAsync(token).ConfigureAwait(false);
 
         // The write barrier is passed, it's safe to inform the API clients about a new leader.
         // If we inform the client before the barrier, we could have duplicate writes, which is not acceptable:
@@ -382,7 +383,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     protected void StartFollowing()
     {
-        switch (state)
+        switch (Volatile.Read(in state))
         {
             case FollowerState<TMember> followerState:
                 followerState.StartServing(ElectionTimeout);
@@ -398,7 +399,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        if (members.LocalMember is not null && state is StandbyState<TMember> { Resumable: true } standbyState)
+        if (members.LocalMember is not null && Volatile.Read(in state) is StandbyState<TMember> { Resumable: true } standbyState)
         {
             var tokenSource = CombineTokens(token, LifecycleToken);
             var lockTaken = false;
@@ -441,7 +442,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         RaftState<TMember> currentState;
-        if ((currentState = state) is not StandbyState<TMember> and not ZombieState)
+        if ((currentState = Volatile.Read(in state)) is not StandbyState<TMember> and not ZombieState)
         {
             var tokenSource = CombineTokens(token, LifecycleToken);
             var lockTaken = false;
@@ -474,7 +475,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IStandbyModeSupport.Standby"/>
-    public bool Standby => state is StandbyState<TMember>;
+    public bool Standby => Volatile.Read(in state) is StandbyState<TMember>;
 
     private async Task CancelPendingRequestsAsync()
     {
@@ -496,6 +497,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private ValueTask UpdateStateAsync(RaftState<TMember> newState)
     {
+        Debug.Assert(transitionLock.IsLockHeld);
+        
         if (leadershipEvent is { Task.IsCompletedSuccessfully: true } leadershipEventCopy)
         {
             Interlocked.CompareExchange(ref leadershipEvent, new(TaskCreationOptions.RunContinuationsAsynchronously), leadershipEventCopy);
@@ -552,6 +555,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private async ValueTask StepDownAsync(bool consensusReached)
     {
+        Debug.Assert(transitionLock.IsLockHeld);
+        
         Logger.DowngradingToFollowerState(AuditTrail.Term);
         switch (state)
         {
@@ -729,11 +734,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             result = new() { Term = AuditTrail.Term };
 
             // provide leader stickiness
-            if (aggressiveStickiness && state is LeaderState<TMember>)
+            if (aggressiveStickiness && Volatile.Read(in state) is LeaderState<TMember>)
             {
                 result = result with { Value = PreVoteResult.RejectedByLeader };
             }
-            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && result.Term <= nextTerm &&
+            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(in lastUpdated).Elapsed >= ElectionTimeout && result.Term <= nextTerm &&
                      await AuditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
             {
                 result = result with { Value = PreVoteResult.Accepted };
@@ -813,7 +818,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         var result = new Result<bool> { Term = AuditTrail.Term };
 
         // provide leader stickiness
-        if (result.Term > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
+        if (result.Term > senderTerm || Timestamp.VolatileRead(in lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
         var tokenSource = CombineTokens(token, LifecycleToken);
@@ -872,7 +877,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
     protected async ValueTask<bool> ResignAsync(CancellationToken token)
     {
-        if (state is LeaderState<TMember> leaderState)
+        if (Volatile.Read(in state) is LeaderState<TMember> leaderState)
         {
             var tokenSource = CombineTokens(token, LifecycleToken);
             var lockTaken = false;
@@ -918,7 +923,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         long? result = null;
 
         // do not execute the next round of heartbeats if the sender is already in sync with the leader
-        if (state is LeaderState<TMember> leaderState)
+        if (Volatile.Read(in state) is LeaderState<TMember> leaderState)
         {
             var lastCommittedEntryIndex = AuditTrail.LastCommittedEntryIndex;
             if (commitIndex < lastCommittedEntryIndex)
@@ -951,7 +956,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         for (long commitIndex; ; token.ThrowIfCancellationRequested())
         {
-            if (state is LeaderState<TMember> leaderState)
+            if (Volatile.Read(in state) is LeaderState<TMember> leaderState)
             {
                 switch (barrierType)
                 {
@@ -1036,6 +1041,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private ValueTask MoveToZombieState(Exception innerException)
     {
+        Debug.Assert(transitionLock.IsLockHeld);
+        
         var newState = new ZombieState(this, innerException);
         Leader = null;
         
@@ -1200,7 +1207,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
 
         Task<bool> IsReadyForTransitionAsync(long currentTerm)
-            => state is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
+            => Volatile.Read(in state) is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
                 ? PreVoteAsync(currentTerm)
                 : Task.FromResult(false);
     }
@@ -1301,7 +1308,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <exception cref="NotLeaderException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask ForceReplicationAsync(CancellationToken token = default)
-        => (state as LeaderState<TMember>)?.ForceReplicationAsync(token) ?? ValueTask.FromException(new NotLeaderException());
+        => (Volatile.Read(in state) as LeaderState<TMember>)?.ForceReplicationAsync(token) ?? ValueTask.FromException(new NotLeaderException());
 
     /// <summary>
     /// Appends a new log entry and ensures that it is replicated and committed.
