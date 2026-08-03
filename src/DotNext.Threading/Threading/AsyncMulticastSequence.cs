@@ -123,13 +123,13 @@ public sealed class AsyncMulticastSequence<T> : IAsyncEnumerable<T>
 
     private async ValueTask UnregisterAsync(AsyncListener listener)
     {
-        for (ImmutableArray<AsyncListener> current = listeners, tmp;; current = tmp, await Task.Yield())
+        for (ImmutableArray<AsyncListener> current = listeners, tmp; !current.IsDefault; current = tmp, await Task.Yield())
         {
             tmp = ImmutableInterlocked.InterlockedCompareExchange(
                 ref listeners,
-                current.IsDefault ? current : current.Remove(listener),
+                current.Remove(listener),
                 current);
-            
+
             if (current == tmp)
                 break;
         }
