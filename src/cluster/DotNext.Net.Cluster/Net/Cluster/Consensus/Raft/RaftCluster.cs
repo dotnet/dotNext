@@ -80,7 +80,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         state = new UnstartedState(this);
         EndPointComparer = config.EndPointComparer;
         this.measurementTags = measurementTags;
-        cancellationTokens = new();
+        cancellationTokens = new() { MaximumRetained = Environment.ProcessorCount * 2 };
     }
 
     /// <summary>
