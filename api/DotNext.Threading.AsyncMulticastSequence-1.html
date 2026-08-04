@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class BoundedObjectPool&lt;T&gt; | .NEXT </title>
+    <title>Class AsyncMulticastSequence&lt;T&gt; | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class BoundedObjectPool&lt;T&gt; | .NEXT ">
+    <meta name="title" content="Class AsyncMulticastSequence&lt;T&gt; | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,18 +65,22 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncMulticastSequence`1">
 
 
 
-  <h1 id="DotNext_Collections_Concurrent_BoundedObjectPool_1" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1" class="text-break">Class BoundedObjectPool&lt;T&gt;</h1>
-  <div class="markdown level0 summary"><p>Represents object pool of the fixed size.</p>
+  <h1 id="DotNext_Threading_AsyncMulticastSequence_1" data-uid="DotNext.Threading.AsyncMulticastSequence`1" class="text-break">Class AsyncMulticastSequence&lt;T&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents asynchronous broadcast channel for single producer and multiple consumer scenario.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">BoundedObjectPool&lt;T&gt;</span></div>
+    <div class="level1"><span class="xref">AsyncMulticastSequence&lt;T&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;T&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -99,11 +103,11 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Concurrent.html">Concurrent</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_syntax">Syntax</h5>
+  <h5 id="DotNext_Threading_AsyncMulticastSequence_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class BoundedObjectPool&lt;T&gt; where T : class</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class AsyncMulticastSequence&lt;T&gt; : IAsyncEnumerable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -116,102 +120,42 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the objects in the pool.</p>
+        <td><p>The type of the elements in the sequence.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_AsyncMulticastSequence_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The subscription can be created by calling <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1.getasyncenumerator">GetAsyncEnumerator(CancellationToken)</a> method.</p>
+</div>
   <h3 id="constructors">Constructors
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs">View Source</a>
   </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1__ctor_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.#ctor*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1__ctor_System_Int32_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.#ctor(System.Int32)">BoundedObjectPool(int)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new object pool.</p>
-</div>
+  <a id="DotNext_Threading_AsyncMulticastSequence_1__ctor_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.#ctor*"></a>
+  <h4 id="DotNext_Threading_AsyncMulticastSequence_1__ctor" data-uid="DotNext.Threading.AsyncMulticastSequence`1.#ctor">AsyncMulticastSequence()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BoundedObjectPool(int desiredCapacity)</code></pre>
+    <pre><code class="lang-csharp hljs">public AsyncMulticastSequence()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">desiredCapacity</span></td>
-        <td><p>The desired number of the objects that can be retained by the pool. The value is rounded to the power of 2 by the pool.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">desiredCapacity</code> is negative, zero, or greater than <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.array.maxlength">MaxLength</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs">View Source</a>
   </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Capacity_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Capacity*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Capacity" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Capacity">Capacity</h4>
-  <div class="markdown level1 summary"><p>Gets the capacity of the pool.</p>
+  <a id="DotNext_Threading_AsyncMulticastSequence_1_IsCompleted_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.IsCompleted*"></a>
+  <h4 id="DotNext_Threading_AsyncMulticastSequence_1_IsCompleted" data-uid="DotNext.Threading.AsyncMulticastSequence`1.IsCompleted">IsCompleted</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that this sequence is completed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Capacity { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_IsFrozen_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.IsFrozen*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_IsFrozen" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.IsFrozen">IsFrozen</h4>
-  <div class="markdown level1 summary"><p>Gets a value indicating that the pool is frozen and the object cannot be returned back to the pool.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsFrozen { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public bool IsCompleted { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -225,6 +169,40 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncMulticastSequence_1_NotifyListenersSequentially_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially*"></a>
+  <h4 id="DotNext_Threading_AsyncMulticastSequence_1_NotifyListenersSequentially" data-uid="DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially">NotifyListenersSequentially</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating how the consumer gets notified about a new value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool NotifyListenersSequentially { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> means that call to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1.current">Current</a> property doesn't
+signal the producer about consumption. The confirmation is produced by the next call to
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1.movenextasync">MoveNextAsync()</a> method;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> means that call to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1.current">Current</a> property
+signal the producer about consumption, and the producer can emit a new value without waiting
+for the next call to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1.movenextasync">MoveNextAsync()</a> method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -232,17 +210,35 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs">View Source</a>
   </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Freeze*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.Freeze">Freeze()</h4>
-  <div class="markdown level1 summary"><p>Freezes the pool in a way when the object cannot be returned back to the pool.</p>
+  <a id="DotNext_Threading_AsyncMulticastSequence_1_TryComplete_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.TryComplete*"></a>
+  <h4 id="DotNext_Threading_AsyncMulticastSequence_1_TryComplete_System_Exception_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.TryComplete(System.Exception)">TryComplete(Exception?)</h4>
+  <div class="markdown level1 summary"><p>Tries to complete the sequence and notify all listeners.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Freeze()</code></pre>
+    <pre><code class="lang-csharp hljs">public bool TryComplete(Exception? e = null)</code></pre>
   </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><span class="parametername">e</span></td>
+        <td><p>The exception to broadcast to all listeners.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -254,56 +250,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this method is called for the first time;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the pool is already frozen.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_Freeze_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Any subsequent call to the <a class="xref" href="DotNext.Collections.Concurrent.BoundedObjectPool-1.html#DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn__0_">TryReturn(T)</a> method returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</div>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryGet_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryGet*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryGet" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryGet">TryGet()</h4>
-  <div class="markdown level1 summary"><p>Tries to rent the object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T? TryGet()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The object instance; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if there are no available objects in the pool.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this sequence is completed successfully;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if this sequence is already completed.</p>
 </td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs">View Source</a>
   </span>
-  <a id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryReturn*"></a>
-  <h4 id="DotNext_Collections_Concurrent_BoundedObjectPool_1_TryReturn__0_" data-uid="DotNext.Collections.Concurrent.BoundedObjectPool`1.TryReturn(`0)">TryReturn(T)</h4>
-  <div class="markdown level1 summary"><p>Returns the object to this pool.</p>
+  <a id="DotNext_Threading_AsyncMulticastSequence_1_WriteAsync_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.WriteAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncMulticastSequence_1_WriteAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncMulticastSequence`1.WriteAsync(`0,System.Threading.CancellationToken)">WriteAsync(T, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Sends the value to all attached listeners.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryReturn(T item)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; WriteAsync(T value, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -317,8 +281,14 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">item</span></td>
-        <td><p>The object that becomes available for the rent.</p>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to produce.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
 </td>
       </tr>
     </tbody>
@@ -333,13 +303,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the object is returned to the pool;
-otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if there is no free space in the pool.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
+        <td><p>A number of notified listeners.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_AsyncMulticastSequence_1_WriteAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method ensures that all consumers process the supplied value.</p>
+</div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable&lt;T&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
@@ -350,6 +326,10 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEach__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">ForEach</a>&lt;T&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>)</div>
+  </div>
 
 </article>
           </div>
@@ -359,7 +339,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Collections/Concurrent/BoundedObjectPool.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/91f16bf0a10c3e4df3b36815fbf52e93f1296ed2/src/DotNext.Threading/Threading/AsyncMulticastSequence.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

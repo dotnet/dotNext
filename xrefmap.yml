@@ -6380,6 +6380,12 @@ references:
   fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.FirstOrNullAsync(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T), System.Threading.CancellationToken)
   nameWithType: AsyncEnumerable.FirstOrNullAsync<T>(IAsyncEnumerable<T>, CancellationToken)
   nameWithType.vb: AsyncEnumerable.FirstOrNullAsync(Of T)(IAsyncEnumerable(Of T), CancellationToken)
+- uid: DotNext.Collections.Generic.AsyncEnumerable.ForEach*
+  name: ForEach
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEach_
+  commentId: Overload:DotNext.Collections.Generic.AsyncEnumerable.ForEach
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.ForEach
+  nameWithType: AsyncEnumerable.ForEach
 - uid: DotNext.Collections.Generic.AsyncEnumerable.ForEachAsync*
   name: ForEachAsync
   href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEachAsync_
@@ -6404,6 +6410,24 @@ references:
   fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.ForEachAsync(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T), System.Func(Of T, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask), System.Threading.CancellationToken)
   nameWithType: AsyncEnumerable.ForEachAsync<T>(IAsyncEnumerable<T>, Func<T, CancellationToken, ValueTask>, CancellationToken)
   nameWithType.vb: AsyncEnumerable.ForEachAsync(Of T)(IAsyncEnumerable(Of T), Func(Of T, CancellationToken, ValueTask), CancellationToken)
+- uid: DotNext.Collections.Generic.AsyncEnumerable.ForEach``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Threading.CancellationToken)
+  name: ForEach<T>(IAsyncEnumerable<T>, Func<T, CancellationToken, ValueTask>, CancellationToken)
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEach__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_
+  commentId: M:DotNext.Collections.Generic.AsyncEnumerable.ForEach``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Threading.CancellationToken)
+  name.vb: ForEach(Of T)(IAsyncEnumerable(Of T), Func(Of T, CancellationToken, ValueTask), CancellationToken)
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.ForEach<T>(System.Collections.Generic.IAsyncEnumerable<T>, System.Func<T, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.ForEach(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T), System.Func(Of T, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask), System.Threading.CancellationToken)
+  nameWithType: AsyncEnumerable.ForEach<T>(IAsyncEnumerable<T>, Func<T, CancellationToken, ValueTask>, CancellationToken)
+  nameWithType.vb: AsyncEnumerable.ForEach(Of T)(IAsyncEnumerable(Of T), Func(Of T, CancellationToken, ValueTask), CancellationToken)
+- uid: DotNext.Collections.Generic.AsyncEnumerable.ForEach``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Threading.Tasks.Task@,System.Threading.CancellationToken)
+  name: ForEach<T>(IAsyncEnumerable<T>, Func<T, CancellationToken, ValueTask>, out Task, CancellationToken)
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEach__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_Tasks_Task__System_Threading_CancellationToken_
+  commentId: M:DotNext.Collections.Generic.AsyncEnumerable.ForEach``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Threading.Tasks.Task@,System.Threading.CancellationToken)
+  name.vb: ForEach(Of T)(IAsyncEnumerable(Of T), Func(Of T, CancellationToken, ValueTask), Task, CancellationToken)
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.ForEach<T>(System.Collections.Generic.IAsyncEnumerable<T>, System.Func<T, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask>, out System.Threading.Tasks.Task, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.ForEach(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T), System.Func(Of T, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask), System.Threading.Tasks.Task, System.Threading.CancellationToken)
+  nameWithType: AsyncEnumerable.ForEach<T>(IAsyncEnumerable<T>, Func<T, CancellationToken, ValueTask>, out Task, CancellationToken)
+  nameWithType.vb: AsyncEnumerable.ForEach(Of T)(IAsyncEnumerable(Of T), Func(Of T, CancellationToken, ValueTask), Task, CancellationToken)
 - uid: DotNext.Collections.Generic.AsyncEnumerable.LastOrNoneAsync*
   name: LastOrNoneAsync
   href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_LastOrNoneAsync_
@@ -50481,6 +50505,98 @@ references:
   commentId: Overload:DotNext.Threading.AsyncManualResetEvent.WaitAsync
   fullName: DotNext.Threading.AsyncManualResetEvent.WaitAsync
   nameWithType: AsyncManualResetEvent.WaitAsync
+- uid: DotNext.Threading.AsyncMulticastSequence`1
+  name: AsyncMulticastSequence<T>
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html
+  commentId: T:DotNext.Threading.AsyncMulticastSequence`1
+  name.vb: AsyncMulticastSequence(Of T)
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T)
+  nameWithType: AsyncMulticastSequence<T>
+  nameWithType.vb: AsyncMulticastSequence(Of T)
+- uid: DotNext.Threading.AsyncMulticastSequence`1.#ctor
+  name: AsyncMulticastSequence()
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1__ctor
+  commentId: M:DotNext.Threading.AsyncMulticastSequence`1.#ctor
+  name.vb: New()
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.AsyncMulticastSequence()
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).New()
+  nameWithType: AsyncMulticastSequence<T>.AsyncMulticastSequence()
+  nameWithType.vb: AsyncMulticastSequence(Of T).New()
+- uid: DotNext.Threading.AsyncMulticastSequence`1.#ctor*
+  name: AsyncMulticastSequence
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1__ctor_
+  commentId: Overload:DotNext.Threading.AsyncMulticastSequence`1.#ctor
+  name.vb: New
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.AsyncMulticastSequence
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).New
+  nameWithType: AsyncMulticastSequence<T>.AsyncMulticastSequence
+  nameWithType.vb: AsyncMulticastSequence(Of T).New
+- uid: DotNext.Threading.AsyncMulticastSequence`1.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_IsCompleted
+  commentId: P:DotNext.Threading.AsyncMulticastSequence`1.IsCompleted
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.IsCompleted
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).IsCompleted
+  nameWithType: AsyncMulticastSequence<T>.IsCompleted
+  nameWithType.vb: AsyncMulticastSequence(Of T).IsCompleted
+- uid: DotNext.Threading.AsyncMulticastSequence`1.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_IsCompleted_
+  commentId: Overload:DotNext.Threading.AsyncMulticastSequence`1.IsCompleted
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.IsCompleted
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).IsCompleted
+  nameWithType: AsyncMulticastSequence<T>.IsCompleted
+  nameWithType.vb: AsyncMulticastSequence(Of T).IsCompleted
+- uid: DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially
+  name: NotifyListenersSequentially
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_NotifyListenersSequentially
+  commentId: P:DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.NotifyListenersSequentially
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).NotifyListenersSequentially
+  nameWithType: AsyncMulticastSequence<T>.NotifyListenersSequentially
+  nameWithType.vb: AsyncMulticastSequence(Of T).NotifyListenersSequentially
+- uid: DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially*
+  name: NotifyListenersSequentially
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_NotifyListenersSequentially_
+  commentId: Overload:DotNext.Threading.AsyncMulticastSequence`1.NotifyListenersSequentially
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.NotifyListenersSequentially
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).NotifyListenersSequentially
+  nameWithType: AsyncMulticastSequence<T>.NotifyListenersSequentially
+  nameWithType.vb: AsyncMulticastSequence(Of T).NotifyListenersSequentially
+- uid: DotNext.Threading.AsyncMulticastSequence`1.TryComplete(System.Exception)
+  name: TryComplete(Exception?)
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_TryComplete_System_Exception_
+  commentId: M:DotNext.Threading.AsyncMulticastSequence`1.TryComplete(System.Exception)
+  name.vb: TryComplete(Exception)
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.TryComplete(System.Exception?)
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).TryComplete(System.Exception)
+  nameWithType: AsyncMulticastSequence<T>.TryComplete(Exception?)
+  nameWithType.vb: AsyncMulticastSequence(Of T).TryComplete(Exception)
+- uid: DotNext.Threading.AsyncMulticastSequence`1.TryComplete*
+  name: TryComplete
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_TryComplete_
+  commentId: Overload:DotNext.Threading.AsyncMulticastSequence`1.TryComplete
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.TryComplete
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).TryComplete
+  nameWithType: AsyncMulticastSequence<T>.TryComplete
+  nameWithType.vb: AsyncMulticastSequence(Of T).TryComplete
+- uid: DotNext.Threading.AsyncMulticastSequence`1.WriteAsync(`0,System.Threading.CancellationToken)
+  name: WriteAsync(T, CancellationToken)
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_WriteAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncMulticastSequence`1.WriteAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.WriteAsync(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).WriteAsync(T, System.Threading.CancellationToken)
+  nameWithType: AsyncMulticastSequence<T>.WriteAsync(T, CancellationToken)
+  nameWithType.vb: AsyncMulticastSequence(Of T).WriteAsync(T, CancellationToken)
+- uid: DotNext.Threading.AsyncMulticastSequence`1.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.Threading.AsyncMulticastSequence-1.html#DotNext_Threading_AsyncMulticastSequence_1_WriteAsync_
+  commentId: Overload:DotNext.Threading.AsyncMulticastSequence`1.WriteAsync
+  fullName: DotNext.Threading.AsyncMulticastSequence<T>.WriteAsync
+  fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).WriteAsync
+  nameWithType: AsyncMulticastSequence<T>.WriteAsync
+  nameWithType.vb: AsyncMulticastSequence(Of T).WriteAsync
 - uid: DotNext.Threading.AsyncReaderWriterLock
   name: AsyncReaderWriterLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html
