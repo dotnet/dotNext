@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -333,6 +334,8 @@ public partial class RaftCluster<TMember>
 
     private async ValueTask ProcessMembershipChangesAsync(IReadOnlySet<TMember> added, IReadOnlySet<TMember> removed)
     {
+        Debug.Assert(transitionLock.IsLockHeld);
+        
         var membersCopy = members;
         try
         {

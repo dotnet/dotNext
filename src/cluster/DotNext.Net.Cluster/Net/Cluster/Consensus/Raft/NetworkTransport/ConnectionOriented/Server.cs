@@ -34,7 +34,7 @@ internal abstract partial class Server : Disposable, IServer
 
     public EndPoint Address { get; }
 
-    private protected abstract MemoryAllocator<byte> BufferAllocator { get; }
+    public required MemoryAllocator<byte> MemoryAllocator { get; init; }
 
     public abstract ValueTask StartAsync(CancellationToken token);
 
@@ -91,7 +91,7 @@ internal abstract partial class Server : Disposable, IServer
 
     private async ValueTask GetMetadataAsync(ProtocolStream protocol, CancellationToken token)
     {
-        using var buffer = BufferAllocator(length: 512);
+        using var buffer = MemoryAllocator(length: 512);
         protocol.Reset();
         await protocol.WriteDictionaryAsync(localMember.Metadata, buffer.Memory, token).ConfigureAwait(false);
     }

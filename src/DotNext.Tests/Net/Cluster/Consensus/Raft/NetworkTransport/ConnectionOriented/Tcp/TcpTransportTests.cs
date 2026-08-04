@@ -8,11 +8,11 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Tcp;
 
+using Buffers;
 using Membership;
 using NetworkTransport;
 using Replication;
 using StateMachine;
-using Threading;
 using static DotNext.Extensions.Logging.TestLoggers;
 
 [Collection(TestCollections.Raft)]
@@ -53,16 +53,18 @@ public sealed class TcpTransportTests : TransportTestSuite
     [InlineData(false)]
     public Task RequestResponse(bool useSsl)
     {
-        TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 2, member, DefaultAllocator, NullLoggerFactory.Instance)
+        TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 2, member, NullLoggerFactory.Instance)
         {
             ReceiveTimeout = timeout,
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             TransmissionBlockSize = 65535,
             GracefulShutdownTimeout = 2000,
             SslOptions = useSsl ? CreateServerSslOptions() : null
         };
 
-        TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
             TransmissionBlockSize = 65535,
@@ -75,15 +77,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     [Fact]
     public Task StressTest()
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             ReceiveTimeout = timeout,
             TransmissionBlockSize = 65535,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
             TransmissionBlockSize = 65535,
@@ -97,15 +101,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     [InlineData(false)]
     public Task MetadataRequestResponse(bool smallAmountOfMetadata)
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             ReceiveTimeout = timeout,
             TransmissionBlockSize = 300,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
             TransmissionBlockSize = 300,
@@ -141,15 +147,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     [InlineData(50, ReceiveEntriesBehavior.DropFirst, true)]
     public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             TransmissionBlockSize = 400,
             ReceiveTimeout = timeout,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             TransmissionBlockSize = 400,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
@@ -173,14 +181,16 @@ public sealed class TcpTransportTests : TransportTestSuite
     [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
     public Task SendingLogEntriesAndConfigurationAndSnapshot(int payloadSize, ReceiveEntriesBehavior behavior)
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             ReceiveTimeout = timeout,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
         };
@@ -194,15 +204,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     [InlineData(0)]
     public Task SendingSnapshot(int payloadSize)
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             TransmissionBlockSize = 350,
             ReceiveTimeout = timeout,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
             TransmissionBlockSize = 350,
@@ -254,15 +266,17 @@ public sealed class TcpTransportTests : TransportTestSuite
     [Fact]
     public Task RequestSynchronization()
     {
-        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             TransmissionBlockSize = 350,
             ReceiveTimeout = timeout,
             GracefulShutdownTimeout = 2000
         };
 
-        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
         {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
             RequestTimeout = timeout,
             ConnectTimeout = timeout,
             TransmissionBlockSize = 350,

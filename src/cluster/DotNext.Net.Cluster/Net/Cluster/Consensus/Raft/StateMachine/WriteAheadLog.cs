@@ -456,9 +456,10 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private ValueTask AppendAsync<TEntry>(TEntry entry, out ulong startAddress, CancellationToken token)
         where TEntry : IRaftLogEntry
     {
+        var hasCapacity = dataPages.TryEnsureCapacity(entry.Length);
         startAddress = dataPages.LastWrittenAddress;
 
-        return dataPages.TryEnsureCapacity(entry.Length)
+        return hasCapacity
             ? DataTransferObject.WriteToAsync(entry, dataPages, token)
             : entry.WriteToAsync(dataPages, token);
     }

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -110,13 +109,5 @@ public static partial class AdvancedHelpers
             Unsafe.CopyBlockUnaligned(ref destination, ref source, count);
         }
     }
-    
-    [StructLayout(LayoutKind.Sequential)]
-    [ExcludeFromCodeCoverage]
-    private readonly ref struct AlignmentHelperType<T>
-        where T : allows ref struct
-    {
-        private readonly byte field1;
-        private readonly T field2;
-    }
 }
+

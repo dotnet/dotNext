@@ -232,11 +232,20 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
-        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint)
-            => new(localMember, endPoint, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint) => new(localMember, endPoint)
+        {
+            DefaultAllocator = MemoryAllocator,
+            ConnectTimeout = ConnectTimeout,
+            ConnectionFactory = clientFactory,
+        };
 
         internal override GenericServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
+            => new(HostEndPoint, localMember, LoggerFactory)
+            {
+                MemoryAllocator = MemoryAllocator,
+                ListenerFactory = serverFactory,
+                ReceiveTimeout = RequestTimeout
+            };
     }
 
     /// <summary>
@@ -345,8 +354,9 @@ public partial class RaftCluster
         }
 
         internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint)
-            => new(localMember, endPoint, MemoryAllocator)
+            => new(localMember, endPoint)
             {
+                MemoryAllocator = MemoryAllocator,
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
@@ -356,8 +366,9 @@ public partial class RaftCluster
             };
 
         internal override TcpServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, ServerBacklog, localMember, MemoryAllocator, LoggerFactory)
+            => new(HostEndPoint, ServerBacklog, localMember, LoggerFactory)
             {
+                MemoryAllocator = MemoryAllocator,
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 ReceiveTimeout = RequestTimeout,

@@ -321,4 +321,14 @@ public sealed class PointerTests : Test
         Equal(address, PointerMarshaller<int>.ConvertToUnmanaged(ptr));
         Equal(ptr, PointerMarshaller<int>.ConvertToManaged(address));
     }
+
+    [Fact]
+    public static unsafe void CopyToSpan()
+    {
+        Pointer<int> ptr = stackalloc int[3] { 10, 20, 30 };
+        Span<int> destination = stackalloc int[3];
+
+        ptr.CopyTo(destination);
+        Equal(ptr.AsSpan(3), destination);
+    }
 }

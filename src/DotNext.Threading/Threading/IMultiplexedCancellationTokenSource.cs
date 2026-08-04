@@ -84,7 +84,7 @@ public static class MultiplexedCancellationTokenSource
         where TSource : IMultiplexedCancellationTokenSource
         => e.CancellationToken == source.Token && source.CancellationOrigin == token;
 
-    private static bool CausedByTimeout<TSource>(OperationCanceledException e, TSource scope)
+    private static bool CausedByTimeout<TSource>(OperationCanceledException e, ref TSource scope)
         where TSource : struct, IMultiplexedCancellationTokenSourceWithTimeout
         => e.CancellationToken == scope.Token && scope.IsTimedOut;
 
@@ -96,7 +96,7 @@ public static class MultiplexedCancellationTokenSource
     /// <returns><see langword="true"/> indicates that the <paramref name="e"/> is triggered by the timeout
     /// associated with <paramref name="scope"/>; otherwise, <see langword="false"/>.</returns>
     public static bool CausedByTimeout(this OperationCanceledException e, CancellationTokenMultiplexer.Scope scope)
-        => CausedByTimeout<CancellationTokenMultiplexer.Scope>(e, scope);
+        => CausedByTimeout(e, ref scope);
 
     /// <summary>
     /// Determines whether the operation was canceled by the specified source due to timeout.
@@ -106,7 +106,7 @@ public static class MultiplexedCancellationTokenSource
     /// <returns><see langword="true"/> indicates that the <paramref name="e"/> is triggered by the timeout
     /// associated with <paramref name="scope"/>; otherwise, <see langword="false"/>.</returns>
     public static bool CausedByTimeout(this OperationCanceledException e, CancellationTokenMultiplexer.ScopeWithTimeout scope)
-        => CausedByTimeout<CancellationTokenMultiplexer.ScopeWithTimeout>(e, scope);
+        => CausedByTimeout(e, ref scope);
 
     /// <summary>
     /// Extends <see cref="CancellationToken"/> type.

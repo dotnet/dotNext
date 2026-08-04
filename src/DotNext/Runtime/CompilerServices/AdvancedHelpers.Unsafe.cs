@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -93,4 +95,13 @@ file abstract class RawData
     internal byte Data;
 
     private RawData() => throw new UnreachableException();
+}
+
+[StructLayout(LayoutKind.Sequential)]
+[ExcludeFromCodeCoverage]
+file readonly ref struct AlignmentHelperType<T>
+    where T : allows ref struct
+{
+    private readonly byte field1;
+    private readonly T field2;
 }
