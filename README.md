@@ -31,39 +31,32 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-26-2026
+Release Date: 08-04-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
-* Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
-* Introduced write lock scope to `Atomic<T>` data type
-* `ReaderWriterSpinLock` is deprecated in favor of `Atomic<T>` struct
-* Fixed AOT compatibility for `BoxedValue<T>` and `UserDataStorage` types
-* Removed lock contention when reading from `UserDataStorage`
-* Improved performance of `TypeMap` and `ConcurrentTypeMap` types
-* `BufferWriterSlim<T>` can be constructed with a fixed capacity
+<a href="https://www.nuget.org/packages/dotnext/6.6.0">DotNext 6.6.0</a>
+* Added `Listen` extension method to consume [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface in the background
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.5.0">DotNext.Metaprogramming 6.5.0</a>
-* All methods accepting variadic arguments as `params Expression[] args` now changed to `params IEnumerable<Expression> args`
-* `AsDynamic()` extension method is deprecated in favor of `Quoted` extension property and extension operators
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.5.0">DotNext.Unsafe 6.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.0">DotNext.Metaprogramming 6.6.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.5.0">DotNext.Threading 6.5.0</a>
-* Improved performance of `AsyncStateTracker` type
-* Perf improvements: `ManualResetCompletionSource` internals moved to `BoxedValue<T>` type to avoid redundant type check
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.5.0">DotNext.IO 6.5.0</a>
-* Introduced `Limit` extension method for all classes implementing [IBufferWriter&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface. The method returns the wrapper that limits the capacity of the underlying writer
-* `EndPointFormatter` type is moved from `DotNext.Net.Cluster` library
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.5.0">DotNext.Net.Cluster 6.5.0</a>
-* `EndPointFormatter` type is moved to `DotNext.IO` library
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.5.0">DotNext.AspNetCore.Cluster 6.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.0">DotNext.Unsafe 6.6.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.5.0">DotNext.MaintenanceServices 1.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.0">DotNext.Threading 6.6.0</a>
+* Added `AsyncMulticastSequence` class which implements [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface for single-producer-multiple-consumers scenario. It is useful to organize async stream of events with multiple subscribers
+* Minor performance improvements of `CancellationTokenMultiplexer`
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.0">DotNext.IO 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.0">DotNext.Net.Cluster 6.6.0</a>
+* Removed memory allocation in the hot execution path related to the communication between cluster nodes
+* Fixed [292](https://github.com/dotnet/dotNext/issues/292)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.0">DotNext.AspNetCore.Cluster 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.0">DotNext.MaintenanceServices 1.6.0</a>
 * Updated dependencies
 
 # Release & Support Policy

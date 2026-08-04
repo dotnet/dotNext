@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 08-04-2026
+<a href="https://www.nuget.org/packages/dotnext/6.6.0">DotNext 6.6.0</a>
+* Added `Listen` extension method to consume [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface in the background
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.0">DotNext.Metaprogramming 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.0">DotNext.Unsafe 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.0">DotNext.Threading 6.6.0</a>
+* Added `AsyncMulticastSequence` class which implements [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface for single-producer-multiple-consumers scenario. It is useful to organize async stream of events with multiple subscribers
+* Minor performance improvements of `CancellationTokenMultiplexer`
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.0">DotNext.IO 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.0">DotNext.Net.Cluster 6.6.0</a>
+* Removed memory allocation in the hot execution path related to the communication between cluster nodes
+* Fixed [292](https://github.com/dotnet/dotNext/issues/292)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.0">DotNext.AspNetCore.Cluster 6.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.0">DotNext.MaintenanceServices 1.6.0</a>
+* Updated dependencies
+
 # 07-26-2026
 <a href="https://www.nuget.org/packages/dotnext/6.5.0">DotNext 6.5.0</a>
 * Improved performance of `Atomic<T>` type: multiple readers don't contend anymore
