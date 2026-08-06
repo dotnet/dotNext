@@ -217,7 +217,7 @@ partial class WriteAheadLog
         }
     }
 
-    private class AnonymousPageManager : PageManager<AnonymousPage>
+    private sealed class AnonymousPageManager : PageManager<AnonymousPage>
     {
         private const int PageCacheSize = sizeof(ulong) * 8;
 
