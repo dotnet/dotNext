@@ -94,7 +94,7 @@ partial class WriteAheadLog
                 return result;
             }
 
-            public ReadOnlySequence<byte> ToReadOnlySequence()
+            private ReadOnlySequence<byte> ToReadOnlySequence()
             {
                 var enumerator = GetEnumerator();
                 return !enumerator.MoveNext() || !enumerator.HasNext
@@ -216,28 +216,59 @@ partial class WriteAheadLog
             base.Dispose(disposing);
         }
     }
-
-    private sealed class AnonymousPageManager : PageManager<AnonymousPage>
+    
+    private abstract class AnonymousPageManager<TPage> : PageManager<TPage>
+        where TPage : AnonymousPageBase
     {
         private const int PageCacheSize = sizeof(ulong) * 8;
-
-        private readonly nuint alignment;
-        private readonly nint madvise;
         private readonly IndexPool indices;
         private PageCache cache;
 
-        public AnonymousPageManager(DirectoryInfo location, int pageSize)
-            : base(location, pageSize, GetPages(location, out var pages))
+        protected AnonymousPageManager(DirectoryInfo location, int pageSize, out ReadOnlySpan<uint> pages)
+            : base(location, pageSize, GetPages(location, out pages))
         {
             indices = new(PageCacheSize);
             Debug.Assert(indices.Capacity is PageCacheSize);
             
             cache = new();
+        }
 
-            alignment = GetPageAlignment(pageSize, out madvise);
+        protected sealed override TPage CreatePage(uint pageIndex) => RentPage();
 
+        private TPage RentPage()
+        {
+            TPage page;
+            if (indices.TryGet(out var poolIndex))
+            {
+                ref var slot = ref cache[poolIndex];
+                if (slot is null)
+                {
+                    try
+                    {
+                        slot = CreatePage(reusable: true);
+                        slot.PoolIndex = poolIndex;
+                    }
+                    catch
+                    {
+                        indices.Return(poolIndex);
+                        throw;
+                    }
+                }
+
+                page = slot;
+            }
+            else
+            {
+                page = CreatePage(reusable: false);
+            }
+
+            return page;
+        }
+
+        protected void Initialize(DirectoryInfo location, ReadOnlySpan<uint> pages)
+        {
             // populate pages
-            AnonymousPage page;
+            TPage page;
             if (pages.IsEmpty)
             {
                 page = RentPage();
@@ -253,92 +284,25 @@ partial class WriteAheadLog
                     Pages.TryAdd(pageIndex, page);
                 }
             }
-
+            
             // place at least one page to the cache
             if (indices.TryGet(out var poolIndex))
             {
-                MarkAsHugePageIfSupported(page = new(PageSize, alignment));
+                page = CreatePage(reusable: true);
+                page.PoolIndex = poolIndex;
                 cache[poolIndex] = page;
+                indices.Return(poolIndex);
             }
         }
 
-        private unsafe void MarkAsHugePageIfSupported(AnonymousPage page)
-        {
-            if (madvise is not 0)
-            {
-                page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
-            }
-        }
-
-        private static nuint GetPageAlignment(int pageSize, out nint madvise)
-        {
-            nuint alignment;
-
-            if (OperatingSystem.IsLinux())
-            {
-                const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
-
-                if (File.Exists(hpage_pmd_size))
-                {
-                    ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
-                    if (nuint.TryParse(transparentHugePageSize, out alignment)
-                        && IsAligned((uint)pageSize, alignment)
-                        && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
-                        goto exit;
-                }
-            }
-
-            // fallback - no THP/LP support
-            madvise = 0;
-            alignment = (uint)Environment.SystemPageSize;
-
-            exit:
-            return alignment;
-
-            static bool IsAligned(nuint pageSize, nuint alignment)
-                => (pageSize & (alignment - 1U)) is 0;
-        }
-
-        protected override AnonymousPage CreatePage(uint pageIndex)
-            => RentPage();
-
-        private AnonymousPage RentPage()
-        {
-            AnonymousPage page;
-            if (indices.TryGet(out var poolIndex))
-            {
-                ref var slot = ref cache[poolIndex];
-                if (slot is null)
-                {
-                    try
-                    {
-                        MarkAsHugePageIfSupported(slot = new(PageSize, alignment) { PoolIndex = poolIndex });
-                    }
-                    catch
-                    {
-                        indices.Return(poolIndex);
-                        throw;
-                    }
-                }
-
-                page = slot;
-            }
-            else
-            {
-                // do not enable HugePages for the pages out of the pool
-                page = new(PageSize, alignment);
-            }
-
-            return page;
-        }
-
-        protected override void ReleasePage(AnonymousPage page)
+        protected abstract TPage CreatePage(bool reusable);
+        
+        protected void ReleasePage(TPage page, bool discard)
         {
             var poolIndex = page.PoolIndex;
             if (poolIndex >= 0)
             {
-                // THP splits the page on discard, skip this behavior for HugePages
-                if (madvise is 0)
+                if (discard)
                     page.Discard();
 
                 if (indices.TryReturn(poolIndex))
@@ -348,16 +312,18 @@ partial class WriteAheadLog
             page.As<IDisposable>().Dispose();
         }
 
-        protected override void DeletePage(uint pageIndex, AnonymousPage page)
+        protected override void ReleasePage(TPage page) => ReleasePage(page, discard: true);
+
+        protected sealed override void DeletePage(uint pageIndex, TPage page)
         {
-            AnonymousPage.Delete(Location, pageIndex);
+            AnonymousPageBase.Delete(Location, pageIndex);
             ReleasePage(page);
         }
-
+        
         private ValueTask FlushAsync(uint pageIndex, Range range, CancellationToken token)
             => Pages.TryGetValue(pageIndex, out var page) ? page.FlushAsync(Location, pageIndex, range, token) : ValueTask.CompletedTask;
 
-        public override ValueTask FlushAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
+        public sealed override ValueTask FlushAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
             => startPage == endPage
                 ? FlushAsync(startPage, startOffset..endOffset, token)
                 : FlushMultiplePagesAsync(startPage, startOffset, endPage, endOffset, token);
@@ -384,11 +350,11 @@ partial class WriteAheadLog
 
             base.Dispose(disposing);
         }
-
+        
         [InlineArray(PageCacheSize)]
         private struct PageCache
         {
-            private AnonymousPage? page0;
+            private TPage? page0;
 
             public void Clear(IndexPool indices)
             {
@@ -399,7 +365,67 @@ partial class WriteAheadLog
             }
         }
     }
-    
+
+    private sealed class AnonymousPageManager : AnonymousPageManager<AnonymousPage>
+    {
+        private readonly nuint alignment;
+        private readonly nint madvise;
+
+        public AnonymousPageManager(DirectoryInfo location, int pageSize)
+            : base(location, pageSize, out var pages)
+        {
+            alignment = GetPageAlignment(pageSize, out madvise);
+
+            Initialize(location, pages);
+
+            static nuint GetPageAlignment(int pageSize, out nint madvise)
+            {
+                nuint alignment;
+
+                if (OperatingSystem.IsLinux())
+                {
+                    const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
+
+                    if (File.Exists(hpage_pmd_size))
+                    {
+                        ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
+                        if (nuint.TryParse(transparentHugePageSize, out alignment)
+                            && IsAligned((uint)pageSize, alignment)
+                            && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
+                            goto exit;
+                    }
+                }
+
+                // fallback - no THP/LP support
+                madvise = 0;
+                alignment = (uint)Environment.SystemPageSize;
+
+                exit:
+                return alignment;
+            }
+
+            static bool IsAligned(nuint pageSize, nuint alignment)
+                => (pageSize & (alignment - 1U)) is 0;
+        }
+
+        protected override AnonymousPage CreatePage(bool reusable)
+        {
+            var page = new AnonymousPage(PageSize, alignment);
+            if (reusable && madvise is not 0)
+            {
+                unsafe
+                {
+                    page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
+                }
+            }
+
+            return page;
+        }
+
+        protected override void ReleasePage(AnonymousPage page)
+            => ReleasePage(page, madvise is 0);  // THP splits the page on discard, skip this behavior for HugePages
+    }
+
     private sealed class MemoryMappedPageManager : PageManager<MemoryMappedPage>
     {
         public MemoryMappedPageManager(DirectoryInfo location, int pageSize)

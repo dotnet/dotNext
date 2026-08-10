@@ -159,6 +159,17 @@ partial class WriteAheadLog
         /// Gets or sets the memory management strategy.
         /// </summary>
         public MemoryManagementStrategy MemoryManagement { get; init; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating that pages should be flushed to disk with unbuffered
+        /// (direct) I/O, bypassing the OS page cache.
+        /// </summary>
+        /// <remarks>
+        /// This flag is applicable only when <see cref="MemoryManagement"/> is
+        /// <see cref="MemoryManagementStrategy.PrivateMemory"/> and only on Windows and Linux;
+        /// it's ignored on other platforms and combinations.
+        /// </remarks>
+        public bool NoBuffering { get; init; }
 
         /// <summary>
         /// Gets or sets the hash algorithm for the log integrity control.
