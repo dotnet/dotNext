@@ -369,61 +369,65 @@ partial class WriteAheadLog
     private sealed class AnonymousPageManager : AnonymousPageManager<AnonymousPage>
     {
         private readonly nuint alignment;
-        private readonly nint madvise;
+        private readonly unsafe delegate*unmanaged<nint, nint, int, int> madvise;
 
-        public AnonymousPageManager(DirectoryInfo location, int pageSize)
+        public unsafe AnonymousPageManager(DirectoryInfo location, int pageSize)
             : base(location, pageSize, out var pages)
         {
             alignment = GetPageAlignment(pageSize, out madvise);
 
             Initialize(location, pages);
         }
-        
-        internal static nuint GetPageAlignment(int pageSize, out nint madvise)
+
+        internal static unsafe nuint GetPageAlignment(int pageSize, out delegate*unmanaged<nint, nint, int, int> madvise)
         {
-            nuint alignment;
+            var alignment = GetAlignment(pageSize, out var madvisePtr);
+            madvise = (delegate*unmanaged<nint, nint, int, int>)madvisePtr;
+            return alignment;
 
-            if (OperatingSystem.IsLinux())
+            static nuint GetAlignment(int pageSize, out nint madvise)
             {
-                const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
+                nuint alignment;
 
-                if (File.Exists(hpage_pmd_size))
+                if (OperatingSystem.IsLinux())
                 {
-                    ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
-                    if (nuint.TryParse(transparentHugePageSize, out alignment)
-                        && IsAligned((uint)pageSize, alignment)
-                        && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
-                        goto exit;
+                    const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
+
+                    if (File.Exists(hpage_pmd_size))
+                    {
+                        ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
+                        if (nuint.TryParse(transparentHugePageSize, out alignment)
+                            && IsAligned((uint)pageSize, alignment)
+                            && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
+                            goto exit;
+                    }
                 }
+
+                // fallback - no THP/LP support
+                madvise = 0;
+                alignment = (uint)Environment.SystemPageSize;
+
+                exit:
+                return alignment;
             }
 
-            // fallback - no THP/LP support
-            madvise = 0;
-            alignment = (uint)Environment.SystemPageSize;
-
-            exit:
-            return alignment;
-            
             static bool IsAligned(nuint pageSize, nuint alignment)
                 => (pageSize & (alignment - 1U)) is 0;
         }
 
-        protected override AnonymousPage CreatePage(bool reusable)
+        protected override unsafe AnonymousPage CreatePage(bool reusable)
         {
             var page = new AnonymousPage(PageSize, alignment);
-            if (reusable && madvise is not 0)
+            if (reusable && madvise is not null)
             {
-                unsafe
-                {
-                    page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
-                }
+                page.ConvertToHugePage(madvise);
             }
 
             return page;
         }
 
-        protected override void ReleasePage(AnonymousPage page)
-            => ReleasePage(page, madvise is 0);  // THP splits the page on discard, skip this behavior for HugePages
+        protected override unsafe void ReleasePage(AnonymousPage page)
+            => ReleasePage(page, madvise is null); // THP splits the page on discard, skip this behavior for HugePages
     }
 
     private sealed class MemoryMappedPageManager : PageManager<MemoryMappedPage>

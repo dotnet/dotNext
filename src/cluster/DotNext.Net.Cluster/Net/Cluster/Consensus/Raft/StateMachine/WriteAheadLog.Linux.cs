@@ -106,7 +106,7 @@ partial class WriteAheadLog
     {
         private readonly uint sectorSize;
         private readonly nuint alignment;
-        private readonly nint madvise;
+        private readonly unsafe delegate*unmanaged<nint, nint, int, int> madvise;
         private readonly unsafe delegate*unmanaged<void*, int, int, int> openFileFunction;
 
         public unsafe LinuxDirectPageManager(DirectoryInfo location, int pageSize)
@@ -136,6 +136,7 @@ partial class WriteAheadLog
             Initialize(location, pages);
 
             [SkipLocalsInit]
+            [MethodImpl(MethodImplOptions.NoInlining)]
             static nuint GetSectorSize(DirectoryInfo location, delegate*unmanaged<byte*, void*, int> statvfs)
             {
                 var path = location.FullName;
@@ -165,15 +166,15 @@ partial class WriteAheadLog
         protected override unsafe LinuxDirectPage CreatePage(bool reusable)
         {
             var page = new LinuxDirectPage(PageSize, alignment, sectorSize, openFileFunction);
-            if (reusable && madvise is not 0)
+            if (reusable && madvise is not null)
             {
-                page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
+                page.ConvertToHugePage(madvise);
             }
 
             return page;
         }
 
-        protected override void ReleasePage(LinuxDirectPage page)
-            => ReleasePage(page, madvise is 0); // THP splits the page on discard, skip this behavior for HugePages
+        protected override unsafe void ReleasePage(LinuxDirectPage page)
+            => ReleasePage(page, madvise is null); // THP splits the page on discard, skip this behavior for HugePages
     }
 }
