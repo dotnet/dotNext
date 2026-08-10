@@ -48,8 +48,7 @@ partial class WriteAheadLog
                 var alignedOffset = ((uint)offset).RoundDown(sectorSize);
                 var alignedEnd = ((uint)(offset + length)).RoundUp(sectorSize);
 
-                var buffer = Memory[(int)alignedOffset..(int)alignedEnd];
-                RandomAccess.Write(handle, buffer.Span, alignedOffset);
+                RandomAccess.Write(handle, GetSpan()[(int)alignedOffset..(int)alignedEnd], alignedOffset);
             }
             catch (Exception e)
             {
