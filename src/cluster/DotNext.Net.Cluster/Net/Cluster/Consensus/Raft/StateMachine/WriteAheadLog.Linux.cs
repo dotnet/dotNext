@@ -34,9 +34,10 @@ partial class WriteAheadLog
         protected override ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
         {
             var task = ValueTask.CompletedTask;
-            var handle = OpenDirect(GetPageFileName(directory, pageIndex), forWriting: true);
+            var handle = default(SafeFileHandle);
             try
             {
+                handle = OpenDirect(GetPageFileName(directory, pageIndex), forWriting: true);
                 EnsureFileSize(handle);
 
                 // Unbuffered I/O requires the file offset, the transfer length, and the buffer
@@ -56,7 +57,7 @@ partial class WriteAheadLog
             }
             finally
             {
-                handle.Dispose();
+                handle?.Dispose();
             }
 
             return task;
@@ -79,21 +80,31 @@ partial class WriteAheadLog
             const int mode = 0x1B6; // 0o666, subject to umask
 
             var byteCount = Encoding.UTF8.GetByteCount(path) + 1;
-            using var pathBuffer = (uint)byteCount <= (uint)SpanOwner<byte>.StackallocThreshold
-                ? stackalloc byte[byteCount]
-                : new SpanOwner<byte>(byteCount);
-            Encoding.UTF8.GetBytes(path, pathBuffer.Span);
-            pathBuffer[^1] = 0;
-
             int fd;
-            fixed (byte* pathPtr = pathBuffer)
+            using (var pathBuffer = (uint)byteCount <= (uint)SpanOwner<byte>.StackallocThreshold
+                       ? stackalloc byte[byteCount]
+                       : new SpanOwner<byte>(byteCount))
             {
-                fd = openFileFunction(pathPtr, flags, mode);
+                Encoding.UTF8.GetBytes(path, pathBuffer.Span);
+                pathBuffer[^1] = 0;
+
+                fixed (byte* pathPtr = pathBuffer)
+                {
+                    fd = openFileFunction(pathPtr, flags, mode);
+                }
             }
 
             return fd >= 0
                 ? new SafeFileHandle(fd, ownsHandle: true)
-                : throw new ExternalException($"Unable to open '{path}' with O_DIRECT.", fd);
+                : throw UnableToOpenFile(path);
+
+            static ExternalException UnableToOpenFile(ReadOnlySpan<char> path)
+            {
+                // This call must be done before string interpolation.
+                // Otherwise, the error code can be 0 or any other value.
+                var errorCode = Marshal.GetLastSystemError();
+                return new ExternalException($"Unable to open '{path}' with O_DIRECT.", errorCode);
+            }
         }
     }
 
