@@ -121,7 +121,14 @@ partial class WriteAheadLog
 
         public int PoolIndex { get; set; }
 
-        public abstract void Populate(DirectoryInfo location, uint pageIndex);
+        protected virtual SafeFileHandle OpenRead(string fileName)
+            => File.OpenHandle(fileName, options: FileOptions.SequentialScan);
+
+        public void Populate(DirectoryInfo location, uint pageIndex)
+        {
+            using var handle = OpenRead(GetPageFileName(location, pageIndex));
+            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
+        }
         
         public static void Delete(DirectoryInfo directory, uint pageIndex)
             => File.Delete(GetPageFileName(directory, pageIndex));
@@ -138,7 +145,7 @@ partial class WriteAheadLog
 
         public sealed override Memory<byte> Memory => CreateMemory(pageSize);
         
-        internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
+        public unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
         {
             Debug.Assert(madvise is not null);
             
@@ -165,12 +172,6 @@ partial class WriteAheadLog
     /// </summary>
     private sealed class AnonymousPage(int pageSize, nuint alignment) : AnonymousPageBase(pageSize, alignment)
     {
-        public override void Populate(DirectoryInfo location, uint pageIndex)
-        {
-            using var handle = File.OpenHandle(GetPageFileName(location, pageIndex), options: FileOptions.SequentialScan);
-            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
-        }
-
         protected override async ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
         {
             using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex),

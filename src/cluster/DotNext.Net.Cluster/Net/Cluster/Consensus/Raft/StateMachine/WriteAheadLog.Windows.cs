@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -19,11 +20,8 @@ partial class WriteAheadLog
         // CreateFileW on Windows because FileOptions bits are passed through verbatim.
         private const FileOptions NoBuffering = (FileOptions)0x2000_0000;
 
-        public override void Populate(DirectoryInfo location, uint pageIndex)
-        {
-            using var handle = File.OpenHandle(GetPageFileName(location, pageIndex), options: NoBuffering);
-            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
-        }
+        protected override SafeFileHandle OpenRead(string fileName)
+            => File.OpenHandle(fileName, options: NoBuffering);
 
         protected override async ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
         {

@@ -28,11 +28,8 @@ partial class WriteAheadLog
             this.openFileFunction = openFileFunction;
         }
 
-        public override void Populate(DirectoryInfo location, uint pageIndex)
-        {
-            using var handle = OpenDirect(GetPageFileName(location, pageIndex), forWriting: false);
-            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
-        }
+        protected override SafeFileHandle OpenRead(string fileName)
+            => OpenDirect(fileName, forWriting: false);
 
         protected override ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
         {
