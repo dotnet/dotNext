@@ -5,8 +5,6 @@ using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-using Numerics;
-
 partial class WriteAheadLog
 {
     /// <summary>
