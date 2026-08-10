@@ -181,8 +181,12 @@ partial class WriteAheadLog
 
             EnsureFileSize(handle);
 
-            var buffer = Memory.Slice(offset, length);
-            await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);
+            await RandomAccess.WriteAsync(
+                    handle,
+                    Memory.Slice(offset, length),
+                    offset,
+                    token)
+                .ConfigureAwait(false);
         }
     }
 }

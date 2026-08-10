@@ -40,8 +40,12 @@ partial class WriteAheadLog
             var alignedOffset = ((uint)offset).RoundDown(sectorSize);
             var alignedEnd = ((uint)(offset + length)).RoundUp(sectorSize);
 
-            var buffer = Memory[(int)alignedOffset..(int)alignedEnd];
-            await RandomAccess.WriteAsync(handle, buffer, alignedOffset, token).ConfigureAwait(false);
+            await RandomAccess.WriteAsync(
+                    handle,
+                    Memory[(int)alignedOffset..(int)alignedEnd],
+                    alignedOffset,
+                    token)
+                .ConfigureAwait(false);
         }
     }
     
