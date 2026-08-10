@@ -21,8 +21,8 @@ partial class WriteAheadLog
         private readonly uint sectorSize;
         private readonly unsafe delegate*unmanaged<void*, int, int, int> openFileFunction;
 
-        public unsafe LinuxDirectPage(int pageSize, uint sectorSize, delegate*unmanaged<void*, int, int, int> openFileFunction)
-            : base(pageSize, (uint)Environment.SystemPageSize)
+        public unsafe LinuxDirectPage(int pageSize, nuint alignment, uint sectorSize, delegate*unmanaged<void*, int, int, int> openFileFunction)
+            : base(pageSize, alignment)
         {
             this.sectorSize = sectorSize;
             this.openFileFunction = openFileFunction;
@@ -105,13 +105,17 @@ partial class WriteAheadLog
     private sealed class LinuxDirectPageManager : AnonymousPageManager<LinuxDirectPage>
     {
         private readonly uint sectorSize;
+        private readonly nuint alignment;
+        private readonly nint madvise;
         private readonly unsafe delegate*unmanaged<void*, int, int, int> openFileFunction;
 
         public unsafe LinuxDirectPageManager(DirectoryInfo location, int pageSize)
             : base(location, pageSize, out var pages)
         {
+            alignment = AnonymousPageManager.GetPageAlignment(pageSize, out madvise);
+
             var programHandle = NativeLibrary.GetMainProgramHandle();
-            
+
             // detect sector size
             sectorSize = NativeLibrary.TryGetExport(programHandle, "statvfs", out var statvfs)
                 ? (uint)GetSectorSize(location, (delegate*unmanaged<byte*, void*, int>)statvfs)
@@ -159,6 +163,17 @@ partial class WriteAheadLog
         }
 
         protected override unsafe LinuxDirectPage CreatePage(bool reusable)
-            => new(PageSize, sectorSize, openFileFunction);
+        {
+            var page = new LinuxDirectPage(PageSize, alignment, sectorSize, openFileFunction);
+            if (reusable && madvise is not 0)
+            {
+                page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
+            }
+
+            return page;
+        }
+
+        protected override void ReleasePage(LinuxDirectPage page)
+            => ReleasePage(page, madvise is 0); // THP splits the page on discard, skip this behavior for HugePages
     }
 }

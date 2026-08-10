@@ -131,6 +131,13 @@ partial class WriteAheadLog
         public sealed override unsafe Span<byte> GetSpan() => new(Address, Size);
 
         public sealed override Memory<byte> Memory => CreateMemory(Size);
+        
+        internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
+        {
+            const int MADV_HUGEPAGE = 14;
+            var errorCode = madvise((nint)Address, Size, MADV_HUGEPAGE);
+            Debug.Assert(errorCode is 0);
+        }
 
         protected override unsafe void Dispose(bool disposing)
         {
@@ -168,13 +175,6 @@ partial class WriteAheadLog
 
             var buffer = Memory.Slice(offset, length);
             await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);
-        }
-
-        internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
-        {
-            const int MADV_HUGEPAGE = 14;
-            var errorCode = madvise((nint)Address, Size, MADV_HUGEPAGE);
-            Debug.Assert(errorCode is 0);
         }
     }
 }

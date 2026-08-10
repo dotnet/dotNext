@@ -377,33 +377,33 @@ partial class WriteAheadLog
             alignment = GetPageAlignment(pageSize, out madvise);
 
             Initialize(location, pages);
+        }
+        
+        internal static nuint GetPageAlignment(int pageSize, out nint madvise)
+        {
+            nuint alignment;
 
-            static nuint GetPageAlignment(int pageSize, out nint madvise)
+            if (OperatingSystem.IsLinux())
             {
-                nuint alignment;
+                const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
 
-                if (OperatingSystem.IsLinux())
+                if (File.Exists(hpage_pmd_size))
                 {
-                    const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
-
-                    if (File.Exists(hpage_pmd_size))
-                    {
-                        ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
-                        if (nuint.TryParse(transparentHugePageSize, out alignment)
-                            && IsAligned((uint)pageSize, alignment)
-                            && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
-                            goto exit;
-                    }
+                    ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
+                    if (nuint.TryParse(transparentHugePageSize, out alignment)
+                        && IsAligned((uint)pageSize, alignment)
+                        && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
+                        goto exit;
                 }
-
-                // fallback - no THP/LP support
-                madvise = 0;
-                alignment = (uint)Environment.SystemPageSize;
-
-                exit:
-                return alignment;
             }
 
+            // fallback - no THP/LP support
+            madvise = 0;
+            alignment = (uint)Environment.SystemPageSize;
+
+            exit:
+            return alignment;
+            
             static bool IsAligned(nuint pageSize, nuint alignment)
                 => (pageSize & (alignment - 1U)) is 0;
         }
