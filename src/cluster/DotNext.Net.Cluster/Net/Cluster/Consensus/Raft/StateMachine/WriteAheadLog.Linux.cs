@@ -40,9 +40,7 @@ partial class WriteAheadLog
             var handle = OpenDirect(GetPageFileName(directory, pageIndex), forWriting: true);
             try
             {
-
-                if (RandomAccess.GetLength(handle) is 0U)
-                    RandomAccess.SetLength(handle, Size);
+                EnsureFileSize(handle);
 
                 // Unbuffered I/O requires the file offset, the transfer length, and the buffer
                 // address to be aligned to the filesystem block size. The buffer address is
@@ -68,6 +66,7 @@ partial class WriteAheadLog
         }
         
         [SkipLocalsInit]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private unsafe SafeFileHandle OpenDirect(ReadOnlySpan<char> path, bool forWriting)
         {
             const int oRdonly = 0;

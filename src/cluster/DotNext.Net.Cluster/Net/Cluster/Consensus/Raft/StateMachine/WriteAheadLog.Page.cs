@@ -89,25 +89,31 @@ partial class WriteAheadLog
     
     private abstract class AnonymousPageBase : Page
     {
-        protected readonly int Size;
-        protected unsafe void* Address;
+        private readonly int pageSize;
+        private unsafe void* address;
         
         protected unsafe AnonymousPageBase(int pageSize, nuint alignment)
         {
             Debug.Assert(pageSize % MinSize is 0);
             Debug.Assert((uint)pageSize % alignment is 0);
 
-            Address = NativeMemory.AlignedAlloc((uint)pageSize, alignment);
+            address = NativeMemory.AlignedAlloc((uint)pageSize, alignment);
             
-            Size = pageSize;
+            this.pageSize = pageSize;
             PoolIndex = -1;
         }
+
+        protected void EnsureFileSize(SafeFileHandle handle)
+        {
+            if (RandomAccess.GetLength(handle) is 0U)
+                RandomAccess.SetLength(handle, pageSize);
+        }
         
-        public unsafe void Clear() => NativeMemory.Clear(Address, (uint)Size);
+        public unsafe void Clear() => NativeMemory.Clear(address, (uint)pageSize);
 
         public void Discard()
         {
-            if ((Size & (Environment.SystemPageSize - 1)) is 0)
+            if ((pageSize & (Environment.SystemPageSize - 1)) is 0)
             {
                 NativeMemory.Discard(GetSpan());
             }
@@ -124,27 +130,29 @@ partial class WriteAheadLog
 
         public ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
         {
-            var (offset, length) = range.GetOffsetAndLength(Size);
+            var (offset, length) = range.GetOffsetAndLength(pageSize);
             return FlushAsync(directory, pageIndex, offset, length, token);
         }
 
-        public sealed override unsafe Span<byte> GetSpan() => new(Address, Size);
+        public sealed override unsafe Span<byte> GetSpan() => new(address, pageSize);
 
-        public sealed override Memory<byte> Memory => CreateMemory(Size);
+        public sealed override Memory<byte> Memory => CreateMemory(pageSize);
         
         internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
         {
+            Debug.Assert(madvise is not null);
+            
             const int MADV_HUGEPAGE = 14;
-            var errorCode = madvise((nint)Address, Size, MADV_HUGEPAGE);
+            var errorCode = madvise((nint)address, pageSize, MADV_HUGEPAGE);
             Debug.Assert(errorCode is 0);
         }
 
         protected override unsafe void Dispose(bool disposing)
         {
-            if (Address is not null)
+            if (address is not null)
             {
-                NativeMemory.AlignedFree(Address);
-                Address = null;
+                NativeMemory.AlignedFree(address);
+                address = null;
             }
         }
 
@@ -170,8 +178,7 @@ partial class WriteAheadLog
                 FileAccess.Write,
                 options: FileOptions.WriteThrough | FileOptions.Asynchronous);
 
-            if (RandomAccess.GetLength(handle) is 0U)
-                RandomAccess.SetLength(handle, Size);
+            EnsureFileSize(handle);
 
             var buffer = Memory.Slice(offset, length);
             await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);

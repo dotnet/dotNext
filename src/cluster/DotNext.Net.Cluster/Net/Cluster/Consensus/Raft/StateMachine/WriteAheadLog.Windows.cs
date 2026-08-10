@@ -32,8 +32,7 @@ partial class WriteAheadLog
                 FileAccess.Write,
                 options: FileOptions.Asynchronous | FileOptions.WriteThrough | NoBuffering);
 
-            if (RandomAccess.GetLength(handle) is 0U)
-                RandomAccess.SetLength(handle, Size);
+            EnsureFileSize(handle);
 
             // Unbuffered I/O requires the file offset, the transfer length, and the buffer
             // address to be aligned to the volume's sector size. The buffer address is
