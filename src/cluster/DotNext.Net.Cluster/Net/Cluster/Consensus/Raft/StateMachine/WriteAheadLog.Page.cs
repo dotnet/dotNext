@@ -10,6 +10,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Numerics;
 
 partial class WriteAheadLog
 {
@@ -108,7 +109,13 @@ partial class WriteAheadLog
             if (RandomAccess.GetLength(handle) is 0U)
                 RandomAccess.SetLength(handle, pageSize);
         }
-        
+
+        protected static (int Start, int End) Align(int offset, int length, uint sectorSize) => new()
+        {
+            Start = (int)((uint)offset).RoundDown(sectorSize),
+            End = (int)((uint)offset + (uint)length).RoundUp(sectorSize),
+        };
+
         public unsafe void Clear() => NativeMemory.Clear(address, (uint)pageSize);
 
         public void Discard()
@@ -133,12 +140,12 @@ partial class WriteAheadLog
         public static void Delete(DirectoryInfo directory, uint pageIndex)
             => File.Delete(GetPageFileName(directory, pageIndex));
 
-        protected abstract ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token);
+        protected abstract ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token);
 
         public ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
         {
             var (offset, length) = range.GetOffsetAndLength(pageSize);
-            return FlushAsync(directory, pageIndex, offset, length, token);
+            return FlushAsync(GetPageFileName(directory, pageIndex), offset, length, token);
         }
 
         public sealed override unsafe Span<byte> GetSpan() => new(address, pageSize);
@@ -172,9 +179,9 @@ partial class WriteAheadLog
     /// </summary>
     private sealed class AnonymousPage(int pageSize, nuint alignment) : AnonymousPageBase(pageSize, alignment)
     {
-        protected override async ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
+        protected override async ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token)
         {
-            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex),
+            using var handle = File.OpenHandle(fileName,
                 FileMode.OpenOrCreate,
                 FileAccess.Write,
                 options: FileOptions.WriteThrough | FileOptions.Asynchronous);

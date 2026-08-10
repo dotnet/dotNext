@@ -31,13 +31,13 @@ partial class WriteAheadLog
         protected override SafeFileHandle OpenRead(string fileName)
             => OpenDirect(fileName, forWriting: false);
 
-        protected override ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
+        protected override ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token)
         {
             var task = ValueTask.CompletedTask;
             var handle = default(SafeFileHandle);
             try
             {
-                handle = OpenDirect(GetPageFileName(directory, pageIndex), forWriting: true);
+                handle = OpenDirect(fileName, forWriting: true);
                 EnsureFileSize(handle);
 
                 // Unbuffered I/O requires the file offset, the transfer length, and the buffer
@@ -45,10 +45,8 @@ partial class WriteAheadLog
                 // already aligned (AlignedAlloc), so only offset/length need to be rounded
                 // to a block boundary; the extra bytes covered by the rounding are always
                 // valid, in-bounds page contents.
-                var alignedOffset = ((uint)offset).RoundDown(sectorSize);
-                var alignedEnd = ((uint)(offset + length)).RoundUp(sectorSize);
-
-                RandomAccess.Write(handle, GetSpan()[(int)alignedOffset..(int)alignedEnd], alignedOffset);
+                var (alignedOffset, alignedEnd) = Align(offset, length, sectorSize);
+                RandomAccess.Write(handle, GetSpan()[alignedOffset..alignedEnd], alignedOffset);
             }
             catch (Exception e)
             {

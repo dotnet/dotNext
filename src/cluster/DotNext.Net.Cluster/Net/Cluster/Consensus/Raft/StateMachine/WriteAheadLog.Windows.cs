@@ -23,29 +23,27 @@ partial class WriteAheadLog
         protected override SafeFileHandle OpenRead(string fileName)
             => File.OpenHandle(fileName, options: NoBuffering);
 
-        protected override async ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
+        protected override async ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token)
         {
-            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex),
+            using var handle = File.OpenHandle(fileName,
                 FileMode.OpenOrCreate,
                 FileAccess.Write,
                 options: FileOptions.Asynchronous | FileOptions.WriteThrough | NoBuffering);
 
             EnsureFileSize(handle);
+            await FlushAsync(handle, offset, length, token).ConfigureAwait(false);
+        }
 
+        private ValueTask FlushAsync(SafeFileHandle handle, int offset, int length, CancellationToken token)
+        {
             // Unbuffered I/O requires the file offset, the transfer length, and the buffer
             // address to be aligned to the volume's sector size. The buffer address is
             // already aligned (AlignedAlloc), so only offset/length need to be rounded
             // to a sector boundary; the extra bytes covered by the rounding are always
             // valid, in-bounds page contents.
-            var alignedOffset = ((uint)offset).RoundDown(sectorSize);
-            var alignedEnd = ((uint)(offset + length)).RoundUp(sectorSize);
+            var (alignedOffset, alignedEnd) = Align(offset, length, sectorSize);
 
-            await RandomAccess.WriteAsync(
-                    handle,
-                    Memory[(int)alignedOffset..(int)alignedEnd],
-                    alignedOffset,
-                    token)
-                .ConfigureAwait(false);
+            return RandomAccess.WriteAsync(handle, Memory[alignedOffset..alignedEnd], alignedOffset, token);
         }
     }
     
