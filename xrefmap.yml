@@ -32069,6 +32069,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
   fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
   nameWithType: WriteAheadLog.Options.MemoryManagement
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering
+  name: NoBuffering
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_NoBuffering
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering
+  nameWithType: WriteAheadLog.Options.NoBuffering
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering*
+  name: NoBuffering
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_NoBuffering_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.NoBuffering
+  nameWithType: WriteAheadLog.Options.NoBuffering
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.ReadAsync(System.Int64,System.Int64,System.Threading.CancellationToken)
   name: ReadAsync(long, long, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_ReadAsync_System_Int64_System_Int64_System_Threading_CancellationToken_
