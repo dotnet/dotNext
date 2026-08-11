@@ -31,32 +31,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-04-2026
+Release Date: 08-11-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.6.0">DotNext 6.6.0</a>
-* Added `Listen` extension method to consume [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface in the background
+<a href="https://www.nuget.org/packages/dotnext/6.6.1">DotNext 6.6.1</a>
+* Optimized `RoundUp` and `RoundDown` for the case when multiplier is a power of 2
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.0">DotNext.Metaprogramming 6.6.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.1">DotNext.Metaprogramming 6.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.0">DotNext.Unsafe 6.6.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.1">DotNext.Unsafe 6.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.6.0">DotNext.Threading 6.6.0</a>
-* Added `AsyncMulticastSequence` class which implements [IAsyncEnumerable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface for single-producer-multiple-consumers scenario. It is useful to organize async stream of events with multiple subscribers
-* Minor performance improvements of `CancellationTokenMultiplexer`
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.1">DotNext.Threading 6.6.1</a>
+* `IndexPool` increases the chance to reuse the same index returned to the pool recently
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.6.0">DotNext.IO 6.6.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.1">DotNext.IO 6.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.0">DotNext.Net.Cluster 6.6.0</a>
-* Removed memory allocation in the hot execution path related to the communication between cluster nodes
-* Fixed [292](https://github.com/dotnet/dotNext/issues/292)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.1">DotNext.Net.Cluster 6.6.1</a>
+* `WriteAheadLog.Options` has `NoBuffering` configuration that can be used in combination with `MemoryManagementStrategy.PrivateMemory` to enable direct disk write. This option prevents OS page cache pollution.
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.0">DotNext.AspNetCore.Cluster 6.6.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.1">DotNext.AspNetCore.Cluster 6.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.0">DotNext.MaintenanceServices 1.6.0</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.1">DotNext.MaintenanceServices 1.6.1</a>
 * Updated dependencies
 
 # Release & Support Policy
