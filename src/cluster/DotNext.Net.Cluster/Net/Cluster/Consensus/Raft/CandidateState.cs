@@ -112,8 +112,9 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         }
         catch (OperationCanceledException)
         {
-            // candidate timeout happened
-            MoveToFollowerState(randomizeTimeout: false);
+            // candidate timeout happened without a decisive result (same failure family as a
+            // split vote below), randomize to avoid retrying in lockstep with other candidates
+            MoveToFollowerState(randomizeTimeout: true);
             return;
         }
         finally

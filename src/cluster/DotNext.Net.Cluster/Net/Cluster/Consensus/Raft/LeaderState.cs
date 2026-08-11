@@ -234,8 +234,10 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
 
         if (hasConsensus)
             return GetCommitIndex(indexBuffer.Span);
-        
-        MoveToFollowerState(randomizeTimeout: false);
+
+        // lost quorum responsiveness; randomize so nodes recovering from a correlated stall
+        // (e.g. shared CPU/network degradation) don't resynchronize on the same fixed timeout
+        MoveToFollowerState(randomizeTimeout: true);
         return null;
     }
 
