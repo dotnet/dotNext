@@ -6,7 +6,7 @@ public sealed class IndexPoolTests : Test
     public static void CheckCapacity()
     {
         var pool = new IndexPool(4);
-        Equal(4, pool.Capacity);
+        Equal(5, pool.Capacity);
     }
 
     [Fact]
@@ -30,12 +30,13 @@ public sealed class IndexPoolTests : Test
     {
         const int capacity = 2;
         var pool = new IndexPool(capacity);
-        Equal(capacity, pool.Capacity);
+        Equal(capacity + 1, pool.Capacity);
 
-        using var barrier = new Barrier(capacity);
+        using var barrier = new Barrier(pool.Capacity);
         var task1 = Task.Factory.StartNew(RentReturn, TestToken);
         var task2 = Task.Factory.StartNew(RentReturn, TestToken);
-        await Task.WhenAll(task1, task2);
+        var task3 = Task.Factory.StartNew(RentReturn, TestToken);
+        await Task.WhenAll(task1, task2, task3);
 
         void RentReturn()
         {
@@ -45,7 +46,7 @@ public sealed class IndexPoolTests : Test
                 try
                 {
                     True(pool.TryGet(out value));
-                    True(value is 0 or 1);
+                    True(value is 0 or 1 or 2);
 
                     barrier.SignalAndWait(TestToken);
                 }
@@ -58,5 +59,17 @@ public sealed class IndexPoolTests : Test
                 pool.Return(value);
             }
         }
+    }
+
+    [Fact]
+    public static void FastItem()
+    {
+        var pool = new IndexPool(4);
+        True(pool.TryGet(out var value));
+        Equal(0, value);
+        
+        True(pool.TryReturn(value));
+        True(pool.TryGet(out value));
+        Equal(0, value);
     }
 }
