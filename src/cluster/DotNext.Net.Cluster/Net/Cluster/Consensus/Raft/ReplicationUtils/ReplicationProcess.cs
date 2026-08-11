@@ -44,7 +44,10 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
         var channel = Channel.CreateBounded<ReplicationBarrier>(new BoundedChannelOptions(queueSize)
         {
-            FullMode = BoundedChannelFullMode.DropWrite,
+            // DropWrite makes TryWrite report success (silently discarding the item) even when full;
+            // Replicate() below relies on a false return to synchronously report the member as
+            // unavailable for this round, which only Wait actually provides.
+            FullMode = BoundedChannelFullMode.Wait,
             AllowSynchronousContinuations = false,
             SingleReader = true,
             SingleWriter = true,

@@ -241,9 +241,10 @@ public sealed class WriteAheadLogTests : Test
     }
 
     [Theory]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
-    public static async Task Overwrite(WriteAheadLog.MemoryManagementStrategy strategy)
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, false)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, true)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory, false)]
+    public static async Task Overwrite(WriteAheadLog.MemoryManagementStrategy strategy, bool noBuffering)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -251,7 +252,9 @@ public sealed class WriteAheadLogTests : Test
         var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
         var dir = GetTempPath();
-        await using var wal = new WriteAheadLog(new() { Location = dir, MemoryManagement = strategy }, IStateMachine.CreateNoOp());
+        await using var wal = new WriteAheadLog(
+            new() { Location = dir, MemoryManagement = strategy, NoBuffering = noBuffering },
+            IStateMachine.CreateNoOp());
 
         await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 1L, token: TestToken);
         Equal(4L, wal.LastEntryIndex);

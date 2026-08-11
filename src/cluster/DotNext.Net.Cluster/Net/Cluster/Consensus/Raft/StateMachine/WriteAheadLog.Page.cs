@@ -10,6 +10,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Numerics;
 
 partial class WriteAheadLog
 {
@@ -87,15 +88,12 @@ partial class WriteAheadLog
         }
     }
     
-    /// <summary>
-    /// Represents memory-mapped page of memory.
-    /// </summary>
-    private sealed class AnonymousPage : Page
+    private abstract class AnonymousPageBase : Page
     {
         private readonly int pageSize;
         private unsafe void* address;
-
-        public unsafe AnonymousPage(int pageSize, nuint alignment)
+        
+        protected unsafe AnonymousPageBase(int pageSize, nuint alignment)
         {
             Debug.Assert(pageSize % MinSize is 0);
             Debug.Assert((uint)pageSize % alignment is 0);
@@ -105,6 +103,18 @@ partial class WriteAheadLog
             this.pageSize = pageSize;
             PoolIndex = -1;
         }
+
+        protected void EnsureFileSize(SafeFileHandle handle)
+        {
+            if (RandomAccess.GetLength(handle) is 0U)
+                RandomAccess.SetLength(handle, pageSize);
+        }
+
+        protected static (int Start, int End) Align(int offset, int length, uint sectorSize) => new()
+        {
+            Start = (int)((uint)offset).RoundDown(sectorSize),
+            End = (int)((uint)offset + (uint)length).RoundUp(sectorSize),
+        };
 
         public unsafe void Clear() => NativeMemory.Clear(address, (uint)pageSize);
 
@@ -116,47 +126,40 @@ partial class WriteAheadLog
             }
         }
 
-        public int PoolIndex { get; init; }
+        public int PoolIndex { get; set; }
+
+        protected virtual SafeFileHandle OpenRead(string fileName)
+            => File.OpenHandle(fileName, options: FileOptions.SequentialScan);
 
         public void Populate(DirectoryInfo location, uint pageIndex)
         {
-            using var handle = File.OpenHandle(GetPageFileName(location, pageIndex), options: FileOptions.SequentialScan);
+            using var handle = OpenRead(GetPageFileName(location, pageIndex));
             RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
         }
-
+        
         public static void Delete(DirectoryInfo directory, uint pageIndex)
             => File.Delete(GetPageFileName(directory, pageIndex));
 
-        private async ValueTask Flush(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
-        {
-            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex),
-                FileMode.OpenOrCreate,
-                FileAccess.Write,
-                options: FileOptions.WriteThrough | FileOptions.Asynchronous);
-
-            if (RandomAccess.GetLength(handle) is 0U)
-                RandomAccess.SetLength(handle, pageSize);
-
-            var buffer = Memory.Slice(offset, length);
-            await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);
-        }
+        protected abstract ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token);
 
         public ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
         {
             var (offset, length) = range.GetOffsetAndLength(pageSize);
-            return Flush(directory, pageIndex, offset, length, token);
+            return FlushAsync(GetPageFileName(directory, pageIndex), offset, length, token);
         }
 
-        internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
+        public sealed override unsafe Span<byte> GetSpan() => new(address, pageSize);
+
+        public sealed override Memory<byte> Memory => CreateMemory(pageSize);
+        
+        public unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madvise)
         {
+            Debug.Assert(madvise is not null);
+            
             const int MADV_HUGEPAGE = 14;
             var errorCode = madvise((nint)address, pageSize, MADV_HUGEPAGE);
             Debug.Assert(errorCode is 0);
         }
-
-        public override unsafe Span<byte> GetSpan() => new(address, pageSize);
-
-        public override Memory<byte> Memory => CreateMemory(pageSize);
 
         protected override unsafe void Dispose(bool disposing)
         {
@@ -168,6 +171,29 @@ partial class WriteAheadLog
         }
 
         [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
-        ~AnonymousPage() => Dispose(disposing: false);
+        ~AnonymousPageBase() => Dispose(disposing: false);
+    }
+    
+    /// <summary>
+    /// Represents memory-mapped page of memory.
+    /// </summary>
+    private sealed class AnonymousPage(int pageSize, nuint alignment) : AnonymousPageBase(pageSize, alignment)
+    {
+        protected override async ValueTask FlushAsync(string fileName, int offset, int length, CancellationToken token)
+        {
+            using var handle = File.OpenHandle(fileName,
+                FileMode.OpenOrCreate,
+                FileAccess.Write,
+                options: FileOptions.WriteThrough | FileOptions.Asynchronous);
+
+            EnsureFileSize(handle);
+
+            await RandomAccess.WriteAsync(
+                    handle,
+                    Memory.Slice(offset, length),
+                    offset,
+                    token)
+                .ConfigureAwait(false);
+        }
     }
 }

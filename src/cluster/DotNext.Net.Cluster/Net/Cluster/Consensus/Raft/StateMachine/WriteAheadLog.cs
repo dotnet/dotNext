@@ -88,13 +88,21 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             PageManager m, d;
             switch (configuration.MemoryManagement)
             {
+                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsWindows() && configuration.NoBuffering:
+                    m = new WindowsDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    d = new WindowsDirectPageManager(dataLocation, configuration.ChunkSize);
+                    break;
+                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsLinux() && configuration.NoBuffering:
+                    m = new LinuxDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    d = new LinuxDirectPageManager(dataLocation, configuration.ChunkSize);
+                    break;
                 case MemoryManagementStrategy.PrivateMemory:
-                    m = new AnonymousPageManager(metadataLocation, Page.MinSize);
+                    m = new AnonymousPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
                     d = new AnonymousPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.SharedMemory:
                 default:
-                    m = new MemoryMappedPageManager(metadataLocation, Page.MinSize);
+                    m = new MemoryMappedPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
                     d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }

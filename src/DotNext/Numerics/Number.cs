@@ -251,8 +251,18 @@ public static partial class Number
     /// <returns><paramref name="value"/> rounded up to the multiple of <paramref name="multiplier"/>.</returns>
     /// <exception cref="OverflowException"><paramref name="value"/> is too large to round up.</exception>
     public static T RoundUp<T>(this T value, T multiplier)
-        where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
+        where T : struct, IUnsignedNumber<T>, IBinaryInteger<T>
     {
+        // For a power-of-two multiplier, the masking form below is overflow-equivalent to the
+        // modulo form: T.MaxValue is always the all-ones bit pattern for the unsigned integer
+        // types this method is used with, so "value + mask" only overflows in exactly the cases
+        // where the mathematically correct rounded-up value would have overflowed too.
+        if (T.IsPow2(multiplier))
+        {
+            var mask = multiplier - T.One;
+            return checked(value + mask) & ~mask;
+        }
+
         var complement = (multiplier - value % multiplier) % multiplier;
         return checked(value + complement);
     }
@@ -265,6 +275,6 @@ public static partial class Number
     /// <typeparam name="T">The type of the number.</typeparam>
     /// <returns><paramref name="value"/> rounded down to the multiple of <paramref name="multiplier"/>.</returns>
     public static T RoundDown<T>(this T value, T multiplier)
-        where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
-        => value - value % multiplier;
+        where T : struct, IUnsignedNumber<T>, IBinaryInteger<T>
+        => T.IsPow2(multiplier) ? value & ~(multiplier - T.One) : value - value % multiplier;
 }

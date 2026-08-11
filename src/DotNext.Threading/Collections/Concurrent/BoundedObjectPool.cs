@@ -43,21 +43,20 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     {
         // fast path - reuse fast item slot
         var result = fastItem as T;
-        if (result is not null
-            && Interlocked.CompareExchange(ref fastItem, null, result) == result)
-            return result;
-        
-        // slow path
-        ref var slot = ref buffer.TryDequeue(out var sequence);
-        if (Unsafe.IsNullRef(ref slot))
+        if (result is null || Interlocked.CompareExchange(ref fastItem, null, result) != result)
         {
-            result = null;
-        }
-        else
-        {
-            result = slot.Item;
-            slot.Item = null;
-            slot.Sequence = sequence;
+            // slow path
+            ref var slot = ref buffer.TryDequeue(out var sequence);
+            if (Unsafe.IsNullRef(ref slot))
+            {
+                result = null;
+            }
+            else
+            {
+                result = slot.Item;
+                slot.Item = null;
+                slot.Sequence = sequence;
+            }
         }
 
         return result;
@@ -73,16 +72,17 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     public bool TryReturn(T item)
     {
         // fast path - try to set fast item slot
-        if (fastItem is null && Interlocked.CompareExchange(ref fastItem, item, null) is null)
-            return true;
-        
-        // slow path
-        ref var slot = ref buffer.TryEnqueue(out var sequence);
-        if (Unsafe.IsNullRef(ref slot))
-            return false;
+        if (fastItem is not null || Interlocked.CompareExchange(ref fastItem, item, null) is not null)
+        {
+            // slow path
+            ref var slot = ref buffer.TryEnqueue(out var sequence);
+            if (Unsafe.IsNullRef(ref slot))
+                return false;
 
-        slot.Item = item;
-        slot.Sequence = sequence;
+            slot.Item = item;
+            slot.Sequence = sequence;
+        }
+
         return true;
     }
 
