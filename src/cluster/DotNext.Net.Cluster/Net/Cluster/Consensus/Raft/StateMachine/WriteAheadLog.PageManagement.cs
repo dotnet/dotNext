@@ -220,17 +220,16 @@ partial class WriteAheadLog
     private abstract class AnonymousPageManager<TPage> : PageManager<TPage>
         where TPage : AnonymousPageBase
     {
-        private const int PageCacheSize = sizeof(ulong) * 8;
         private readonly IndexPool indices;
-        private PageCache cache;
+        private readonly TPage?[] cache;
 
         protected AnonymousPageManager(DirectoryInfo location, int pageSize, out ReadOnlySpan<uint> pages)
             : base(location, pageSize, GetPages(location, out pages))
         {
-            indices = new(PageCacheSize);
-            Debug.Assert(indices.Capacity is PageCacheSize);
-            
-            cache = new();
+            const int pageCacheSize = sizeof(uint) * 8;
+
+            indices = new(pageCacheSize);
+            cache = new TPage[indices.Capacity];
         }
 
         protected sealed override TPage CreatePage(uint pageIndex) => RentPage();
@@ -285,7 +284,7 @@ partial class WriteAheadLog
                 }
             }
             
-            // place at least one page to the cache
+            // place at least one page to the cache to populate fast item
             if (indices.TryGet(out var poolIndex))
             {
                 page = CreatePage(reusable: true);
@@ -345,24 +344,10 @@ partial class WriteAheadLog
         {
             if (disposing && indices.Freeze())
             {
-                cache.Clear(indices);
+                Array.Clear(cache);
             }
 
             base.Dispose(disposing);
-        }
-        
-        [InlineArray(PageCacheSize)]
-        private struct PageCache
-        {
-            private TPage? page0;
-
-            public void Clear(IndexPool indices)
-            {
-                while (indices.TryGet(out var index))
-                {
-                    this[index]?.As<IDisposable>().Dispose();
-                }
-            }
         }
     }
 
