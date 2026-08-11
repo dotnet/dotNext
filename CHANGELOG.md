@@ -20,6 +20,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.1">DotNext.Net.Cluster 6.6.1</a>
 * `WriteAheadLog.Options` has `NoBuffering` configuration that can be used in combination with `MemoryManagementStrategy.PrivateMemory` to enable direct disk write. This option prevents OS page cache pollution
 * Randomize election timeout on failed candidacy and quorum loss
+* Fix replication queue full-detection to actually detect fullness
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.1">DotNext.AspNetCore.Cluster 6.6.1</a>
 * Updated dependencies
