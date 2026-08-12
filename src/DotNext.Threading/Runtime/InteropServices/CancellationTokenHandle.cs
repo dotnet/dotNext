@@ -10,7 +10,7 @@ using Threading;
 /// </summary>
 /// <seealso cref="UnmanagedCallersOnlyAttribute"/>
 [StructLayout(LayoutKind.Sequential)]
-public struct CancellationTokenHandle : IDisposable
+public record struct CancellationTokenHandle : IDisposable
 {
     private GCHandle handle;
 
