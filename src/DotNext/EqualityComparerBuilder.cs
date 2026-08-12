@@ -192,11 +192,10 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static IEnumerable<FieldInfo> GetAllFields(Type type)
     {
-        foreach (var t in type.GetBaseTypes(includeTopLevel: true))
-        {
-            foreach (var field in t.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
-                yield return field;
-        }
+        const BindingFlags instanceDeclaredOnly = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic;
+        return type
+            .GetBaseTypes(includeTopLevel: true)
+            .SelectMany(static t => t.GetFields(instanceDeclaredOnly));
     }
 
     [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
