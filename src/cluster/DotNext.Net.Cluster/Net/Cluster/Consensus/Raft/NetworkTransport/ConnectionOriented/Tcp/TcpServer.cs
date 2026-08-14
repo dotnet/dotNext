@@ -131,6 +131,11 @@ internal sealed class TcpServer : Server, ITcpTransport
                 {
                     await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
                 }
+                catch (OperationCanceledException e) when (e.CausedByTimeout(timeoutSource))
+                {
+                    logger.RequestTimedOut(clientAddress, e);
+                    break;
+                }
                 finally
                 {
                     // reset cancellation token
@@ -142,11 +147,9 @@ internal sealed class TcpServer : Server, ITcpTransport
         {
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
-            // if lifecycleToken is canceled then shutdown socket gracefully without logging
-            if (e.CausedByTimeout(timeoutSource))
-                logger.RequestTimedOut(clientAddress, e);
+            // shutdown socket gracefully without logging
         }
         catch (Exception e)
         {

@@ -38,6 +38,7 @@ public abstract class TransportTestSuite : RaftTest
         internal ReceiveEntriesBehavior Behavior;
         internal byte[] ReceivedConfiguration = [];
         internal long ReceivedConfigurationVersion = -1L;
+        internal TimeSpan VoteDelay;
         private readonly ClusterMemberId localId = Random.Shared.Next<ClusterMemberId>();
 
         internal LocalMember(bool smallAmountOfMetadata = false)
@@ -125,13 +126,17 @@ public abstract class TransportTestSuite : RaftTest
             return true;
         }
 
-        ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        async ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             True(token.CanBeCanceled);
             Equal(42L, term);
             Equal(1L, lastLogIndex);
             Equal(56L, lastLogTerm);
-            return ValueTask.FromResult<Result<bool>>(new() { Term = 43L, Value = true });
+
+            if (VoteDelay > TimeSpan.Zero)
+                await Task.Delay(VoteDelay, token);
+
+            return new() { Term = 43L, Value = true };
         }
 
         ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -210,6 +215,27 @@ public abstract class TransportTestSuite : RaftTest
             True(task.Result.Value);
             Equal(43L, task.Result.Term);
         });
+    }
+
+    private protected async Task RequestTimeoutTest(ServerFactory serverFactory, ClientFactory clientFactory)
+    {
+        var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+        var serverTimeout = TimeSpan.FromMilliseconds(50D);
+        var member = new LocalMember { VoteDelay = DefaultTimeout };
+        await using var server = serverFactory(member, serverAddr, serverTimeout);
+        await server.StartAsync(TestToken);
+
+        using (var client = clientFactory(serverAddr, member, DefaultTimeout))
+        {
+            await ThrowsAsync<MemberUnavailableException>(
+                () => client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, TestToken));
+        }
+
+        member.VoteDelay = TimeSpan.Zero;
+        using var nextClient = clientFactory(serverAddr, member, DefaultTimeout);
+        var result = await nextClient.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, TestToken);
+        True(result.Value);
+        Equal(43L, result.Term);
     }
 
     private protected async Task MetadataRequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory, bool smallAmountOfMetadata)
