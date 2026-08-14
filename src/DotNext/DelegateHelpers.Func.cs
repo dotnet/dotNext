@@ -64,7 +64,9 @@ partial class DelegateHelpers
                 return Unsafe.As<Func<TResult>>(FromBoolConstant(Unsafe.As<TResult, bool>(ref obj)));
 
             // slow path - allocates a new delegate
-            return obj is null ? Default<TResult?>! : obj.UnboxAny<TResult>;
+            return obj is null || typeof(TResult).IsPrimitive && EqualityComparer<TResult>.Default.Equals(obj, default)
+                ? Default<TResult?>!
+                : obj.UnboxAny<TResult>;
         }
         
         /// <summary>
@@ -223,7 +225,9 @@ partial class DelegateHelpers
                 return Unsafe.As<Func<T, TResult>>(FromBoolConstant<T>(Unsafe.As<TResult, bool>(ref obj)));
 
             // slow path - allocates a new delegate
-            return obj is null ? Default<T, TResult?>! : obj.UnboxAny<T, TResult>;
+            return obj is null || typeof(TResult).IsPrimitive && EqualityComparer<TResult>.Default.Equals(obj, default)
+                ? Default<T, TResult?>!
+                : obj.UnboxAny<T, TResult>;
         }
     }
 
