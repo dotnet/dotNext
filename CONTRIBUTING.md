@@ -1,6 +1,5 @@
 Contribution to .NEXT
 ====
-[![Chat for Contributors](https://badges.gitter.im/dot_next/contrib.svg)](https://gitter.im/dot_next/contrib)
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -24,3 +23,6 @@ Contributions must not contain breaking changes such as backward incompatible mo
 
 ## Unit Tests
 If your PR contains bug fix or new feature then it should have unit tests.
+
+## AI
+If your PR was fully or partially made by the AI model (Codex, Claude, etc.), add `ai_assisted` label to it.
