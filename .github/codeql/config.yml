@@ -3,5 +3,5 @@ paths:
 paths-ignore:
   - src/DotNext.Tests
   - src/DotNext.Benchmarks
+  - src/DotNext.Benchmarks.WAL
   - src/examples
-  - src/VisualBasicElements
