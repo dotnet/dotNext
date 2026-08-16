@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 08-17-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.2">DotNext.Net.Cluster 6.6.2</a>
+* Fixed [293](https://github.com/dotnet/dotNext/issues/293)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.2</a>
+* Updated dependencies
+
 # 08-11-2026
 <a href="https://www.nuget.org/packages/dotnext/6.6.1">DotNext 6.6.1</a>
 * Optimized `RoundUp` and `RoundDown` for the case when multiplier is a power of 2
