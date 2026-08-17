@@ -2,10 +2,28 @@ Release Notes
 ====
 
 # 08-17-2026
+<a href="https://www.nuget.org/packages/dotnext/6.6.2">DotNext 6.6.2</a>
+* `Constant` static extension method for [Func&lt;TResult&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-1) delegate provides cached version for default value of the primitive types
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.2">DotNext.Metaprogramming 6.6.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.2">DotNext.Unsafe 6.6.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.2">DotNext.Threading 6.6.2</a>
+* Added `CancellationTokenHandle` that can be used to expose [CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) to the unmanaged code efficiently
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.2">DotNext.IO 6.6.2</a>
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.2">DotNext.Net.Cluster 6.6.2</a>
 * Fixed [293](https://github.com/dotnet/dotNext/issues/293)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.2">DotNext.MaintenanceServices 1.6.2</a>
 * Updated dependencies
 
 # 08-11-2026
