@@ -96,6 +96,28 @@ public sealed class TcpTransportTests : TransportTestSuite
         return StressTestCore(CreateServer, CreateClient);
     }
 
+    [Fact]
+    public Task RequestTimeout()
+    {
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 2, member, NullLoggerFactory.Instance)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            ReceiveTimeout = timeout,
+            TransmissionBlockSize = 65535,
+            GracefulShutdownTimeout = 2000
+        };
+
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            RequestTimeout = timeout,
+            ConnectTimeout = timeout,
+            TransmissionBlockSize = 65535,
+        };
+
+        return RequestTimeoutTest(CreateServer, CreateClient);
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
