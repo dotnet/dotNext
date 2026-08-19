@@ -35,8 +35,8 @@ public sealed record LinuxUdsPeerIdentity : IIdentity
 
         if (GetpwuidFunction is not null)
         {
-            ref var passwd = ref GetpwuidFunction(uid);
-            if (!Unsafe.IsNullRef(ref passwd))
+            ref readonly var passwd = ref GetpwuidFunction(uid);
+            if (!Unsafe.IsNullRef(in passwd))
             {
                 Name = Marshal.PtrToStringAnsi(passwd.Name);
                 DisplayName = Marshal.PtrToStringAnsi(passwd.UserInfo);

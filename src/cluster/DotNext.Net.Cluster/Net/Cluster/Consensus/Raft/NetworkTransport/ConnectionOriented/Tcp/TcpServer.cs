@@ -127,15 +127,11 @@ internal sealed class TcpServer : Server, ITcpTransport
                     break;
 
                 timeoutSource = multiplexer.Combine(receiveTimeout, lifecycleToken);
-                try
-                {
-                    await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    // reset cancellation token
-                    await timeoutSource.DisposeAsync().ConfigureAwait(false);
-                }
+                await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
+
+                // reset cancellation token
+                await timeoutSource.DisposeAsync().ConfigureAwait(false);
+                timeoutSource = default;
             }
         }
         catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } or { InnerException: SocketException { SocketErrorCode: SocketError.ConnectionReset } })
@@ -154,6 +150,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         }
         finally
         {
+            await timeoutSource.DisposeAsync().ConfigureAwait(false);
             await protocol.DisposeAsync().ConfigureAwait(false);
             if (protocol.BaseStream is SslStream ssl)
                 await ssl.DisposeAsync().ConfigureAwait(false);

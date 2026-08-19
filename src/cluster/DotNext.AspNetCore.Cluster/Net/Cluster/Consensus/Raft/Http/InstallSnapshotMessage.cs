@@ -25,8 +25,8 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
     internal readonly IDataTransferObject Configuration;
     
     public InstallSnapshotMessage(in ClusterMemberId sender, long term, IRaftLogEntry snapshot, long snapshotIndex,
-        IDataTransferObject configuration, long configVersion)
-        : base(sender, term)
+        IDataTransferObject configuration, long configVersion, int stateVersion)
+        : base(sender, term, stateVersion)
     {
         Debug.Assert(configuration.Length is not null);
         

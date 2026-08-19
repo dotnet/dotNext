@@ -37,7 +37,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         internal MultipartLogEntry(MultipartSection section)
             : base(section.Body, true)
         {
-            Term = ParseHeader(section.Headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
+            Term = ParseHeader(section.Headers, VoteMessageBase.RecordTermHeader, Int64Parser);
             CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
             IsConfiguration = ParseHeader(section.Headers, IsConfigurationHeader, BooleanParser);
         }
@@ -230,8 +230,8 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     internal readonly long PrevLogTerm;
     internal readonly long CommitIndex;
 
-    private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
-        : base(sender, term)
+    private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion)
+        : base(sender, term, stateVersion)
     {
         PrevLogIndex = prevLogIndex;
         PrevLogTerm = prevLogTerm;
@@ -387,7 +387,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             }
 
             // write headers
-            WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term);
+            WriteHeader(builder, VoteMessageBase.RecordTermHeader, entry.Term);
             WriteHeader<NullableFormattable<int>>(builder, CommandIdHeader, entry.CommandId);
             WriteHeader(builder, IsConfigurationHeader, entry.IsConfiguration);
 
@@ -454,8 +454,9 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
     private TList entries;  // not readonly to avoid hidden copies
 
-    internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
-        : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
+    internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries,
+        int stateVersion)
+        : base(sender, term, prevLogIndex, prevLogTerm, commitIndex, stateVersion)
     {
         this.entries = entries;
     }

@@ -6,9 +6,9 @@ using Buffers;
 using Buffers.Binary;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly record struct AppendEntriesMessage(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount) : IBinaryFormattable<AppendEntriesMessage>
+internal readonly record struct AppendEntriesMessage(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, int StateVersion) : IBinaryFormattable<AppendEntriesMessage>
 {
-    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
+    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int) + sizeof(int);
 
     public void Format(Span<byte> output)
     {
@@ -19,6 +19,7 @@ internal readonly record struct AppendEntriesMessage(ClusterMemberId Id, long Te
         writer.WriteLittleEndian(PrevLogTerm);
         writer.WriteLittleEndian(CommitIndex);
         writer.WriteLittleEndian(EntriesCount);
+        writer.WriteLittleEndian(StateVersion);
     }
 
     public static AppendEntriesMessage Parse(ReadOnlySpan<byte> input)
@@ -30,6 +31,7 @@ internal readonly record struct AppendEntriesMessage(ClusterMemberId Id, long Te
             reader.ReadLittleEndian<long>(),
             reader.ReadLittleEndian<long>(),
             reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<int>(),
             reader.ReadLittleEndian<int>());
     }
 }

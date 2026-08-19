@@ -21,6 +21,11 @@ public interface IStateMachine : ISnapshotManager
     ValueTask<long> ApplyAsync(LogEntry entry, CancellationToken token);
 
     /// <summary>
+    /// Gets the version of the replication protocol.
+    /// </summary>
+    int Version => 0;
+
+    /// <summary>
     /// Creates no-op state machine.
     /// </summary>
     /// <param name="snapshotThreshold">The number of log entries to be squashed as a snapshot.</param>

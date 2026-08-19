@@ -596,10 +596,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
     /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
     /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+    /// <param name="stateVersion">The version of the state machine.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="null"/> if snapshot is outdated.</returns>
     protected async ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot,
-        long snapshotIndex, CancellationToken token)
+        long snapshotIndex, int stateVersion, CancellationToken token)
         where TSnapshot : IRaftLogEntry
     
     {
@@ -612,12 +613,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             lockTaken = true;
 
             result = new() { Term = AuditTrail.Term };
-            if (snapshot.IsSnapshot && senderTerm >= result.Term && snapshotIndex > AuditTrail.LastCommittedEntryIndex)
+            if (stateVersion <= AuditTrail.Version
+                && snapshot.IsSnapshot
+                && senderTerm >= result.Term
+                && snapshotIndex > AuditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
-                
+
                 // install snapshot
                 await AuditTrail.AppendAsync(snapshot, snapshotIndex, tokenSource.Token).ConfigureAwait(false);
                 result = result with
@@ -651,10 +655,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
     /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
     /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+    /// <param name="stateVersion">The version of the state machine.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The processing result.</returns>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))] // hot path, avoid allocations
-    protected async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+    protected async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm,
+        ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
         where TEntry : IRaftLogEntry
     {
         Result<HeartbeatResult> result;
@@ -666,7 +672,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             lockTaken = true;
 
             result = new() { Term = AuditTrail.Term };
-            if (result.Term <= senderTerm)
+            if (stateVersion <= AuditTrail.Version && result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
@@ -721,9 +727,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="nextTerm">Caller's current term + 1.</param>
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+    /// <param name="stateVersion">The version of the state machine.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>Pre-vote result received from the member.</returns>
-    protected async ValueTask<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    protected async ValueTask<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long nextTerm, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
     {
         Result<PreVoteResult> result;
 
@@ -733,9 +740,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             result = new() { Term = AuditTrail.Term };
 
-            // provide leader stickiness
-            if (aggressiveStickiness && Volatile.Read(in state) is LeaderState<TMember>)
+            
+            if (stateVersion > AuditTrail.Version)
             {
+                // reject
+            }
+            else if (aggressiveStickiness && Volatile.Read(in state) is LeaderState<TMember>)
+            {
+                // provide leader stickiness
                 result = result with { Value = PreVoteResult.RejectedByLeader };
             }
             else if (members.ContainsKey(sender) && Timestamp.VolatileRead(in lastUpdated).Elapsed >= ElectionTimeout && result.Term <= nextTerm &&
@@ -811,14 +823,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="senderTerm">Term value provided by sender of the request.</param>
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+    /// <param name="stateVersion">The version of the state machine.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-    protected async ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    protected async ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
     {
         var result = new Result<bool> { Term = AuditTrail.Term };
 
         // provide leader stickiness
-        if (result.Term > senderTerm || Timestamp.VolatileRead(in lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
+        if (stateVersion > AuditTrail.Version
+            || result.Term > senderTerm
+            || Timestamp.VolatileRead(in lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
         var tokenSource = CombineTokens(token, LifecycleToken);

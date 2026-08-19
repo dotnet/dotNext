@@ -60,6 +60,11 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// </summary>
     IClusterConfigurationStorage? ConfigurationStorage { get; internal set; }
 
+    /// <summary>
+    /// Gets the version of the replication protocol.
+    /// </summary>
+    int Version => 0;
+
     internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)
         => lastVote is null || lastVote.Value == expected;
 }

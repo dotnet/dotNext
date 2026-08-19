@@ -31,32 +31,12 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-11-2026
+Release Date: 08-19-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.6.1">DotNext 6.6.1</a>
-* Optimized `RoundUp` and `RoundDown` for the case when multiplier is a power of 2
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
+* Added support of Raft cluster rolling updates, when a new log entry types need to be introduced 
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.1">DotNext.Metaprogramming 6.6.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.1">DotNext.Unsafe 6.6.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/6.6.1">DotNext.Threading 6.6.1</a>
-* `IndexPool` increases the chance to reuse the same index returned to the pool recently
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.6.1">DotNext.IO 6.6.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.1">DotNext.Net.Cluster 6.6.1</a>
-* `WriteAheadLog.Options` has `NoBuffering` configuration that can be used in combination with `MemoryManagementStrategy.PrivateMemory` to enable direct disk write. This option prevents OS page cache pollution
-* Randomize election timeout on failed candidacy and quorum loss
-* Fix replication queue full-detection to actually detect fullness
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.1">DotNext.AspNetCore.Cluster 6.6.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.1">DotNext.MaintenanceServices 1.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
 * Updated dependencies
 
 # Release & Support Policy
@@ -81,13 +61,6 @@ Philosophy of development process:
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks
-
-# Users
-.NEXT is used by several companies in their projects:
-
-[![Copenhagen Atomics](https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Copenhagenatomics_logo_gray.png/320px-Copenhagenatomics_logo_gray.png)](https://www.copenhagenatomics.com)
-
-[![Wargaming](https://upload.wikimedia.org/wikipedia/en/f/fa/Wargaming_logo.svg)](https://wargaming.com)
 
 # Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

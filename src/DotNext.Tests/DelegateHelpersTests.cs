@@ -209,9 +209,12 @@ public sealed class DelegateHelpersTests : Test
     {
         Same(Func<string>.Constant(null), Func<string>.Constant(null));
         Null(Func<string>.Constant(null).Invoke());
+
+        Same(Func<int>.Constant(0), Func<int>.Constant(0));
         
         Same(Func<int, string>.Constant(null), Func<int, string>.Constant(null));
         Null(Func<int, string>.Constant(null).Invoke(42));
+        Same(Func<int, int>.Constant(0), Func<int, int>.Constant(0));
 
         Same(Func<bool>.Constant(true), Func<bool>.Constant(true));
         Same(Func<bool>.Constant(false), Func<bool>.Constant(false));
