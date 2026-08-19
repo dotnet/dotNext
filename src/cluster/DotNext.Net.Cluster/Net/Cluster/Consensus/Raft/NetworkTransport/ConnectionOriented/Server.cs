@@ -61,7 +61,7 @@ internal abstract partial class Server : Disposable, IServer
         static ValueTask<Result<bool>> Invoke(ILocalMember localMember, ReadOnlySpan<byte> requestData, CancellationToken token)
         {
             var request = VoteMessage.Parse(requestData);
-            return localMember.VoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token);
+            return localMember.VoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, request.StateVersion, token);
         }
     }
 
@@ -76,7 +76,7 @@ internal abstract partial class Server : Disposable, IServer
         static ValueTask<Result<PreVoteResult>> Invoke(ILocalMember localMember, ReadOnlySpan<byte> requestData, CancellationToken token)
         {
             var request = PreVoteMessage.Parse(requestData);
-            return localMember.PreVoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token);
+            return localMember.PreVoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, request.StateVersion, token);
         }
     }
 
@@ -128,6 +128,7 @@ internal abstract partial class Server : Disposable, IServer
             snapshot.Message.Term,
             snapshot,
             snapshot.Message.SnapshotIndex,
+            snapshot.Message.StateVersion,
             token).ConfigureAwait(false);
 
         // skip contents of the snapshot if it wasn't consumed
@@ -174,7 +175,9 @@ internal abstract partial class Server : Disposable, IServer
             message.Term,
             entries,
             message.PrevLogIndex,
-            message.PrevLogTerm, message.CommitIndex,
+            message.PrevLogTerm,
+            message.CommitIndex,
+            message.StateVersion,
             token);
     }
 

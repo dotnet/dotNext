@@ -301,7 +301,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         if (TryGetMember(request.Sender) is { } sender)
         {
             sender.Touch();
-            result = await VoteAsync(request.Sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false);
+            result = await VoteAsync(request.Sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, request.StateVersion, token).ConfigureAwait(false);
         }
         else
         {
@@ -315,7 +315,8 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         TryGetMember(request.Sender)?.Touch();
         await PreVoteMessage.SaveResponseAsync(response,
-            await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false),
+            await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, request.StateVersion, token)
+                .ConfigureAwait(false),
             token).ConfigureAwait(false);
     }
 
@@ -339,7 +340,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         try
         {
             var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm,
-                message.CommitIndex, token).ConfigureAwait(false);
+                message.CommitIndex, message.StateVersion, token).ConfigureAwait(false);
             await AppendEntriesMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
         }
         finally
@@ -367,6 +368,7 @@ internal partial class RaftHttpCluster : IOutputChannel
             message.ConsensusTerm,
             message.Snapshot,
             message.Index,
+            message.StateVersion,
             token).ConfigureAwait(false);
         await InstallSnapshotMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }

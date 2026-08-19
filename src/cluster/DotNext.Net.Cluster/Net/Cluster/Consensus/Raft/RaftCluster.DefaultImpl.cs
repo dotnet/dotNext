@@ -225,33 +225,33 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         => ResignAsync(token);
 
     /// <inheritdoc />
-    ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-        => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+    ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
+        => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, stateVersion, token);
 
     /// <inheritdoc />
-    ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
     {
         if (TryGetMember(sender) is not { } member)
             return ValueTask.FromResult<Result<bool>>(new() { Term = AuditTrail.Term });
 
         member.Touch();
-        return VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
+        return VoteAsync(sender, term, lastLogIndex, lastLogTerm, stateVersion, token);
     }
 
     /// <inheritdoc />
-    ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
     {
         TryGetMember(sender)?.Touch();
-        return PreVoteAsync(sender, term + 1L, lastLogIndex, lastLogTerm, token);
+        return PreVoteAsync(sender, term + 1L, lastLogIndex, lastLogTerm, stateVersion, token);
     }
 
     /// <inheritdoc />
     ValueTask<Result<HeartbeatResult>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, 
-        long snapshotIndex, CancellationToken token)
+        long snapshotIndex, int stateVersion, CancellationToken token)
     {
         TryGetMember(sender)?.Touch();
 
-        return InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
+        return InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, stateVersion, token);
     }
 
     /// <inheritdoc />

@@ -229,8 +229,8 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
 
         Logger.InstallingSnapshot(member.EndPoint, replicationIndex = snapshotIndex);
 
-        var (config, version) = await LoadConfigurationAsync(token).ConfigureAwait(false);
-        return await member.InstallSnapshotAsync(Term, snapshot, snapshotIndex, config, version, token)
+        var (config, configVersion) = await LoadConfigurationAsync(token).ConfigureAwait(false);
+        return await member.InstallSnapshotAsync(Term, snapshot, snapshotIndex, config, configVersion, token)
             .ConfigureAwait(false);
     }
 

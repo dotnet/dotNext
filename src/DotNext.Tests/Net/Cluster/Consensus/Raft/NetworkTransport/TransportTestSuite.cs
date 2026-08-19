@@ -61,8 +61,9 @@ public abstract class TransportTestSuite : RaftTest
 
         ValueTask<bool> ILocalMember.ResignAsync(CancellationToken token) => ValueTask.FromResult(true);
 
-        async ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        async ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
         {
+            Equal(0, stateVersion);
             Equal(42L, senderTerm);
             Equal(1, prevLogIndex);
             Equal(56L, prevLogTerm);
@@ -102,8 +103,9 @@ public abstract class TransportTestSuite : RaftTest
         }
 
         async ValueTask<Result<HeartbeatResult>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot,
-            long snapshotIndex, CancellationToken token)
+            long snapshotIndex, int stateVersion, CancellationToken token)
         {
+            Equal(0, stateVersion);
             Equal(42L, senderTerm);
             Equal(10, snapshotIndex);
             True(snapshot.IsSnapshot);
@@ -126,12 +128,13 @@ public abstract class TransportTestSuite : RaftTest
             return true;
         }
 
-        async ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        async ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
         {
             True(token.CanBeCanceled);
             Equal(42L, term);
             Equal(1L, lastLogIndex);
             Equal(56L, lastLogTerm);
+            Equal(0, stateVersion);
 
             if (VoteDelay > TimeSpan.Zero)
                 await Task.Delay(VoteDelay, token);
@@ -139,12 +142,13 @@ public abstract class TransportTestSuite : RaftTest
             return new() { Term = 43L, Value = true };
         }
 
-        ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, int stateVersion, CancellationToken token)
         {
             True(token.CanBeCanceled);
             Equal(10L, term);
             Equal(2L, lastLogIndex);
             Equal(99L, lastLogTerm);
+            Equal(0, stateVersion);
             return ValueTask.FromResult<Result<PreVoteResult>>(new() { Term = 44L, Value = PreVoteResult.Accepted });
         }
 
