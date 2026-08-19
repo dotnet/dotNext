@@ -528,7 +528,7 @@ public abstract class TransportTestSuite : RaftTest
         => new TestWriteAheadLog(new() { Location = GetTempPath() }, IStateMachine.CreateNoOp(), version);
 }
 
-file sealed class TestWriteAheadLog(WriteAheadLog.Options options, IStateMachine stateMachine, int version = 0)
+file sealed class TestWriteAheadLog(WriteAheadLog.Options options, IStateMachine stateMachine, int version)
     : WriteAheadLog(options, stateMachine), IPersistentState
 {
     int IPersistentState.Version => version;
