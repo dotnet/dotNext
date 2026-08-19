@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 08-19-2026
+# 08-20-2026
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
 * Added support of Raft cluster rolling updates, when a new log entry types need to be introduced
 
