@@ -192,6 +192,10 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 return MemberResult.Touched;
             case HeartbeatResult.Rejected when result.Term > Term:
                 return MemberResult.HigherTermDetected(result.Term);
+            case HeartbeatResult.UnsupportedVersion:
+                // Do not decrement NextIndex
+                Logger.UnsupportedVersion(member.EndPoint);
+                return MemberResult.Touched;
             default:
                 Logger.ReplicationFailed(member.EndPoint, member.State.NextIndex = member.State.PrecedingIndex);
                 return MemberResult.Touched;
