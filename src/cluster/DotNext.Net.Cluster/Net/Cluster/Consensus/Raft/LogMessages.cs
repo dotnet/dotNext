@@ -337,4 +337,12 @@ internal static partial class LogMessages
         "Cluster member {Member} is too far behind the leader",
         EventName = $"{EventIdPrefix}.{nameof(SlowMember)}")]
     public static partial void SlowMember(this ILogger logger, EndPoint member);
+
+    [LoggerMessage(
+        EventIdOffset + 45,
+        LogLevel.Warning,
+        "Member {Member} has older protocol and/or state machine version. Replication failed.",
+        EventName = $"{EventIdPrefix}.{nameof(UnsupportedVersion)}"
+    )]
+    public static partial void UnsupportedVersion(this ILogger logger, EndPoint member);
 }

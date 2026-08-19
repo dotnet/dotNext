@@ -612,22 +612,28 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new() { Term = AuditTrail.Term };
-            if (stateVersion <= AuditTrail.Version
-                && snapshot.IsSnapshot
+            result = new() { Term = AuditTrail.Term, Value = HeartbeatResult.Rejected };
+            if (snapshot.IsSnapshot
                 && senderTerm >= result.Term
                 && snapshotIndex > AuditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
-
-                // install snapshot
-                await AuditTrail.AppendAsync(snapshot, snapshotIndex, tokenSource.Token).ConfigureAwait(false);
-                result = result with
+                
+                if (stateVersion > AuditTrail.Version)
                 {
-                    Value = senderTerm == snapshot.Term ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated
-                };
+                    result = result with { Value = HeartbeatResult.UnsupportedVersion };
+                }
+                else
+                {
+                    // install snapshot
+                    await AuditTrail.AppendAsync(snapshot, snapshotIndex, tokenSource.Token).ConfigureAwait(false);
+                    result = result with
+                    {
+                        Value = senderTerm == snapshot.Term ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated
+                    };
+                }
             }
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
@@ -671,14 +677,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new() { Term = AuditTrail.Term };
-            if (stateVersion <= AuditTrail.Version && result.Term <= senderTerm)
+            result = new() { Term = AuditTrail.Term, Value = HeartbeatResult.Rejected };
+            if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 var senderMember = TryGetMember(sender);
                 Leader = senderMember;
-                if (await AuditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
+                if (stateVersion > AuditTrail.Version)
+                {
+                    result = result with { Value = HeartbeatResult.UnsupportedVersion };
+                }
+                else if (await AuditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
                 {
                     var notEmpty = UseTermDetector(ref entries, senderTerm);
 

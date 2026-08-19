@@ -20,4 +20,14 @@ public enum HeartbeatResult : byte
     /// log entries from the replica has the same Term as the sender.
     /// </summary>
     ReplicatedWithLeaderTerm = 2,
+    
+    /// <summary>
+    /// Incoming replication is rejected because the sender has higher state machine version.
+    /// </summary>
+    /// <remarks>
+    /// No need to decrement <see cref="IRaftClusterMember.ReplicationState.NextIndex"/> in contrast
+    /// to <see cref="Rejected"/> status.
+    /// When the receiver has higher term than the sender, this status should not be reported.
+    /// </remarks>
+    UnsupportedVersion = 3,
 }
