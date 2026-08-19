@@ -841,8 +841,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         var result = new Result<bool> { Term = AuditTrail.Term };
 
         // provide leader stickiness
-        if (stateVersion > AuditTrail.Version
-            || result.Term > senderTerm
+        if (result.Term > senderTerm
             || Timestamp.VolatileRead(in lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
@@ -871,7 +870,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     goto exit;
             }
 
-            if (AuditTrail.IsVotedFor(sender) && await AuditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
+            if (stateVersion <= AuditTrail.Version
+                && AuditTrail.IsVotedFor(sender) 
+                && await AuditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
             {
                 await AuditTrail.UpdateVotedForAsync(sender, tokenSource.Token).ConfigureAwait(false);
                 result = result with { Value = true };
