@@ -695,6 +695,18 @@ dotnet run -- http 3264 node3
 <p>The wire format is highly optimized for transferring log entries during the replication process over the wire. The most performance optimizations should be performed when configuring persistent Write-Ahead Log.</p>
 <p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a> writes all log entries to the page cache or private memory depending on <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_MemoryManagement">MemoryManagement</a> configuration property. The background flusher instructs the OS to flush the modified memory pages to the disk. The caller that appends the log entry doesn't wait for the flush. The background process creates checkpoints for every flush for safe recovery in case of failure.</p>
 <p>On Linux, WAL implementation automatically detects availability of <a href="https://docs.kernel.org/admin-guide/mm/transhuge.html">Transparent Huge Pages</a>. If THP is enabled, WAL arranges huge memory pages to keep the written log entries.</p>
+<h1 id="rolling-updates">Rolling Updates</h1>
+<p>A number of WAL log entries is not static and can evolve over the time. For backward compatibility, old log entries remain intact. But new log entries can be introduced in a new version. Previously, it wasn't possible to do that without stopping the whole cluster. Otherwise, a new version of the node can try to replicate the log entry which is not known to the older node.</p>
+<p>To fix that problem, <code>Version</code> property is introduced in <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. The value of this property is taken into account at the wire protocol level. <code>Vote</code>, <code>PreVote</code>, <code>AppendEntries</code>, and <code>InstallSnapshot</code> message carry this version. If node received a message with version that is larger than the local version, the message is rejected. However, the node with higher version is able to process the message.</p>
+<p>The value of the property is typically hard-coded, no need to read it from the configuration. It indicates a set of supported log entries.</p>
+<p>The following process describes how the rolling update can be performed:</p>
+<ol>
+<li>Cluster with nodes <em>A(0)</em>, <em>B(0)</em>, <em>C(0)</em>, where <em>0</em> is a version</li>
+<li>Upgrade <em>A(0)</em> =&gt; <em>A(1)</em>. No cluster shutdown, because the quorum remains alive. If node <em>A</em> was a leader, a new leader will be elected eventually among <em>B</em> and <em>C</em></li>
+<li>Node <em>A</em> now supports additional log entry types</li>
+<li>Upgrade <em>B(0)</em> =&gt; <em>B(1)</em>. Now the quorum of nodes can handle additional log entry types. <em>C</em> can't, so it cannot replicate from a new leader and becomes a stale node. However, the cluster is alive</li>
+<li>Upgrade <em>C(0)</em> =&gt; <em>C(1)</em>. Now the whole cluster supports additional log entry types</li>
+</ol>
 <h1 id="guide-how-to-implement-database">Guide: How To Implement Database</h1>
 <p>This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.</p>
 <p>For memory-based state machine:</p>
@@ -749,15 +761,15 @@ await cluster.ReplicateAsync(new MyLogEntry(term), Timeout.InfiniteTimeSpan, tok
 <p>From architecture point of view, these two parts are separated. However, the actual implementation may require a bridge between them.</p>
 <h2 id="cluster-member">Cluster Member</h2>
 <p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a> declares the methods that are equivalent to Raft-specific message types.</p>
-<p><code>NextIndex</code> property should return a location in memory to the index of the next log entry to be replicated for the current member. It doesn't contain any logic.</p>
+<p><code>State</code> property should return a location in memory to the index of the next log entry to be replicated for the current member. It doesn't contain any logic.</p>
 <pre><code class="lang-csharp">using DotNext;
 using DotNext.Net.Cluster.Consensus.Raft;
 
 sealed class ClusterMember : Disposable, IRaftClusterMember
 {
-    private long nextIndex;
+    private IRaftClusterMember.ReplicationState state;
 
-    ref long IRaftClusterMember.NextIndex =&gt; ref nextIndex;
+    ref IRaftClusterMember.ReplicationState IRaftClusterMember.State =&gt; ref state;
 }
 </code></pre>
 <p><code>VoteAsync</code>, <code>PreVoteAsync</code>, <code>AppendEntriesAsync</code>, <code>InstallSnapshotAsync</code> are methods for sending Raft-specific messages over the wire. They are called automatically by core logic located in <code>RaftCluster</code> class. Implementation of these methods should throw <a class="xref" href="../../api/DotNext.Net.Cluster.MemberUnavailableException.html">MemberUnavailableException</a> if any network-related problem occurred.</p>

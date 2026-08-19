@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct AsyncEventHub.EventGroup | .NEXT </title>
+    <title>Struct CancellationTokenHandle | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct AsyncEventHub.EventGroup | .NEXT ">
+    <meta name="title" content="Struct CancellationTokenHandle | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,20 +65,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncEventHub.EventGroup">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle">
 
 
 
-  <h1 id="DotNext_Threading_AsyncEventHub_EventGroup" data-uid="DotNext.Threading.AsyncEventHub.EventGroup" class="text-break">Struct AsyncEventHub.EventGroup</h1>
-  <div class="markdown level0 summary"><p>Represents a group of events.</p>
+  <h1 id="DotNext_Runtime_InteropServices_CancellationTokenHandle" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle" class="text-break">Struct CancellationTokenHandle</h1>
+  <div class="markdown level0 summary"><p>Exposes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> to the unmanaged code.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -92,30 +90,26 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.InteropServices.html">InteropServices</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_AsyncEventHub_EventGroup_syntax">Syntax</h5>
+  <h5 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct AsyncEventHub.EventGroup : IReadOnlyCollection&lt;int&gt;, IEnumerable&lt;int&gt;, IEnumerable, IEquatable&lt;AsyncEventHub.EventGroup&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct CancellationTokenHandle : IDisposable, IEquatable&lt;CancellationTokenHandle&gt;</code></pre>
   </div>
-  <h5 id="DotNext_Threading_AsyncEventHub_EventGroup_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>It's better to cache a set of necessary event groups rather than create them on the fly
-due to performance reasons.</p>
-</div>
   <h3 id="constructors">Constructors
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup__ctor_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.#ctor*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup__ctor_System_ReadOnlySpan_System_Int32__" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.#ctor(System.ReadOnlySpan{System.Int32})">EventGroup(ReadOnlySpan&lt;int&gt;)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new group of events.</p>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle__ctor_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle__ctor_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor(System.Threading.CancellationToken)">CancellationTokenHandle(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new handle for the specified cancellation token.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public EventGroup(ReadOnlySpan&lt;int&gt; indices)</code></pre>
+    <pre><code class="lang-csharp hljs">public CancellationTokenHandle(CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -128,25 +122,9 @@ due to performance reasons.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><span class="parametername">indices</span></td>
-        <td><p>Indices of the events.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">indices</code> has at least one negative index.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token to wrap.</p>
 </td>
       </tr>
     </tbody>
@@ -155,16 +133,16 @@ due to performance reasons.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_Count_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Count*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_Count" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Count">Count</h4>
-  <div class="markdown level1 summary"><p>Gets a number of events in this group.</p>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Token_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Token*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Token" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Token">Token</h4>
+  <div class="markdown level1 summary"><p>Unwraps the token.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly CancellationToken Token { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -176,7 +154,7 @@ due to performance reasons.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -185,62 +163,28 @@ due to performance reasons.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_Contains_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Contains*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_Contains_System_Int32_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Contains(System.Int32)">Contains(int)</h4>
-  <div class="markdown level1 summary"><p>Checks whether the specified event is in this group.</p>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Dispose_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Dispose" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases memory associated with the handle.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Contains(int index)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">index</span></td>
-        <td><p>The index of the event.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the event with index <code class="paramref">index</code> is in this group; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_Equals_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Equals*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_Equals_DotNext_Threading_AsyncEventHub_EventGroup_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Equals(DotNext.Threading.AsyncEventHub.EventGroup)">Equals(EventGroup)</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_DotNext_Runtime_InteropServices_CancellationTokenHandle_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(DotNext.Runtime.InteropServices.CancellationTokenHandle)">Equals(CancellationTokenHandle)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(AsyncEventHub.EventGroup other)</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly bool Equals(CancellationTokenHandle other)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -253,7 +197,7 @@ due to performance reasons.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a></td>
         <td><span class="parametername">other</span></td>
         <td></td>
       </tr>
@@ -276,15 +220,15 @@ due to performance reasons.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_Equals_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Equals*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_Equals_System_Object_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.Equals(System.Object)">Equals(object)</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(System.Object)">Equals(object)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object obj)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -322,44 +266,15 @@ due to performance reasons.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_GetEnumerator_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_GetEnumerator" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator">GetEnumerator()</h4>
-  <div class="markdown level1 summary"><p>Gets an enumerator over indices in this group.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncEventHub.EventGroup.Enumerator GetEnumerator()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html">Enumerator</a></td>
-        <td><p>An enumerator over indices.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_GetHashCode_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.GetHashCode*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_GetHashCode" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.GetHashCode">GetHashCode()</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_GetHashCode" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode">GetHashCode()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -380,15 +295,15 @@ due to performance reasons.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_ToString_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.ToString*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_ToString" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.ToString">ToString()</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_ToString_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_ToString" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString">ToString()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -411,15 +326,15 @@ due to performance reasons.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_op_Equality_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.op_Equality*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_op_Equality_DotNext_Threading_AsyncEventHub_EventGroup_DotNext_Threading_AsyncEventHub_EventGroup_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.op_Equality(DotNext.Threading.AsyncEventHub.EventGroup,DotNext.Threading.AsyncEventHub.EventGroup)">operator ==(EventGroup, EventGroup)</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Equality_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Equality_DotNext_Runtime_InteropServices_CancellationTokenHandle_DotNext_Runtime_InteropServices_CancellationTokenHandle_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)">operator ==(CancellationTokenHandle, CancellationTokenHandle)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(AsyncEventHub.EventGroup left, AsyncEventHub.EventGroup right)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator ==(CancellationTokenHandle left, CancellationTokenHandle right)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -432,12 +347,12 @@ due to performance reasons.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a></td>
         <td><span class="parametername">left</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a></td>
         <td><span class="parametername">right</span></td>
         <td></td>
       </tr>
@@ -460,15 +375,15 @@ due to performance reasons.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncEventHub_EventGroup_op_Inequality_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.op_Inequality*"></a>
-  <h4 id="DotNext_Threading_AsyncEventHub_EventGroup_op_Inequality_DotNext_Threading_AsyncEventHub_EventGroup_DotNext_Threading_AsyncEventHub_EventGroup_" data-uid="DotNext.Threading.AsyncEventHub.EventGroup.op_Inequality(DotNext.Threading.AsyncEventHub.EventGroup,DotNext.Threading.AsyncEventHub.EventGroup)">operator !=(EventGroup, EventGroup)</h4>
+  <a id="DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Inequality_DotNext_Runtime_InteropServices_CancellationTokenHandle_DotNext_Runtime_InteropServices_CancellationTokenHandle_" data-uid="DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)">operator !=(CancellationTokenHandle, CancellationTokenHandle)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(AsyncEventHub.EventGroup left, AsyncEventHub.EventGroup right)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator !=(CancellationTokenHandle left, CancellationTokenHandle right)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -481,12 +396,12 @@ due to performance reasons.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a></td>
         <td><span class="parametername">left</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a>.<a class="xref" href="DotNext.Threading.AsyncEventHub.EventGroup.html">EventGroup</a></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.CancellationTokenHandle.html">CancellationTokenHandle</a></td>
         <td><span class="parametername">right</span></td>
         <td></td>
       </tr>
@@ -509,13 +424,7 @@ due to performance reasons.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
@@ -530,6 +439,10 @@ due to performance reasons.</p>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.unmanagedcallersonlyattribute">UnmanagedCallersOnlyAttribute</a></div>
+  </div>
 
 </article>
           </div>
@@ -539,7 +452,7 @@ due to performance reasons.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Threading/AsyncEventHub.DebugSupport.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/1bebeed28f536f80465cd475154c7f4ca60f7a40/src/DotNext.Threading/Runtime/InteropServices/CancellationTokenHandle.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

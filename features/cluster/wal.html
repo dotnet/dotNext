@@ -320,6 +320,8 @@ var interpreter = new CommandInterpreter.Builder()
 </ol>
 <h1 id="telemetry">Telemetry</h1>
 <p>The WAL exposes a group of metrics through <code>DotNext.IO.WriteAheadLog</code> meter. The metrics can be discovered with <code>dotnet-counters</code> tool from the .NET SDK.</p>
+<h1 id="rolling-updates">Rolling updates</h1>
+<p>The process is described in the related section <a href="raft.html">here</a>. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a> class implements <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface, so its <code>Version</code> property is implemented by delegating it to <code>Version</code> property of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.html">IStateMachine</a> interface. Implementer needs to override this property and bump the returned value when a new log entries are added.</p>
 
 </article>
           </div>

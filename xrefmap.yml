@@ -27984,6 +27984,12 @@ references:
   commentId: F:DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.ReplicatedWithLeaderTerm
   fullName: DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.ReplicatedWithLeaderTerm
   nameWithType: HeartbeatResult.ReplicatedWithLeaderTerm
+- uid: DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.UnsupportedVersion
+  name: UnsupportedVersion
+  href: api/DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.html#DotNext_Net_Cluster_Consensus_Raft_HeartbeatResult_UnsupportedVersion
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.UnsupportedVersion
+  fullName: DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.UnsupportedVersion
+  nameWithType: HeartbeatResult.UnsupportedVersion
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http
   name: DotNext.Net.Cluster.Consensus.Raft.Http
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.html
@@ -28563,6 +28569,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync
   fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync
   nameWithType: IPersistentState.UpdateVotedForAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version
+  name: Version
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Version
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version
+  nameWithType: IPersistentState.Version
+- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version*
+  name: Version
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Version_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Version
+  nameWithType: IPersistentState.Version
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster
   name: IRaftCluster
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html
@@ -30492,15 +30510,15 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).AppendEntriesAsync
   nameWithType: RaftCluster<TMember>.AppendEntriesAsync
   nameWithType.vb: RaftCluster(Of TMember).AppendEntriesAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: AppendEntriesAsync<TEntry>(ClusterMemberId, long, ILogEntryProducer<TEntry>, long, long, long, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AppendEntriesAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: AppendEntriesAsync(Of TEntry)(ClusterMemberId, Long, ILogEntryProducer(Of TEntry), Long, Long, Long, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.AppendEntriesAsync<TEntry>(DotNext.Net.Cluster.ClusterMemberId, long, DotNext.IO.Log.ILogEntryProducer<TEntry>, long, long, long, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).AppendEntriesAsync(Of TEntry)(DotNext.Net.Cluster.ClusterMemberId, Long, DotNext.IO.Log.ILogEntryProducer(Of TEntry), Long, Long, Long, System.Threading.CancellationToken)
-  nameWithType: RaftCluster<TMember>.AppendEntriesAsync<TEntry>(ClusterMemberId, long, ILogEntryProducer<TEntry>, long, long, long, CancellationToken)
-  nameWithType.vb: RaftCluster(Of TMember).AppendEntriesAsync(Of TEntry)(ClusterMemberId, Long, ILogEntryProducer(Of TEntry), Long, Long, Long, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name: AppendEntriesAsync<TEntry>(ClusterMemberId, long, ILogEntryProducer<TEntry>, long, long, long, int, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_AppendEntriesAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Int64_System_Int64_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.AppendEntriesAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name.vb: AppendEntriesAsync(Of TEntry)(ClusterMemberId, Long, ILogEntryProducer(Of TEntry), Long, Long, Long, Integer, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.AppendEntriesAsync<TEntry>(DotNext.Net.Cluster.ClusterMemberId, long, DotNext.IO.Log.ILogEntryProducer<TEntry>, long, long, long, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).AppendEntriesAsync(Of TEntry)(DotNext.Net.Cluster.ClusterMemberId, Long, DotNext.IO.Log.ILogEntryProducer(Of TEntry), Long, Long, Long, Integer, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.AppendEntriesAsync<TEntry>(ClusterMemberId, long, ILogEntryProducer<TEntry>, long, long, long, int, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).AppendEntriesAsync(Of TEntry)(ClusterMemberId, Long, ILogEntryProducer(Of TEntry), Long, Long, Long, Integer, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ApplyReadBarrierAsync(DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType,System.Threading.CancellationToken)
   name: ApplyReadBarrierAsync(ReadBarrierType, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_ReadBarrierType_System_Threading_CancellationToken_
@@ -30818,15 +30836,15 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).InstallSnapshotAsync
   nameWithType: RaftCluster<TMember>.InstallSnapshotAsync
   nameWithType.vb: RaftCluster(Of TMember).InstallSnapshotAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,``0,System.Int64,System.Threading.CancellationToken)
-  name: InstallSnapshotAsync<TSnapshot>(ClusterMemberId, long, TSnapshot, long, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallSnapshotAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64___0_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,``0,System.Int64,System.Threading.CancellationToken)
-  name.vb: InstallSnapshotAsync(Of TSnapshot)(ClusterMemberId, Long, TSnapshot, Long, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.InstallSnapshotAsync<TSnapshot>(DotNext.Net.Cluster.ClusterMemberId, long, TSnapshot, long, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).InstallSnapshotAsync(Of TSnapshot)(DotNext.Net.Cluster.ClusterMemberId, Long, TSnapshot, Long, System.Threading.CancellationToken)
-  nameWithType: RaftCluster<TMember>.InstallSnapshotAsync<TSnapshot>(ClusterMemberId, long, TSnapshot, long, CancellationToken)
-  nameWithType.vb: RaftCluster(Of TMember).InstallSnapshotAsync(Of TSnapshot)(ClusterMemberId, Long, TSnapshot, Long, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,``0,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name: InstallSnapshotAsync<TSnapshot>(ClusterMemberId, long, TSnapshot, long, int, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallSnapshotAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64___0_System_Int64_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.InstallSnapshotAsync``1(DotNext.Net.Cluster.ClusterMemberId,System.Int64,``0,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name.vb: InstallSnapshotAsync(Of TSnapshot)(ClusterMemberId, Long, TSnapshot, Long, Integer, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.InstallSnapshotAsync<TSnapshot>(DotNext.Net.Cluster.ClusterMemberId, long, TSnapshot, long, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).InstallSnapshotAsync(Of TSnapshot)(DotNext.Net.Cluster.ClusterMemberId, Long, TSnapshot, Long, Integer, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.InstallSnapshotAsync<TSnapshot>(ClusterMemberId, long, TSnapshot, long, int, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).InstallSnapshotAsync(Of TSnapshot)(ClusterMemberId, Long, TSnapshot, Long, Integer, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Leader
   name: Leader
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Leader
@@ -30931,15 +30949,15 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).Members
   nameWithType: RaftCluster<TMember>.Members
   nameWithType.vb: RaftCluster(Of TMember).Members
-- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: PreVoteAsync(ClusterMemberId, long, long, long, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_PreVoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: PreVoteAsync(ClusterMemberId, Long, Long, Long, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId, long, long, long, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId, Long, Long, Long, System.Threading.CancellationToken)
-  nameWithType: RaftCluster<TMember>.PreVoteAsync(ClusterMemberId, long, long, long, CancellationToken)
-  nameWithType.vb: RaftCluster(Of TMember).PreVoteAsync(ClusterMemberId, Long, Long, Long, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name: PreVoteAsync(ClusterMemberId, long, long, long, int, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_PreVoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name.vb: PreVoteAsync(ClusterMemberId, Long, Long, Long, Integer, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId, long, long, long, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).PreVoteAsync(DotNext.Net.Cluster.ClusterMemberId, Long, Long, Long, Integer, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.PreVoteAsync(ClusterMemberId, long, long, long, int, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).PreVoteAsync(ClusterMemberId, Long, Long, Long, Integer, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.PreVoteAsync*
   name: PreVoteAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_PreVoteAsync_
@@ -31178,15 +31196,15 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).UnavailableMemberDetected(Of TAddress)(DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage(Of TAddress), TAddress, Long, System.Threading.CancellationToken)
   nameWithType: RaftCluster<TMember>.UnavailableMemberDetected<TAddress>(IClusterConfigurationStorage<TAddress>, TAddress, long, CancellationToken)
   nameWithType.vb: RaftCluster(Of TMember).UnavailableMemberDetected(Of TAddress)(IClusterConfigurationStorage(Of TAddress), TAddress, Long, CancellationToken)
-- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: VoteAsync(ClusterMemberId, long, long, long, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_VoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: VoteAsync(ClusterMemberId, Long, Long, Long, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.VoteAsync(DotNext.Net.Cluster.ClusterMemberId, long, long, long, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).VoteAsync(DotNext.Net.Cluster.ClusterMemberId, Long, Long, Long, System.Threading.CancellationToken)
-  nameWithType: RaftCluster<TMember>.VoteAsync(ClusterMemberId, long, long, long, CancellationToken)
-  nameWithType.vb: RaftCluster(Of TMember).VoteAsync(ClusterMemberId, Long, Long, Long, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name: VoteAsync(ClusterMemberId, long, long, long, int, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_VoteAsync_DotNext_Net_Cluster_ClusterMemberId_System_Int64_System_Int64_System_Int64_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync(DotNext.Net.Cluster.ClusterMemberId,System.Int64,System.Int64,System.Int64,System.Int32,System.Threading.CancellationToken)
+  name.vb: VoteAsync(ClusterMemberId, Long, Long, Long, Integer, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.VoteAsync(DotNext.Net.Cluster.ClusterMemberId, long, long, long, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).VoteAsync(DotNext.Net.Cluster.ClusterMemberId, Long, Long, Long, Integer, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.VoteAsync(ClusterMemberId, long, long, long, int, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).VoteAsync(ClusterMemberId, Long, Long, Long, Integer, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.VoteAsync*
   name: VoteAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_VoteAsync_
@@ -31400,6 +31418,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.CreateNoOp
   fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.CreateNoOp
   nameWithType: IStateMachine.CreateNoOp
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version
+  name: Version
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_IStateMachine_Version
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version
+  nameWithType: IStateMachine.Version
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version*
+  name: Version
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_IStateMachine_Version_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.Version
+  nameWithType: IStateMachine.Version
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry
   name: LogEntry
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.html
@@ -43203,6 +43233,135 @@ references:
   commentId: N:DotNext.Runtime.InteropServices
   fullName: DotNext.Runtime.InteropServices
   nameWithType: DotNext.Runtime.InteropServices
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle
+  name: CancellationTokenHandle
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html
+  commentId: T:DotNext.Runtime.InteropServices.CancellationTokenHandle
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle
+  nameWithType: CancellationTokenHandle
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor(System.Threading.CancellationToken)
+  name: CancellationTokenHandle(CancellationToken)
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle__ctor_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor(System.Threading.CancellationToken)
+  name.vb: New(CancellationToken)
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.CancellationTokenHandle(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.New(System.Threading.CancellationToken)
+  nameWithType: CancellationTokenHandle.CancellationTokenHandle(CancellationToken)
+  nameWithType.vb: CancellationTokenHandle.New(CancellationToken)
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor*
+  name: CancellationTokenHandle
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle__ctor_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.#ctor
+  name.vb: New
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.CancellationTokenHandle
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.New
+  nameWithType: CancellationTokenHandle.CancellationTokenHandle
+  nameWithType.vb: CancellationTokenHandle.New
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Dispose
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose()
+  nameWithType: CancellationTokenHandle.Dispose()
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Dispose_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Dispose
+  nameWithType: CancellationTokenHandle.Dispose
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  name: Equals(CancellationTokenHandle)
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_DotNext_Runtime_InteropServices_CancellationTokenHandle_
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  nameWithType: CancellationTokenHandle.Equals(CancellationTokenHandle)
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(System.Object)
+  name: Equals(object)
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_System_Object_
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(object)
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals(Object)
+  nameWithType: CancellationTokenHandle.Equals(object)
+  nameWithType.vb: CancellationTokenHandle.Equals(Object)
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals*
+  name: Equals
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Equals_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Equals
+  nameWithType: CancellationTokenHandle.Equals
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_GetHashCode
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode()
+  nameWithType: CancellationTokenHandle.GetHashCode()
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_GetHashCode_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.GetHashCode
+  nameWithType: CancellationTokenHandle.GetHashCode
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_ToString
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString()
+  nameWithType: CancellationTokenHandle.ToString()
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_ToString_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.ToString
+  nameWithType: CancellationTokenHandle.ToString
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Token
+  name: Token
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Token
+  commentId: P:DotNext.Runtime.InteropServices.CancellationTokenHandle.Token
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Token
+  nameWithType: CancellationTokenHandle.Token
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.Token*
+  name: Token
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_Token_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.Token
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.Token
+  nameWithType: CancellationTokenHandle.Token
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  name: operator ==(CancellationTokenHandle, CancellationTokenHandle)
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Equality_DotNext_Runtime_InteropServices_CancellationTokenHandle_DotNext_Runtime_InteropServices_CancellationTokenHandle_
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  name.vb: =(CancellationTokenHandle, CancellationTokenHandle)
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.operator ==(DotNext.Runtime.InteropServices.CancellationTokenHandle, DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.=(DotNext.Runtime.InteropServices.CancellationTokenHandle, DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  nameWithType: CancellationTokenHandle.operator ==(CancellationTokenHandle, CancellationTokenHandle)
+  nameWithType.vb: CancellationTokenHandle.=(CancellationTokenHandle, CancellationTokenHandle)
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality*
+  name: operator ==
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Equality_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Equality
+  name.vb: =
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.operator ==
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.=
+  nameWithType: CancellationTokenHandle.operator ==
+  nameWithType.vb: CancellationTokenHandle.=
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  name: operator !=(CancellationTokenHandle, CancellationTokenHandle)
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Inequality_DotNext_Runtime_InteropServices_CancellationTokenHandle_DotNext_Runtime_InteropServices_CancellationTokenHandle_
+  commentId: M:DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality(DotNext.Runtime.InteropServices.CancellationTokenHandle,DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  name.vb: <>(CancellationTokenHandle, CancellationTokenHandle)
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.operator !=(DotNext.Runtime.InteropServices.CancellationTokenHandle, DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.<>(DotNext.Runtime.InteropServices.CancellationTokenHandle, DotNext.Runtime.InteropServices.CancellationTokenHandle)
+  nameWithType: CancellationTokenHandle.operator !=(CancellationTokenHandle, CancellationTokenHandle)
+  nameWithType.vb: CancellationTokenHandle.<>(CancellationTokenHandle, CancellationTokenHandle)
+- uid: DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Runtime.InteropServices.CancellationTokenHandle.html#DotNext_Runtime_InteropServices_CancellationTokenHandle_op_Inequality_
+  commentId: Overload:DotNext.Runtime.InteropServices.CancellationTokenHandle.op_Inequality
+  name.vb: <>
+  fullName: DotNext.Runtime.InteropServices.CancellationTokenHandle.operator !=
+  fullName.vb: DotNext.Runtime.InteropServices.CancellationTokenHandle.<>
+  nameWithType: CancellationTokenHandle.operator !=
+  nameWithType.vb: CancellationTokenHandle.<>
 - uid: DotNext.Runtime.InteropServices.IUnmanagedMemory
   name: IUnmanagedMemory
   href: api/DotNext.Runtime.InteropServices.IUnmanagedMemory.html
