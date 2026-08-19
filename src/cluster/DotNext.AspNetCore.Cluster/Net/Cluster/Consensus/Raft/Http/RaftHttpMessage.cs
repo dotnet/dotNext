@@ -10,21 +10,31 @@ internal abstract class RaftHttpMessage : HttpMessage
     // request - represents Term value according to Raft protocol
     // response - represents Term value of the reply node
     private const string TermHeader = "X-Raft-Term";
+    
+    // request - represents state machine version
+    private const string StateVersionHeader = "X-Raft-State-Version";
 
+    internal readonly int StateVersion;
     internal readonly long ConsensusTerm;
 
-    private protected RaftHttpMessage(in ClusterMemberId sender, long term)
-        : base(sender) => ConsensusTerm = term;
+    private protected RaftHttpMessage(in ClusterMemberId sender, long term, int stateVersion)
+        : base(sender)
+    {
+        ConsensusTerm = term;
+        StateVersion = stateVersion;
+    }
 
     private protected RaftHttpMessage(IDictionary<string, StringValues> headers)
         : base(headers)
     {
         ConsensusTerm = ParseHeader(headers, TermHeader, Int64Parser);
+        StateVersion = ParseHeader(headers, StateVersionHeader, Int32Parser);
     }
 
     protected new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
+        request.Headers.Add(StateVersionHeader, StateVersion.ToString(InvariantCulture));
         base.PrepareRequest(request);
     }
 

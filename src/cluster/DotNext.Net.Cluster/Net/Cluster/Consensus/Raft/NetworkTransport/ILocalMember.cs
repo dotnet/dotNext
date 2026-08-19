@@ -34,4 +34,6 @@ internal interface ILocalMember
     ValueTask<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
     ILogger Logger => NullLogger.Instance;
+    
+    int Version { get; }
 }

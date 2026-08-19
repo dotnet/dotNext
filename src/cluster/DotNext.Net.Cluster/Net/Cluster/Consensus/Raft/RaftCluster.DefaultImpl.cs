@@ -57,6 +57,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         { IRaftCluster.LocalAddressMeterAttributeName, config.PublicEndPoint.ToString() },
     };
+    
+    int ILocalMember.Version => AuditTrail.Version;
 
     /// <inheritdoc />
     protected override ILogger Logger { get; }

@@ -152,6 +152,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     }
 
     /// <inheritdoc/>
+    int IPersistentState.Version => stateMachine.Version;
+
+    /// <inheritdoc/>
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
     private long SnapshotIndex => stateMachine.Snapshot?.Index ?? 0L;

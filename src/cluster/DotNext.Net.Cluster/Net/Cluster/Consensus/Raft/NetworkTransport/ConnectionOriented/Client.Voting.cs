@@ -12,7 +12,7 @@ internal partial class Client
         ValueTask IClientExchange<Result<bool>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.Vote);
-            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm));
+            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm, localMember.Version));
             protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
@@ -25,7 +25,7 @@ internal partial class Client
         ValueTask IClientExchange<Result<PreVoteResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.PreVote);
-            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm));
+            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm, localMember.Version));
             protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }

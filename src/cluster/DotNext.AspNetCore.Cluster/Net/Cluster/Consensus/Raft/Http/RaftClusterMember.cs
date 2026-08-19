@@ -21,7 +21,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     private readonly Uri? resourcePath;
     private readonly IHostingContext context;
-    internal readonly ClusterMemberId Id;
+    private readonly ClusterMemberId id;
     internal readonly UriEndPoint EndPoint;
     private readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
     private volatile ClusterMemberStatus status;
@@ -41,12 +41,12 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         this.context = context;
         EndPoint = remoteMember;
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, remoteMember.ToString());
-        Id = ClusterMemberId.FromEndPoint(remoteMember);
+        id = ClusterMemberId.FromEndPoint(remoteMember);
         resourcePath = remoteMember.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped) is { Length: > 0 }
             ? null
             : new(DefaultProtocolPath, UriKind.Relative);
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new()).ToString()));
-        IsRemote = Id != context.LocalMemberId;
+        IsRemote = id != context.LocalMemberId;
     }
 
     event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
@@ -161,7 +161,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return token.IsCancellationRequested
             ? Task.FromCanceled<Result<bool>>(token)
             : IsRemote
-            ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
+            ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm, context.Version), token)
             : Task.FromResult<Result<bool>>(new() { Term = term, Value = true });
     }
 
@@ -170,7 +170,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return token.IsCancellationRequested
             ? Task.FromCanceled<Result<PreVoteResult>>(token)
             : IsRemote
-            ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
+            ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm, context.Version), token)
             : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
     }
 
@@ -196,7 +196,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             return Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
 
         return SendAsync<Result<HeartbeatResult>, AppendEntriesMessage<TEntry, TList>>(
-            new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries)
+            new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries, context.Version)
             {
                 UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries,
             },
@@ -214,7 +214,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
         if (configuration.Length is not null)
             return SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(
-                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configuration, configurationVersion), token);
+                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configuration, configurationVersion, context.Version), token);
         
         // configuration doesn't support Length property, use slow path
         return InstallSnapshotSlowAsync(term, snapshot, snapshotIndex, configuration, configurationVersion, token);
@@ -228,7 +228,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             .ConfigureAwait(false);
 
         return await SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(
-                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configCopy, configurationVersion), token)
+                new(in context.LocalMemberId, term, snapshot, snapshotIndex, configCopy, configurationVersion, context.Version), token)
             .ConfigureAwait(false);
     }
 
@@ -254,7 +254,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     EndPoint IPeer.EndPoint => EndPoint;
 
-    ClusterMemberId IClusterMember.Id => Id;
+    ClusterMemberId IClusterMember.Id => id;
 
     bool IClusterMember.IsLeader => context.IsLeader(this);
 

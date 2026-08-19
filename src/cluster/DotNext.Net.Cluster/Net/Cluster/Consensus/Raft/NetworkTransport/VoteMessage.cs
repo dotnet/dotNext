@@ -6,9 +6,9 @@ using Buffers;
 using Buffers.Binary;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly record struct VoteMessage(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) : IBinaryFormattable<VoteMessage>
+internal readonly record struct VoteMessage(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm, int StateVersion) : IBinaryFormattable<VoteMessage>
 {
-    public static int Size => sizeof(long) + sizeof(long) + sizeof(long) + ClusterMemberId.Size;
+    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
 
     public void Format(Span<byte> output)
     {
@@ -17,6 +17,7 @@ internal readonly record struct VoteMessage(ClusterMemberId Id, long Term, long 
         writer.WriteLittleEndian(Term);
         writer.WriteLittleEndian(LastLogIndex);
         writer.WriteLittleEndian(LastLogTerm);
+        writer.WriteLittleEndian(StateVersion);
     }
 
     public static VoteMessage Parse(ReadOnlySpan<byte> input)
@@ -26,6 +27,7 @@ internal readonly record struct VoteMessage(ClusterMemberId Id, long Term, long 
             reader.Read<ClusterMemberId>(),
             reader.ReadLittleEndian<long>(),
             reader.ReadLittleEndian<long>(),
-            reader.ReadLittleEndian<long>());
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<int>());
     }
 }

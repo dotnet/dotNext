@@ -23,14 +23,14 @@ internal partial class Client
         ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             // write header
-            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, entriesCount: 0));
+            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, entriesCount: 0, localMember.Version));
             return protocol.WriteToTransportAsync(token);
         }
 
-        public int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender, int entriesCount)
+        public int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender, int entriesCount, int stateVersion)
         {
             var writer = protocol.BeginRequestMessage(MessageType.AppendEntries);
-            writer.Write<AppendEntriesMessage>(new(sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount));
+            writer.Write<AppendEntriesMessage>(new(sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount, stateVersion));
             return writer.WrittenCount;
         }
     }
@@ -47,7 +47,7 @@ internal partial class Client
             CancellationToken token)
         {
             // write header
-            protocol.AdvanceWriteCursor(exchange.WriteHeaders(protocol, in localMember.Id, entries.Count));
+            protocol.AdvanceWriteCursor(exchange.WriteHeaders(protocol, in localMember.Id, entries.Count, localMember.Version));
             return RequestAsync(entries, protocol, buffer, token);
         }
 

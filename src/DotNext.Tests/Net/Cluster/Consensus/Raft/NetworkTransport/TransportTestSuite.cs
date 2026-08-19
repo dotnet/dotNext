@@ -155,6 +155,8 @@ public abstract class TransportTestSuite : RaftTest
         }
 
         public IReadOnlyDictionary<string, string> Metadata { get; }
+
+        int ILocalMember.Version => 0;
     }
 
     private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);

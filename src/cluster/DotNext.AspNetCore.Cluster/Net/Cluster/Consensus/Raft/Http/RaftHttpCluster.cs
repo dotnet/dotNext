@@ -70,6 +70,8 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         configurationEvents = Channel.CreateUnbounded<IClusterConfiguration<UriEndPoint>>(new() { SingleWriter = true, SingleReader = true });
     }
 
+    int IHostingContext.Version => AuditTrail.Version;
+
     private IClusterMemberLifetime? Configurator
     {
         init => configurator = value;

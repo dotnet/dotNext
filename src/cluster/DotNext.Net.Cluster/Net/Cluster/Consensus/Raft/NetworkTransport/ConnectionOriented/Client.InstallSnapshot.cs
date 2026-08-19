@@ -16,7 +16,7 @@ internal partial class Client
         ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer,
             CancellationToken token)
         {
-            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id));
+            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, localMember.Version));
             return RequestAsync(snapshot, configuration, protocol, buffer, token);
         }
 
@@ -39,10 +39,10 @@ internal partial class Client
             await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
         }
 
-        private int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender)
+        private int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender, int stateVersion)
         {
             var writer = protocol.BeginRequestMessage(MessageType.InstallSnapshot);
-            writer.Write<SnapshotMessage>(new(sender, term, snapshotIndex, snapshot, configurationVersion));
+            writer.Write<SnapshotMessage>(new(sender, term, snapshotIndex, snapshot, configurationVersion, stateVersion));
             return writer.WrittenCount;
         }
 
