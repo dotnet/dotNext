@@ -437,17 +437,7 @@ However, the current implementation needs to inform the rest of the cluster abou
 
 [IFailureDetector](xref:DotNext.Diagnostics.IFailureDetector) interface is an extension point that provides failure detection algorithm. The library ships [φ Accrual Failure Detector](xref:DotNext.Diagnostics.PhiAccrualFailureDetector) as an efficient implementation of the detector which is based on anomalies of response time. By default, automatic failure detection is disabled. But the caller code can specify a factory for failure detectors. In that case, the internals of Raft implementation instantiate failure detector for each cluster member automatically on a leader's side. See [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.FailureDetectorFactory) property for more information. In DI environment (ASP.NET Core), the factory can be registered as singleton service.
 
-# Development and Debugging
-It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to start the node in _Cold Start_ mode.
-
-# Performance
-The wire format is highly optimized for transferring log entries during the replication process over the wire. The most performance optimizations should be performed when configuring persistent Write-Ahead Log.
-
-[WriteAheadLog](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog) writes all log entries to the page cache or private memory depending on [MemoryManagement](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement) configuration property. The background flusher instructs the OS to flush the modified memory pages to the disk. The caller that appends the log entry doesn't wait for the flush. The background process creates checkpoints for every flush for safe recovery in case of failure.
-
-On Linux, WAL implementation automatically detects availability of [Transparent Huge Pages](https://docs.kernel.org/admin-guide/mm/transhuge.html). If THP is enabled, WAL arranges huge memory pages to keep the written log entries.
-
-# Rolling Updates
+## Rolling Updates
 A number of WAL log entries is not static and can evolve over the time. For backward compatibility, old log entries remain intact. But new log entries can be introduced in a new version. Previously, it wasn't possible to do that without stopping the whole cluster. Otherwise, a new version of the node can try to replicate the log entry which is not known to the older node.
 
 To fix that problem, `Version` property is introduced in [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. The value of this property is taken into account at the wire protocol level. `Vote`, `PreVote`, `AppendEntries`, and `InstallSnapshot` message carry this version. If node received a message with version that is larger than the local version, the message is rejected. However, the node with higher version is able to process the message.
@@ -461,6 +451,16 @@ The following process describes how the rolling update can be performed:
 3. Node _A_ now supports additional log entry types
 4. Upgrade _B(0)_ => _B(1)_. Now the quorum of nodes can handle additional log entry types. _C_ can't, so it cannot replicate from a new leader and becomes a stale node. However, the cluster is alive
 5. Upgrade _C(0)_ => _C(1)_. Now the whole cluster supports additional log entry types
+
+# Development and Debugging
+It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to start the node in _Cold Start_ mode.
+
+# Performance
+The wire format is highly optimized for transferring log entries during the replication process over the wire. The most performance optimizations should be performed when configuring persistent Write-Ahead Log.
+
+[WriteAheadLog](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog) writes all log entries to the page cache or private memory depending on [MemoryManagement](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement) configuration property. The background flusher instructs the OS to flush the modified memory pages to the disk. The caller that appends the log entry doesn't wait for the flush. The background process creates checkpoints for every flush for safe recovery in case of failure.
+
+On Linux, WAL implementation automatically detects availability of [Transparent Huge Pages](https://docs.kernel.org/admin-guide/mm/transhuge.html). If THP is enabled, WAL arranges huge memory pages to keep the written log entries.
 
 # Guide: How To Implement Database
 This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
