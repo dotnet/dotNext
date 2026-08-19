@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 08-19-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
+* Added support of Raft cluster rolling updates, when a new log entry types need to be introduced
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
+* Updated dependencies
+
 # 08-17-2026
 <a href="https://www.nuget.org/packages/dotnext/6.6.2">DotNext 6.6.2</a>
 * `Constant` static extension method for [Func&lt;TResult&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-1) delegate provides cached version for default value of the primitive types
