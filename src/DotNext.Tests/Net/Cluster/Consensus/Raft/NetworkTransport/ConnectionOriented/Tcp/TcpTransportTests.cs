@@ -365,7 +365,7 @@ public sealed class TcpTransportTests : TransportTestSuite
         // Expected index is 2, because index 1 is added by the leader as a write barrier
         await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
         Equal(2L, leader.AuditTrail.LastCommittedEntryIndex);
-        Equal(2L, IsType<WriteAheadLog>(leader.AuditTrail).LastAppliedIndex);
+        Equal(2L, IsAssignableFrom<WriteAheadLog>(leader.AuditTrail).LastAppliedIndex);
         await leader.As<IReplicationCluster<IRaftLogEntry>>().ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
 
         await host1.StopAsync(TestToken);
