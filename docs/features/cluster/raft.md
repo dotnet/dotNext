@@ -447,6 +447,21 @@ The wire format is highly optimized for transferring log entries during the repl
 
 On Linux, WAL implementation automatically detects availability of [Transparent Huge Pages](https://docs.kernel.org/admin-guide/mm/transhuge.html). If THP is enabled, WAL arranges huge memory pages to keep the written log entries.
 
+# Rolling Updates
+A number of WAL log entries is not static and can evolve over the time. For backward compatibility, old log entries remain intact. But new log entries can be introduced in a new version. Previously, it wasn't possible to do that without stopping the whole cluster. Otherwise, a new version of the node can try to replicate the log entry which is not known to the older node.
+
+To fix that problem, `Version` property is introduced in [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. The value of this property is taken into account at the wire protocol level. `Vote`, `PreVote`, `AppendEntries`, and `InstallSnapshot` message carry this version. If node received a message with version that is larger than the local version, the message is rejected. However, the node with higher version is able to process the message.
+
+The value of the property is typically hard-coded, no need to read it from the configuration. It indicates a set of supported log entries.
+
+The following process describes how the rolling update can be performed:
+
+1. Cluster with nodes _A(0)_, _B(0)_, _C(0)_, where _0_ is a version
+2. Upgrade _A(0)_ => _A(1)_. No cluster shutdown, because the quorum remains alive. If node _A_ was a leader, a new leader will be elected eventually among _B_ and _C_
+3. Node _A_ now supports additional log entry types
+4. Upgrade _B(0)_ => _B(1)_. Now the quorum of nodes can handle additional log entry types. _C_ can't, so it cannot replicate from a new leader and becomes a stale node. However, the cluster is alive
+5. Upgrade _C(0)_ => _C(1)_. Now the whole cluster supports additional log entry types
+
 # Guide: How To Implement Database
 This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
 

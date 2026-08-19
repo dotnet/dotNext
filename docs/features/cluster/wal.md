@@ -272,3 +272,6 @@ In other words, the time of the transition **appended** => **applied** depends o
 
 # Telemetry
 The WAL exposes a group of metrics through `DotNext.IO.WriteAheadLog` meter. The metrics can be discovered with `dotnet-counters` tool from the .NET SDK.
+
+# Rolling updates
+The process is described in the related section [here](./raft.md). [WriteAheadLog](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog) class implements [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface, so its `Version` property is implemented by delegating it to `Version` property of [IStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine) interface. Implementer needs to override this property and bump the returned value when a new log entries are added.
