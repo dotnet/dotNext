@@ -524,6 +524,12 @@ public abstract class TransportTestSuite : RaftTest
         await host1.StopAsync();
     }
 
-    protected static WriteAheadLog CreateWal()
-        => new(new() { Location = GetTempPath() }, IStateMachine.CreateNoOp());
+    protected static WriteAheadLog CreateWal(int version = 0)
+        => new TestWriteAheadLog(new() { Location = GetTempPath() }, IStateMachine.CreateNoOp(), version);
+}
+
+file sealed class TestWriteAheadLog(WriteAheadLog.Options options, IStateMachine stateMachine, int version = 0)
+    : WriteAheadLog(options, stateMachine), IPersistentState
+{
+    int IPersistentState.Version => version;
 }

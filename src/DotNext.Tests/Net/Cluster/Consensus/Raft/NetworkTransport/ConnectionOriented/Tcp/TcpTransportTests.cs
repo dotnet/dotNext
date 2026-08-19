@@ -388,6 +388,21 @@ public sealed class TcpTransportTests : TransportTestSuite
         
         await host1.StopAsync(TestToken);
     }
+
+    [Fact]
+    public static async Task WalVersioning()
+    {
+        await using var wal1 = CreateWal(version: 1);
+        await using var host1 = new RaftCluster(CreateConfiguration(Host1Port)) { AuditTrail = wal1 };
+        await host1.StartAsync(TestToken);
+
+        await using var wal2 = CreateWal();
+        await using var host2 = new RaftCluster(CreateConfiguration(Host2Port)) { AuditTrail = wal2 };
+        await host2.StartAsync(TestToken);
+
+        // host1 has higher version, so it cannot be a leader
+        await host2.WaitForLeadershipAsync(TestToken);
+    }
     
     private static RaftCluster.TcpConfiguration CreateConfiguration(int port, bool coldStart = false)
     {
