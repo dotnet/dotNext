@@ -500,16 +500,16 @@ From architecture point of view, these two parts are separated. However, the act
 ## Cluster Member
 [IRaftClusterMember](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember) declares the methods that are equivalent to Raft-specific message types.
 
-`NextIndex` property should return a location in memory to the index of the next log entry to be replicated for the current member. It doesn't contain any logic.
+`State` property should return a location in memory to the index of the next log entry to be replicated for the current member. It doesn't contain any logic.
 ```csharp
 using DotNext;
 using DotNext.Net.Cluster.Consensus.Raft;
 
 sealed class ClusterMember : Disposable, IRaftClusterMember
 {
-    private long nextIndex;
+    private IRaftClusterMember.ReplicationState state;
 
-    ref long IRaftClusterMember.NextIndex => ref nextIndex;
+    ref IRaftClusterMember.ReplicationState IRaftClusterMember.State => ref state;
 }
 ```
 
