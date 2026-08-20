@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
 using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -381,27 +383,44 @@ internal partial class RaftHttpCluster : IOutputChannel
         await SynchronizeMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }
 
-    internal Task ProcessRequest(HttpContext context)
+    internal async Task ProcessRequestAsync(HttpContext context)
     {
         context.Features.Set(duplicationDetector);
 
-        // process request
-        return HttpMessage.GetMessageType(context.Request) switch
+        var tokenSource = CombineTokens(context.RequestAborted, context.RequestServices.ApplicationStoppingToken);
+        try
         {
-            AppendEntriesMessage.MessageType => AppendEntriesAsync(context.Request, context.Response, context.RequestAborted),
-            SynchronizeMessage.MessageType => SynchronizeAsync(new SynchronizeMessage(context.Request), context.Response, context.RequestAborted),
-            RequestVoteMessage.MessageType => VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted),
-            PreVoteMessage.MessageType => PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted),
-            InstallSnapshotMessage.MessageType => InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted),
-            CustomMessage.MessageType => ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted),
-            ResignMessage.MessageType => ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted),
-            MetadataMessage.MessageType => GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted),
-            _ => BadRequest(context),
+            await ProcessRequestAsync(context.Request, context.Response, tokenSource.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            context.Abort();
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private Task ProcessRequestAsync(HttpRequest request, HttpResponse response, CancellationToken token)
+    {
+        // process request
+        return HttpMessage.GetMessageType(request) switch
+        {
+            AppendEntriesMessage.MessageType => AppendEntriesAsync(request, response, token),
+            SynchronizeMessage.MessageType => SynchronizeAsync(new SynchronizeMessage(request), response, token),
+            RequestVoteMessage.MessageType => VoteAsync(new RequestVoteMessage(request), response, token),
+            PreVoteMessage.MessageType => PreVoteAsync(new PreVoteMessage(request), response, token),
+            InstallSnapshotMessage.MessageType => InstallSnapshotAsync(new InstallSnapshotMessage(request), response, token),
+            CustomMessage.MessageType => ReceiveMessageAsync(new CustomMessage(request), response, token),
+            ResignMessage.MessageType => ResignAsync(new ResignMessage(request), response, token),
+            MetadataMessage.MessageType => GetMetadataAsync(new MetadataMessage(request), response, token),
+            _ => BadRequest(response),
         };
 
-        static Task BadRequest(HttpContext context)
+        static Task BadRequest(HttpResponse response)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            response.StatusCode = StatusCodes.Status400BadRequest;
             return Task.CompletedTask;
         }
     }
@@ -420,4 +439,13 @@ internal partial class RaftHttpCluster : IOutputChannel
 
     bool IHostingContext.TryGetTimeout<TMessage>(out TimeSpan timeout)
         => TryGetTimeout(typeof(TMessage), out timeout);
+}
+
+file static class ServiceProviderExtensions
+{
+    extension(IServiceProvider provider)
+    {
+        public CancellationToken ApplicationStoppingToken
+            => provider.GetService<IHostApplicationLifetime>()?.ApplicationStopping ?? CancellationToken.None;
+    }
 }
