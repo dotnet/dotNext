@@ -1,8 +1,10 @@
+using System.Runtime.InteropServices;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
+using IO;
 
 /// <summary>
 /// Represents persistent cluster configuration storage.
@@ -14,6 +16,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     private const FileOptions Options = FileOptions.Asynchronous | FileOptions.SequentialScan;
     
     private readonly string configurationFile;
+    private readonly nint openFileFunction;
 
     /// <summary>
     /// Initializes a new persistent storage.
@@ -22,6 +25,11 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     protected PersistentClusterConfigurationStorage(string fileName)
     {
         configurationFile = fileName;
+
+        if (OperatingSystem.IsLinux())
+        {
+            NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "open", out openFileFunction);
+        }
     }
 
     /// <inheritdoc/>
@@ -100,7 +108,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
                 return false;
 
             // rewrite config
-            var tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempFile = Path.Combine(Path.GetDirectoryName(configurationFile.AsSpan()).ToString(),
+                string.Concat(Path.GetRandomFileName(), ".tmp"));
             using (var handle = File.OpenHandle(tempFile,
                        FileMode.CreateNew,
                        FileAccess.Write,
@@ -115,7 +124,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
                 RandomAccess.FlushToDisk(handle);
             }
 
-            File.Move(tempFile, configurationFile, overwrite: true);
+            Move(tempFile, configurationFile);
         }
         finally
         {
@@ -123,5 +132,16 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         }
 
         return true;
+    }
+
+    private unsafe void Move(string sourceFileName, string destFileName)
+    {
+        File.Move(sourceFileName, destFileName, overwrite: true);
+
+        if (OperatingSystem.IsLinux() && openFileFunction is not 0)
+        {
+            Directory.FlushToDisk(Path.GetDirectoryName(destFileName),
+                (delegate*unmanaged<byte*, int, int, int>)openFileFunction);
+        }
     }
 }
