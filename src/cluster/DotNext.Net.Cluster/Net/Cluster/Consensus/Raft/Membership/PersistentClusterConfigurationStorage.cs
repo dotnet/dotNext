@@ -141,7 +141,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         if (OperatingSystem.IsLinux() && openFileFunction is not 0)
         {
-            Directory.FlushToDisk(Path.GetDirectoryName(destFileName),
+            Directory.FlushToDisk(Path.GetDirectoryName(destFileName.AsSpan()),
                 (delegate*unmanaged<byte*, int, int, int>)openFileFunction);
         }
     }

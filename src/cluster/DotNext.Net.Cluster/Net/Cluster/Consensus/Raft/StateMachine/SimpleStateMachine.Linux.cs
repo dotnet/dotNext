@@ -24,7 +24,7 @@ partial class SimpleStateMachine
         protected override void Commit(string sourceFileName, string destinationFileName)
         {
             base.Commit(sourceFileName, destinationFileName);
-            Directory.FlushToDisk(Path.GetDirectoryName(destinationFileName), openFileFunction);
+            Directory.FlushToDisk(Path.GetDirectoryName(destinationFileName.AsSpan()), openFileFunction);
         }
     }
 }
