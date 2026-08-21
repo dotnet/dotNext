@@ -31,13 +31,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-20-2026
+Release Date: 08-21-2026
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
-* Added support of Raft cluster rolling updates, when a new log entry types need to be introduced 
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.4">DotNext.Net.Cluster 6.6.4</a>
+* Fixed durability and atomicity guarantees for file operations in `SimpleStateMachine` implementation
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.4">DotNext.AspNetCore.Cluster 6.6.4</a>
+* Raft request handler aborts any incoming HTTP requests as soon as the application stop is requested. It doesn't wait for completion of the in-flight requests
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).

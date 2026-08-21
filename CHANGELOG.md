@@ -1,11 +1,18 @@
 Release Notes
 ====
 
+# 08-21-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.4">DotNext.Net.Cluster 6.6.4</a>
+* Fixed durability and atomicity guarantees for file operations in `SimpleStateMachine` implementation
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.4">DotNext.AspNetCore.Cluster 6.6.4</a>
+* Raft request handler aborts any incoming HTTP requests as soon as the application stop is requested. It doesn't wait for completion of the in-flight requests
+
 # 08-20-2026
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
 * Added support of Raft cluster rolling updates, when a new log entry types need to be introduced
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.3">DotNext.AspNetCore.Cluster 6.6.3</a>
 * Updated dependencies
 
 # 08-17-2026
