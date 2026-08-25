@@ -150,7 +150,7 @@ public static class UnmanagedMemory
             fixed (void* ptr = memory)
             {
                 var address = (nuint)ptr;
-                var alignedAddress = address - (address & ((uint)Environment.SystemPageSize - 1));
+                var alignedAddress = address - (address & (pageSize - 1));
                 alignedAddress = address == alignedAddress ? alignedAddress : alignedAddress + pageSize;
 
                 offset = (int)(alignedAddress - address);
