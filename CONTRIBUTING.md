@@ -25,4 +25,4 @@ Contributions must not contain breaking changes such as backward incompatible mo
 If your PR contains bug fix or new feature then it should have unit tests.
 
 ## AI
-If your PR was fully or partially made by the AI model (Codex, Claude, etc.), add `ai_assisted` label to it.
+If your PR was fully or partially made by an AI model (Codex, Claude, etc.), add the `ai_assisted` label to it.
