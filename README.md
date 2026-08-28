@@ -33,11 +33,31 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 08-21-2026
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.4">DotNext.Net.Cluster 6.6.4</a>
-* Fixed durability and atomicity guarantees for file operations in `SimpleStateMachine` implementation
+<a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
+* `Constant` static extension method for [Func&lt;TResult&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-1) delegate provides cached version for default value of the primitive types
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.4">DotNext.AspNetCore.Cluster 6.6.4</a>
-* Raft request handler aborts any incoming HTTP requests as soon as the application stop is requested. It doesn't wait for completion of the in-flight requests
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.5">DotNext.Metaprogramming 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.5">DotNext.Unsafe 6.6.5</a>
+* Improved performance of `GetPageAlignedOffset` method
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.5">DotNext.Threading 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.5">DotNext.IO 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
+* Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.5">DotNext.AspNetCore.Cluster 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.5">DotNext.MaintenanceServices 1.6.5</a>
+* Updated dependencies
+
+Also, AOT compatibility tests are added.
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).
