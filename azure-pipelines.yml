@@ -2,6 +2,8 @@ variables:
   Solution: src/DotNext.slnx
   TestFolder: src/DotNext.Tests
   TestProject: $(TestFolder)/DotNext.Tests.csproj
+  AotTestFolder: src/DotNext.Aot.Tests
+  AotTestProject: $(AotTestFolder)/DotNext.Aot.Tests.csproj
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: false
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 trigger:
@@ -49,6 +51,19 @@ stages:
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
               arguments: --configuration Debug
+          - task: DotNetCoreCLI@2
+            displayName: Publish AOT Tests
+            inputs:
+              command: publish
+              publishWebProjects: false
+              zipAfterPublish: false
+              projects: $(AotTestProject)
+              arguments: --configuration Release --output $(AotTestFolder)/bin/aot
+          - task: CmdLine@2
+            displayName: Run AOT Tests
+            inputs:
+              workingDirectory: $(AotTestFolder)/bin/aot
+              script: ./DotNext.Aot.Tests
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             timeoutInMinutes: 10
