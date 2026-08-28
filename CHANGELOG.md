@@ -15,7 +15,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.6.5">DotNext.IO 6.6.5</a>
-* Updated dependencies
+* Fixed [296](https://github.com/dotnet/dotNext/issues/296)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
 * Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC
