@@ -62,7 +62,7 @@ stages:
           - task: CmdLine@2
             displayName: Run AOT Tests
             inputs:
-              workingDirectory: $(AotTestFolder)/bin/aot
+              workingDirectory: $(AotTestFolder)/bin/aot/DotNext.Aot.Tests
               script: ./DotNext.Aot.Tests
           - task: DotNetCoreCLI@2
             displayName: Test Debug
