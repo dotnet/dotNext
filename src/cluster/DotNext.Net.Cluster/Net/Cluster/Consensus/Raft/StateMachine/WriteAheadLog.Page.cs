@@ -45,6 +45,7 @@ partial class WriteAheadLog
 
             const FileAccess fileAccess = FileAccess.ReadWrite;
             fileHandle = File.OpenHandle(fileName, FileMode.OpenOrCreate, fileAccess);
+            File.SetAttributes(fileHandle, FileAttributes.NotContentIndexed);
 
             var mappedHandle = MemoryMappedFile.CreateFromFile(fileHandle, mapName: null, pageSize, MemoryMappedFileAccess.ReadWrite,
                 HandleInheritability.None, leaveOpen: true);

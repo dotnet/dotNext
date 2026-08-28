@@ -18,7 +18,7 @@ partial class WriteAheadLog
     private sealed class LinuxDirectPage : AnonymousPageBase
     {
         private readonly uint sectorSize;
-        private readonly unsafe delegate*unmanaged<void*, int, int, int> openFileFunction;
+        private readonly unsafe delegate*unmanaged<byte*, int, int, int> openFileFunction;
 
         public unsafe LinuxDirectPage(int pageSize, nuint alignment, uint sectorSize, delegate*unmanaged<void*, int, int, int> openFileFunction)
             : base(pageSize, alignment)

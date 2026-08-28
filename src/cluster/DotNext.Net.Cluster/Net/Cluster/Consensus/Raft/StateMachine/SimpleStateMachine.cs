@@ -16,6 +16,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     private readonly CancellationToken lifetimeToken;
     private readonly DirectoryInfo location;
     private readonly Task<SnapshotWriter> sentinel;
+    private readonly Func<long, FileInfo, SnapshotWriter> writerFactory;
 
     [SuppressMessage("Usage", "CA2213", Justification = "See DisposeAsync() implementation")]
     private CancellationTokenSource? lifetimeSource;
@@ -35,6 +36,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
         this.location = location;
         lifetimeToken = (lifetimeSource = new()).Token;
         sentinel = Task.FromException<SnapshotWriter>(new ObjectDisposedException(GetType().Name));
+        writerFactory = CreateSnapshotWriterFactory();
     }
 
     /// <summary>
@@ -59,7 +61,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     /// <returns>The task representing asynchronous execution of the method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     protected static async ValueTask RestoreAsync(CommandInterpreter interpreter, FileInfo snapshotFile, CancellationToken token)
-        => await interpreter.InterpretAsync(new Snapshot(snapshotFile), token).ConfigureAwait(false);
+        => await interpreter.InterpretAsync(new Snapshot(snapshotFile, SnapshotWriter.CreateDefault), token).ConfigureAwait(false);
     
     /// <summary>
     /// Persists the current state.
@@ -78,7 +80,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     public ValueTask RestoreAsync(CancellationToken token = default)
     {
         // find the most recent snapshot
-        foreach (var candidate in GetSnapshots(location))
+        foreach (var candidate in GetSnapshots())
         {
             if (snapshot is null || candidate.Index > snapshot.Index)
             {
@@ -101,7 +103,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
         var task = ValueTask.CompletedTask;
         try
         {
-            foreach (var candidate in GetSnapshots(location))
+            foreach (var candidate in GetSnapshots())
             {
                 token.ThrowIfCancellationRequested();
                 if (candidate.Index < watermark)
@@ -163,7 +165,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
         if (ReferenceEquals(Interlocked.CompareExchange(ref snapshottingProcess, null, task), task))
         {
             writer.Commit();
-            snapshot = new Snapshot(writer.Destination);
+            snapshot = new Snapshot(writer.Destination, writerFactory);
         }
     }
 
@@ -178,7 +180,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private async Task<SnapshotWriter> BeginSnapshottingAsync(long index, long term, CancellationToken token)
     {
-        var writer = new SnapshotWriter(preallocationSize: 0L, Snapshot.CreateSnapshotFile(location, index, term));
+        var writer = writerFactory.Invoke(0L, Snapshot.CreateSnapshotFile(location, index, term));
         try
         {
             await PersistAsync(writer, token).ConfigureAwait(false);
@@ -207,8 +209,8 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     private async ValueTask<long> InstallSnapshotAsync(LogEntry entry, CancellationToken token)
     {
         await EndSnapshottingAsync(commit: false).ConfigureAwait(false);
-        
-        var newSnapshot = new Snapshot(location, entry.Index, entry.Term);
+
+        var newSnapshot = new Snapshot(location, entry.Index, entry.Term, writerFactory);
         await newSnapshot.ReadFromAsync(entry, token).ConfigureAwait(false);
         await RestoreAsync(newSnapshot.File, token).ConfigureAwait(false);
         

@@ -520,7 +520,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             transitionCancellation.Cancel(false);
             await CancelPendingRequestsAsync().ConfigureAwait(false);
-            electionEvent.TrySetCanceled(LifecycleToken);
             var lockTaken = false;
             try
             {
@@ -690,6 +689,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 }
                 else if (await AuditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
                 {
+                    // The sender's commit index must never exceed the index of the last new entry
+                    // delivered in this RPC (e.g. the leader batches entries per RPC while its own
+                    // commit index is already further ahead), per the Raft commit rule:
+                    commitIndex = long.Min(commitIndex, prevLogIndex + entries.RemainingCount);
+
                     var notEmpty = UseTermDetector(ref entries, senderTerm);
 
                     // prevent Follower state transition during processing of received log entries
@@ -1062,6 +1066,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private ValueTask MoveToStandbyState(bool resumable = true)
     {
         Leader = null;
+
+        if (!resumable)
+        {
+            electionEvent.TrySetException(new QuorumUnreachableException());
+            leadershipEvent.TrySetException(new QuorumUnreachableException());
+        }
+        
         return UpdateStateAsync(new StandbyState<TMember>(this) { ConsensusTimeout = LeaderLeaseDuration, Resumable = resumable });
     }
 
@@ -1073,7 +1084,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         Leader = null;
         
         readinessProbe.TrySetException(newState.CreateException());
-        leadershipEvent.TrySetException(newState.CreateException());
+        electionEvent.TrySetException(newState.CreateException());
         leadershipEvent.TrySetException(newState.CreateException());
 
         return UpdateStateAsync(newState);

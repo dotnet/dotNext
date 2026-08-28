@@ -187,7 +187,7 @@ public static partial class ConfigurationExtensions
         => builder.Host.JoinCluster(memberConfigSection);
 
     private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
-        => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = HttpUtils.WriteExceptionContent }).Run(cluster.ProcessRequest);
+        => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = HttpUtils.WriteExceptionContent }).Run(cluster.ProcessRequestAsync);
 
     /// <summary>
     /// Setup Raft protocol handler as middleware for the specified application.

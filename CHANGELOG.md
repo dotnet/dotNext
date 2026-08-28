@@ -1,11 +1,46 @@
 Release Notes
 ====
 
+# 08-28-2026
+<a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
+* All `FromPointer` static extension methods for delegates are marked with [RequiresDynamicCodeAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.requiresdynamiccodeattribute), because delegate construction from a method pointer is not supported in AOT
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.5">DotNext.Metaprogramming 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.5">DotNext.Unsafe 6.6.5</a>
+* Improved performance of `GetPageAlignedOffset` method
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.5">DotNext.Threading 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.5">DotNext.IO 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
+* Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC
+* Fixed freeze of `WaitForLeaderAsync` and `WaitForLeadershipAsync` methods when the node is requested to stop
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.5">DotNext.AspNetCore.Cluster 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.5">DotNext.MaintenanceServices 1.6.5</a>
+* Updated dependencies
+
+Also, AOT compatibility tests are added.
+
+# 08-21-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.4">DotNext.Net.Cluster 6.6.4</a>
+* Fixed durability and atomicity guarantees for file operations in `SimpleStateMachine` implementation
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.4">DotNext.AspNetCore.Cluster 6.6.4</a>
+* Raft request handler aborts any incoming HTTP requests as soon as the application stop is requested. It doesn't wait for completion of the in-flight requests
+
 # 08-20-2026
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
 * Added support of Raft cluster rolling updates, when a new log entry types need to be introduced
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.3">DotNext.AspNetCore.Cluster 6.6.3</a>
 * Updated dependencies
 
 # 08-17-2026

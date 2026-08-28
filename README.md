@@ -31,13 +31,34 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-20-2026
+Release Date: 08-21-2026
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.3">DotNext.Net.Cluster 6.6.3</a>
-* Added support of Raft cluster rolling updates, when a new log entry types need to be introduced 
+<a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
+* All `FromPointer` static extension methods for delegates are marked with [RequiresDynamicCodeAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.requiresdynamiccodeattribute), because delegate construction from a method pointer is not supported in AOT
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.2">DotNext.AspNetCore.Cluster 6.6.3</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.5">DotNext.Metaprogramming 6.6.5</a>
 * Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.6.5">DotNext.Unsafe 6.6.5</a>
+* Improved performance of `GetPageAlignedOffset` method
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.6.5">DotNext.Threading 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.6.5">DotNext.IO 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
+* Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC
+* Fixed freeze of `WaitForLeaderAsync` and `WaitForLeadershipAsync` methods when the node is requested to stop
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.5">DotNext.AspNetCore.Cluster 6.6.5</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.6.5">DotNext.MaintenanceServices 1.6.5</a>
+* Updated dependencies
+
+Also, AOT compatibility tests are added.
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).
