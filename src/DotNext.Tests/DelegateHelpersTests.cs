@@ -528,6 +528,19 @@ public sealed class DelegateHelpersTests : Test
         static void FillChars(Span<char> dest, string source)
             => source.CopyTo(dest);
     }
+    
+    [Fact]
+    public static unsafe void CreateReadOnlySpanAction()
+    {
+        const string expected = "Hello, world!";
+        var fn = ReadOnlySpanAction<char, Span<char>>.FromPointer(&FillChars);
+        Span<char> destination = stackalloc char[expected.Length];
+        fn.Invoke(expected, destination);
+        Equal(expected, destination);
+
+        static void FillChars(ReadOnlySpan<char> src, Span<char> dest)
+            => src.CopyTo(dest);
+    }
 
     [Fact]
     public static void ActionWrapper()
