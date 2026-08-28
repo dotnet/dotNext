@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext;
@@ -27,7 +29,7 @@ public static partial class DelegateHelpers
         if (enumerator.MoveNext())
         {
             d = ChangeTypeCore(enumerator.Current, rewriter, delegateType);
-            
+
             while (enumerator.MoveNext())
             {
                 d = Delegate.Combine(d, ChangeTypeCore(enumerator.Current, rewriter, delegateType));
@@ -49,7 +51,7 @@ public static partial class DelegateHelpers
         => value ? True : False;
 
     private static bool True() => true;
-    
+
     private static bool True<T>(T value) where T : allows ref struct => true;
 
     private static bool False() => false;
@@ -66,4 +68,46 @@ public static partial class DelegateHelpers
     private static TResult UnboxAny<T, TResult>(this object obj, T arg)
         where T : allows ref struct
         => obj.UnboxAny<TResult>();
+
+    private sealed unsafe partial class MethodPointer
+    {
+        private readonly nuint pointer;
+
+        private MethodPointer(void* pointer) => this.pointer = new(pointer);
+
+        public override string ToString() => new nuint(pointer).ToString("X");
+
+        public override bool Equals([NotNullWhen(true)] object? other)
+            => other is MethodPointer methodPtr && methodPtr.pointer == pointer;
+
+        public override int GetHashCode() => pointer.GetHashCode();
+    }
+
+    private sealed unsafe partial class MethodPointer<TTarget>
+        where TTarget : class?
+    {
+        private readonly TTarget target;
+        private readonly nuint pointer;
+
+        private MethodPointer(void* pointer, TTarget target)
+        {
+            this.pointer = new(pointer);
+            this.target = target;
+        }
+        
+        public override string ToString() => pointer.ToString("X");
+
+        public override bool Equals([NotNullWhen(true)] object? other)
+            => other is MethodPointer<TTarget> methodPtr
+               && methodPtr.pointer == pointer
+               && ReferenceEquals(target, methodPtr.target);
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(pointer);
+            hash.Add(RuntimeHelpers.GetHashCode(target));
+            return hash.ToHashCode();
+        }
+    }
 }
