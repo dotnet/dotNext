@@ -91,9 +91,7 @@ public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
     /// <param name="consumer">The value representing the pointer to the method.</param>
     /// <returns>The delegate representing the wrapped method.</returns>
     public static explicit operator Action<T>(Consumer<T> consumer)
-        => RuntimeFeature.IsDynamicCodeCompiled
-            ? Action<T>.FromPointer(consumer.ptr)
-            : consumer.As<IConsumer<T>>().Invoke;
+        => Action<T>.FromPointer(consumer.ptr);
 }
 
 /// <summary>
