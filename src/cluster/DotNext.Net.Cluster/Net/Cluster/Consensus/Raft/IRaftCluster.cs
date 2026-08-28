@@ -79,6 +79,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <returns>The leadership token.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    /// <exception cref="QuorumUnreachableException">The local node is stopped and never can be elected as leader.</exception>
     /// <seealso cref="LeadershipToken"/>
     Task<CancellationToken> WaitForLeadershipAsync(CancellationToken token = default);
 
