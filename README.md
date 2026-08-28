@@ -34,7 +34,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 Release Date: 08-21-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
-* `Constant` static extension method for [Func&lt;TResult&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-1) delegate provides cached version for default value of the primitive types
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.5">DotNext.Metaprogramming 6.6.5</a>
 * Updated dependencies
