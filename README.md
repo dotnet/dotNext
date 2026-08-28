@@ -31,7 +31,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-21-2026
+Release Date: 08-29-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
 * All `FromPointer` static extension methods for delegates are marked with [RequiresDynamicCodeAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.requiresdynamiccodeattribute), because delegate construction from a method pointer is not supported in AOT

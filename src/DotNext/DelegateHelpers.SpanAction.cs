@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -24,10 +24,12 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe SpanAction<TItem, TArg> FromPointer(delegate*<Span<TItem>, TArg, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create<TItem, TArg>(ptr);
 
             Ldnull();
             Push(ptr);
@@ -44,16 +46,40 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe SpanAction<TItem, TArg> FromPointer<T>(delegate*<T, Span<TItem>, TArg, void> ptr, T obj)
             where T : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<T>.Create<TItem, TArg>(ptr, obj);
 
             Push(obj);
             Push(ptr);
             Newobj(Constructor(Type<SpanAction<TItem, TArg>>(), Type<object>(), Type<IntPtr>()));
             return Return<SpanAction<TItem, TArg>>();
         }
+    }
+    
+    unsafe partial class MethodPointer
+    {
+        public static SpanAction<TItem, TArg> Create<TItem, TArg>(delegate*<Span<TItem>, TArg, void> ptr)
+            where TArg : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<TItem, TArg>(Span<TItem> span, TArg arg)
+            where TArg : allows ref struct
+            => ((delegate*<Span<TItem>, TArg, void>)pointer)(span, arg);
+    }
+    
+    unsafe partial class MethodPointer<TTarget>
+    {
+        public static SpanAction<TItem, TArg> Create<TItem, TArg>(delegate*<TTarget, Span<TItem>, TArg, void> ptr, TTarget target)
+            where TArg : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<TItem, TArg>(Span<TItem> span, TArg arg)
+            where TArg : allows ref struct
+            => ((delegate*<TTarget, Span<TItem>, TArg, void>)pointer)(target, span, arg);
     }
 }

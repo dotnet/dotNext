@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -32,7 +32,7 @@ public partial class DelegateHelpers
 
             return result;
         }
-        
+
         /// <summary>
         /// Converts static method represented by the pointer to the open delegate of type <see cref="Action"/>.
         /// </summary>
@@ -40,17 +40,19 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action FromPointer(delegate*<void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
+            
             Ldnull();
             Push(ptr);
             Newobj(Constructor(Type<Action>(), Type<object>(), Type<IntPtr>()));
             return Return<Action>();
         }
-        
+
         /// <summary>
         /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action"/>.
         /// </summary>
@@ -60,11 +62,13 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action FromPointer<TTarget>(delegate*<TTarget, void> ptr, TTarget target)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -147,10 +151,12 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T> FromPointer(delegate*<T, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
 
             Ldnull();
             Push(ptr);
@@ -167,11 +173,13 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T> FromPointer<TTarget>(delegate*<TTarget, T, void> ptr, TTarget target)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -270,10 +278,12 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2> FromPointer(delegate*<T1, T2, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
 
             Ldnull();
             Push(ptr);
@@ -290,11 +300,13 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2> FromPointer<TTarget>(delegate*<TTarget, T1, T2, void> ptr, TTarget target)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -384,10 +396,12 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3> FromPointer(delegate*<T1, T2, T3, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
 
             Ldnull();
             Push(ptr);
@@ -404,11 +418,13 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, void> ptr, TTarget target)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -505,6 +521,9 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
+
             Ldnull();
             Push(ptr);
             Newobj(Constructor(Type<Action<T1, T2, T3, T4>>(), Type<object>(), Type<IntPtr>()));
@@ -523,6 +542,9 @@ public partial class DelegateHelpers
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -583,10 +605,12 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3, T4, T5> FromPointer(delegate*<T1, T2, T3, T4, T5, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
 
             Ldnull();
             Push(ptr);
@@ -603,11 +627,13 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3, T4, T5> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, T4, T5, void> ptr, TTarget target)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, target);
 
             Push(target);
             Push(ptr);
@@ -672,10 +698,12 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3, T4, T5, T6> FromPointer(delegate*<T1, T2, T3, T4, T5, T6, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer.Create(ptr);
 
             Ldnull();
             Push(ptr);
@@ -691,12 +719,14 @@ public partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
-        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Action<T1, T2, T3, T4, T5, T6> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, T4, T5, T6, void> ptr,
             TTarget obj)
             where TTarget : class?
         {
             ArgumentNullException.ThrowIfNull(ptr);
+
+            if (!RuntimeFeature.IsDynamicCodeCompiled)
+                return MethodPointer<TTarget>.Create(ptr, obj);
 
             Push(obj);
             Push(ptr);
@@ -708,5 +738,177 @@ public partial class DelegateHelpers
         /// Gets the action that does nothing.
         /// </summary>
         public static Action<T1, T2, T3, T4, T5, T6> NoOp => static (_, _, _, _, _, _) => { };
+    }
+    
+    unsafe partial class MethodPointer
+    {
+        public static Action Create(delegate*<void> ptr)
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke() => ((delegate*<void>)pointer)();
+
+        public static Action<T> Create<T>(delegate*<T, void> ptr)
+            where T : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T>(T arg)
+            where T : allows ref struct
+            => ((delegate*<T, void>)pointer)(arg);
+
+        public static Action<T1, T2> Create<T1, T2>(delegate*<T1, T2, void> ptr)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T1, T2>(T1 arg1, T2 arg2)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            => ((delegate*<T1, T2, void>)pointer)(arg1, arg2);
+
+        public static Action<T1, T2, T3> Create<T1, T2, T3>(delegate*<T1, T2, T3, void> ptr)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            => ((delegate*<T1, T2, T3, void>)pointer)(arg1, arg2, arg3);
+
+        public static Action<T1, T2, T3, T4> Create<T1, T2, T3, T4>(delegate*<T1, T2, T3, T4, void> ptr)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            => ((delegate*<T1, T2, T3, T4, void>)pointer)(arg1, arg2, arg3, arg4);
+
+        public static Action<T1, T2, T3, T4, T5> Create<T1, T2, T3, T4, T5>(delegate*<T1, T2, T3, T4, T5, void> ptr)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            => ((delegate*<T1, T2, T3, T4, T5, void>)pointer)(arg1, arg2, arg3, arg4, arg5);
+
+        public static Action<T1, T2, T3, T4, T5, T6> Create<T1, T2, T3, T4, T5, T6>(delegate*<T1, T2, T3, T4, T5, T6, void> ptr)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            => new MethodPointer(ptr).Invoke;
+
+        private void Invoke<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            => ((delegate*<T1, T2, T3, T4, T5, T6, void>)pointer)(arg1, arg2, arg3, arg4, arg5, arg6);
+    }
+    
+    unsafe partial class MethodPointer<TTarget>
+    {
+        public static Action Create(delegate*<TTarget, void> ptr, TTarget target)
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke() => ((delegate*<TTarget, void>)pointer)(target);
+
+        public static Action<T> Create<T>(delegate*<TTarget, T, void> ptr, TTarget target)
+            where T : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T>(T arg)
+            where T : allows ref struct
+            => ((delegate*<TTarget, T, void>)pointer)(target, arg);
+
+        public static Action<T1, T2> Create<T1, T2>(delegate*<TTarget, T1, T2, void> ptr, TTarget target)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T1, T2>(T1 arg1, T2 arg2)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            => ((delegate*<TTarget, T1, T2, void>)pointer)(target, arg1, arg2);
+
+        public static Action<T1, T2, T3> Create<T1, T2, T3>(delegate*<TTarget, T1, T2, T3, void> ptr, TTarget target)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            => ((delegate*<TTarget, T1, T2, T3, void>)pointer)(target, arg1, arg2, arg3);
+
+        public static Action<T1, T2, T3, T4> Create<T1, T2, T3, T4>(delegate*<TTarget, T1, T2, T3, T4, void> ptr, TTarget target)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            => ((delegate*<TTarget, T1, T2, T3, T4, void>)pointer)(target, arg1, arg2, arg3, arg4);
+
+        public static Action<T1, T2, T3, T4, T5> Create<T1, T2, T3, T4, T5>(delegate*<TTarget, T1, T2, T3, T4, T5, void> ptr, TTarget target)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            => ((delegate*<TTarget, T1, T2, T3, T4, T5, void>)pointer)(target, arg1, arg2, arg3, arg4, arg5);
+
+        public static Action<T1, T2, T3, T4, T5, T6> Create<T1, T2, T3, T4, T5, T6>(delegate*<TTarget, T1, T2, T3, T4, T5, T6, void> ptr, TTarget target)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            => new MethodPointer<TTarget>(ptr, target).Invoke;
+
+        private void Invoke<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            => ((delegate*<TTarget, T1, T2, T3, T4, T5, T6, void>)pointer)(target, arg1, arg2, arg3, arg4, arg5, arg6);
     }
 }

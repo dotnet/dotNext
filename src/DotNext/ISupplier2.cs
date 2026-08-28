@@ -108,9 +108,7 @@ public readonly unsafe struct Supplier<T1, T2, TResult>(delegate*<T1, T2, TResul
     /// <param name="supplier">The value representing the pointer to the method.</param>
     /// <returns>The delegate representing the wrapped method.</returns>
     public static explicit operator Func<T1, T2, TResult>(Supplier<T1, T2, TResult> supplier)
-        => RuntimeFeature.IsDynamicCodeCompiled
-            ? Func<T1, T2, TResult>.FromPointer(supplier.ptr)
-            : supplier.As<ISupplier<T1, T2, TResult>>().Invoke;
+        => Func<T1, T2, TResult>.FromPointer(supplier.ptr);
 }
 
 /// <summary>

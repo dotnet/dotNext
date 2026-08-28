@@ -91,16 +91,14 @@ public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : 
     /// <returns>The typed function pointer.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr) => new(ptr);
-
+    
     /// <summary>
     /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
     /// </summary>
     /// <param name="supplier">The value representing the pointer to the method.</param>
     /// <returns>The delegate representing the wrapped method.</returns>
     public static explicit operator Func<T, TResult>(Supplier<T, TResult> supplier)
-        => RuntimeFeature.IsDynamicCodeCompiled
-            ? Func<T, TResult>.FromPointer(supplier.ptr)
-            : supplier.As<ISupplier<T, TResult>>().Invoke;
+        => Func<T, TResult>.FromPointer(supplier.ptr);
 }
 
 /// <summary>

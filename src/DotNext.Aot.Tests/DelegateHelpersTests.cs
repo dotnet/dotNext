@@ -5,11 +5,21 @@ public class DelegateHelpersTests : Assert
     [Fact]
     public static unsafe void CreateAction()
     {
-        Throws<PlatformNotSupportedException>(static () => Action.FromPointer(&DoAction));
+        var action = Action.FromPointer(&DoAction);
+        NotNull(action);
+        action();
+
+        var obj = new ClassWithProperty();
+        action = Action.FromPointer(&DoAction2, obj);
+        action();
+        Equal(42, obj.Prop);
 
         static void DoAction()
         {
         }
+
+        static void DoAction2(ClassWithProperty obj)
+            => obj.Prop = 42;
     }
     
     [Fact]
@@ -37,4 +47,9 @@ public class DelegateHelpersTests : Assert
         static string Concat(string str1, string str2, string str3, string str4, string str5)
             => str1 + str2 + str3 + str4 + str5;
     }
+}
+
+file sealed class ClassWithProperty
+{
+    internal int Prop { get; set; }
 }
