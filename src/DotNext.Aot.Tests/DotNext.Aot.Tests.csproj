@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DotNext</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Authors>.NET Foundation and Contributors</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Unit tests for AOT compatibility of .NEXT libraries</Description>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.aot.mtp-v2"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNext\DotNext.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <CodeCoverageExclude Include="**/*.g.cs" />
+  </ItemGroup>
+</Project>
