@@ -3,7 +3,7 @@ Release Notes
 
 # 08-28-2026
 <a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
-* Updated dependencies
+* All `FromPointer` static extension methods for delegates are marked with [RequiresDynamicCodeAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.requiresdynamiccodeattribute), because delegate construction from a method pointer is not supported in AOT
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.6.5">DotNext.Metaprogramming 6.6.5</a>
 * Updated dependencies
