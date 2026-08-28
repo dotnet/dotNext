@@ -187,6 +187,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
+                buffer.Resize(sizeHint, allocator);
                 result = buffer.Memory.Slice(0, sizeHint);
                 break;
             default:
@@ -256,7 +257,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         Debug.Assert(HasBufferedData);
 
         EnsureBackingStore();
-        return Submit(RandomAccess.WriteAsync(fileBackend, WrittenMemory, filePosition, token), flushToDisk ? writeAndCopyCallback : writeCallback);
+        return Submit(RandomAccess.WriteAsync(fileBackend, WrittenMemory, filePosition, token), flushToDisk ? writeCallback : writeAndFlushCallback);
     }
 
     [MemberNotNull(nameof(fileBackend))]
@@ -336,6 +337,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
+                buffer.Resize(input.Length, allocator);
                 input.CopyTo(buffer.Span);
                 position = input.Length;
                 break;
