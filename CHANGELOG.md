@@ -19,6 +19,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
 * Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC
+* Fixed freeze of `WaitForLeaderAsync` and `WaitForLeadershipAsync` methods when the node is requested to stop
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.6.5">DotNext.AspNetCore.Cluster 6.6.5</a>
 * Updated dependencies
