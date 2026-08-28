@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -117,6 +118,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<TResult> FromPointer(delegate*<TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -136,6 +138,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<TResult> FromPointer<TTarget>(delegate*<TTarget, TResult> ptr, TTarget target)
             where TTarget : class?
         {
@@ -262,6 +265,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T, TResult> FromPointer(delegate*<T, TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -281,6 +285,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T, TResult> FromPointer<TTarget>(delegate*<TTarget, T, TResult> ptr, TTarget obj)
             where TTarget : class?
         {
@@ -482,6 +487,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, TResult> FromPointer(delegate*<T1, T2, TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -501,6 +507,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, TResult> FromPointer<TTarget>(delegate*<TTarget, T1, T2, TResult> ptr, TTarget target)
             where TTarget : class?
         {
@@ -569,6 +576,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, TResult> FromPointer(delegate*<T1, T2, T3, TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -588,6 +596,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, TResult> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, TResult> ptr, TTarget target)
             where TTarget : class?
         {
@@ -661,6 +670,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, TResult> FromPointer(delegate*<T1, T2, T3, T4, TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -680,6 +690,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, TResult> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, T4, TResult> ptr, TTarget target)
             where TTarget : class?
         {
@@ -753,6 +764,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, T5, TResult> FromPointer(delegate*<T1, T2, T3, T4, T5, TResult> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -772,6 +784,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, T5, TResult> FromPointer<TTarget>(delegate*<TTarget, T1, T2, T3, T4, T5, TResult> ptr,
             TTarget target)
             where TTarget : class?
@@ -856,6 +869,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, T5, T6, TResult> FromPointer(
             delegate*<T1, T2, T3, T4, T5, T6, TResult> ptr)
         {
@@ -876,6 +890,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe Func<T1, T2, T3, T4, T5, T6, TResult> FromPointer<TTarget>(
             delegate*<TTarget, T1, T2, T3, T4, T5, T6, TResult> ptr, TTarget target)
             where TTarget : class?

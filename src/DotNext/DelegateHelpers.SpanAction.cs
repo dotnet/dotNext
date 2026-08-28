@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -23,6 +24,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe SpanAction<TItem, TArg> FromPointer(delegate*<Span<TItem>, TArg, void> ptr)
         {
             ArgumentNullException.ThrowIfNull(ptr);
@@ -42,6 +44,7 @@ partial class DelegateHelpers
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         [CLSCompliant(false)]
+        [RequiresDynamicCode("Converting method pointer to delegate is not supported in AOT.")]
         public static unsafe SpanAction<TItem, TArg> FromPointer<T>(delegate*<T, Span<TItem>, TArg, void> ptr, T obj)
             where T : class?
         {
