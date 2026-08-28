@@ -690,6 +690,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 }
                 else if (await AuditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
                 {
+                    // The sender's commit index must never exceed the index of the last new entry
+                    // delivered in this RPC (e.g. the leader batches entries per RPC while its own
+                    // commit index is already further ahead), per the Raft commit rule:
+                    commitIndex = long.Min(commitIndex, prevLogIndex + entries.RemainingCount);
+
                     var notEmpty = UseTermDetector(ref entries, senderTerm);
 
                     // prevent Follower state transition during processing of received log entries
