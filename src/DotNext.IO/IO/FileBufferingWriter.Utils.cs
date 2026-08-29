@@ -7,7 +7,6 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.IO;
 
-using Buffers;
 using Runtime.CompilerServices;
 
 public partial class FileBufferingWriter : IDynamicInterfaceCastable
@@ -121,8 +120,7 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
             awaiterCopy.GetResult();
 
             filePosition += position;
-            buffer.Resize(secondBufferCopy.Length, allocator);
-            secondBufferCopy.CopyTo(buffer.Memory);
+            secondBufferCopy.Span.CopyTo(EnsureCapacity(secondBufferCopy.Length).Span);
             position = secondBufferCopy.Length;
         }
         catch (Exception e)
