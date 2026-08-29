@@ -187,8 +187,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
-                buffer.Resize(sizeHint, allocator);
-                result = buffer.Memory.Slice(0, sizeHint);
+                result = EnsureCapacity(sizeHint).Memory.Slice(0, sizeHint);
                 break;
             default:
                 throw new InsufficientMemoryException();
@@ -226,7 +225,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
             output = default;
             return size <= memoryThreshold ? MemoryEvaluationResult.PersistExistingBuffer : MemoryEvaluationResult.PersistAll;
         }
-
+        
         var bufLen = buffer.Length;
 
         // expand buffer if necessary
@@ -236,12 +235,33 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
             if ((uint)bufLen > (uint)newSize && (uint)bufLen <= (uint)memoryThreshold)
                 newSize = bufLen;
 
-            buffer.Resize(newSize, allocator);
+            var newBuffer = allocator.AllocateAtLeast(newSize);
+            output = newBuffer.Memory;
+            buffer.Span.Slice(0, position).CopyTo(output.Span);
+            buffer.Dispose();
+            buffer = newBuffer;
+            AllocationMeter.Record(buffer.Length, measurementTags);
+        }
+        else
+        {
+            output = buffer.Memory;
+        }
+
+        output = output.Slice(position, size);
+        return MemoryEvaluationResult.Success;
+    }
+
+    private ref readonly MemoryOwner<byte> EnsureCapacity(int newSize)
+    {
+        if (newSize > buffer.Length)
+        {
+            var newBuffer = allocator.AllocateAtLeast(newSize);
+            buffer.Dispose();
+            buffer = newBuffer;
             AllocationMeter.Record(buffer.Length, measurementTags);
         }
 
-        output = buffer.Memory.Slice(position, size);
-        return MemoryEvaluationResult.Success;
+        return ref buffer;
     }
 
     private bool HasBufferedData => position > 0;
@@ -337,8 +357,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
-                buffer.Resize(input.Length, allocator);
-                input.CopyTo(buffer.Span);
+                input.CopyTo(EnsureCapacity(input.Length).Span);
                 position = input.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
