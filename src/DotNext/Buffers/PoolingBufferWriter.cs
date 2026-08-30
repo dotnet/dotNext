@@ -106,7 +106,7 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
     /// <inheritdoc/>
     private protected override void Resize(int newSize)
     {
-        buffer.Resize(newSize, allocator);
+        buffer.ResizeCore(newSize, allocator);
         PoolingBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 
