@@ -19,6 +19,7 @@ public interface ICluster : IPeerMesh<IClusterMember>
     /// <exception cref="TimeoutException">The operation is timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    /// <exception cref="InvalidOperationException">The local node cannot observe the quorum.</exception>
     ValueTask<IClusterMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default);
 
     /// <summary>
