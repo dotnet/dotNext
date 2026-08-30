@@ -47,4 +47,43 @@ public sealed class BitArrayExtensionsTests : Test
         Equal(uint.PopCount(value), bits.PopCount);
         True(bits[0]);
     }
+
+    public static TheoryData<BitArray, IReadOnlyList<int>> SetBitsData => new()
+    {
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0000), [] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0101), [0, 2] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0111), [0, 1, 2] },
+        { BitArray.Create<ushort>(0B_1000_0100_0010_0001), [0, 5, 10, 15] },
+    };
+
+    [Theory]
+    [MemberData(nameof(SetBitsData))]
+    public static void CheckSetBits(BitArray array, IReadOnlyList<int> indices)
+    {
+        Equal(indices, array.SetBits);
+    }
+
+    [Fact]
+    public static void SetBitsAcrossWordsAndTail()
+    {
+        // exercise word-level scanning (multiple machine words) as well as
+        // the trailing bytes that don't fill a whole word
+        const int length = 100;
+        ReadOnlySpan<int> indices = [0, 1, 7, 8, 31, 32, 33, 63, 64, 65, 95, 99];
+
+        var array = new BitArray(length);
+        foreach (var index in indices)
+        {
+            array[index] = true;
+        }
+
+        Equal(indices, [.. array.SetBits]);
+    }
+
+    [Fact]
+    public static void SetBitsEmpty()
+    {
+        Empty(new BitArray(length: 128).SetBits);
+        Empty(new BitArray(length: 0).SetBits);
+    }
 }

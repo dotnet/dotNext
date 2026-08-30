@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections;
 
+using Generic;
 using Runtime.InteropServices;
 
 /// <summary>
@@ -65,5 +66,81 @@ public static class BitArrayExtensions
             source.CopyTo(CollectionsMarshal.AsBytes(result));
             return result;
         }
+
+        /// <summary>
+        /// Gets an enumerator over indices of set bits.
+        /// </summary>
+        public SetBitsEnumerator SetBits => new(array);
+    }
+
+    /// <summary>
+    /// Gets an enumerator over set bits.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public struct SetBitsEnumerator : IEnumerator<SetBitsEnumerator, int>, IEnumerable<int>
+    {
+        private const int BitsInByte = 8;
+        private readonly BitArray array;
+        private int position;
+
+        internal SetBitsEnumerator(BitArray array)
+            => this.array = array;
+        
+        /// <summary>
+        /// Gets the current index.
+        /// </summary>
+        public int Current { get; private set; }
+
+        /// <summary>
+        /// Advances to the next set bit.
+        /// </summary>
+        /// <returns><see langword="true"/> if the next set bit is found; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext()
+        {
+            for (var bytes = CollectionsMarshal.AsBytes(array); position < array.Length;)
+            {
+                var byteIndex = position / BitsInByte;
+                var bitOffset = position & (BitsInByte - 1);
+                var iterationResult = bytes.Length - byteIndex >= nuint.Size
+                    ? MoveNext(Unsafe.ReadUnaligned<nuint>(in bytes[byteIndex]), byteIndex, bitOffset)
+                    : MoveNext(bytes[byteIndex], byteIndex, bitOffset);
+
+                if (iterationResult)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool MoveNext<T>(T word, int byteIndex, int bitOffset)
+            where T : unmanaged, IBinaryInteger<T>
+        {
+            // Mask allows to remove previously inspected bits
+            word &= ~((T.One << bitOffset) - T.One);
+            if (word == T.Zero)
+            {
+                var bitsInWord = BitsInByte * Unsafe.SizeOf<T>();
+                position += bitsInWord - bitOffset;
+                return false;
+            }
+
+            var index = int.CreateTruncating(T.TrailingZeroCount(word));
+            position = (Current = index + byteIndex * BitsInByte) + 1;
+            return true;
+        }
+
+        /// <summary>
+        /// Gets an enumerator over indices of set bits.
+        /// </summary>
+        /// <returns>An enumerator over indices of set bits.</returns>
+        public SetBitsEnumerator GetEnumerator() => new(array);
+        
+        private IEnumerator<int> GetClassicEnumerator()
+            => IEnumerator<int>.Create(GetEnumerator());
+
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+            => GetClassicEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetClassicEnumerator();
     }
 }
