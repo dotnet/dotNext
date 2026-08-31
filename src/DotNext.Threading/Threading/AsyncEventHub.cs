@@ -13,10 +13,10 @@ using Collections.Generic;
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
 public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 {
-    private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
+    private static readonly int MaxInlinedSize = Unsafe.SizeOf<UInt128>() * 8;
 
     private readonly EventGroup all;
-    private UInt128 state;
+    private State state;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -25,20 +25,19 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
     public AsyncEventHub(int count)
     {
-        ArgumentOutOfRangeException.ThrowIfZero(count);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)MaxCount, nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
         Count = count;
-        all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
+        var allState = new State(count, defaultValue: true);
+        all = new(allState);
+        state = new(count);
     }
-    
-    private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
-    private static void DrainWaitQueue(UInt128 state, ref WaitQueueScope queue)
+    private new void DrainWaitQueue(ref WaitQueueScope queue)
     {
         for (; !queue.IsEndOfQueue<WaitNode, WaitNode>(out var node); queue.Advance())
         {
-            if (node.Matches(state))
+            if (node.Matches(in state))
                 queue.SignalCurrent();
         }
     }
@@ -61,11 +60,12 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitOneAsync(int eventIndex, TimeSpan timeout, CancellationToken token = default)
     {
-        if ((uint)eventIndex > (uint)Count)
+        if ((uint)eventIndex >= (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
+        var mask = new State(Count) { [eventIndex] = true };
         var builder = BeginAcquisition(timeout, token);
-        return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, GetBitMask(eventIndex));
+        return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, mask);
     }
 
     /// <summary>
@@ -79,11 +79,12 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitOneAsync(int eventIndex, CancellationToken token = default)
     {
-        if ((uint)eventIndex > (uint)Count)
+        if ((uint)eventIndex >= (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
+        var mask = new State(Count) { [eventIndex] = true };
         var builder = BeginAcquisition(token);
-        return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, GetBitMask(eventIndex));
+        return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, mask);
     }
 
     /// <summary>
@@ -108,15 +109,13 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)Count, nameof(eventIndex));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-
-        var newState = GetBitMask(eventIndex);
+        
         bool result;
         var queue = CaptureWaitQueue();
         try
         {
-            result = (state & newState) == UInt128.Zero;
-            state = newState;
-            DrainWaitQueue(state = newState, ref queue);
+            result = state.Pop(eventIndex);
+            DrainWaitQueue(ref queue);
         }
         finally
         {
@@ -137,15 +136,15 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)Count, nameof(eventIndex));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-
-        var mask = GetBitMask(eventIndex);
+        
         bool result;
 
         var queue = CaptureWaitQueue();
         try
         {
-            result = (state & mask) == UInt128.Zero;
-            DrainWaitQueue(state |= mask, ref queue);
+            result = state[eventIndex] is false;
+            state[eventIndex] = true;
+            DrainWaitQueue(ref queue);
         }
         finally
         {
@@ -166,16 +165,16 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public EventGroup ResetAndPulse(in EventGroup events)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)events.Mask.Capacity, (uint)Count, nameof(events));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        UInt128 result;
+        var result = events.Mask.Clone();
         var queue = CaptureWaitQueue();
         try
         {
-            result = events.Mask & ~state;
-            state = events.Mask;
-            DrainWaitQueue(state = events.Mask, ref queue);
+            result.AndNot(in state);
+            events.Mask.CopyTo(ref state);
+            DrainWaitQueue(ref queue);
         }
         finally
         {
@@ -196,15 +195,16 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public EventGroup Pulse(in EventGroup events)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)events.Mask.Capacity, (uint)Count, nameof(events));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        UInt128 result;
+        var result = events.Mask.Clone();
         var queue = CaptureWaitQueue();
         try
         {
-            result = events.Mask & ~state;
-            DrainWaitQueue(state |= events.Mask, ref queue);
+            result.AndNot(in state);
+            state |= events.Mask;
+            DrainWaitQueue(ref queue);
         }
         finally
         {
@@ -236,7 +236,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAnyAsync(in EventGroup events, TimeSpan timeout, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(timeout, token);
@@ -256,7 +256,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAnyAsync(in EventGroup events, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(token);
@@ -279,7 +279,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAnyAsync(in EventGroup events, ICollection<int> output, TimeSpan timeout, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(timeout, token);
@@ -300,27 +300,28 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAnyAsync(in EventGroup events, ICollection<int> output, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(token);
         return WaitAnyAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask, output);
     }
     
-    private T WaitAnyAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask, ICollection<int>? output = null)
+    private T WaitAnyAsync<T, TBuilder>(ref TBuilder builder, in State mask, ICollection<int>? output = null)
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        var events = state & mask;
+        var events = state.Clone();
+        events &= mask;
         switch (builder.IsCompleted)
         {
             case true:
                 goto default;
-            case false when Acquire<T, TBuilder, WaitNode>(ref builder, events != UInt128.Zero) is { } node:
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, !events.IsZeroed) is { } node:
                 node.WaitAny(mask, output);
                 goto default;
             case false when output is not null:
-                FillIndices(events, output);
+                output.AddAll(in events);
                 goto default;
             default:
                 return builder.Build();
@@ -388,7 +389,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAllAsync(in EventGroup events, TimeSpan timeout, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(timeout, token);
@@ -408,7 +409,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAllAsync(in EventGroup events, CancellationToken token = default)
     {
-        if (events.Mask > all.Mask)
+        if ((uint)events.Mask.Capacity > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
         var builder = BeginAcquisition(token);
@@ -437,28 +438,19 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     public ValueTask WaitAllAsync(CancellationToken token = default)
         => WaitAllAsync(all, token);
 
-    private T WaitAllAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask)
+    private T WaitAllAsync<T, TBuilder>(ref TBuilder builder, in State mask)
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        var events = state & mask;
         switch (builder.IsCompleted)
         {
             case true:
                 goto default;
-            case false when Acquire<T, TBuilder, WaitNode>(ref builder, events == mask) is { } node:
-                node.WaitAll(mask);
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, state.CheckMask(in mask)) is { } node:
+                node.WaitAll(in mask);
                 goto default;
             default:
                 return builder.Build();
-        }
-    }
-
-    private static void FillIndices(UInt128 events, ICollection<int> indices)
-    {
-        for (var enumerator = new EventGroup.Enumerator(events); enumerator.MoveNext();)
-        {
-            indices.Add(enumerator.Current);
         }
     }
 
@@ -472,9 +464,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     [StructLayout(LayoutKind.Auto)]
     public readonly record struct EventGroup : IReadOnlyCollection<int>
     {
-        internal readonly UInt128 Mask;
+        internal readonly State Mask;
 
-        internal EventGroup(UInt128 mask) => Mask = mask;
+        internal EventGroup(in State mask) => Mask = mask;
 
         /// <summary>
         /// Initializes a new group of events.
@@ -483,19 +475,19 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="indices"/> has at least one negative index.</exception>
         public EventGroup(ReadOnlySpan<int> indices)
         {
+            var mask = new State();
             foreach (var index in indices)
             {
-                if (index < 0)
-                    throw new ArgumentOutOfRangeException(nameof(indices));
-
-                Mask |= GetBitMask(index);
+                mask.Add(index);
             }
+
+            Mask = mask;
         }
 
         /// <summary>
         /// Gets a number of events in this group.
         /// </summary>
-        public int Count => int.CreateTruncating(UInt128.PopCount(Mask));
+        public int Count => Mask.PopCount;
 
         /// <summary>
         /// Checks whether the specified event is in this group.
@@ -505,8 +497,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         public bool Contains(int index)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(index);
-            
-            return (Mask & GetBitMask(index)) != UInt128.Zero;
+
+            return Mask[index];
         }
 
         /// <summary>
@@ -527,89 +519,84 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         [StructLayout(LayoutKind.Auto)]
         public struct Enumerator : IEnumerator<Enumerator, int>
         {
-            private UInt128 state;
+            private State.Enumerator enumerator;
 
-            internal Enumerator(in UInt128 state) => this.state = state;
+            internal Enumerator(in State state, bool clone = true)
+                => enumerator = clone ? state.Clone().GetEnumerator() : state.GetEnumerator();
 
             /// <summary>
             /// Gets the current index.
             /// </summary>
-            public int Current
-            {
-                readonly get;
-                private set;
-            }
+            public int Current => enumerator.Current;
 
             /// <inheritdoc cref="IEnumerator.MoveNext()"/>
-            public bool MoveNext()
-            {
-                if (state == UInt128.Zero)
-                    return false;
-
-                var index = Current = int.CreateTruncating(UInt128.TrailingZeroCount(state));
-                state ^= GetBitMask(index);
-                return true;
-            }
+            public bool MoveNext() => enumerator.MoveNext();
         }
     }
 
     private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IWaitNodeFeature<WaitNode>
     {
-        private UInt128 mask;
+        private State mask;
         private bool waitAll;
-        private ICollection<int>? events;
+        private ICollection<int>? indices;
 
-        internal void WaitAll(in UInt128 mask)
+        internal void WaitAll(in State expectedMask)
         {
             waitAll = true;
-            this.mask = mask;
+            mask = expectedMask;
         }
 
-        internal void WaitAny(in UInt128 mask, ICollection<int>? events)
+        internal void WaitAny(in State expectedMask, ICollection<int>? output)
         {
             waitAll = false;
-            this.mask = mask;
-            this.events = events;
+            mask = expectedMask;
+            indices = output;
         }
 
         protected override void CleanUp()
         {
-            events = null;
+            indices = null;
             base.CleanUp();
         }
 
-        internal bool Matches(UInt128 state)
+        internal bool Matches(in State state)
         {
-            var result = state & mask;
-
             if (waitAll)
-            {
-                if (result == mask)
-                    return true;
-            }
-            else if (result != UInt128.Zero)
-            {
-                if (events is not null)
-                    FillIndices(result, events);
+                return state.CheckMask(in mask);
 
-                return true;
-            }
+            var result = state.Clone();
+            result &= mask;
 
-            return false;
+            if (result.IsZeroed)
+                return false;
+
+            indices?.AddAll(in result);
+            return true;
         }
 
         WaitNode IWaitNodeFeature<WaitNode>.Feature => this;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ResetTransition(ref UInt128 state) : ILockManager
+    private readonly ref struct ResetTransition(ref State state) : ILockManager
     {
-        private readonly ref UInt128 state = ref state;
+        private readonly ref State state = ref state;
 
         bool ILockManager.IsLockAllowed => true;
 
-        void ILockManager.AcquireLock() => state = default;
+        void ILockManager.AcquireLock() => state.Reset();
 
         static bool ILockManager.RequiresEmptyQueue => false;
+    }
+}
+
+file static class CollectionExtensions
+{
+    public static void AddAll(this ICollection<int> indices, in AsyncEventHub.State state)
+    {
+        foreach (var index in state)
+        {
+            indices.Add(index);
+        }
     }
 }
