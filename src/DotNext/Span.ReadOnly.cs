@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext;
 
 using Buffers;
+using Runtime.CompilerServices;
 
 partial class Span
 {
@@ -256,6 +257,19 @@ partial class Span
             ref var elementRef = ref MemoryMarshal.GetReference(span);
             var length = span.Length;
             return length > 0 ? Unsafe.Add(ref elementRef, length - 1) : Optional<T>.None;
+        }
+
+        /// <summary>
+        /// Gets a value indicating that the span represents a memory block of zero bytes.
+        /// </summary>
+        public bool IsZeroed
+        {
+            get
+            {
+                ref var reference = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(span));
+                var length = (nuint)(uint)Unsafe.SizeOf<T>() * (uint)span.Length;
+                return AdvancedHelpers.IsZero(ref reference, length);
+            }
         }
     }
     

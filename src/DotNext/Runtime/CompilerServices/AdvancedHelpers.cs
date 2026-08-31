@@ -41,7 +41,7 @@ public static partial class AdvancedHelpers
         return ref address.Advance<T>();
     }
 
-    private static unsafe bool IsZero([In] ref byte address, nuint length)
+    internal static unsafe bool IsZero([In] ref byte address, nuint length)
     {
         var result = false;
 
