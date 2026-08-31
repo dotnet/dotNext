@@ -23,11 +23,11 @@ public sealed class BitArrayExtensionsTests : Test
     [Fact]
     public static void CreateFromBlittableValue()
     {
-        var bits = BitArray.Create(uint.MaxValue);
-        Equal(uint.PopCount(uint.MaxValue), bits.PopCount);
+        var bits = BitArray.Create(int.MaxValue);
+        Equal(int.PopCount(int.MaxValue), bits.PopCount);
 
-        bits = BitArray.Create(1U);
-        Equal(uint.PopCount(1U), bits.PopCount);
+        bits = BitArray.Create(1);
+        Equal(int.PopCount(1), bits.PopCount);
         True(bits[0]);
         
         bits = BitArray.Create(Int128.One);
@@ -38,27 +38,27 @@ public sealed class BitArrayExtensionsTests : Test
     [Fact]
     public static void CreateFromSpan()
     {
-        var value = uint.MaxValue;
+        var value = int.MaxValue;
         var bits = BitArray.Create(MemoryMarshal.AsReadOnlyBytes(in value));
-        Equal(uint.PopCount(value), bits.PopCount);
+        Equal(int.PopCount(value), bits.PopCount);
 
-        value = 1U;
+        value = 1;
         bits = BitArray.Create(MemoryMarshal.AsReadOnlyBytes(in value));
-        Equal(uint.PopCount(value), bits.PopCount);
+        Equal(int.PopCount(value), bits.PopCount);
         True(bits[0]);
     }
 
-    public static TheoryData<BitArray, IReadOnlyList<long>> SetBitsData => new()
+    public static TheoryData<BitArray, IReadOnlyList<int>> SetBitsData => new()
     {
         { BitArray.Create<ushort>(0B_0000_0000_0000_0000), [] },
-        { BitArray.Create<ushort>(0B_0000_0000_0000_0101), [0L, 2L] },
-        { BitArray.Create<ushort>(0B_0000_0000_0000_0111), [0L, 1L, 2L] },
-        { BitArray.Create<ushort>(0B_1000_0100_0010_0001), [0L, 5L, 10L, 15L] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0101), [0, 2] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0111), [0, 1, 2] },
+        { BitArray.Create<ushort>(0B_1000_0100_0010_0001), [0, 5, 10, 15] },
     };
 
     [Theory]
     [MemberData(nameof(SetBitsData))]
-    public static void CheckSetBits(BitArray array, IReadOnlyList<long> indices)
+    public static void CheckSetBits(BitArray array, IReadOnlyList<int> indices)
     {
         Equal(indices, array.SetBits);
     }

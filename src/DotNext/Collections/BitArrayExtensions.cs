@@ -22,11 +22,11 @@ public static class BitArrayExtensions
         /// <summary>
         /// Gets the number of bits set to 1.
         /// </summary>
-        public long PopCount
+        public int PopCount
         {
             get
             {
-                var result = 0L;
+                var result = 0;
                 Span<byte> bytes;
                 for (bytes = CollectionsMarshal.AsBytes(array);
                      bytes.Length >= nuint.Size;
@@ -77,19 +77,24 @@ public static class BitArrayExtensions
     /// Gets an enumerator over set bits.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct SetBitsEnumerator : IEnumerator<SetBitsEnumerator, long>, IEnumerable<long>
+    public struct SetBitsEnumerator : IEnumerator<SetBitsEnumerator, int>, IEnumerable<int>
     {
         private const int BitsInByte = 8;
         private readonly BitArray array;
-        private nint position;
+        private int position;
 
         internal SetBitsEnumerator(BitArray array)
             => this.array = array;
+
+        /// <summary>
+        /// Gets a value indicating that this enumerator is constructed as default value.
+        /// </summary>
+        public readonly bool IsDefault => array is null;
         
         /// <summary>
         /// Gets the current index.
         /// </summary>
-        public long Current { get; private set; }
+        public int Current { get; private set; }
 
         /// <summary>
         /// Advances to the next set bit.
@@ -104,7 +109,7 @@ public static class BitArrayExtensions
                 if (remainingBytes <= 0)
                     break;
 
-                var bitOffset = (int)(position & (BitsInByte - 1L));
+                var bitOffset = position & (BitsInByte - 1);
                 ref var reference = ref Unsafe.Add(
                     ref MemoryMarshal.GetReference(bytes),
                     byteIndex);
@@ -119,7 +124,7 @@ public static class BitArrayExtensions
             return false;
         }
 
-        private bool MoveNext<T>(T word, nint byteIndex, int bitOffset)
+        private bool MoveNext<T>(T word, int byteIndex, int bitOffset)
             where T : unmanaged, IBinaryInteger<T>
         {
             // Mask allows to remove previously inspected bits
@@ -131,7 +136,7 @@ public static class BitArrayExtensions
                 return false;
             }
 
-            var index = nint.CreateTruncating(T.TrailingZeroCount(word));
+            var index = int.CreateTruncating(T.TrailingZeroCount(word));
             index += byteIndex * BitsInByte;
             Current = index;
             position = index + 1;
@@ -144,10 +149,10 @@ public static class BitArrayExtensions
         /// <returns>An enumerator over indices of set bits.</returns>
         public SetBitsEnumerator GetEnumerator() => new(array);
         
-        private IEnumerator<long> GetClassicEnumerator()
-            => IEnumerator<long>.Create(GetEnumerator());
+        private IEnumerator<int> GetClassicEnumerator()
+            => IEnumerator<int>.Create(GetEnumerator());
 
-        IEnumerator<long> IEnumerable<long>.GetEnumerator()
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
             => GetClassicEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetClassicEnumerator();
