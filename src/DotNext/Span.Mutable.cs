@@ -338,13 +338,6 @@ partial class Span
     
     private static Span<T> TrimLengthCore<T>(Span<T> span, int maxLength, out Span<T> rest)
     {
-        Unsafe.SkipInit(out rest);
-        return Unsafe.BitCast<ReadOnlySpan<T>, Span<T>>(TrimLengthCore(span, maxLength,
-            out Unsafe.As<Span<T>, ReadOnlySpan<T>>(ref rest)));
-    }
-    
-    private static ReadOnlySpan<T> TrimLengthCore<T>(ReadOnlySpan<T> span, int maxLength, out ReadOnlySpan<T> rest)
-    {
         var length = span.Length;
         if (length > maxLength)
         {
