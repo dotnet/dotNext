@@ -24,7 +24,7 @@ public static class NativeMemoryExtensions
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
         public static unsafe int Compare([In] void* first, [In] void* second, nuint length)
-            => AdvancedHelpers.CompareUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
+            => AdvancedHelpers.CompareUnaligned(in Unsafe.AsRef<byte>(first), in Unsafe.AsRef<byte>(second), length);
         
         /// <summary>
         /// Computes equality between two blocks of memory.
@@ -35,7 +35,7 @@ public static class NativeMemoryExtensions
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public static unsafe bool Equals([In] void* first, [In] void* second, nuint length)
-            => AdvancedHelpers.EqualsUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
+            => AdvancedHelpers.EqualsUnaligned(in Unsafe.AsRef<byte>(first), in Unsafe.AsRef<byte>(second), length);
         
         /// <summary>
         /// Copies one value into another assuming unaligned memory access.
