@@ -50,17 +50,34 @@ public sealed class BinaryTransformationsTests : Test
         var expected = BitwiseAndNotSlow(x, y);
         x.AndNot(y.AsSpan());
         Equal(expected, y);
+    }
+    
+    [Theory]
+    [InlineData(32 + 16 + 3)]
+    [InlineData(32 + 3)]
+    [InlineData(3)]
+    public static void BitwiseReversedAndNot(int size)
+    {
+        var x = new byte[size];
+        Random.Shared.NextBytes(x);
 
-        static byte[] BitwiseAndNotSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
-        {
-            Equal(x.Length, y.Length);
-            var result = new byte[x.Length];
+        var y = new byte[size];
+        Random.Shared.NextBytes(y);
 
-            for (var i = 0; i < x.Length; i++)
-                result[i] = (byte)(x[i] & ~y[i]);
+        var expected = BitwiseAndNotSlow(x, y);
+        x.AsSpan().AndNot(y);
+        Equal(expected, x);
+    }
+    
+    private static byte[] BitwiseAndNotSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+    {
+        Equal(x.Length, y.Length);
+        var result = new byte[x.Length];
 
-            return result;
-        }
+        for (var i = 0; i < x.Length; i++)
+            result[i] = (byte)(x[i] & ~y[i]);
+
+        return result;
     }
 
     [Theory]
