@@ -48,7 +48,7 @@ public sealed class BinaryTransformationsTests : Test
         Random.Shared.NextBytes(y);
 
         var expected = BitwiseAndNotSlow(x, y);
-        x.AndNot(y);
+        x.AndNot(y.AsSpan());
         Equal(expected, y);
 
         static byte[] BitwiseAndNotSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
