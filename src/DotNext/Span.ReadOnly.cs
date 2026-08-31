@@ -148,7 +148,22 @@ partial class Span
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public static ReadOnlySpan<T> operator %(ReadOnlySpan<T> x, int maxLength)
             => x.TrimLength(maxLength);
-        
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="rest">The rest of <paramref name="span"/>.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public ReadOnlySpan<T> TrimLength(int maxLength, out ReadOnlySpan<T> rest)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
+
+            return TrimLengthCore(span, maxLength, out rest);
+        }
+
         /// <summary>
         /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
         /// </summary>
