@@ -48,17 +48,17 @@ public sealed class BitArrayExtensionsTests : Test
         True(bits[0]);
     }
 
-    public static TheoryData<BitArray, IReadOnlyList<int>> SetBitsData => new()
+    public static TheoryData<BitArray, IReadOnlyList<long>> SetBitsData => new()
     {
         { BitArray.Create<ushort>(0B_0000_0000_0000_0000), [] },
-        { BitArray.Create<ushort>(0B_0000_0000_0000_0101), [0, 2] },
-        { BitArray.Create<ushort>(0B_0000_0000_0000_0111), [0, 1, 2] },
-        { BitArray.Create<ushort>(0B_1000_0100_0010_0001), [0, 5, 10, 15] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0101), [0L, 2L] },
+        { BitArray.Create<ushort>(0B_0000_0000_0000_0111), [0L, 1L, 2L] },
+        { BitArray.Create<ushort>(0B_1000_0100_0010_0001), [0L, 5L, 10L, 15L] },
     };
 
     [Theory]
     [MemberData(nameof(SetBitsData))]
-    public static void CheckSetBits(BitArray array, IReadOnlyList<int> indices)
+    public static void CheckSetBits(BitArray array, IReadOnlyList<long> indices)
     {
         Equal(indices, array.SetBits);
     }
@@ -69,12 +69,12 @@ public sealed class BitArrayExtensionsTests : Test
         // exercise word-level scanning (multiple machine words) as well as
         // the trailing bytes that don't fill a whole word
         const int length = 100;
-        ReadOnlySpan<int> indices = [0, 1, 7, 8, 31, 32, 33, 63, 64, 65, 95, 99];
+        ReadOnlySpan<long> indices = [0, 1, 7, 8, 31, 32, 33, 63, 64, 65, 95, 99];
 
         var array = new BitArray(length);
         foreach (var index in indices)
         {
-            array[index] = true;
+            array[(int)index] = true;
         }
 
         Equal(indices, [.. array.SetBits]);

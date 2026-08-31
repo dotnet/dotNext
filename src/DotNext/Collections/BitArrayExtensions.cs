@@ -77,11 +77,11 @@ public static class BitArrayExtensions
     /// Gets an enumerator over set bits.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct SetBitsEnumerator : IEnumerator<SetBitsEnumerator, int>, IEnumerable<int>
+    public struct SetBitsEnumerator : IEnumerator<SetBitsEnumerator, long>, IEnumerable<long>
     {
         private const int BitsInByte = 8;
         private readonly BitArray array;
-        private int position;
+        private nint position;
 
         internal SetBitsEnumerator(BitArray array)
             => this.array = array;
@@ -89,7 +89,7 @@ public static class BitArrayExtensions
         /// <summary>
         /// Gets the current index.
         /// </summary>
-        public int Current { get; private set; }
+        public long Current { get; private set; }
 
         /// <summary>
         /// Advances to the next set bit.
@@ -97,13 +97,20 @@ public static class BitArrayExtensions
         /// <returns><see langword="true"/> if the next set bit is found; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext()
         {
-            for (var bytes = CollectionsMarshal.AsBytes(array); position < array.Length;)
+            for (var bytes = CollectionsMarshal.AsBytes(array);;)
             {
                 var byteIndex = position / BitsInByte;
-                var bitOffset = position & (BitsInByte - 1);
-                var iterationResult = bytes.Length - byteIndex >= nuint.Size
-                    ? MoveNext(Unsafe.ReadUnaligned<nuint>(in bytes[byteIndex]), byteIndex, bitOffset)
-                    : MoveNext(bytes[byteIndex], byteIndex, bitOffset);
+                var remainingBytes = bytes.Length - byteIndex;
+                if (remainingBytes <= 0)
+                    break;
+
+                var bitOffset = (int)(position & (BitsInByte - 1L));
+                ref var reference = ref Unsafe.Add(
+                    ref MemoryMarshal.GetReference(bytes),
+                    byteIndex);
+                var iterationResult = remainingBytes >= nuint.Size
+                    ? MoveNext(Unsafe.ReadUnaligned<nuint>(in reference), byteIndex, bitOffset)
+                    : MoveNext(reference, byteIndex, bitOffset);
 
                 if (iterationResult)
                     return true;
@@ -112,7 +119,7 @@ public static class BitArrayExtensions
             return false;
         }
 
-        private bool MoveNext<T>(T word, int byteIndex, int bitOffset)
+        private bool MoveNext<T>(T word, nint byteIndex, int bitOffset)
             where T : unmanaged, IBinaryInteger<T>
         {
             // Mask allows to remove previously inspected bits
@@ -124,8 +131,10 @@ public static class BitArrayExtensions
                 return false;
             }
 
-            var index = int.CreateTruncating(T.TrailingZeroCount(word));
-            position = (Current = index + byteIndex * BitsInByte) + 1;
+            var index = nint.CreateTruncating(T.TrailingZeroCount(word));
+            index += byteIndex * BitsInByte;
+            Current = index;
+            position = index + 1;
             return true;
         }
 
@@ -135,10 +144,10 @@ public static class BitArrayExtensions
         /// <returns>An enumerator over indices of set bits.</returns>
         public SetBitsEnumerator GetEnumerator() => new(array);
         
-        private IEnumerator<int> GetClassicEnumerator()
-            => IEnumerator<int>.Create(GetEnumerator());
+        private IEnumerator<long> GetClassicEnumerator()
+            => IEnumerator<long>.Create(GetEnumerator());
 
-        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        IEnumerator<long> IEnumerable<long>.GetEnumerator()
             => GetClassicEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetClassicEnumerator();
