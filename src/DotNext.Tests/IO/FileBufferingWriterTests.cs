@@ -595,4 +595,40 @@ public sealed class FileBufferingWriterTests : Test
             Equal(newData, owner.Memory);
         }
     }
+
+    [Fact]
+    public static void RegressionIssue296()
+    {
+        var bufferSize = 4096;
+        var threshold  = bufferSize * 2;
+
+        using var stream = new FileBufferingWriter(new()
+        {
+            MemoryAllocator = ArrayPool<byte>.Shared.ToAllocator(),
+            MemoryThreshold = threshold,
+            InitialCapacity = bufferSize,
+            AsyncIO = false
+        });
+
+        stream.Write([1]);
+        stream.Write(new byte[threshold]);
+    }
+    
+    [Fact]
+    public static async Task RegressionIssue296Async()
+    {
+        var bufferSize = 4096;
+        var threshold  = bufferSize * 2;
+
+        await using var stream = new FileBufferingWriter(new()
+        {
+            MemoryAllocator = ArrayPool<byte>.Shared.ToAllocator(),
+            MemoryThreshold = threshold,
+            InitialCapacity = bufferSize,
+            AsyncIO = true
+        });
+
+        await stream.WriteAsync(new byte[1], TestToken);
+        await stream.WriteAsync(new byte[threshold], TestToken);
+    }
 }

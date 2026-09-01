@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
@@ -74,11 +75,18 @@ public static partial class Memory
     {
         if (!owner.TryResize(newLength))
         {
-            var newBuffer = allocator.AllocateAtLeast(newLength);
-            owner.Span.CopyTo(newBuffer.Span);
-            owner.Dispose();
-            owner = newBuffer;
+            owner.ResizeCore(newLength, allocator);
         }
+    }
+
+    internal static void ResizeCore<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
+    {
+        Debug.Assert(newLength > owner.Length);
+        
+        var newBuffer = allocator.AllocateAtLeast(newLength);
+        owner.Span.CopyTo(newBuffer.Span);
+        owner.Dispose();
+        owner = newBuffer;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,6 +1,34 @@
 Release Notes
 ====
 
+# 09-01-2026
+<a href="https://www.nuget.org/packages/dotnext/6.7.0">DotNext 6.7.0</a>
+* Improved performance of internal buffer reallocation in `BufferWriterSlim<T>` and `PoolingBufferWriter<T>` types
+* Added comprehensive extensions for [BitArray](https://learn.microsoft.com/en-us/dotnet/api/system.collections.bitarray) class
+* Added `IsZeroed` extension property for [ReadOnlySpan&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) type which indicates that the span references a memory containing only zero bytes
+* Added reversed `AndNot` binary transformation to `BinaryTransformations` class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.7.0">DotNext.Metaprogramming 6.7.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.7.0">DotNext.Unsafe 6.7.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.7.0">DotNext.Threading 6.7.0</a>
+* `AsyncEventHub` has no limit on the number of events anymore
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.7.0">DotNext.IO 6.7.0</a>
+* Fixed telemetry reporting when reallocation of the internal buffer inside `FileBufferingWriter` class is requested
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.7.0">DotNext.Net.Cluster 6.7.0</a>
+* Added description for `InvalidOperationException` exception that can be raised by `ICluster.WaitForLeaderAsync` when the cluster quorum is not available
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.7.0">DotNext.AspNetCore.Cluster 6.7.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.7.0">DotNext.MaintenanceServices 1.7.0</a>
+* Updated dependencies
+
 # 08-29-2026
 <a href="https://www.nuget.org/packages/dotnext/6.6.5">DotNext 6.6.5</a>
 * All `FromPointer` static extension methods for delegates are marked with [RequiresDynamicCodeAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.requiresdynamiccodeattribute), because delegate construction from a method pointer is not supported in AOT
@@ -15,7 +43,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.6.5">DotNext.IO 6.6.5</a>
-* Updated dependencies
+* Fixed [296](https://github.com/dotnet/dotNext/issues/296)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.6.5">DotNext.Net.Cluster 6.6.5</a>
 * Clamp follower commit index to the last entry delivered in `AppendEntries` Raft RPC

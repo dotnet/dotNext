@@ -27,21 +27,16 @@ public static partial class AdvancedHelpers
         Refanyval<T>();
         return ref ReturnRef<T>();
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ref byte Advance<T>(this ref byte ptr)
-        where T : unmanaged, allows ref struct
-        => ref Unsafe.Add(ref ptr, sizeof(T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] nuint* length)
+    private static unsafe ref readonly byte Advance<T>(this ref readonly byte address, scoped ref nuint length)
         where T : unmanaged, allows ref struct
     {
-        *length -= (nuint)sizeof(T);
-        return ref address.Advance<T>();
+        length -= (nuint)sizeof(T);
+        return ref Unsafe.Add(ref Unsafe.AsRef(in address), sizeof(T));
     }
 
-    private static unsafe bool IsZero([In] ref byte address, nuint length)
+    internal static unsafe bool IsZero(ref readonly byte address, nuint length)
     {
         var result = false;
 
@@ -49,8 +44,8 @@ public static partial class AdvancedHelpers
         {
             while (length >= (nuint)Vector<byte>.Count)
             {
-                if (Unsafe.ReadUnaligned<Vector<byte>>(ref address) == Vector<byte>.Zero)
-                    address = ref address.Advance<Vector<byte>>(&length);
+                if (Vector.LoadUnsafe(in address) == Vector<byte>.Zero)
+                    address = ref address.Advance<Vector<byte>>(ref length);
                 else
                     goto exit;
             }
@@ -58,8 +53,8 @@ public static partial class AdvancedHelpers
 
         while (length >= (nuint)sizeof(nuint))
         {
-            if (Unsafe.ReadUnaligned<nuint>(ref address) is 0U)
-                address = ref address.Advance<nuint>(&length);
+            if (Unsafe.ReadUnaligned<nuint>(in address) is 0U)
+                address = ref address.Advance<nuint>(ref length);
             else
                 goto exit;
         }
@@ -67,7 +62,7 @@ public static partial class AdvancedHelpers
         while (length > 0)
         {
             if (address is 0)
-                address = ref address.Advance<byte>(&length);
+                address = ref address.Advance<byte>(ref length);
             else
                 goto exit;
         }
@@ -77,36 +72,50 @@ public static partial class AdvancedHelpers
         return result;
     }
     
-    internal static int CompareUnaligned(ref byte first, ref byte second, nuint length)
+    internal static int CompareUnaligned(ref readonly byte first, ref readonly byte second, nuint length)
     {
         var comparison = 0;
-        for (nuint count; length > 0 && comparison is 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
+        for (int count;
+             length > 0 && comparison is 0;
+             length -= (uint)count,
+             first = ref Unsafe.Add(ref Unsafe.AsRef(in first), count),
+             second = ref Unsafe.Add(ref Unsafe.AsRef(in second), count))
         {
-            count = length > int.MaxValue ? int.MaxValue : length;
-            comparison = MemoryMarshal.CreateReadOnlySpan(ref first, (int)count).SequenceCompareTo(MemoryMarshal.CreateReadOnlySpan(ref second, (int)count));
+            count = int.CreateSaturating(length);
+            comparison = MemoryMarshal.CreateReadOnlySpan(in first, count)
+                .SequenceCompareTo(MemoryMarshal.CreateReadOnlySpan(in second, count));
         }
 
         return comparison;
     }
-    
-    internal static bool EqualsUnaligned(ref byte first, ref byte second, nuint length)
+
+    internal static bool EqualsUnaligned(ref readonly byte first, ref readonly byte second, nuint length)
     {
-        for (nuint count; length > 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
+        for (int count;
+             length > 0;
+             length -= (uint)count,
+             first = ref Unsafe.Add(ref Unsafe.AsRef(in first), count),
+             second = ref Unsafe.Add(ref Unsafe.AsRef(in second), count))
         {
-            count = length > int.MaxValue ? int.MaxValue : length;
-            if (!MemoryMarshal.CreateReadOnlySpan(ref first, (int)count).SequenceEqual(MemoryMarshal.CreateReadOnlySpan(ref second, (int)count)))
+            count = int.CreateSaturating(length);
+            if (!MemoryMarshal.CreateReadOnlySpan(in first, count)
+                    .SequenceEqual(MemoryMarshal.CreateReadOnlySpan(in second, count)))
                 return false;
         }
 
         return true;
     }
-    
-    private static void Copy([In] ref byte source, [In] ref byte destination, nuint length)
+
+    private static void Copy(ref readonly byte source, ref byte destination, nuint length)
     {
-        for (uint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
+        for (uint count;
+             length > 0;
+             length -= count,
+             source = ref Unsafe.Add(ref Unsafe.AsRef(in source), count),
+             destination = ref Unsafe.Add(ref destination, count))
         {
             count = uint.CreateSaturating(length);
-            Unsafe.CopyBlockUnaligned(ref destination, ref source, count);
+            Unsafe.CopyBlockUnaligned(ref destination, in source, count);
         }
     }
 }

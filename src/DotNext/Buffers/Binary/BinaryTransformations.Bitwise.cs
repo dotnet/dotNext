@@ -37,6 +37,21 @@ public static partial class BinaryTransformations
     }
 
     /// <summary>
+    /// Performs bitwise AND-NOT operation between two vectors in-place.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in vector.</typeparam>
+    /// <param name="x">The first vector.</param>
+    /// <param name="y">The second vector. It will be replaced with a result of operation.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="x"/> is not equal to <paramref name="y"/>.</exception>
+    public static void AndNot<T>(this Span<T> x, ReadOnlySpan<T> y)
+        where T : unmanaged
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
+
+        Transform<T, BitwiseNotAndTransformation>(y, x);
+    }
+
+    /// <summary>
     /// Performs bitwise OR operation between two vectors in-place.
     /// </summary>
     /// <typeparam name="T">The type of elements in vector.</typeparam>
@@ -194,6 +209,13 @@ public static partial class BinaryTransformations
         static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.AndNot(x, y);
 
         static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => x & ~y;
+    }
+    
+    private readonly struct BitwiseNotAndTransformation : IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
+    {
+        static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.AndNot(y, x);
+
+        static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => y & ~x;
     }
 
     private readonly struct OnesComplementTransformation : IUnaryTransformation<nuint>, IUnaryTransformation<Vector<byte>>

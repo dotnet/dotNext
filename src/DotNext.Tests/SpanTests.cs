@@ -609,4 +609,14 @@ public sealed class SpanTests : Test
         Array.Clear(mask);
         False(new ReadOnlySpan<byte>(value).IsBitwiseAndNonZero(mask));
     }
+
+    [Fact]
+    public static void IsMemZero()
+    {
+        Span<int> span = [10, 20, 30, 40];
+        False(span.IsZeroed);
+        
+        span.Clear();
+        True(span.IsZeroed);
+    }
 }

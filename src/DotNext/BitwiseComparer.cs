@@ -80,13 +80,13 @@ public sealed class BitwiseComparer<T> :
                 hash = InToRef<T, byte>(in value);
                 break;
             case sizeof(ushort):
-                hash = ReadUnaligned<ushort>(ref InToRef<T, byte>(in value));
+                hash = ReadUnaligned<ushort>(in InToRef<T, byte>(in value));
                 break;
             case sizeof(uint):
-                hash = ReadUnaligned<int>(ref InToRef<T, byte>(in value));
+                hash = ReadUnaligned<int>(in InToRef<T, byte>(in value));
                 break;
             case sizeof(ulong):
-                hash = ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)).GetHashCode();
+                hash = ReadUnaligned<ulong>(in InToRef<T, byte>(in value)).GetHashCode();
                 break;
         }
 

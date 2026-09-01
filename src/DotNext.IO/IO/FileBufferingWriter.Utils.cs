@@ -58,17 +58,17 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
 
     private void OnWrite()
     {
-        var awaiter = this.awaiter;
-        this.awaiter = default;
+        var awaiterCopy = awaiter;
+        awaiter = default;
 
-        var secondBuffer = this.secondBuffer;
-        this.secondBuffer = default;
+        var secondBufferCopy = this.secondBuffer;
+        secondBuffer = default;
 
         try
         {
-            awaiter.GetResult();
+            awaiterCopy.GetResult();
 
-            filePosition += secondBuffer.Length + position;
+            filePosition += secondBufferCopy.Length + position;
             position = 0;
         }
         catch (Exception e)
@@ -84,17 +84,17 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
     {
         Debug.Assert(fileBackend is not null);
 
-        var awaiter = this.awaiter;
-        this.awaiter = default;
+        var awaiterCopy = awaiter;
+        awaiter = default;
 
-        var secondBuffer = this.secondBuffer;
-        this.secondBuffer = default;
+        var secondBufferCopy = secondBuffer;
+        secondBuffer = default;
 
         try
         {
-            awaiter.GetResult();
+            awaiterCopy.GetResult();
 
-            filePosition += secondBuffer.Length + position;
+            filePosition += secondBufferCopy.Length + position;
             position = 0;
             RandomAccess.FlushToDisk(fileBackend);
         }
@@ -109,19 +109,19 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
 
     private void OnWriteAndCopy()
     {
-        var awaiter = this.awaiter;
-        this.awaiter = default;
+        var awaiterCopy = awaiter;
+        awaiter = default;
 
-        var secondBuffer = this.secondBuffer;
-        this.secondBuffer = default;
+        var secondBufferCopy = this.secondBuffer;
+        secondBuffer = default;
 
         try
         {
-            awaiter.GetResult();
+            awaiterCopy.GetResult();
 
             filePosition += position;
-            secondBuffer.CopyTo(buffer.Memory);
-            position = secondBuffer.Length;
+            secondBufferCopy.Span.CopyTo(EnsureCapacity(secondBufferCopy.Length).Span);
+            position = secondBufferCopy.Length;
         }
         catch (Exception e)
         {
