@@ -112,7 +112,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_AndNot_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.AndNot*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_AndNot__1_System_ReadOnlySpan___0__System_Span___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.AndNot``1(System.ReadOnlySpan{``0},System.Span{``0})">AndNot&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Span&lt;T&gt;)</h4>
@@ -181,7 +181,76 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Binary_BinaryTransformations_AndNot_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.AndNot*"></a>
+  <h4 id="DotNext_Buffers_Binary_BinaryTransformations_AndNot__1_System_Span___0__System_ReadOnlySpan___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.AndNot``1(System.Span{``0},System.ReadOnlySpan{``0})">AndNot&lt;T&gt;(Span&lt;T&gt;, ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Performs bitwise AND-NOT operation between two vectors in-place.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void AndNot&lt;T&gt;(this Span&lt;T&gt; x, ReadOnlySpan&lt;T&gt; y) where T : unmanaged</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first vector.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second vector. It will be replaced with a result of operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in vector.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>The length of <code class="paramref">x</code> is not equal to <code class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseAnd_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseAnd*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseAnd__1_System_ReadOnlySpan___0__System_Span___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseAnd``1(System.ReadOnlySpan{``0},System.Span{``0})">BitwiseAnd&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Span&lt;T&gt;)</h4>
@@ -250,7 +319,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseOr_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseOr*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseOr__1_System_ReadOnlySpan___0__System_Span___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseOr``1(System.ReadOnlySpan{``0},System.Span{``0})">BitwiseOr&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Span&lt;T&gt;)</h4>
@@ -319,7 +388,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseXor_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseXor*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_BitwiseXor__1_System_ReadOnlySpan___0__System_Span___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.BitwiseXor``1(System.ReadOnlySpan{``0},System.Span{``0})">BitwiseXor&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Span&lt;T&gt;)</h4>
@@ -388,7 +457,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_Format_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Format*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_Format__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Format``1(``0,DotNext.Buffers.MemoryAllocator{System.Byte})">Format&lt;T&gt;(T, MemoryAllocator&lt;byte&gt;?)</h4>
@@ -455,7 +524,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_OnesComplement_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.OnesComplement*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_OnesComplement__1_System_Span___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.OnesComplement``1(System.Span{``0})">OnesComplement&lt;T&gt;(Span&lt;T&gt;)</h4>
@@ -502,7 +571,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_Parse_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Parse*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_Parse__1_System_Buffers_ReadOnlySequence_System_Byte___" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Parse``1(System.Buffers.ReadOnlySequence{System.Byte}@)">Parse&lt;T&gt;(in ReadOnlySequence&lt;byte&gt;)</h4>
@@ -564,7 +633,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_Reverse_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Reverse*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_Reverse__1___0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.Reverse``1(``0@)">Reverse&lt;T&gt;(ref T)</h4>
@@ -611,7 +680,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_TryFormat_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.TryFormat*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_TryFormat__1___0_System_Span_System_Byte__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.TryFormat``1(``0,System.Span{System.Byte})">TryFormat&lt;T&gt;(T, Span&lt;byte&gt;)</h4>
@@ -678,7 +747,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_BinaryTransformations_TryParse_" data-uid="DotNext.Buffers.Binary.BinaryTransformations.TryParse*"></a>
   <h4 id="DotNext_Buffers_Binary_BinaryTransformations_TryParse__1_System_ReadOnlySpan_System_Byte____0__" data-uid="DotNext.Buffers.Binary.BinaryTransformations.TryParse``1(System.ReadOnlySpan{System.Byte},``0@)">TryParse&lt;T&gt;(scoped ReadOnlySpan&lt;byte&gt;, out T?)</h4>
@@ -753,7 +822,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/9f3a0d9b0be796879fb6cc829de9db176ce9f6ef/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/DotNext/Buffers/Binary/BinaryTransformations.Bitwise.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

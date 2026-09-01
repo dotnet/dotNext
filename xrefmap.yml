@@ -473,6 +473,15 @@ references:
   fullName.vb: DotNext.Buffers.Binary.BinaryTransformations.AndNot(Of T)(System.ReadOnlySpan(Of T), System.Span(Of T))
   nameWithType: BinaryTransformations.AndNot<T>(ReadOnlySpan<T>, Span<T>)
   nameWithType.vb: BinaryTransformations.AndNot(Of T)(ReadOnlySpan(Of T), Span(Of T))
+- uid: DotNext.Buffers.Binary.BinaryTransformations.AndNot``1(System.Span{``0},System.ReadOnlySpan{``0})
+  name: AndNot<T>(Span<T>, ReadOnlySpan<T>)
+  href: api/DotNext.Buffers.Binary.BinaryTransformations.html#DotNext_Buffers_Binary_BinaryTransformations_AndNot__1_System_Span___0__System_ReadOnlySpan___0__
+  commentId: M:DotNext.Buffers.Binary.BinaryTransformations.AndNot``1(System.Span{``0},System.ReadOnlySpan{``0})
+  name.vb: AndNot(Of T)(Span(Of T), ReadOnlySpan(Of T))
+  fullName: DotNext.Buffers.Binary.BinaryTransformations.AndNot<T>(System.Span<T>, System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Buffers.Binary.BinaryTransformations.AndNot(Of T)(System.Span(Of T), System.ReadOnlySpan(Of T))
+  nameWithType: BinaryTransformations.AndNot<T>(Span<T>, ReadOnlySpan<T>)
+  nameWithType.vb: BinaryTransformations.AndNot(Of T)(Span(Of T), ReadOnlySpan(Of T))
 - uid: DotNext.Buffers.Binary.BinaryTransformations.BitwiseAnd*
   name: BitwiseAnd
   href: api/DotNext.Buffers.Binary.BinaryTransformations.html#DotNext_Buffers_Binary_BinaryTransformations_BitwiseAnd_
@@ -6075,6 +6084,120 @@ references:
   commentId: Overload:DotNext.CharComparer.GetHashCode
   fullName: DotNext.CharComparer.GetHashCode
   nameWithType: CharComparer.GetHashCode
+- uid: DotNext.Collections
+  name: DotNext.Collections
+  href: api/DotNext.Collections.html
+  commentId: N:DotNext.Collections
+  fullName: DotNext.Collections
+  nameWithType: DotNext.Collections
+- uid: DotNext.Collections.BitArrayExtensions
+  name: BitArrayExtensions
+  href: api/DotNext.Collections.BitArrayExtensions.html
+  commentId: T:DotNext.Collections.BitArrayExtensions
+  fullName: DotNext.Collections.BitArrayExtensions
+  nameWithType: BitArrayExtensions
+- uid: DotNext.Collections.BitArrayExtensions.Create(System.ReadOnlySpan{System.Byte})
+  name: Create(ReadOnlySpan<byte>)
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_Create_System_ReadOnlySpan_System_Byte__
+  commentId: M:DotNext.Collections.BitArrayExtensions.Create(System.ReadOnlySpan{System.Byte})
+  name.vb: Create(ReadOnlySpan(Of Byte))
+  fullName: DotNext.Collections.BitArrayExtensions.Create(System.ReadOnlySpan<byte>)
+  fullName.vb: DotNext.Collections.BitArrayExtensions.Create(System.ReadOnlySpan(Of Byte))
+  nameWithType: BitArrayExtensions.Create(ReadOnlySpan<byte>)
+  nameWithType.vb: BitArrayExtensions.Create(ReadOnlySpan(Of Byte))
+- uid: DotNext.Collections.BitArrayExtensions.Create*
+  name: Create
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_Create_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.Create
+  fullName: DotNext.Collections.BitArrayExtensions.Create
+  nameWithType: BitArrayExtensions.Create
+- uid: DotNext.Collections.BitArrayExtensions.Create``1(``0@)
+  name: Create<T>(in T)
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_Create__1___0__
+  commentId: M:DotNext.Collections.BitArrayExtensions.Create``1(``0@)
+  name.vb: Create(Of T)(T)
+  fullName: DotNext.Collections.BitArrayExtensions.Create<T>(in T)
+  fullName.vb: DotNext.Collections.BitArrayExtensions.Create(Of T)(T)
+  nameWithType: BitArrayExtensions.Create<T>(in T)
+  nameWithType.vb: BitArrayExtensions.Create(Of T)(T)
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator
+  name: BitArrayExtensions.SetBitsEnumerator
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html
+  commentId: T:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator
+  nameWithType: BitArrayExtensions.SetBitsEnumerator
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current
+  name: Current
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_Current
+  commentId: P:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.Current
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current*
+  name: Current
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_Current_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.Current
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.Current
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_GetEnumerator
+  commentId: M:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator()
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.GetEnumerator()
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_GetEnumerator_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.GetEnumerator
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.GetEnumerator
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault
+  name: IsDefault
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_IsDefault
+  commentId: P:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.IsDefault
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault*
+  name: IsDefault
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_IsDefault_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.IsDefault
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.IsDefault
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_MoveNext
+  commentId: M:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext()
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.MoveNext()
+- uid: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.html#DotNext_Collections_BitArrayExtensions_SetBitsEnumerator_MoveNext_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext
+  fullName: DotNext.Collections.BitArrayExtensions.SetBitsEnumerator.MoveNext
+  nameWithType: BitArrayExtensions.SetBitsEnumerator.MoveNext
+- uid: DotNext.Collections.BitArrayExtensions.get_PopCount(System.Collections.BitArray)
+  name: get_PopCount(BitArray)
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_get_PopCount_System_Collections_BitArray_
+  commentId: M:DotNext.Collections.BitArrayExtensions.get_PopCount(System.Collections.BitArray)
+  fullName: DotNext.Collections.BitArrayExtensions.get_PopCount(System.Collections.BitArray)
+  nameWithType: BitArrayExtensions.get_PopCount(BitArray)
+- uid: DotNext.Collections.BitArrayExtensions.get_PopCount*
+  name: get_PopCount
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_get_PopCount_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.get_PopCount
+  fullName: DotNext.Collections.BitArrayExtensions.get_PopCount
+  nameWithType: BitArrayExtensions.get_PopCount
+- uid: DotNext.Collections.BitArrayExtensions.get_SetBits(System.Collections.BitArray)
+  name: get_SetBits(BitArray)
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_get_SetBits_System_Collections_BitArray_
+  commentId: M:DotNext.Collections.BitArrayExtensions.get_SetBits(System.Collections.BitArray)
+  fullName: DotNext.Collections.BitArrayExtensions.get_SetBits(System.Collections.BitArray)
+  nameWithType: BitArrayExtensions.get_SetBits(BitArray)
+- uid: DotNext.Collections.BitArrayExtensions.get_SetBits*
+  name: get_SetBits
+  href: api/DotNext.Collections.BitArrayExtensions.html#DotNext_Collections_BitArrayExtensions_get_SetBits_
+  commentId: Overload:DotNext.Collections.BitArrayExtensions.get_SetBits
+  fullName: DotNext.Collections.BitArrayExtensions.get_SetBits
+  nameWithType: BitArrayExtensions.get_SetBits
 - uid: DotNext.Collections.Concurrent
   name: DotNext.Collections.Concurrent
   href: api/DotNext.Collections.Concurrent.html
@@ -46794,6 +46917,21 @@ references:
   fullName.vb: DotNext.Span.TrimLength(Of T)(System.Span(Of T), Integer, System.Span(Of T))
   nameWithType: Span.TrimLength<T>(Span<T>, int, out Span<T>)
   nameWithType.vb: Span.TrimLength(Of T)(Span(Of T), Integer, Span(Of T))
+- uid: DotNext.Span.get_IsZeroed*
+  name: get_IsZeroed
+  href: api/DotNext.Span.html#DotNext_Span_get_IsZeroed_
+  commentId: Overload:DotNext.Span.get_IsZeroed
+  fullName: DotNext.Span.get_IsZeroed
+  nameWithType: Span.get_IsZeroed
+- uid: DotNext.Span.get_IsZeroed``1(System.ReadOnlySpan{``0})
+  name: get_IsZeroed<T>(ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_get_IsZeroed__1_System_ReadOnlySpan___0__
+  commentId: M:DotNext.Span.get_IsZeroed``1(System.ReadOnlySpan{``0})
+  name.vb: get_IsZeroed(Of T)(ReadOnlySpan(Of T))
+  fullName: DotNext.Span.get_IsZeroed<T>(System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.get_IsZeroed(Of T)(System.ReadOnlySpan(Of T))
+  nameWithType: Span.get_IsZeroed<T>(ReadOnlySpan<T>)
+  nameWithType.vb: Span.get_IsZeroed(Of T)(ReadOnlySpan(Of T))
 - uid: DotNext.Span.op_BitwiseAnd*
   name: op_BitwiseAnd
   href: api/DotNext.Span.html#DotNext_Span_op_BitwiseAnd_
