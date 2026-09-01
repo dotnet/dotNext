@@ -1,8 +1,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -22,11 +20,7 @@ public static partial class AdvancedHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T AsRef<T>(this TypedReference reference)
         where T : allows ref struct
-    {
-        Ldarg(nameof(reference));
-        Refanyval<T>();
-        return ref ReturnRef<T>();
-    }
+        => ref new LocalReference<T>(ref __refvalue(reference, T)).Value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ref readonly byte Advance<T>(this ref readonly byte address, scoped ref nuint length)
