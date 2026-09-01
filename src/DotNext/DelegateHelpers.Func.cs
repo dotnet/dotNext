@@ -1,8 +1,4 @@
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext;
 
@@ -121,13 +117,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -144,13 +136,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
     
@@ -272,13 +260,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -295,13 +279,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, obj);
-
-            Push(obj);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T, TResult>.Create(obj, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, obj);
         }
     }
 
@@ -498,13 +478,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -521,13 +497,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
 
@@ -591,13 +563,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -614,13 +582,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
 
@@ -689,13 +653,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -712,13 +672,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
 
@@ -787,13 +743,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, T5, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, T5, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -811,13 +763,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, T5, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, T5, TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
 
@@ -897,13 +845,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.CreateFunc(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, T6, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, T5, T6, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, T5, T6, TResult>.Create(target: null, (nint)ptr)
+                : MethodPointer.CreateFunc(ptr);
         }
 
         /// <summary>
@@ -921,13 +865,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<TTarget>.Create(ptr, target);
-
-            Push(target);
-            Push(ptr);
-            Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, T6, TResult>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<T1, T2, T3, T4, T5, T6, TResult>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? FuncHelpers<T1, T2, T3, T4, T5, T6, TResult>.Create(target, (nint)ptr)
+                : MethodPointer<TTarget>.Create(ptr, target);
         }
     }
     
@@ -1132,6 +1072,76 @@ partial class DelegateHelpers
             where TResult : allows ref struct
             => ((delegate*<TTarget, T1, T2, T3, T4, T5, T6, TResult>)pointer)(target, arg1, arg2, arg3, arg4, arg5, arg6);
     }
+}
+
+file static class FuncHelpers<TResult>
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T, TResult>
+    where T : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T, TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T1, T2, TResult>
+    where T1 : allows ref struct
+    where T2 : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T1, T2, TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T1, T2, T3, TResult>
+    where T1 : allows ref struct
+    where T2 : allows ref struct
+    where T3 : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T1, T2, T3, TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T1, T2, T3, T4, TResult>
+    where T1 : allows ref struct
+    where T2 : allows ref struct
+    where T3 : allows ref struct
+    where T4 : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T1, T2, T3, T4, TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T1, T2, T3, T4, T5, TResult>
+    where T1 : allows ref struct
+    where T2 : allows ref struct
+    where T3 : allows ref struct
+    where T4 : allows ref struct
+    where T5 : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T1, T2, T3, T4, T5, TResult> Create(object? target, nint pointer);
+}
+
+file static class FuncHelpers<T1, T2, T3, T4, T5, T6, TResult>
+    where T1 : allows ref struct
+    where T2 : allows ref struct
+    where T3 : allows ref struct
+    where T4 : allows ref struct
+    where T5 : allows ref struct
+    where T6 : allows ref struct
+    where TResult : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern Func<T1, T2, T3, T4, T5, T6, TResult> Create(object? target, nint pointer);
 }
 
 file sealed class BinaryOperator<T>(Func<T, bool> left, Func<T, bool> right)
