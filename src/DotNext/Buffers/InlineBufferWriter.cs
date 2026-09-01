@@ -62,7 +62,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
     {
         if (IGrowableBuffer<T>.GetBufferSize(sizeHint, buffer.Length, position, out sizeHint))
-            buffer.Resize(sizeHint, allocator);
+            buffer.ResizeCore(sizeHint, allocator);
         
         return ref buffer;
     }

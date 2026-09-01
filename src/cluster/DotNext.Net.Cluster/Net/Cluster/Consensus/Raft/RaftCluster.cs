@@ -601,7 +601,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     protected async ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot,
         long snapshotIndex, int stateVersion, CancellationToken token)
         where TSnapshot : IRaftLogEntry
-    
     {
         Result<HeartbeatResult> result;
         var lockTaken = false;

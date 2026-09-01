@@ -191,7 +191,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     private void EnsureExtraBufferSize(int sizeHint)
     {
         if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out sizeHint))
-            extraBuffer.Resize(sizeHint, allocator);
+            extraBuffer.ResizeCore(sizeHint, allocator);
     }
 
     /// <summary>

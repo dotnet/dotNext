@@ -17,7 +17,7 @@ partial class AdvancedHelpers
             where TFrom : allows ref struct
             where TTo : allows ref struct
             => ref Unsafe.As<TFrom, TTo>(ref Unsafe.AsRef(in source));
-        
+
         /// <summary>
         /// Returns an address of the given by-ref parameter.
         /// </summary>
@@ -27,7 +27,7 @@ partial class AdvancedHelpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe nint AddressOf<T>(ref readonly T value)
             where T : allows ref struct
-            => (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
+            => (nint)Unsafe.AsPointer(in value);
         
         /// <summary>
         /// Copies the specified number of elements from source address to the destination address.
@@ -42,7 +42,7 @@ partial class AdvancedHelpers
             where T : unmanaged, allows ref struct
         {
             Unsafe.SkipInit(out destination);
-            Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nuint)count * (nuint)sizeof(T)));
+            Copy(in Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked(count * (uint)sizeof(T)));
         }
         
         /// <summary>

@@ -12,21 +12,25 @@ public sealed class AsyncEventHubTests : Test
         Throws<ArgumentOutOfRangeException>(static () => new AsyncEventHub(-1));
     }
 
-    [Fact]
-    public static void WaitOne()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static void WaitOne(int count)
     {
-        using var hub = new AsyncEventHub(3);
-        Equal(3, hub.Count);
+        using var hub = new AsyncEventHub(count);
+        Equal(count, hub.Count);
 
         True(hub.Pulse(0));
         True(hub.WaitOneAsync(0, TestToken).IsCompletedSuccessfully);
         False(hub.WaitOneAsync(1, TestToken).IsCompleted);
     }
 
-    [Fact]
-    public static async Task WaitAny()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task WaitAny(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
 
         var flags = hub.Pulse(new AsyncEventHub.EventGroup([0]));
         True(flags.Contains(0));
@@ -40,10 +44,12 @@ public sealed class AsyncEventHubTests : Test
         Equal(0, Single(set));
     }
 
-    [Fact]
-    public static async Task WaitAny2()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task WaitAny2(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
         
         var flags = hub.ResetAndPulse(new AsyncEventHub.EventGroup([0]));
         True(flags.Contains(0));
@@ -52,10 +58,12 @@ public sealed class AsyncEventHubTests : Test
         await hub.WaitAnyAsync(TestToken);
     }
     
-    [Fact]
-    public static async Task WaitAny3()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task WaitAny3(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
 
         True(hub.ResetAndPulse(0));
 
@@ -66,13 +74,15 @@ public sealed class AsyncEventHubTests : Test
         Equal(0, Single(set));
     }
 
-    [Fact]
-    public static async Task WaitAll()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task WaitAll(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
 
         var flags = hub.PulseAll();
-        Equal(3, flags.Count);
+        Equal(count, flags.Count);
         Contains(0, flags);
         Contains(1, flags);
         Contains(2, flags);
@@ -82,12 +92,12 @@ public sealed class AsyncEventHubTests : Test
         await hub.WaitAllAsync(InfiniteTimeSpan, TestToken);
     }
 
-    [Fact]
-    public static void CaptureState()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static void CaptureState(int count)
     {
-        using var hub = new AsyncEventHub(3);
-        Span<bool> state = stackalloc bool[hub.Count];
-        state.Clear();
+        using var hub = new AsyncEventHub(count);
 
         var flags = hub.CaptureState();
         Empty(flags);
@@ -97,10 +107,12 @@ public sealed class AsyncEventHubTests : Test
         Equal(1, Single(flags));
     }
 
-    [Fact]
-    public static async Task CancelPendingTasks()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task CancelPendingTasks(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
         var task1 = hub.WaitOneAsync(0, TestToken).AsTask();
         var task2 = hub.WaitOneAsync(1, TestToken).AsTask();
 
@@ -109,10 +121,12 @@ public sealed class AsyncEventHubTests : Test
         await ThrowsAsync<OperationCanceledException>(task2);
     }
 
-    [Fact]
-    public static void ResetAndPulse()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static void ResetAndPulse(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
 
         True(hub.Pulse(1));
         False(hub.ResetAndPulse(1));
@@ -125,19 +139,23 @@ public sealed class AsyncEventHubTests : Test
         False(flags.Contains(1));
     }
 
-    [Fact]
-    public static void Pulse()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static void Pulse(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
         Equal(1, Single(hub.Pulse(new AsyncEventHub.EventGroup([1]))));
         Empty(hub.Pulse(new AsyncEventHub.EventGroup([1])));
     }
 
-    [Fact]
-    public static async Task IncorrectGroup()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task IncorrectGroup(int count)
     {
-        using var hub = new AsyncEventHub(3);
-        var group = new AsyncEventHub.EventGroup([3]);
+        using var hub = new AsyncEventHub(count);
+        var group = new AsyncEventHub.EventGroup([count]);
         Throws<ArgumentOutOfRangeException>(() => hub.ResetAndPulse(group));
         Throws<ArgumentOutOfRangeException>(() => hub.Pulse(group));
         await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group, TestToken).AsTask);
@@ -146,10 +164,12 @@ public sealed class AsyncEventHubTests : Test
         await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAnyAsync(group, InfiniteTimeSpan, TestToken).AsTask);
     }
 
-    [Fact]
-    public static async Task OutOfOrderWaitQueueProcessing()
+    [Theory]
+    [InlineData(3)]
+    [InlineData(512)]
+    public static async Task OutOfOrderWaitQueueProcessing(int count)
     {
-        using var hub = new AsyncEventHub(3);
+        using var hub = new AsyncEventHub(count);
         var task = hub.WaitOneAsync(0, TestToken);
 
         True(hub.Pulse(1));
@@ -159,5 +179,15 @@ public sealed class AsyncEventHubTests : Test
         True(task.IsCompleted);
 
         await task;
+    }
+
+    [Fact]
+    public static void LargeEventGroup()
+    {
+        var group = new AsyncEventHub.EventGroup([1, 512, 514]);
+        Contains(512, group);
+        Contains(514, group);
+        Contains(1, group);
+        Equal(3, group.Count);
     }
 }

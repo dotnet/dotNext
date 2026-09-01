@@ -37,10 +37,10 @@ partial class AdvancedHelpers
             {
                 0 => true,
                 sizeof(byte) => Unsafe.InToRef<T, byte>(in value) is 0,
-                sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)) is 0,
-                sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(in value)) is 0U,
-                sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)) is 0UL,
-                _ => IsZero(ref Unsafe.InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
+                sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(in InToRef<T, byte>(in value)) is 0,
+                sizeof(uint) => Unsafe.ReadUnaligned<uint>(in InToRef<T, byte>(in value)) is 0U,
+                sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(in InToRef<T, byte>(in value)) is 0UL,
+                _ => IsZero(in Unsafe.InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
             };
         
         /// <summary>
