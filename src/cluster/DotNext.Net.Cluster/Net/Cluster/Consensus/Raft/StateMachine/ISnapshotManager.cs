@@ -11,7 +11,11 @@ public interface ISnapshotManager
     /// <remarks>
     /// This method should be idempotent.
     /// </remarks>
-    /// <returns>The currently maintaining snapshot; or <see langowrd="null"/> if there is no snapshot.</returns>
+    /// <returns>The currently maintaining snapshot; or <see langword="null"/> if there is no snapshot.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Some implementations may throw this exception to inform the caller that the information about the snapshot
+    /// is not yet loaded. The caller needs to restore or initialize the manager first.
+    /// </exception>
     ISnapshot? Snapshot { get; }
 
     /// <summary>

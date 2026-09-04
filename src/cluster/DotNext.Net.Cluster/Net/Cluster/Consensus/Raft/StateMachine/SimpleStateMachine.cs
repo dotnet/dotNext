@@ -37,6 +37,10 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
         lifetimeToken = (lifetimeSource = new()).Token;
         sentinel = Task.FromException<SnapshotWriter>(new ObjectDisposedException(GetType().Name));
         writerFactory = CreateSnapshotWriterFactory();
+        
+        // if there is a snapshot on disk, it must be loaded via RestoreAsync before use;
+        // otherwise, there is nothing to restore
+        appliedIndex = GetSnapshots().FirstOrDefault() is null ? 0L : -1L;
     }
 
     /// <summary>
@@ -89,13 +93,17 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
             }
         }
 
-        return snapshot is { File: { } snapshotFile }
-            ? RestoreAsync(snapshotFile, token)
-            : ValueTask.CompletedTask;
+        if (snapshot is { File: { } snapshotFile })
+            return RestoreAsync(snapshotFile, token);
+
+        appliedIndex = 0L;
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    ISnapshot? ISnapshotManager.Snapshot => snapshot;
+    ISnapshot? ISnapshotManager.Snapshot => appliedIndex >= 0L
+        ? snapshot
+        : throw new InvalidOperationException(ExceptionMessages.StateMachineIsNotRestored);
 
     /// <inheritdoc/>
     ValueTask ISnapshotManager.ReclaimGarbageAsync(long watermark, CancellationToken token)

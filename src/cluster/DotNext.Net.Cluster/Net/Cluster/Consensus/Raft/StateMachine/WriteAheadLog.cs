@@ -48,6 +48,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        // Snapshot getter may throw if the state machine is not restored or initialized
+        var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
         hash = configuration.CreateHashAlgorithm();
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
@@ -123,8 +125,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                     : 0UL,
             };
         }
-
-        var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
+        
         LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
         applyTrigger = new();
         appliedEvent = new()
