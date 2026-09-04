@@ -115,16 +115,24 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
 
-    private protected abstract Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+    private protected abstract Task<Result<ReplicationStatus>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 
     /// <inheritdoc/>
-    Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm,
+    Task<Result<ReplicationStatus>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm,
         long commitIndex, CancellationToken token)
         => IsRemote
             ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token)
-            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+            : Task.FromResult<Result<ReplicationStatus>>(new()
+            {
+                Term = term,
+                Value = new()
+                {
+                    LastIndex = prevLogIndex + entries.Count,
+                    Result = HeartbeatResult.ReplicatedWithLeaderTerm,
+                }
+            });
 
     private protected abstract Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex,
         IDataTransferObject configuration, long configurationVersion, CancellationToken token);

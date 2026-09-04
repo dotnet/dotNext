@@ -181,7 +181,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             : SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMemberId), token);
     }
 
-    Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
+    Task<Result<ReplicationStatus>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
         long term,
         TList entries,
         long prevLogIndex,
@@ -190,12 +190,20 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         CancellationToken token)
     {
         if (token.IsCancellationRequested)
-            return Task.FromCanceled<Result<HeartbeatResult>>(token);
+            return Task.FromCanceled<Result<ReplicationStatus>>(token);
 
         if (!IsRemote)
-            return Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
+            return Task.FromResult<Result<ReplicationStatus>>(new()
+            {
+                Term = term,
+                Value = new()
+                {
+                    LastIndex = prevLogIndex + entries.Count,
+                    Result = HeartbeatResult.ReplicatedWithLeaderTerm,
+                }
+            });
 
-        return SendAsync<Result<HeartbeatResult>, AppendEntriesMessage<TEntry, TList>>(
+        return SendAsync<Result<ReplicationStatus>, AppendEntriesMessage<TEntry, TList>>(
             new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries, context.Version)
             {
                 UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries,
