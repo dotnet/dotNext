@@ -155,11 +155,11 @@ internal abstract partial class Server : Disposable, IServer
         }
 
         protocol.Reset();
-        await protocol.WriteHeartbeatResultAsync(in response, token).ConfigureAwait(false);
+        await protocol.WriteReplicationResultAsync(in response, token).ConfigureAwait(false);
     }
     
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static ValueTask<Result<HeartbeatResult>> AppendEntriesAsync(ILocalMember localMember, out IAsyncEnumerator<IRaftLogEntry> enumerator, ProtocolStream protocol,
+    private static ValueTask<Result<ReplicationStatus>> AppendEntriesAsync(ILocalMember localMember, out IAsyncEnumerator<IRaftLogEntry> enumerator, ProtocolStream protocol,
         CancellationToken token)
     {
         var reader = new SpanReader<byte>(protocol.WrittenBufferSpan);

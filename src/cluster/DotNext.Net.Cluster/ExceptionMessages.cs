@@ -52,4 +52,6 @@ internal static class ExceptionMessages
     internal static string LogEntryHashMismatch => (string)Resources.Get();
 
     internal static string MissingWalPage(uint pageIndex) => Resources.Get().Format(pageIndex);
+
+    internal static string StateMachineIsNotRestored => (string)Resources.Get();
 }

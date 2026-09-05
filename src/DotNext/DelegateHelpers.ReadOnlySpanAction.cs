@@ -1,9 +1,5 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext;
 
@@ -28,13 +24,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer.Create<TItem, TArg>(ptr);
-
-            Ldnull();
-            Push(ptr);
-            Newobj(Constructor(Type<ReadOnlySpanAction<TItem, TArg>>(), Type<object>(), Type<IntPtr>()));
-            return Return<ReadOnlySpanAction<TItem, TArg>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? ReadOnlySpanActionHelpers<TItem, TArg>.Create(target: null, (nint)ptr)
+                : MethodPointer.Create<TItem, TArg>(ptr);
         }
         
         /// <summary>
@@ -51,13 +43,9 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            if (!RuntimeFeature.IsDynamicCodeCompiled)
-                return MethodPointer<T>.Create<TItem, TArg>(ptr, obj);
-
-            Push(obj);
-            Push(ptr);
-            Newobj(Constructor(Type<ReadOnlySpanAction<TItem, TArg>>(), Type<object>(), Type<IntPtr>()));
-            return Return<ReadOnlySpanAction<TItem, TArg>>();
+            return RuntimeFeature.IsDynamicCodeCompiled
+                ? ReadOnlySpanActionHelpers<TItem, TArg>.Create(obj, (nint)ptr)
+                : MethodPointer<T>.Create<TItem, TArg>(ptr, obj);
         }
     }
 
@@ -71,7 +59,7 @@ partial class DelegateHelpers
             where TArg : allows ref struct
             => ((delegate*<ReadOnlySpan<TItem>, TArg, void>)pointer)(span, arg);
     }
-    
+
     unsafe partial class MethodPointer<TTarget>
     {
         public static ReadOnlySpanAction<TItem, TArg> Create<TItem, TArg>(delegate*<TTarget, ReadOnlySpan<TItem>, TArg, void> ptr, TTarget target)
@@ -82,4 +70,11 @@ partial class DelegateHelpers
             where TArg : allows ref struct
             => ((delegate*<TTarget, ReadOnlySpan<TItem>, TArg, void>)pointer)(target, span, arg);
     }
+}
+
+file static class ReadOnlySpanActionHelpers<TItem, TArg>
+    where TArg : allows ref struct
+{
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    public static extern ReadOnlySpanAction<TItem, TArg> Create(object? target, nint pointer);
 }

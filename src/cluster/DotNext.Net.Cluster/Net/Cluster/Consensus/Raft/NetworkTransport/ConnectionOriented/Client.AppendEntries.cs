@@ -8,19 +8,19 @@ using IO;
 
 internal partial class Client
 {
-    private interface IAppendEntriesExchange : IClientExchange<Result<HeartbeatResult>>
+    private interface IAppendEntriesExchange : IClientExchange<Result<ReplicationStatus>>
     {
-        static string IClientExchange<Result<HeartbeatResult>>.Name => "AppendEntries";
+        static string IClientExchange<Result<ReplicationStatus>>.Name => "AppendEntries";
         
-        static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadHeartbeatResultAsync(token);
+        static ValueTask<Result<ReplicationStatus>> IClientExchange<Result<ReplicationStatus>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+            => protocol.ReadReplicationResultAsync(token);
     }
     
     // optimized version for empty heartbeats (it has no field to store empty entries)
     [StructLayout(LayoutKind.Auto)]
     private readonly struct AppendEntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex) : IAppendEntriesExchange
     {
-        ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<Result<ReplicationStatus>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             // write header
             protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, entriesCount: 0, localMember.Version));
@@ -43,7 +43,7 @@ internal partial class Client
     {
         private readonly AppendEntriesExchange exchange = new(term, prevLogIndex, prevLogTerm, commitIndex);
 
-        ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer,
+        ValueTask IClientExchange<Result<ReplicationStatus>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer,
             CancellationToken token)
         {
             // write header
@@ -76,10 +76,10 @@ internal partial class Client
         }
     }
 
-    private protected sealed override Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex,
+    private protected sealed override Task<Result<ReplicationStatus>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex,
         long prevLogTerm, long commitIndex, CancellationToken token)
         => entries.Count is 0
-            ? RequestAsync<Result<HeartbeatResult>, AppendEntriesExchange>(new(term, prevLogIndex, prevLogTerm, commitIndex), token)
-            : RequestAsync<Result<HeartbeatResult>, AppendEntriesExchange<TEntry, TList>>(new(term, entries, prevLogIndex, prevLogTerm, commitIndex),
+            ? RequestAsync<Result<ReplicationStatus>, AppendEntriesExchange>(new(term, prevLogIndex, prevLogTerm, commitIndex), token)
+            : RequestAsync<Result<ReplicationStatus>, AppendEntriesExchange<TEntry, TList>>(new(term, entries, prevLogIndex, prevLogTerm, commitIndex),
                 token);
 }

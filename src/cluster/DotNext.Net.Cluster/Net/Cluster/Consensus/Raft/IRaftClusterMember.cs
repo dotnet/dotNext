@@ -60,7 +60,8 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+    Task<Result<ReplicationStatus>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex,
+        CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 

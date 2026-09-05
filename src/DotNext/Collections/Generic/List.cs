@@ -12,7 +12,7 @@ using static Reflection.CollectionType;
 /// <summary>
 /// Provides various extensions for <see cref="IList{T}"/> interface.
 /// </summary>
-public static partial class List
+public static class List
 {
     /// <summary>
     /// Extends <see cref="IReadOnlyList{T}"/> type.

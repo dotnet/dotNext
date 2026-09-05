@@ -31,11 +31,26 @@ internal static class ProtocolStreamExtensions
         return protocol.WriteToTransportAsync(token);
     }
 
+    internal static ValueTask WriteReplicationResultAsync(this ProtocolStream protocol, in Result<ReplicationStatus> result, CancellationToken token)
+    {
+        protocol.Reset();
+        new AppendEntriesResult(in result).Format(protocol.RemainingBufferSpan);
+        protocol.AdvanceWriteCursor(AppendEntriesResult.Size);
+        return protocol.WriteToTransportAsync(token);
+    }
+
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal static async ValueTask<Result<HeartbeatResult>> ReadHeartbeatResultAsync(this ProtocolStream protocol, CancellationToken token)
     {
         await protocol.ReadAsync(Result.Size, token).ConfigureAwait(false);
         return Result.Parse(protocol.WrittenBufferSpan);
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    internal static async ValueTask<Result<ReplicationStatus>> ReadReplicationResultAsync(this ProtocolStream protocol, CancellationToken token)
+    {
+        await protocol.ReadAsync(AppendEntriesResult.Size, token).ConfigureAwait(false);
+        return AppendEntriesResult.Parse(protocol.WrittenBufferSpan);
     }
 
     internal static ValueTask WritePreVoteResultAsync(this ProtocolStream protocol, in Result<PreVoteResult> result, CancellationToken token)

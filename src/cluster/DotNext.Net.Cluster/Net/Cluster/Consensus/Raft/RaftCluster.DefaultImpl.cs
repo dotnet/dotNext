@@ -225,7 +225,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         => ResignAsync(token);
 
     /// <inheritdoc />
-    ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
+    ValueTask<Result<ReplicationStatus>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
         => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, stateVersion, token);
 
     /// <inheritdoc />

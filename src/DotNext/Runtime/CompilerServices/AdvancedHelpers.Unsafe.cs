@@ -90,6 +90,7 @@ partial class AdvancedHelpers
     }
 }
 
+[ExcludeFromCodeCoverage]
 file abstract class RawData
 {
     internal byte Data;
