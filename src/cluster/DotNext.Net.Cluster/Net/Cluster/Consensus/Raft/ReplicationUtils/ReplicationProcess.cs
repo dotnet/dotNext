@@ -24,7 +24,7 @@ internal class ReplicationProcess : Disposable
     public virtual bool IsAvailable => true;
 }
 
-internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntryConsumer<IRaftLogEntry, Result<HeartbeatResult>>
+internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntryConsumer<IRaftLogEntry, Result<ReplicationStatus>>
     where TMember : IRaftClusterMember
 {
     private readonly TMember member;
@@ -153,7 +153,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         }
     }
 
-    private ValueTask<Result<HeartbeatResult>> ReplicateAsync(long startIndex, long endIndex, CancellationToken token)
+    private ValueTask<Result<ReplicationStatus>> ReplicateAsync(long startIndex, long endIndex, CancellationToken token)
     {
         Logger.ReplicationStarted(member.EndPoint, startIndex, endIndex);
         return AuditTrail
@@ -180,9 +180,10 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         }
     }
 
-    private MemberResult? ConvertToResult(in Result<HeartbeatResult> result)
+    private MemberResult? ConvertToResult(in Result<ReplicationStatus> result)
     {
-        switch (result.Value)
+        var status = result.Value;
+        switch (status.Result)
         {
             case HeartbeatResult.ReplicatedWithLeaderTerm:
                 OnReplicated();
@@ -197,7 +198,9 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
                 Logger.UnsupportedVersion(member.EndPoint);
                 return MemberResult.Touched;
             default:
-                Logger.ReplicationFailed(member.EndPoint, member.State.NextIndex = member.State.PrecedingIndex);
+                ref var currentState = ref member.State;
+                Logger.ReplicationFailed(member.EndPoint,
+                    currentState.NextIndex = long.Min(currentState.PrecedingIndex, status.LastIndex + 1L));
                 return MemberResult.Touched;
         }
     }
@@ -208,13 +211,13 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         member.State.NextIndex = replicationIndex + 1L;
     }
     
-    ValueTask<Result<HeartbeatResult>> ILogEntryConsumer<IRaftLogEntry, Result<HeartbeatResult>>.
+    ValueTask<Result<ReplicationStatus>> ILogEntryConsumer<IRaftLogEntry, Result<ReplicationStatus>>.
         ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
         => new(snapshotIndex.HasValue
             ? ReplicateSnapshotAsync(entries[0], snapshotIndex.GetValueOrDefault(), token)
             : ReplicateEntriesAsync<TEntryImpl, TList>(entries, token));
 
-    private Task<Result<HeartbeatResult>> ReplicateEntriesAsync<TEntry, TList>(TList entries, CancellationToken token)
+    private Task<Result<ReplicationStatus>> ReplicateEntriesAsync<TEntry, TList>(TList entries, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>
     {
@@ -225,7 +228,7 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         return result;
     }
 
-    private async Task<Result<HeartbeatResult>> ReplicateSnapshotAsync<TSnapshot>(TSnapshot snapshot,
+    private async Task<Result<ReplicationStatus>> ReplicateSnapshotAsync<TSnapshot>(TSnapshot snapshot,
         long snapshotIndex, CancellationToken token)
         where TSnapshot : IRaftLogEntry
     {
@@ -234,8 +237,18 @@ internal sealed class ReplicationProcess<TMember> : ReplicationProcess, ILogEntr
         Logger.InstallingSnapshot(member.EndPoint, replicationIndex = snapshotIndex);
 
         var (config, configVersion) = await LoadConfigurationAsync(token).ConfigureAwait(false);
-        return await member.InstallSnapshotAsync(Term, snapshot, snapshotIndex, config, configVersion, token)
+        var result = await member.InstallSnapshotAsync(Term, snapshot, snapshotIndex, config, configVersion, token)
             .ConfigureAwait(false);
+
+        return new()
+        {
+            Term = result.Term,
+            Value = new()
+            {
+                LastIndex = snapshotIndex,
+                Result = result.Value,
+            }
+        };
     }
 
     private ValueTask<(IDataTransferObject, long)> LoadConfigurationAsync(CancellationToken token)

@@ -41,10 +41,13 @@ internal abstract class RaftHttpMessage : HttpMessage
     // serves as a default implementation of IHttpMessage.IsMemberUnavailable
     public new static bool IsMemberUnavailable(HttpStatusCode? code) => true;
 
+    private protected static long ParseTerm(HttpResponseMessage response)
+        => ParseHeader(response.Headers, TermHeader, Int64Parser);
+
     private protected new static async Task<Result<bool>> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token) => new()
     {
         Value = await HttpMessage.ParseBoolResponseAsync(response, token).ConfigureAwait(false),
-        Term = ParseHeader(response.Headers, TermHeader, Int64Parser),
+        Term = ParseTerm(response),
     };
 
     private protected new static async Task<Result<T>> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
@@ -60,10 +63,13 @@ internal abstract class RaftHttpMessage : HttpMessage
         return SaveResponseAsync(response, result.Value, token);
     }
 
+    private protected static void WriteTerm(HttpResponse response, long term)
+        => response.Headers.Append(TermHeader, term.ToString(InvariantCulture));
+
     private protected static Task SaveResponseAsync<T>(HttpResponse response, in Result<T> result, CancellationToken token)
         where T : struct, Enum
     {
-        response.Headers.Append(TermHeader, result.Term.ToString(InvariantCulture));
+        WriteTerm(response, result.Term);
         return SaveResponseAsync(response, result.Value, token);
     }
 }

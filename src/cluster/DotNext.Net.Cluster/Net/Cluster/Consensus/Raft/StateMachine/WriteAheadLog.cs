@@ -33,6 +33,14 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <summary>
     /// Initializes a new WAL.
     /// </summary>
+    /// <remarks>
+    /// If <paramref name="stateMachine"/> supports snapshot restoration (e.g. <see cref="SimpleStateMachine"/>),
+    /// its restore method (such as <see cref="SimpleStateMachine.RestoreAsync(System.Threading.CancellationToken)"/>)
+    /// must be called, and awaited to completion, before calling this constructor. The constructor reads the
+    /// state machine's most recently restored snapshot synchronously to compute the starting point for log
+    /// replay; restoring the snapshot afterward has no effect on an already-constructed WAL and forces
+    /// a full replay of the log from the beginning.
+    /// </remarks>
     /// <param name="configuration">The configuration of the write-ahead log.</param>
     /// <param name="stateMachine">The state machine.</param>
     public WriteAheadLog(Options configuration, IStateMachine stateMachine)
@@ -40,6 +48,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        // Snapshot getter may throw if the state machine is not restored or initialized
+        var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
         hash = configuration.CreateHashAlgorithm();
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
@@ -115,8 +125,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                     : 0UL,
             };
         }
-
-        var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
+        
         LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
         applyTrigger = new();
         appliedEvent = new()

@@ -49,6 +49,14 @@ public static class RaftClusterConfiguration
     /// <summary>
     /// Registers the state machine and the write-ahead log for it.
     /// </summary>
+    /// <remarks>
+    /// <see cref="RestoreStateAsync{TStateMachine}"/> must be called, and awaited to completion,
+    /// before anything resolves <see cref="WriteAheadLog"/> (or any other component that depends on
+    /// <see cref="IPersistentState"/>) from the DI container. The write-ahead log reads the state
+    /// machine's most recently restored snapshot synchronously from its constructor, so restoring
+    /// the state machine after the write-ahead log has already been constructed silently discards
+    /// the snapshot and forces a full replay of the log from scratch.
+    /// </remarks>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
     /// <param name="options">The WAL configuration.</param>
@@ -78,6 +86,12 @@ public static class RaftClusterConfiguration
     /// </summary>
     /// <remarks>
     /// The state machine must be registered previously with <see cref="UseStateMachine{TStateMachine}"/> method.
+    /// This method must be called, and awaited to completion, before anything else resolves
+    /// <see cref="WriteAheadLog"/> (or any other component depending on <see cref="IPersistentState"/>)
+    /// from the DI container - resolving the state machine here, via <see cref="ServiceProviderServiceExtensions.GetRequiredService{T}"/>,
+    /// triggers its lazy construction, so calling this method too late (after the write-ahead log has
+    /// already been constructed with the same state machine instance) will not restore anything useful:
+    /// the write-ahead log captures the state machine's snapshot state synchronously at construction time.
     /// </remarks>
     /// <param name="app">The application builder.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>

@@ -372,9 +372,9 @@ public sealed class WriteAheadLogTests : Test
         }
 
         await using var stateMachine = new SumStateMachine(new(dir));
+        await stateMachine.RestoreAsync(TestToken);
         await using (var wal = new WriteAheadLog(new() { Location = dir, HashAlgorithm = hashAlg }, stateMachine))
         {
-            await stateMachine.RestoreAsync(TestToken);
             await wal.InitializeAsync(TestToken);
 
             Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);

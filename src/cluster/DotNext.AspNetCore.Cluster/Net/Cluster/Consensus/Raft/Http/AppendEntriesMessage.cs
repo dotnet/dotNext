@@ -28,6 +28,8 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
     private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
+    
+    private protected const string LastIndexHeader = "X-Raft-Last-Index";
     private protected const string CommandIdHeader = "X-Raft-Command-Id";
     private protected const string IsConfigurationHeader = "X-Raft-Configuration";
     private protected const string CountHeader = "X-Raft-Entries-Count";
@@ -282,11 +284,17 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 
     static string IHttpMessage.MessageType => MessageType;
 
-    internal static Task SaveResponseAsync(HttpResponse response, in Result<HeartbeatResult> result, CancellationToken token)
-        => RaftHttpMessage.SaveResponseAsync(response, in result, token);
+    internal static Task SaveResponseAsync(HttpResponse response, in Result<ReplicationStatus> result, CancellationToken token)
+    {
+        var status = result.Value;
+        
+        WriteTerm(response, result.Term);
+        response.Headers.Append(LastIndexHeader, status.LastIndex.ToString(InvariantCulture));
+        return SaveResponseAsync(response, status.Result, token);
+    }
 }
 
-internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<HeartbeatResult>>
+internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<ReplicationStatus>>
     where TEntry : IRaftLogEntry
     where TList : IReadOnlyList<TEntry>
 {
@@ -473,6 +481,17 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
     private HttpContent CreateContentProvider()
         => UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries) : new MultipartLogEntriesWriter(in entries);
 
-    Task<Result<HeartbeatResult>> IHttpMessage<Result<HeartbeatResult>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
-        => ParseEnumResponseAsync<HeartbeatResult>(response, token);
+    async Task<Result<ReplicationStatus>> IHttpMessage<Result<ReplicationStatus>>.ParseResponseAsync(HttpResponseMessage response,
+        CancellationToken token)
+    {
+        return new()
+        {
+            Term = ParseTerm(response),
+            Value = new()
+            {
+                LastIndex = ParseHeader(response.Headers, LastIndexHeader, Int64Parser),
+                Result = await HttpMessage.ParseEnumResponseAsync<HeartbeatResult>(response, token).ConfigureAwait(false),
+            }
+        };
+    }
 }

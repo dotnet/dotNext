@@ -360,7 +360,7 @@ public partial class RaftCluster
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
-                SslOptions = SslOptions?.ClientOptions,
+                SslOptions = SslOptions?.CreateClientOptions(endPoint),
                 RequestTimeout = RequestTimeout,
                 ConnectTimeout = ConnectTimeout,
             };

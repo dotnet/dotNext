@@ -663,11 +663,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The processing result.</returns>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))] // hot path, avoid allocations
-    protected async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm,
+    protected async ValueTask<Result<ReplicationStatus>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm,
         ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
         where TEntry : IRaftLogEntry
     {
-        Result<HeartbeatResult> result;
+        Result<ReplicationStatus> result;
         var lockTaken = false;
         var tokenSource = CombineTokens(token, LifecycleToken);
         try
@@ -675,7 +675,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new() { Term = AuditTrail.Term, Value = HeartbeatResult.Rejected };
+            result = new()
+            {
+                Term = AuditTrail.Term,
+                Value = new()
+                {
+                    Result = HeartbeatResult.Rejected,
+                    LastIndex = AuditTrail.LastEntryIndex,
+                }
+            };
             if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
@@ -684,14 +692,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Leader = senderMember;
                 if (stateVersion > AuditTrail.Version)
                 {
-                    result = result with { Value = HeartbeatResult.UnsupportedVersion };
+                    result = result with { Value = result.Value with { Result = HeartbeatResult.UnsupportedVersion } };
                 }
                 else if (await AuditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
                 {
                     // The sender's commit index must never exceed the index of the last new entry
                     // delivered in this RPC (e.g. the leader batches entries per RPC while its own
                     // commit index is already further ahead), per the Raft commit rule:
-                    commitIndex = long.Min(commitIndex, prevLogIndex + entries.RemainingCount);
+                    var lastIndex = prevLogIndex + entries.RemainingCount;
+                    commitIndex = long.Min(commitIndex, lastIndex);
 
                     var notEmpty = UseTermDetector(ref entries, senderTerm);
 
@@ -708,7 +717,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         await AuditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, tokenSource.Token).ConfigureAwait(false);
                         result = result with
                         {
-                            Value = IsReplicatedWithExpectedTerm(entries) ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated
+                            Value = result.Value with
+                            {
+                                Result = IsReplicatedWithExpectedTerm(entries) ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated,
+                                LastIndex = lastIndex,
+                            }
                         };
                     }
 

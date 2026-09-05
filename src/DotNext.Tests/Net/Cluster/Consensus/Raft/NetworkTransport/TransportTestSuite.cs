@@ -61,7 +61,7 @@ public abstract class TransportTestSuite : RaftTest
 
         ValueTask<bool> ILocalMember.ResignAsync(CancellationToken token) => ValueTask.FromResult(true);
 
-        async ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
+        async ValueTask<Result<ReplicationStatus>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, int stateVersion, CancellationToken token)
         {
             Equal(0, stateVersion);
             Equal(42L, senderTerm);
@@ -70,6 +70,7 @@ public abstract class TransportTestSuite : RaftTest
             Equal(10, commitIndex);
 
             byte[] buffer;
+            var lastIndex = prevLogIndex + entries.RemainingCount;
             switch (Behavior)
             {
                 case ReceiveEntriesBehavior.ReceiveAll:
@@ -98,7 +99,11 @@ public abstract class TransportTestSuite : RaftTest
             return new()
             {
                 Term = 43L,
-                Value = HeartbeatResult.ReplicatedWithLeaderTerm,
+                Value = new()
+                {
+                    Result = HeartbeatResult.ReplicatedWithLeaderTerm,
+                    LastIndex = lastIndex,
+                }
             };
         }
 
@@ -193,7 +198,7 @@ public abstract class TransportTestSuite : RaftTest
 
         //Heartbeat request
         var appendEntries = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, TestToken);
-        Equal(HeartbeatResult.ReplicatedWithLeaderTerm, appendEntries.Value);
+        Equal(HeartbeatResult.ReplicatedWithLeaderTerm, appendEntries.Value.Result);
         Equal(43L, appendEntries.Term);
     }
 
@@ -294,7 +299,7 @@ public abstract class TransportTestSuite : RaftTest
 
         var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
         Equal(43L, result.Term);
-        Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
+        Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value.Result);
         switch (behavior)
         {
             case ReceiveEntriesBehavior.ReceiveAll:
@@ -369,21 +374,21 @@ public abstract class TransportTestSuite : RaftTest
         Random.Shared.NextBytes(payload);
         var configuration = new BinaryTransferObject(payload);
 
-        Result<HeartbeatResult> result;
         for (var i = 0; i < 100; i++)
         {
             // process snapshot
-            result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, configuration, 2L, TestToken);
-            Equal(43L, result.Term);
-            Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
+            var snapshotResult = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, configuration, 2L, TestToken);
+            Equal(43L, snapshotResult.Term);
+            Equal(HeartbeatResult.ReplicatedWithLeaderTerm, snapshotResult.Value);
             NotEmpty(member.ReceivedEntries);
             Equal(snapshot, member.ReceivedEntries[0]);
             member.ReceivedEntries.Clear();
 
             // process entries
-            result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
-            Equal(43L, result.Term);
-            Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
+            var replicationResult = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
+            Equal(43L, replicationResult.Term);
+            Equal(HeartbeatResult.ReplicatedWithLeaderTerm, replicationResult.Value.Result);
+            Equal(1 + 2, replicationResult.Value.LastIndex); // prevLogIndex + count(entries)
             switch (behavior)
             {
                 case ReceiveEntriesBehavior.ReceiveAll:
