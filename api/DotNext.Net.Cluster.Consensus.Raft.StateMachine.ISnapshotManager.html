@@ -83,7 +83,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_ISnapshotManager_Snapshot_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.ISnapshotManager.Snapshot*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_ISnapshotManager_Snapshot" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.ISnapshotManager.Snapshot">Snapshot</h4>
@@ -105,7 +105,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.ISnapshot.html">ISnapshot</a></td>
-        <td><p>The currently maintaining snapshot; or <see langowrd="null"></see> if there is no snapshot.</p>
+        <td><p>The currently maintaining snapshot; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if there is no snapshot.</p>
 </td>
       </tr>
     </tbody>
@@ -113,11 +113,28 @@
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_ISnapshotManager_Snapshot_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method should be idempotent.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Some implementations may throw this exception to inform the caller that the information about the snapshot
+is not yet loaded. The caller needs to restore or initialize the manager first.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_ISnapshotManager_ReclaimGarbageAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.ISnapshotManager.ReclaimGarbageAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_ISnapshotManager_ReclaimGarbageAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.ISnapshotManager.ReclaimGarbageAsync(System.Int64,System.Threading.CancellationToken)">ReclaimGarbageAsync(long, CancellationToken)</h4>
@@ -208,7 +225,7 @@ get the snapshot of the index less than <code class="paramref">watermark</code>.
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/1be51b2fff0c2630a1e9ac876dec4b6f464dcffe/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/ISnapshotManager.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

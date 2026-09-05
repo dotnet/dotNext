@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct AsyncReaderWriterLock.LockStamp | .NEXT </title>
+    <title>Struct ReplicationStatus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct AsyncReaderWriterLock.LockStamp | .NEXT ">
+    <meta name="title" content="Struct ReplicationStatus | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,23 +65,20 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus">
 
 
 
-  <h1 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp" class="text-break">Struct AsyncReaderWriterLock.LockStamp</h1>
-  <div class="markdown level0 summary"><p>Represents lock stamp used for optimistic reading.</p>
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus" class="text-break">Struct ReplicationStatus</h1>
+  <div class="markdown level0 summary"><p>Gets the replication status of the member.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
-    </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
@@ -92,27 +89,83 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct AsyncReaderWriterLock.LockStamp : IEquatable&lt;AsyncReaderWriterLock.LockStamp&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct ReplicationStatus : IEquatable&lt;ReplicationStatus&gt;</code></pre>
   </div>
-  <h3 id="methods">Methods
+  <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_DotNext_Threading_AsyncReaderWriterLock_LockStamp_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(DotNext.Threading.AsyncReaderWriterLock.LockStamp)">Equals(LockStamp)</h4>
-  <div class="markdown level1 summary"><p>Determines whether this stamp represents the same version of the lock state
-as the given stamp.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_LastIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_LastIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex">LastIndex</h4>
+  <div class="markdown level1 summary"><p>Gets the index of the last log entry.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(AsyncReaderWriterLock.LockStamp other)</code></pre>
+    <pre><code class="lang-csharp hljs">public required long LastIndex { readonly get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Result_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Result" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result">Result</h4>
+  <div class="markdown level1 summary"><p>Gets the heartbeat result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public required HeartbeatResult Result { readonly get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.html">HeartbeatResult</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)">Equals(ReplicationStatus)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool Equals(ReplicationStatus other)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -125,10 +178,9 @@ as the given stamp.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a></td>
         <td><span class="parametername">other</span></td>
-        <td><p>The lock stamp to compare.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -143,24 +195,21 @@ as the given stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> of this stamp is equal to <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_System_Object_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(System.Object)">Equals(object?)</h4>
-  <div class="markdown level1 summary"><p>Determines whether this stamp represents the same version of the lock state
-as the given stamp.</p>
-</div>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_System_Object_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(System.Object)">Equals(object)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object obj)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -174,9 +223,8 @@ as the given stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">other</span></td>
-        <td><p>The lock stamp to compare.</p>
-</td>
+        <td><span class="parametername">obj</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -191,8 +239,7 @@ as the given stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> of this stamp is equal to <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -200,16 +247,15 @@ as the given stamp.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_GetHashCode_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_GetHashCode" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode">GetHashCode()</h4>
-  <div class="markdown level1 summary"><p>Computes hash code for this stamp.</p>
-</div>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_GetHashCode_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_GetHashCode" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -222,28 +268,54 @@ as the given stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The hash code of this stamp.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_ToString_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_ToString" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
   <h3 id="operators">Operators
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Equality_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Equality_DotNext_Threading_AsyncReaderWriterLock_LockStamp__DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">operator ==(in LockStamp, in LockStamp)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the first stamp represents the same version of the lock state
-as the second stamp.</p>
-</div>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Equality_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Equality_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)">operator ==(ReplicationStatus, ReplicationStatus)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(in AsyncReaderWriterLock.LockStamp first, in AsyncReaderWriterLock.LockStamp second)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator ==(ReplicationStatus left, ReplicationStatus right)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -256,16 +328,14 @@ as the second stamp.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first lock stamp to compare.</p>
-</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a></td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second lock stamp to compare.</p>
-</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a></td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -280,24 +350,21 @@ as the second stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> of <code class="paramref">first</code> stamp is equal to <code class="paramref">second</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Inequality_" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Inequality_DotNext_Threading_AsyncReaderWriterLock_LockStamp__DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">operator !=(in LockStamp, in LockStamp)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the first stamp represents the different version of the lock state
-as the second stamp.</p>
-</div>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Inequality_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Inequality_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)">operator !=(ReplicationStatus, ReplicationStatus)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(in AsyncReaderWriterLock.LockStamp first, in AsyncReaderWriterLock.LockStamp second)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator !=(ReplicationStatus left, ReplicationStatus right)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -310,16 +377,14 @@ as the second stamp.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first lock stamp to compare.</p>
-</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a></td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second lock stamp to compare.</p>
-</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html">ReplicationStatus</a></td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -334,8 +399,7 @@ as the second stamp.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> of <code class="paramref">first</code> stamp is not equal to <code class="paramref">second</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -362,7 +426,7 @@ as the second stamp.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/DotNext.Threading/Threading/AsyncReaderWriterLock.LockStamp.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/d6d22afdfffa50261c12533959e8ad18282012fd/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ReplicationStatus.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

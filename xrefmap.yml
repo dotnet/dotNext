@@ -31410,6 +31410,117 @@ references:
   commentId: F:DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType.Weak
   fullName: DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType.Weak
   nameWithType: ReadBarrierType.Weak
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus
+  name: ReplicationStatus
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus
+  nameWithType: ReplicationStatus
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  name: Equals(ReplicationStatus)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  nameWithType: ReplicationStatus.Equals(ReplicationStatus)
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(System.Object)
+  name: Equals(object)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_System_Object_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(object)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals(Object)
+  nameWithType: ReplicationStatus.Equals(object)
+  nameWithType.vb: ReplicationStatus.Equals(Object)
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals*
+  name: Equals
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Equals_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Equals
+  nameWithType: ReplicationStatus.Equals
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_GetHashCode
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode()
+  nameWithType: ReplicationStatus.GetHashCode()
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_GetHashCode_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.GetHashCode
+  nameWithType: ReplicationStatus.GetHashCode
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex
+  name: LastIndex
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_LastIndex
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex
+  nameWithType: ReplicationStatus.LastIndex
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex*
+  name: LastIndex
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_LastIndex_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.LastIndex
+  nameWithType: ReplicationStatus.LastIndex
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result
+  name: Result
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Result
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result
+  nameWithType: ReplicationStatus.Result
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result*
+  name: Result
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_Result_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.Result
+  nameWithType: ReplicationStatus.Result
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString
+  name: ToString()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_ToString
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString()
+  nameWithType: ReplicationStatus.ToString()
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString*
+  name: ToString
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_ToString_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.ToString
+  nameWithType: ReplicationStatus.ToString
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  name: operator ==(ReplicationStatus, ReplicationStatus)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Equality_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  name.vb: =(ReplicationStatus, ReplicationStatus)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.operator ==(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus, DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.=(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus, DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  nameWithType: ReplicationStatus.operator ==(ReplicationStatus, ReplicationStatus)
+  nameWithType.vb: ReplicationStatus.=(ReplicationStatus, ReplicationStatus)
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality*
+  name: operator ==
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Equality_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Equality
+  name.vb: =
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.operator ==
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.=
+  nameWithType: ReplicationStatus.operator ==
+  nameWithType.vb: ReplicationStatus.=
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  name: operator !=(ReplicationStatus, ReplicationStatus)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Inequality_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus,DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  name.vb: <>(ReplicationStatus, ReplicationStatus)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.operator !=(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus, DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.<>(DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus, DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus)
+  nameWithType: ReplicationStatus.operator !=(ReplicationStatus, ReplicationStatus)
+  nameWithType.vb: ReplicationStatus.<>(ReplicationStatus, ReplicationStatus)
+- uid: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.html#DotNext_Net_Cluster_Consensus_Raft_ReplicationStatus_op_Inequality_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.op_Inequality
+  name.vb: <>
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.operator !=
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ReplicationStatus.<>
+  nameWithType: ReplicationStatus.operator !=
+  nameWithType.vb: ReplicationStatus.<>
 - uid: DotNext.Net.Cluster.Consensus.Raft.Result`1
   name: Result<T>
   href: api/DotNext.Net.Cluster.Consensus.Raft.Result-1.html
@@ -36007,6 +36118,18 @@ references:
   commentId: Overload:DotNext.Net.Security.SslOptions.ClientOptions
   fullName: DotNext.Net.Security.SslOptions.ClientOptions
   nameWithType: SslOptions.ClientOptions
+- uid: DotNext.Net.Security.SslOptions.CreateClientOptions(System.Net.EndPoint)
+  name: CreateClientOptions(EndPoint)
+  href: api/DotNext.Net.Security.SslOptions.html#DotNext_Net_Security_SslOptions_CreateClientOptions_System_Net_EndPoint_
+  commentId: M:DotNext.Net.Security.SslOptions.CreateClientOptions(System.Net.EndPoint)
+  fullName: DotNext.Net.Security.SslOptions.CreateClientOptions(System.Net.EndPoint)
+  nameWithType: SslOptions.CreateClientOptions(EndPoint)
+- uid: DotNext.Net.Security.SslOptions.CreateClientOptions*
+  name: CreateClientOptions
+  href: api/DotNext.Net.Security.SslOptions.html#DotNext_Net_Security_SslOptions_CreateClientOptions_
+  commentId: Overload:DotNext.Net.Security.SslOptions.CreateClientOptions
+  fullName: DotNext.Net.Security.SslOptions.CreateClientOptions
+  nameWithType: SslOptions.CreateClientOptions
 - uid: DotNext.Net.Security.SslOptions.ServerOptions
   name: ServerOptions
   href: api/DotNext.Net.Security.SslOptions.html#DotNext_Net_Security_SslOptions_ServerOptions
