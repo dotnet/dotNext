@@ -343,6 +343,32 @@ public sealed class TcpTransportTests : TransportTestSuite
         await host2.StopAsync(TestToken);
         await host3.StopAsync(TestToken);
     }
+
+    [Fact]
+    public static async Task HigherLastLogTermWinsElection()
+    {
+        IPersistentState log1 = new ConsensusOnlyState();
+        await log1.AppendAsync(new EmptyLogEntry { Term = 1L }, TestToken);
+        await log1.AppendAsync(new EmptyLogEntry { Term = 1L }, TestToken);
+        await log1.AppendAsync(new EmptyLogEntry { Term = 2L }, TestToken);
+        await log1.UpdateTermAsync(2L, resetLastVote: false, TestToken);
+
+        IPersistentState log2 = new ConsensusOnlyState();
+        await log2.AppendAsync(new EmptyLogEntry { Term = 1L }, TestToken);
+        await log2.AppendAsync(new EmptyLogEntry { Term = 3L }, TestToken);
+        await log2.UpdateTermAsync(3L, resetLastVote: false, TestToken);
+
+        await using var host1 = new RaftCluster(CreateTwoNodeConfiguration(Host1Port)) { AuditTrail = log1 };
+        await using var host2 = new RaftCluster(CreateTwoNodeConfiguration(Host2Port)) { AuditTrail = log2 };
+
+        await Task.WhenAll(host1.StartAsync(TestToken), host2.StartAsync(TestToken));
+
+        var leader = await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2);
+        Equal(host2.LocalMemberAddress, leader);
+
+        await host1.StopAsync(TestToken);
+        await host2.StopAsync(TestToken);
+    }
     
     [Fact]
     public static async Task ReplicateLogEntry()
@@ -404,6 +430,25 @@ public sealed class TcpTransportTests : TransportTestSuite
         await host2.WaitForLeadershipAsync(TestToken);
     }
     
+    private static RaftCluster.TcpConfiguration CreateTwoNodeConfiguration(int port)
+    {
+        var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+        {
+            ColdStart = false,
+            LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
+            ConfigurationStorage = null,
+        };
+
+        var configuration = result.ConfigurationStorage as InMemoryClusterConfigurationStorage<EndPoint>;
+        NotNull(configuration);
+        var builder = configuration.CreateInitialConfigurationBuilder();
+        builder.Add(new IPEndPoint(IPAddress.Loopback, Host1Port));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, Host2Port));
+        builder.Build();
+
+        return result;
+    }
+
     private static RaftCluster.TcpConfiguration CreateConfiguration(int port, bool coldStart = false)
     {
         var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
