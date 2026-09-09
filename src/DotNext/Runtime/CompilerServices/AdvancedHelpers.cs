@@ -26,8 +26,9 @@ public static partial class AdvancedHelpers
     private static unsafe ref readonly byte Advance<T>(this ref readonly byte address, scoped ref nuint length)
         where T : unmanaged, allows ref struct
     {
-        length -= (nuint)sizeof(T);
-        return ref Unsafe.Add(ref Unsafe.AsRef(in address), sizeof(T));
+        nuint size = (uint)sizeof(T);
+        length -= size;
+        return ref Unsafe.Add(ref Unsafe.AsRef(in address), size);
     }
 
     internal static unsafe bool IsZero(ref readonly byte address, nuint length)
