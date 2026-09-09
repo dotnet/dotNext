@@ -20,7 +20,7 @@ public static partial class AdvancedHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T AsRef<T>(this TypedReference reference)
         where T : allows ref struct
-        => ref new LocalReference<T>(ref __refvalue(reference, T)).Value;
+        => ref Unsafe.AsRef(ref __refvalue(reference, T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ref readonly byte Advance<T>(this ref readonly byte address, scoped ref nuint length)
