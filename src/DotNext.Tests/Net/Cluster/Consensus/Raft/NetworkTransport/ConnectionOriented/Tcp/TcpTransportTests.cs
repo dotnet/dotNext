@@ -403,7 +403,7 @@ public sealed class TcpTransportTests : TransportTestSuite
         // host1 has higher version, so it cannot be a leader
         await host2.WaitForLeadershipAsync(TestToken);
     }
-
+    
     private static RaftCluster.TcpConfiguration CreateConfiguration(int port, bool coldStart = false)
     {
         var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
