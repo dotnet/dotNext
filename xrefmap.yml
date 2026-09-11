@@ -30475,6 +30475,21 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.EndPoint
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.EndPoint
   nameWithType: RaftClusterMember.EndPoint
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync(System.Boolean,System.Threading.CancellationToken)
+  name: GetMetadataAsync(bool, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_GetMetadataAsync_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync(System.Boolean,System.Threading.CancellationToken)
+  name.vb: GetMetadataAsync(Boolean, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync(bool, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync(Boolean, System.Threading.CancellationToken)
+  nameWithType: RaftClusterMember.GetMetadataAsync(bool, CancellationToken)
+  nameWithType.vb: RaftClusterMember.GetMetadataAsync(Boolean, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync*
+  name: GetMetadataAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_GetMetadataAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.GetMetadataAsync
+  nameWithType: RaftClusterMember.GetMetadataAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.IsLeader
   name: IsLeader
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_IsLeader
@@ -30505,6 +30520,18 @@ references:
   commentId: E:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.MemberStatusChanged
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.MemberStatusChanged
   nameWithType: RaftClusterMember.MemberStatusChanged
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync(System.Threading.CancellationToken)
+  name: ResignAsync(CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_ResignAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync(System.Threading.CancellationToken)
+  nameWithType: RaftClusterMember.ResignAsync(CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync*
+  name: ResignAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_ResignAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ResignAsync
+  nameWithType: RaftClusterMember.ResignAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.Status
   name: Status
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_Status
@@ -30529,6 +30556,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ToString
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.ToString
   nameWithType: RaftClusterMember.ToString
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata
+  name: TryGetMetadata()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_TryGetMetadata
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata()
+  nameWithType: RaftClusterMember.TryGetMetadata()
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata*
+  name: TryGetMetadata
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_TryGetMetadata_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.TryGetMetadata
+  nameWithType: RaftClusterMember.TryGetMetadata
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMemberEventArgs`1
   name: RaftClusterMemberEventArgs<TMember>
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftClusterMemberEventArgs-1.html
