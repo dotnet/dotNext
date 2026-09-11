@@ -16,7 +16,10 @@ public static class PersistentStateExtensions
     internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
     {
         var localIndex = auditTrail.LastEntryIndex;
-        return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
+        var localTerm = await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
+
+        // Raft §5.4.1: higher last-log term wins; on equal terms the longer log wins.
+        return term > localTerm || (term == localTerm && index >= localIndex);
     }
 
     internal static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)

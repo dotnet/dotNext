@@ -26,6 +26,6 @@ internal partial class Client
         static string IClientExchange<bool>.Name => Name;
     }
 
-    private protected sealed override Task<bool> ResignAsync(CancellationToken token)
+    public sealed override Task<bool> ResignAsync(CancellationToken token)
         => RequestAsync<bool, ResignExchange>(ResignExchange.Instance, token);
 }

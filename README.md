@@ -31,33 +31,31 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-05-2026
+Release Date: 09-11-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.7.1">DotNext 6.7.1</a>
-* `FromPointer` migrated from handwritten IL code to fast reflection using [UnsafeAccessor](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafeaccessorattribute), which is more portable across .NET versions
+<a href="https://www.nuget.org/packages/dotnext/6.7.2">DotNext 6.7.2</a>
+* Minor performance improvements of static extension methods declared in `AdvancedHelpers` class
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.7.1">DotNext.Metaprogramming 6.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.7.2">DotNext.Metaprogramming 6.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.7.1">DotNext.Unsafe 6.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.7.2">DotNext.Unsafe 6.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.7.1">DotNext.Threading 6.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/6.7.2">DotNext.Threading 6.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.7.1">DotNext.IO 6.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/6.7.2">DotNext.IO 6.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.7.1">DotNext.Net.Cluster 6.7.1</a>
-* Optimized catch up of the temporary unavailable node when it becomes available again for the leader. Outdated leader now can report last WAL index, so the leader can adjust replication position for the node much faster than just decrementing it speculatively in every replication round
-* Added stricter control for the order of state machine recovery and WAL initialization
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.7.2">DotNext.Net.Cluster 6.7.2</a>
+* Added synchronous access to the cached metadata via `TryGetMetadata` public method in `RaftClusterMember` class
+* Fixed and merged [298](https://github.com/dotnet/dotNext/pull/298)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.7.1">DotNext.AspNetCore.Cluster 6.7.1</a>
-* Optimized catch up of the temporary unavailable node when it becomes available again for the leader. Outdated leader now can report last WAL index, so the leader can adjust replication position for the node much faster than just decrementing it speculatively in every replication round
-* Added stricter control for the order of state machine recovery and WAL initialization
-* Added appropriate XML remarks to the DI configuration methods
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.7.2">DotNext.AspNetCore.Cluster 6.7.2</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.7.1">DotNext.MaintenanceServices 1.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.7.2">DotNext.MaintenanceServices 1.7.2</a>
 * Updated dependencies
 
 # Release & Support Policy

@@ -144,24 +144,41 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
             ? InstallSnapshotAsync(term, snapshot, snapshotIndex, configuration, configurationVersion, token)
             : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
 
-    private protected abstract Task<bool> ResignAsync(CancellationToken token);
-
     /// <inheritdoc/>
-    Task<bool> IClusterMember.ResignAsync(CancellationToken token) => ResignAsync(token);
+    public abstract Task<bool> ResignAsync(CancellationToken token);
 
     private protected abstract Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token);
 
     /// <inheritdoc/>
-    async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
+    public ValueTask<IReadOnlyDictionary<string, string>> GetMetadataAsync(bool refresh, CancellationToken token)
     {
+        ValueTask<IReadOnlyDictionary<string, string>> task;
         if (!IsRemote)
-            return localMember.Metadata;
+        {
+            task = new(localMember.Metadata);
+        }
+        else if (metadataCache is not { } cached || refresh)
+        {
+            task = LoadMetadataAsync(token);
+        }
+        else
+        {
+            task = new(cached);
+        }
 
-        if (metadataCache is null || refresh)
-            metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);
-
-        return metadataCache;
+        return task;
     }
+
+    private async ValueTask<IReadOnlyDictionary<string, string>> LoadMetadataAsync(CancellationToken token)
+        => metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);
+
+    /// <summary>
+    /// Tries to get cached metadata.
+    /// </summary>
+    /// <returns>The cached metadata; or <see langword="null"/> if it's not available.</returns>
+    public IReadOnlyDictionary<string, string>? TryGetMetadata() => IsRemote
+        ? metadataCache
+        : localMember.Metadata;
 
     private protected abstract Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
