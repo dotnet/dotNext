@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using static System.Threading.Timeout;
 
@@ -13,10 +12,9 @@ using Membership;
 using NetworkTransport;
 using Replication;
 using StateMachine;
-using static DotNext.Extensions.Logging.TestLoggers;
 
 [Collection(TestCollections.Raft)]
-public sealed class TcpTransportTests : TransportTestSuite
+public sealed partial class TcpTransportTests : TransportTestSuite
 {
     private const int Host1Port = 3362;
     private const int Host2Port = 3363;
@@ -24,7 +22,7 @@ public sealed class TcpTransportTests : TransportTestSuite
     
     private static X509Certificate2 LoadCertificate()
     {
-        using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Test), "node.pfx");
+        using var rawCertificate = typeof(TcpTransportTests).Assembly.GetManifestResourceStream(typeof(Test), "node.pfx");
         using var ms = new MemoryStream(1024);
         rawCertificate?.CopyTo(ms);
         ms.Seek(0, SeekOrigin.Begin);
@@ -411,7 +409,7 @@ public sealed class TcpTransportTests : TransportTestSuite
             // LowerElectionTimeout = 1000,
             // UpperElectionTimeout = 2000,
             ColdStart = coldStart,
-            LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
+            LoggerFactory = CreateDebugLoggerFactory(port),
             ConfigurationStorage = null,
         };
 

@@ -18,6 +18,7 @@
 
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AotTests>true</AotTests>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,23 +28,37 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--Core Classes-->
     <Compile Include="..\DotNext.Tests\Test.cs" Link="Test.cs" />
+    <Compile Include="..\DotNext.Tests\TestCollections.cs" Link="TestCollections.cs" />
     <Compile Include="..\DotNext.Tests\DelegateHelpersTests.cs" Link="DelegateHelpersTests.cs" />
     <Compile Include="..\DotNext.Tests\ResultTests.cs" Link="ResultTests.cs" />
     <Compile Include="..\DotNext.Tests\OptionalTests.cs" Link="OptionalTests.cs" />
     <Compile Include="..\DotNext.Tests\BasicExtensionsTests.cs" Link="BasicExtensionsTests.cs" />
     <Compile Include="..\DotNext.Tests\Buffers\SpanOwnerTests.cs" Link="Buffers\SpanOwnerTests.cs" />
+    <!--Runtime Intrinsics-->
     <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\VariantTests.cs" Link="Runtime\VariantTests.cs" />
+    <!--Raft Tests-->
+    <Compile Include="..\DotNext.Tests\IO\TestTransferObject.cs" Link="IO\TestTransferObject.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\RaftTest.cs" Link="Net\Cluster\Consensus\Raft\RaftTest.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\NetworkTransport\TransportTestSuite.cs" Link="Net\Cluster\Consensus\Raft\NetworkTransport\TransportTestSuite.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\NetworkTransport\ConnectionOriented\Tcp\TcpTransportTests.cs" Link="Net\Cluster\Consensus\Raft\NetworkTransport\ConnectionOriented\Tcp\TcpTransportTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" AdditionalProperties="AotTests=$(AotTests)" />
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
+    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" />
     <ProjectReference Include="..\DotNext\DotNext.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <EmbeddedResource Include="..\DotNext.Tests\node.pfx">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
     
   <ItemGroup>

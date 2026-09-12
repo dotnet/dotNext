@@ -28,6 +28,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(AotTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);AOT_TESTS</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
@@ -45,6 +49,10 @@
     <Optimize>true</Optimize>
     <DebugType>embedded</DebugType>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AotTests)' == 'true'">
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
