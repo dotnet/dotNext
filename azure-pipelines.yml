@@ -63,7 +63,14 @@ stages:
             displayName: Run AOT Tests
             inputs:
               workingDirectory: $(AotTestFolder)/bin/aot/DotNext.Aot.Tests
-              script: ./DotNext.Aot.Tests
+              script: ./DotNext.Aot.Tests --report-trx --report-trx-filename aot-tests.trx --results-directory $(Agent.TempDirectory)/AotTestResults
+          - task: PublishTestResults@2
+            displayName: 'Publish AOT Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '$(Agent.TempDirectory)/AotTestResults/*.trx'
+              testRunTitle: 'AOT Tests on Linux'
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             timeoutInMinutes: 10
