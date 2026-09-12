@@ -34,6 +34,8 @@
     <Compile Include="..\DotNext.Tests\BasicExtensionsTests.cs" Link="BasicExtensionsTests.cs" />
     <Compile Include="..\DotNext.Tests\Buffers\SpanOwnerTests.cs" Link="Buffers\SpanOwnerTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\VariantTests.cs" Link="Runtime\VariantTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
