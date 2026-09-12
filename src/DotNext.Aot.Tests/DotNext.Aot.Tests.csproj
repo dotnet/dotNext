@@ -48,9 +48,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" AdditionalProperties="AotTests=true" />
-    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
-    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" />
-    <ProjectReference Include="..\DotNext\DotNext.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
