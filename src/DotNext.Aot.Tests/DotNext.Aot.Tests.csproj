@@ -63,5 +63,6 @@
   <ItemGroup>
     <CodeCoverageExclude Include="**/*.g.cs" />
     <RuntimeHostConfigurationOption Include="DotNext.Buffers.NativeAllocation" Value="False" Trim="True" />
+    <RuntimeHostConfigurationOption Include="System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported" Value="False" Trim="True" />
   </ItemGroup>
 </Project>
