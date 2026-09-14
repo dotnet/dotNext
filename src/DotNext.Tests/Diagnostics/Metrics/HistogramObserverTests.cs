@@ -2,7 +2,7 @@ using System.Diagnostics.Metrics;
 
 namespace DotNext.Diagnostics.Metrics;
 
-public sealed class HistogramObserverTests : Test
+public sealed class HistogramObserverTests : InstrumentObserverTest
 {
     [Fact]
     public static void ObserveValue()
@@ -32,8 +32,5 @@ public sealed class HistogramObserverTests : Test
         }
 
         True(observer.IsCompleted);
-
-        static bool Filter(Histogram<int> histogram, ReadOnlySpan<KeyValuePair<string, object>> tags)
-            => tags is [];
     }
 }
