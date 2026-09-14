@@ -34,5 +34,5 @@ public static class AppContextExtensions
     }
     
     [FeatureSwitchDefinition(DynamicCodeSupportFeature)]
-    private static bool IsDynamicCodeAllowed { get; } = AppContext.IsFeatureSupported(DynamicCodeSupportFeature);
+    private static bool IsDynamicCodeAllowed { get; } = IsFeatureSupported(DynamicCodeSupportFeature);
 }
