@@ -129,19 +129,11 @@ stages:
           - download: current
             displayName: Download MacOS coverage
             artifact: coverage-macos
-          - task: DotNetCoreCLI@2
-            displayName: Install ReportGenerator
-            inputs:
-              command: custom
-              custom: tool
-              arguments: install --tool-path . dotnet-reportgenerator-globaltool
-          - script: ./reportgenerator "-reports:$(Pipeline.Workspace)/coverage-windows/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-linux/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-macos/coverage.cobertura.xml" "-targetdir:$(Agent.TempDirectory)/MergedCoverage" -reporttypes:Cobertura
-            displayName: Merge coverage reports
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish merged code coverage'
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish merged code coverage (v2, native merge)'
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/MergedCoverage/Cobertura.xml
+              summaryFileLocation: $(Pipeline.Workspace)/coverage-*/coverage.cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
