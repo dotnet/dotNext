@@ -34,11 +34,9 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
-            inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-windows
       - job: Linux
         pool:
           vmImage: ubuntu-latest
@@ -82,11 +80,9 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
-            inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-linux
       - job: MacOS
         pool:
           vmImage: macOS-latest
@@ -112,11 +108,40 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-macos
+      - job: MergeCoverage
+        dependsOn:
+          - Windows
+          - Linux
+          - MacOS
+        condition: succeededOrFailed()
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - download: current
+            displayName: Download Windows coverage
+            artifact: coverage-windows
+          - download: current
+            displayName: Download Linux coverage
+            artifact: coverage-linux
+          - download: current
+            displayName: Download MacOS coverage
+            artifact: coverage-macos
+          - task: DotNetCoreCLI@2
+            displayName: Install ReportGenerator
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . dotnet-reportgenerator-globaltool
+          - script: ./reportgenerator "-reports:$(Pipeline.Workspace)/coverage-windows/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-linux/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-macos/coverage.cobertura.xml" "-targetdir:$(Agent.TempDirectory)/MergedCoverage" -reporttypes:Cobertura
+            displayName: Merge coverage reports
           - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
+            displayName: 'Publish merged code coverage'
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              summaryFileLocation: $(Agent.TempDirectory)/MergedCoverage/Cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
