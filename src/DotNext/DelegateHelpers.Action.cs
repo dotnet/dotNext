@@ -40,7 +40,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -59,7 +59,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -143,7 +143,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -162,7 +162,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T>.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -262,7 +262,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -281,7 +281,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2>.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -372,7 +372,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -391,7 +391,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3>.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -485,7 +485,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -503,7 +503,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4>.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -565,7 +565,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4, T5>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -584,7 +584,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4, T5>.Create(target, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, target);
         }
@@ -650,7 +650,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4, T5, T6>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create(ptr);
         }
@@ -669,7 +669,7 @@ public partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ActionHelpers<T1, T2, T3, T4, T5, T6>.Create(obj, (nint)ptr)
                 : MethodPointer<TTarget>.Create(ptr, obj);
         }

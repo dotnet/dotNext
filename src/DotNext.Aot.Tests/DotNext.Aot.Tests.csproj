@@ -7,7 +7,6 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <PublishAot>true</PublishAot>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <InvariantGlobalization>true</InvariantGlobalization>
     <Authors>.NET Foundation and Contributors</Authors>
@@ -63,6 +62,7 @@
   <ItemGroup>
     <CodeCoverageExclude Include="**/*.g.cs" />
     <RuntimeHostConfigurationOption Include="DotNext.Buffers.NativeAllocation" Value="False" Trim="True" />
-    <RuntimeHostConfigurationOption Include="System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported" Value="False" Trim="True" />
+    <RuntimeHostConfigurationOption Include="DotNext.IsDynamicCodeAllowed" Value="False" Trim="True" />
   </ItemGroup>
+
 </Project>

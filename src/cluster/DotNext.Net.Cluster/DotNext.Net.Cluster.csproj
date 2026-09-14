@@ -28,8 +28,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(AotTests)' == 'true'">
-    <DefineConstants>$(DefineConstants);AOT_TESTS</DefineConstants>
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <DefineConstants>$(DefineConstants);PUBLISH_AOT</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -51,7 +51,7 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(AotTests)' == 'true'">
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 

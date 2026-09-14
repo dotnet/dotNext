@@ -222,7 +222,7 @@ public partial struct UserDataStorage
         const uint minSize = 8U;
         
         uint size;
-        if (RuntimeFeature.IsDynamicCodeSupported)
+        if (AppContext.IsJit)
         {
             size = (uint)Environment.ProcessorCount;
             size += size / 2U;

@@ -70,7 +70,7 @@ stages:
               publishWebProjects: false
               zipAfterPublish: false
               projects: $(AotTestProject)
-              arguments: --configuration Release --output $(AotTestFolder)/bin/aot -p:AotTests=true
+              arguments: --configuration Release --output $(AotTestFolder)/bin/aot -p:PublishAot=true
           - task: CmdLine@2
             displayName: Run AOT Tests
             inputs:

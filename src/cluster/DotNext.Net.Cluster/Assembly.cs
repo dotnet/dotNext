@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-#if DEBUG || AOT_TESTS
+#if DEBUG || PUBLISH_AOT
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DotNext.Tests")]
