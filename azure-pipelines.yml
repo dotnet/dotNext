@@ -137,7 +137,7 @@ stages:
               arguments: install --tool-path . dotnet-reportgenerator-globaltool
           - script: ./reportgenerator "-reports:$(Pipeline.Workspace)/coverage-windows/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-linux/coverage.cobertura.xml;$(Pipeline.Workspace)/coverage-macos/coverage.cobertura.xml" "-targetdir:$(Agent.TempDirectory)/MergedCoverage" -reporttypes:Cobertura
             displayName: Merge coverage reports
-          - task: PublishCodeCoverageResults@2
+          - task: PublishCodeCoverageResults@1
             displayName: 'Publish merged code coverage'
             inputs:
               codeCoverageTool: Cobertura
