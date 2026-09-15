@@ -252,7 +252,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     Debug.Assert(value is not null);
                     raiseEventHandlers = electionEventCopy.TrySetResult(value);
                     break;
-                case (true, false) when !ReferenceEquals(electionEventCopy.Task.Result, value):
+                case (true, false) when !electionEventCopy.Task.IsCompletedSuccessfully
+                                       || !ReferenceEquals(electionEventCopy.Task.Result, value):
                     Debug.Assert(value is not null);
                     newEvent = new();
                     newEvent.SetResult(value);
@@ -298,7 +299,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ValueTask result;
 
         // ensure that local member has been received
-        if (readinessProbe.Task.IsCompleted)
+        if (readinessProbe.Task.IsCompleted && state is not StandbyState<TMember> { Resumable: false })
         {
             result = ValueTask.CompletedTask;
         }
@@ -316,6 +317,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UnfreezeCoreAsync()
         {
+            // A removed member can be added again after its original readiness
+            // probe completed and its leadership waiters were faulted.
+            if (leadershipEvent.Task.IsFaulted)
+                Interlocked.Exchange(ref leadershipEvent, new(TaskCreationOptions.RunContinuationsAsynchronously));
+
             var newState = new FollowerState<TMember>(this) { ConsensusReached = true };
             await UpdateStateAsync(newState).ConfigureAwait(false);
             newState.StartServing(ElectionTimeout);

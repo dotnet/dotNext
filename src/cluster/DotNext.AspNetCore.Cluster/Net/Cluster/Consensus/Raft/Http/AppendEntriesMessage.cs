@@ -489,7 +489,12 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             Term = ParseTerm(response),
             Value = new()
             {
-                LastIndex = ParseHeader(response.Headers, LastIndexHeader, Int64Parser),
+                // Older peers do not provide this backtracking hint. Falling back
+                // to PrevLogIndex preserves the legacy one-entry decrement on rejection;
+                // successful replication uses the last index sent by the leader.
+                LastIndex = response.Headers.Contains(LastIndexHeader)
+                    ? ParseHeader(response.Headers, LastIndexHeader, Int64Parser)
+                    : PrevLogIndex,
                 Result = await HttpMessage.ParseEnumResponseAsync<HeartbeatResult>(response, token).ConfigureAwait(false),
             }
         };

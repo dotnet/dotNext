@@ -1,3 +1,5 @@
+extern alias RaftCore;
+using CoreConfigurationStorage = RaftCore::DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage;
 using System.Buffers.Binary;
 using System.Net;
 using System.Reflection;
@@ -17,6 +19,64 @@ using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 [Collection(TestCollections.WriteAheadLog)]
 public sealed class WriteAheadLogTests : Test
 {
+    [Theory(Timeout = 60000)]
+    [InlineData(4096, WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
+    [InlineData(16384, WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
+    [InlineData(4096, WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
+    [InlineData(16384, WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
+    public static async Task ExistingMetadataPageSizeIsPreserved(int pageSize, WriteAheadLog.MemoryManagementStrategy strategy)
+    {
+        var token = TestContext.Current.CancellationToken;
+        var directory = GetTempPath();
+        var metadata = Directory.CreateDirectory(Path.Combine(directory, "metadata"));
+        // A valid empty page, laid out by either the 4 KiB legacy format or a
+        // 16 KiB-page host. This also exercises cross-host reopening on 4 KiB CI.
+        await File.WriteAllBytesAsync(Path.Combine(metadata.FullName, "0"), new byte[pageSize], token);
+        var options = new WriteAheadLog.Options { Location = directory, MemoryManagement = strategy };
+        const int count = 1025;
+        await using (var wal = new WriteAheadLog(options, new ContextAwareStateMachine()))
+        {
+            for (var i = 1; i <= count; i++)
+                Equal(i, await wal.AppendAsync(new TestLogEntry($"entry-{i}") { Term = i }, token));
+            await wal.CommitAsync(count, token);
+            await wal.WaitForApplyAsync(count, token);
+            await wal.FlushAsync(token);
+        }
+
+        All(metadata.EnumerateFiles(), file => Equal(pageSize, file.Length));
+        await using var reopened = new WriteAheadLog(options, new ContextAwareStateMachine());
+        await reopened.InitializeAsync(token);
+        await reopened.ReadAsync(new LogEntryConsumer(async (entries, _, readToken) =>
+        {
+            Equal(count, entries.Count);
+            for (var i = 0; i < entries.Count; i++)
+            {
+                Equal(i + 1L, entries[i].Term);
+                Equal($"entry-{i + 1}", await entries[i].ToStringAsync(Encoding.UTF8, token: readToken));
+            }
+            return Missing.Value;
+        }), 1L, count, token);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(4097)]
+    [InlineData(8192)] // Individually valid, but inconsistent with the other page.
+    public static void InvalidMetadataPageSizeIsRejectedBeforeOpeningWal(int secondPageSize)
+    {
+        var directory = GetTempPath();
+        var metadata = Directory.CreateDirectory(Path.Combine(directory, "metadata"));
+        var first = Path.Combine(metadata.FullName, "0");
+        var second = Path.Combine(metadata.FullName, "1");
+        File.WriteAllBytes(first, new byte[4096]);
+        File.WriteAllBytes(second, new byte[secondPageSize]);
+        Throws<InvalidDataException>(() => new WriteAheadLog(new() { Location = directory }, new ContextAwareStateMachine()));
+        Equal(4096L, new FileInfo(first).Length);
+        Equal(secondPageSize, new FileInfo(second).Length);
+        False(File.Exists(Path.Combine(directory, "checkpoint")));
+        False(File.Exists(Path.Combine(directory, "state")));
+    }
+
     [Fact]
     public static async Task LockManager()
     {
@@ -446,7 +506,7 @@ public sealed class WriteAheadLogTests : Test
     {
         var dir = GetTempPath();
         await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOp(2));
-        IClusterConfigurationStorage<EndPoint> storage = new InMemoryClusterConfigurationStorage(EqualityComparer<EndPoint>.Default);
+        IClusterConfigurationStorage<EndPoint> storage = new CoreConfigurationStorage(EqualityComparer<EndPoint>.Default);
         wal.ConfigurationStorage = storage;
 
         var config = await storage.LoadConfigurationAsync(TestToken);

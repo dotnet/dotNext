@@ -17,6 +17,27 @@ partial class WriteAheadLog
         public const string LocationPrefix = "metadata";
 
         private readonly int MetadataEntryAlignedSize = GetAlignedSize(LogEntryMetadata.Size + hashSizeInBytes, manager.PageSize);
+
+        internal static int GetPageSize(DirectoryInfo location)
+        {
+            int? storedSize = null;
+            foreach (var file in location.EnumerateFiles())
+            {
+                if (!uint.TryParse(file.Name, provider: null, out _))
+                    continue;
+
+                var length = file.Length;
+                if (length is < Page.MinSize or > int.MaxValue || !long.IsPow2(length)
+                    || (storedSize.HasValue && storedSize.GetValueOrDefault() != length))
+                    throw new InvalidDataException(ExceptionMessages.InvalidWalMetadataPageSize);
+
+                storedSize = (int)length;
+            }
+
+            // Older WALs use 4 KiB metadata pages even on hosts with larger OS
+            // pages. Their page numbering must survive both upgrades and moves.
+            return storedSize ?? int.Max(Page.MinSize, Environment.SystemPageSize);
+        }
         
         private static int GetAlignedSize(int headerSize, int containerSize)
         {

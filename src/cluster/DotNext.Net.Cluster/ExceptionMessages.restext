@@ -19,3 +19,4 @@ BadCheckpointVersion=Checkpoint file version is not supported: {0}
 LogEntryHashMismatch=Log entry hash doesn't match
 MissingWalPage=WAL page {0} doesn't exist on the disk
 StateMachineIsNotRestored=State machine is not restored. Call RestoreAsync first.
+InvalidWalMetadataPageSize=WAL metadata pages must have the same power-of-two size of at least 4096 bytes

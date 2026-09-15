@@ -1,3 +1,5 @@
+extern alias RaftCore;
+using CoreMessageHandler = RaftCore::DotNext.Net.Cluster.Messaging.MessageHandler;
 namespace DotNext.Net.Cluster.Messaging;
 
 public sealed class MessageHandlerTests : Test
@@ -5,7 +7,7 @@ public sealed class MessageHandlerTests : Test
     [Fact]
     public static void MessageHandlerBuilder1()
     {
-        var handler = new MessageHandler.Builder()
+        var handler = new CoreMessageHandler.Builder()
             .Add<AddMessage, ResultMessage>(AddMessage.Name, static (sender, input, context, token) => Task.FromResult<ResultMessage>(input.Execute()), ResultMessage.Name)
             .Add<ResultMessage>(ResultMessage.Name, static (sender, input, context, token) => Task.CompletedTask)
             .Build();
@@ -21,7 +23,7 @@ public sealed class MessageHandlerTests : Test
     [Fact]
     public static void MessageHandlerBuilder2()
     {
-        var handler = new MessageHandler.Builder()
+        var handler = new CoreMessageHandler.Builder()
             .Add<AddMessage, ResultMessage>(AddMessage.Name, static (input, context, token) => Task.FromResult<ResultMessage>(input.Execute()), ResultMessage.Name)
             .Add<ResultMessage>(ResultMessage.Name, static (ResultMessage input, object context, CancellationToken token) => Task.CompletedTask)
             .Build();
@@ -37,7 +39,7 @@ public sealed class MessageHandlerTests : Test
     [Fact]
     public static void MessageHandlerBuilder3()
     {
-        var handler = new MessageHandler.Builder()
+        var handler = new CoreMessageHandler.Builder()
             .Add<AddMessage, ResultMessage>(AddMessage.Name, static (sender, input, token) => Task.FromResult<ResultMessage>(input.Execute()), ResultMessage.Name)
             .Add<ResultMessage>(ResultMessage.Name, static (ISubscriber sender, ResultMessage input, CancellationToken token) => Task.CompletedTask)
             .Build();
@@ -53,7 +55,7 @@ public sealed class MessageHandlerTests : Test
     [Fact]
     public static void MessageHandlerBuilder4()
     {
-        var handler = new MessageHandler.Builder()
+        var handler = new CoreMessageHandler.Builder()
             .Add<AddMessage, ResultMessage>(AddMessage.Name, static (input, token) => Task.FromResult<ResultMessage>(input.Execute()), ResultMessage.Name)
             .Add<ResultMessage>(ResultMessage.Name, static (input, token) => Task.CompletedTask)
             .Build();

@@ -390,7 +390,9 @@ partial class WriteAheadLog
 
                 // fallback - no THP/LP support
                 madvise = 0;
-                alignment = (uint)Environment.SystemPageSize;
+                // Legacy metadata pages may be smaller than an OS page. They
+                // cannot use discard/huge-page hints, but remain valid buffers.
+                alignment = (uint)int.Min(pageSize, Environment.SystemPageSize);
 
                 exit:
                 return alignment;
