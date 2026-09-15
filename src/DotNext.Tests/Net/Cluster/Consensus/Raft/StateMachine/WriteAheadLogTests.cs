@@ -19,42 +19,43 @@ using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 [Collection(TestCollections.WriteAheadLog)]
 public sealed class WriteAheadLogTests : Test
 {
-    [Theory]
+    [Theory(Timeout = 60000)]
     [InlineData(4096, WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
     [InlineData(16384, WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
     [InlineData(4096, WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
     [InlineData(16384, WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
     public static async Task ExistingMetadataPageSizeIsPreserved(int pageSize, WriteAheadLog.MemoryManagementStrategy strategy)
     {
+        var token = TestContext.Current.CancellationToken;
         var directory = GetTempPath();
         var metadata = Directory.CreateDirectory(Path.Combine(directory, "metadata"));
         // A valid empty page, laid out by either the 4 KiB legacy format or a
         // 16 KiB-page host. This also exercises cross-host reopening on 4 KiB CI.
-        await File.WriteAllBytesAsync(Path.Combine(metadata.FullName, "0"), new byte[pageSize], TestToken);
+        await File.WriteAllBytesAsync(Path.Combine(metadata.FullName, "0"), new byte[pageSize], token);
         var options = new WriteAheadLog.Options { Location = directory, MemoryManagement = strategy };
         const int count = 1025;
         await using (var wal = new WriteAheadLog(options, new ContextAwareStateMachine()))
         {
             for (var i = 1; i <= count; i++)
-                Equal(i, await wal.AppendAsync(new TestLogEntry($"entry-{i}") { Term = i }, TestToken));
-            await wal.CommitAsync(count, TestToken);
-            await wal.WaitForApplyAsync(count, TestToken);
-            await wal.FlushAsync(TestToken);
+                Equal(i, await wal.AppendAsync(new TestLogEntry($"entry-{i}") { Term = i }, token));
+            await wal.CommitAsync(count, token);
+            await wal.WaitForApplyAsync(count, token);
+            await wal.FlushAsync(token);
         }
 
         All(metadata.EnumerateFiles(), file => Equal(pageSize, file.Length));
         await using var reopened = new WriteAheadLog(options, new ContextAwareStateMachine());
-        await reopened.InitializeAsync(TestToken);
-        await reopened.ReadAsync(new LogEntryConsumer(async (entries, _, token) =>
+        await reopened.InitializeAsync(token);
+        await reopened.ReadAsync(new LogEntryConsumer(async (entries, _, readToken) =>
         {
             Equal(count, entries.Count);
             for (var i = 0; i < entries.Count; i++)
             {
                 Equal(i + 1L, entries[i].Term);
-                Equal($"entry-{i + 1}", await entries[i].ToStringAsync(Encoding.UTF8, token: token));
+                Equal($"entry-{i + 1}", await entries[i].ToStringAsync(Encoding.UTF8, token: readToken));
             }
             return Missing.Value;
-        }), 1L, count, TestToken);
+        }), 1L, count, token);
     }
 
     [Theory]

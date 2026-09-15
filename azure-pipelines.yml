@@ -132,7 +132,7 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              arguments: --configuration Debug --output Detailed --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
@@ -146,7 +146,7 @@ stages:
             inputs:
               command: test
               projects: $(AotTestProject)
-              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              arguments: --configuration Debug --output Detailed --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
               nobuild: false
               testRunTitle: 'Debug on MacOS (NoDynamicCode)'
               publishTestResults: true
