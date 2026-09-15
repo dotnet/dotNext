@@ -1,3 +1,5 @@
+extern alias RaftCore;
+using CoreMessageHandler = RaftCore::DotNext.Net.Cluster.Messaging.MessageHandler;
 using System.Diagnostics.CodeAnalysis;
 
 
@@ -7,7 +9,7 @@ namespace DotNext.Net.Cluster.Messaging;
 [Message<AddMessage>(AddMessage.Name)]
 [Message<SubtractMessage>(SubtractMessage.Name)]
 [Message<ResultMessage>(ResultMessage.Name)]
-public class TestMessageHandler : MessageHandler
+public class TestMessageHandler : CoreMessageHandler
 {
     internal int Result;
 

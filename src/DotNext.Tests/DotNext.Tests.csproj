@@ -30,7 +30,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
-    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
+    <!-- HTTP internals exposed to tests contain names also present in the core assembly. -->
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Aliases="global,RaftCore"/>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj"/>
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj"/>
     <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj"/>

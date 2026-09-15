@@ -1,3 +1,5 @@
+extern alias RaftCore;
+using CoreConfigurationStorage = RaftCore::DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage;
 using System.Buffers.Binary;
 using System.Net;
 using System.Reflection;
@@ -503,7 +505,7 @@ public sealed class WriteAheadLogTests : Test
     {
         var dir = GetTempPath();
         await using var wal = new WriteAheadLog(new() { Location = dir }, IStateMachine.CreateNoOp(2));
-        IClusterConfigurationStorage<EndPoint> storage = new InMemoryClusterConfigurationStorage(EqualityComparer<EndPoint>.Default);
+        IClusterConfigurationStorage<EndPoint> storage = new CoreConfigurationStorage(EqualityComparer<EndPoint>.Default);
         wal.ConfigurationStorage = storage;
 
         var config = await storage.LoadConfigurationAsync(TestToken);

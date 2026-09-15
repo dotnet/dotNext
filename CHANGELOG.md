@@ -7,6 +7,9 @@ DotNext.Net.Cluster:
 * Preserve the size of existing WAL metadata pages when reopening logs from older releases or hosts with a different system page size. Reject inconsistent page sizes before opening WAL files.
 * Allow a removed live member to receive replication and rejoin after its election waiters have faulted. Restore normal follower behavior and fresh leadership waiters on re-addition.
 
+DotNext.AspNetCore.Cluster:
+* Accept legacy Raft HTTP requests without a state machine version as version zero and responses without the last-index backtracking hint. Malformed explicit headers remain rejected, allowing rolling upgrades from 6.6.0 without relaxing version checks.
+
 # 09-11-2026
 <a href="https://www.nuget.org/packages/dotnext/6.7.2">DotNext 6.7.2</a>
 * Minor performance improvements of static extension methods declared in `AdvancedHelpers` class

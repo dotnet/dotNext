@@ -28,7 +28,11 @@ internal abstract class RaftHttpMessage : HttpMessage
         : base(headers)
     {
         ConsensusTerm = ParseHeader(headers, TermHeader, Int64Parser);
-        StateVersion = ParseHeader(headers, StateVersionHeader, Int32Parser);
+        // Peers predating state machine versioning implicitly use version zero.
+        // A present but malformed version must still fail protocol validation.
+        StateVersion = headers.ContainsKey(StateVersionHeader)
+            ? ParseHeader(headers, StateVersionHeader, Int32Parser)
+            : 0;
     }
 
     protected new void PrepareRequest(HttpRequestMessage request)
