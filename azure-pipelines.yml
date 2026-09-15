@@ -158,7 +158,6 @@ stages:
           - Windows
           - Linux
           - MacOS
-        condition: succeededOrFailed()
         pool:
           vmImage: ubuntu-latest
         steps:
