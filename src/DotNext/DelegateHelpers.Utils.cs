@@ -75,7 +75,7 @@ public static partial class DelegateHelpers
 
         private MethodPointer(void* pointer) => this.pointer = new(pointer);
 
-        public override string ToString() => new nuint(pointer).ToString("X");
+        public override string ToString() => pointer.ToString("X");
 
         public override bool Equals([NotNullWhen(true)] object? other)
             => other is MethodPointer methodPtr && methodPtr.pointer == pointer;
