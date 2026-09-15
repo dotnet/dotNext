@@ -50,11 +50,15 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         // Snapshot getter may throw if the state machine is not restored or initialized
         var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
+        var rootPath = new DirectoryInfo(configuration.Location);
+        rootPath.CreateIfNeeded();
+        var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
+        metadataLocation.CreateIfNeeded();
+        // Validate existing pages before opening or resizing any WAL files.
+        var metadataPageSize = MetadataPageManager.GetPageSize(metadataLocation);
         hash = configuration.CreateHashAlgorithm();
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
-        var rootPath = new DirectoryInfo(configuration.Location);
-        rootPath.CreateIfNeeded();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
         lockManager = new()
@@ -89,9 +93,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // page management
         {
-            var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
-            metadataLocation.CreateIfNeeded();
-
             var dataLocation = rootPath.GetSubdirectory(PagedBufferWriter.LocationPrefix);
             dataLocation.CreateIfNeeded();
 
@@ -99,20 +100,20 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             switch (configuration.MemoryManagement)
             {
                 case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsWindows() && configuration.NoBuffering:
-                    m = new WindowsDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new WindowsDirectPageManager(metadataLocation, metadataPageSize);
                     d = new WindowsDirectPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsLinux() && configuration.NoBuffering:
-                    m = new LinuxDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new LinuxDirectPageManager(metadataLocation, metadataPageSize);
                     d = new LinuxDirectPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.PrivateMemory:
-                    m = new AnonymousPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new AnonymousPageManager(metadataLocation, metadataPageSize);
                     d = new AnonymousPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.SharedMemory:
                 default:
-                    m = new MemoryMappedPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new MemoryMappedPageManager(metadataLocation, metadataPageSize);
                     d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }

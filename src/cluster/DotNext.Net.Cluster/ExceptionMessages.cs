@@ -49,6 +49,8 @@ internal static class ExceptionMessages
 
     internal static string BadCheckpointVersion(uint version) => Resources.Get().Format(version);
 
+    internal static string InvalidWalMetadataPageSize => (string)Resources.Get();
+
     internal static string LogEntryHashMismatch => (string)Resources.Get();
 
     internal static string MissingWalPage(uint pageIndex) => Resources.Get().Format(pageIndex);

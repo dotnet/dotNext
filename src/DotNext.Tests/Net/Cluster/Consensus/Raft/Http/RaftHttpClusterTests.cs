@@ -51,6 +51,56 @@ public sealed class RaftHttpClusterTests : RaftTest
             .Build();
     }
 
+    [Fact(Timeout = 60000)]
+    public static async Task RemovedLiveMemberCanRejoin()
+    {
+        var token = TestContext.Current.CancellationToken;
+        static Dictionary<string, string> Configuration(int port, bool coldStart) => new()
+        {
+            ["partitioning"] = "false",
+            ["publicEndPoint"] = $"http://localhost:{port}",
+            ["coldStart"] = coldStart.ToString(),
+            ["requestTimeout"] = "00:00:05",
+        };
+
+        using var host1 = CreateHost<Startup>(3262, Configuration(3262, true));
+        using var host2 = CreateHost<Startup>(3263, Configuration(3263, false));
+        using var host3 = CreateHost<Startup>(3264, Configuration(3264, false));
+        await host1.StartAsync(token);
+        await host2.StartAsync(token);
+        await host3.StartAsync(token);
+        var leader = GetLocalClusterView(host1);
+        var second = GetLocalClusterView(host2);
+        var removed = GetLocalClusterView(host3);
+        await leader.WaitForLeaderAsync(DefaultTimeout, token);
+        True(await leader.AddMemberAsync(second.LocalMemberAddress, token));
+        True(await leader.AddMemberAsync(removed.LocalMemberAddress, token));
+        await removed.Readiness.WaitAsync(token);
+
+        True(await leader.RemoveMemberAsync(removed.LocalMemberAddress, token));
+        await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, token);
+        True(await leader.AddMemberAsync(removed.LocalMemberAddress, token));
+        await leader.ForceReplicationAsync(token);
+        var index = leader.AuditTrail.LastCommittedEntryIndex;
+        // Catch-up applies the removal before receiving the re-addition. The old
+        // election task has faulted, but subsequent AppendEntries must still work.
+        await removed.AuditTrail.WaitForApplyAsync(index, token).AsTask().WaitAsync(DefaultTimeout, token);
+        Equal(leader.LocalMemberAddress, ((UriEndPoint)removed.Leader.EndPoint).Uri);
+        await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, token);
+        await removed.AuditTrail.WaitForApplyAsync(leader.AuditTrail.LastCommittedEntryIndex, token)
+            .AsTask().WaitAsync(DefaultTimeout, token);
+
+        using var leadershipWaitCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var leadershipWait = removed.WaitForLeadershipAsync(leadershipWaitCancellation.Token);
+        False(leadershipWait.IsCompleted);
+        await leadershipWaitCancellation.CancelAsync();
+        await ThrowsAnyAsync<OperationCanceledException>(leadershipWait);
+
+        await host3.StopAsync(token);
+        await host2.StopAsync(token);
+        await host1.StopAsync(token);
+    }
+
     [Fact]
     public static async Task CommunicationWithLeader()
     {
