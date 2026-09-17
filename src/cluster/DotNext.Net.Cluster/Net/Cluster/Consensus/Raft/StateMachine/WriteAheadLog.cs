@@ -73,19 +73,22 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         measurementTags = configuration.MeasurementTags;
 
         // checkpoint
-        long lastReliablyWrittenEntryIndex;
         checkpoint = new(rootPath, out var version);
         switch (version)
         {
             case CheckpointVersion0 cp:
-                lastReliablyWrittenEntryIndex = cp.Checkpoint;
+                LastEntryIndex = LastCommittedEntryIndex = long.Max(cp.Checkpoint, snapshotIndex);
+                break;
+            case CheckpointVersion1 cp:
+                LastEntryIndex = cp.LastIndex;
+                LastCommittedEntryIndex = long.Max(cp.CommitIndex, snapshotIndex);
                 break;
             default:
                 checkpoint.Dispose();
                 throw new UnsupportedCheckpointVersionException(checkpoint.Version);
         }
         
-        (stateMachine as NoOpStateMachine)?.SetLastCommittedIndex(lastReliablyWrittenEntryIndex);
+        (stateMachine as NoOpStateMachine)?.SetLastCommittedIndex(LastCommittedEntryIndex);
         
         // page management
         {
@@ -120,13 +123,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             metadataPages = new(m, hash?.HashLengthInBytes ?? 0);
             dataPages = new(d)
             {
-                LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
+                LastWrittenAddress = metadataPages.TryGetMetadata(LastEntryIndex, out var metadata)
                     ? metadata.End
                     : 0UL,
             };
         }
         
-        LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
         applyTrigger = new();
         appliedEvent = new()
         {

@@ -51,7 +51,7 @@ partial class WriteAheadLog
                         await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
 
                         // everything up to toIndex is flushed, save the commit index
-                        await checkpoint.UpdateAsync<CheckpointVersion0>(new(newIndex), token).ConfigureAwait(false);
+                        await checkpoint.UpdateAsync<CheckpointVersion1>(new(newIndex, newIndex), token).ConfigureAwait(false);
                         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
                     }
                     finally

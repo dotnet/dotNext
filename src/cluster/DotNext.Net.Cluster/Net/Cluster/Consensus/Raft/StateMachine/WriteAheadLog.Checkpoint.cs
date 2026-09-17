@@ -14,10 +14,10 @@ partial class WriteAheadLog
     [StructLayout(LayoutKind.Auto)]
     private struct Checkpoint : IDisposable
     {
-        private const uint CurrentVersion = CheckpointVersion0.Version;
+        private const uint CurrentVersion = CheckpointVersion1.Version;
         
         private const int VersionLength = sizeof(uint);
-        private const int MaxSize = CheckpointVersion0.Size + VersionLength;
+        private const int MaxSize = CheckpointVersion1.Size + VersionLength;
         private const string FileName = "checkpoint";
 
         private readonly SafeFileHandle handle;
@@ -38,16 +38,19 @@ partial class WriteAheadLog
                         Debug.Assert(CurrentVersion == CheckpointVersion0.Version);
                         
                         Version = CurrentVersion;
-                        checkpoint = new CheckpointVersion0(checkpoint: 0L);
+                        checkpoint = new CheckpointVersion1(commitIndex: 0L, lastIndex: 0L);
                         break;
-                    case sizeof(long):
+                    case CheckpointVersion0.Size:
                         Version = CheckpointVersion0.Version;
                         checkpoint = new CheckpointVersion0(BinaryPrimitives.ReadInt64LittleEndian(readBuf));
                         break;
                     default:
-                        checkpoint = (Version = BinaryPrimitives.ReadUInt32LittleEndian(readBuf)) switch
+                        Version = BinaryPrimitives.ReadUInt32LittleEndian(readBuf);
+                        readBuf = readBuf.Slice(VersionLength);
+                        checkpoint = Version switch
                         {
-                            CheckpointVersion0.Version => CheckpointVersion0.Parse(readBuf.Slice(VersionLength)),
+                            CheckpointVersion0.Version => CheckpointVersion0.Parse(readBuf),
+                            CheckpointVersion1.Version => CheckpointVersion1.Parse(readBuf),
                             _ => null
                         };
 
@@ -76,8 +79,6 @@ partial class WriteAheadLog
     
     private interface IVersionedCheckpoint
     {
-        long Checkpoint { get; }
-        
         static abstract uint Version { get; }
     }
 
@@ -102,6 +103,35 @@ partial class WriteAheadLog
         }
 
         public long Checkpoint => checkpoint;
+
+        static uint IVersionedCheckpoint.Version => Version;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct CheckpointVersion1(long commitIndex, long lastIndex) : IBinaryFormattable<CheckpointVersion1>, IVersionedCheckpoint
+    {
+        public const uint Version = 1;
+        public const int Size = sizeof(long) + sizeof(long);
+
+        static int IBinaryFormattable<CheckpointVersion1>.Size => Size;
+        
+        public void Format(scoped Span<byte> destination)
+        {
+            var writer = new SpanWriter<byte>(destination);
+            writer.WriteLittleEndian(commitIndex);
+            writer.WriteLittleEndian(lastIndex);
+        }
+
+        public static CheckpointVersion1 Parse(scoped ReadOnlySpan<byte> source)
+        {
+            var reader = new SpanReader<byte>(source);
+            return new(reader.ReadLittleEndian<long>(),
+                reader.ReadLittleEndian<long>());
+        }
+
+        public long CommitIndex => commitIndex;
+
+        public long LastIndex => lastIndex;
 
         static uint IVersionedCheckpoint.Version => Version;
     }
