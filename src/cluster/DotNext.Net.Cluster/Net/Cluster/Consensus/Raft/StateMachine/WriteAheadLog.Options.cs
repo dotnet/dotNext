@@ -205,5 +205,11 @@ partial class WriteAheadLog
             get;
             init;
         }
+
+        public bool FlushOnCommit
+        {
+            get => !field;
+            init => field = !value;
+        }
     }
 }

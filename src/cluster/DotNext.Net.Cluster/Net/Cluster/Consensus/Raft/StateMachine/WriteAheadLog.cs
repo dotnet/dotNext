@@ -80,8 +80,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 LastEntryIndex = LastCommittedEntryIndex = long.Max(cp.Checkpoint, snapshotIndex);
                 break;
             case CheckpointVersion1 cp:
-                LastEntryIndex = cp.LastIndex;
-                LastCommittedEntryIndex = long.Max(cp.CommitIndex, snapshotIndex);
+                LastEntryIndex = long.Max(LastCommittedEntryIndex = long.Max(cp.CommitIndex, snapshotIndex), cp.LastIndex);
                 break;
             default:
                 checkpoint.Dispose();
@@ -144,6 +143,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             {
                 flushTrigger = new(initialState: false);
                 flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, out flushCompleted), lifetimeToken);
+                flushOnCommit = configuration.FlushOnCommit;
             }
             else if (interval == InfiniteTimeSpan)
             {

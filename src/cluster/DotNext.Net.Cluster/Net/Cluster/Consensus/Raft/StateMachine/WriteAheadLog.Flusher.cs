@@ -14,6 +14,7 @@ partial class WriteAheadLog
     private readonly AsyncAutoResetEventSlim? flushTrigger, flushCompleted;
     private readonly Task flusherTask;
     private readonly WeakReference<Task?> cleanupTask = new(target: null, trackResurrection: false);
+    private readonly bool flushOnCommit;
     
     private Checkpoint checkpoint;
     private long commitIndex; // Commit lock protects modification of this field
