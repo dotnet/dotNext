@@ -266,7 +266,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place extra element.</exception>
     public ref T Add()
     {
-        ref var result = ref MemoryMarshal.GetReference(InternalGetSpan(1));
+        ref T result = ref MemoryMarshal.GetReference(InternalGetSpan(1));
         position += 1;
         return ref result;
     }
