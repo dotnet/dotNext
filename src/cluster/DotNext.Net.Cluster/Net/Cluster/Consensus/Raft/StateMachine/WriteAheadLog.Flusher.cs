@@ -38,12 +38,13 @@ partial class WriteAheadLog
 
             while (!token.IsCancellationRequested && backgroundTaskFailure is null)
             {
-                var newSnapshot = SnapshotIndex;
-                var lastCommittedIndex = LastCommittedEntryIndex;
+                var newSnapshot = SnapshotIndex; // everything is flushed and committed up to this index
+                var lastCommittedIndex = long.Max(newSnapshot, LastCommittedEntryIndex);
                 var currentState = flusherState.Value;
-                var newIndex = LastEntryIndex;
+                var newIndex = long.Max(LastEntryIndex, newSnapshot);
+                var flushFrom = long.Max(newSnapshot + 1L, currentState.UnflushedIndex);
                 
-                if (newIndex >= currentState.UnflushedIndex || lastCommittedIndex != currentState.FlushedCommitIndex)
+                if (newIndex >= flushFrom || lastCommittedIndex != currentState.FlushedCommitIndex)
                 {
                     // Ensure that the flusher is not running with the snapshot installation process concurrently
                     lockManager.SetCallerInformation("Flush Pages");
@@ -52,39 +53,40 @@ partial class WriteAheadLog
                     // Can be modified by AppendAsync which supports rewriting of the tail,
                     // that's why we need to read it again
                     currentState = flusherState.Value;
-                    newIndex = LastEntryIndex;
+                    newIndex = long.Max(LastEntryIndex, newSnapshot);
+                    flushFrom = long.Max(newSnapshot + 1L, currentState.UnflushedIndex);
                     var ts = default(Timestamp);
                     try
                     {
-                        if (newIndex >= currentState.UnflushedIndex)
+                        if (newIndex >= flushFrom)
                         {
                             ts = new();
-                            await Flush(currentState.UnflushedIndex, newIndex, token).ConfigureAwait(false);
+                            await FlushAsync(flushFrom, newIndex, token).ConfigureAwait(false);
 
                             // everything up to newIndex is flushed, save the commit index
                             await checkpoint.UpdateAsync<CheckpointVersion1>(new(lastCommittedIndex, newIndex), token)
                                 .ConfigureAwait(false);
-                            
-                            currentState = new()
-                            {
-                                UnflushedIndex = long.Max(flusherOldSnapshot = newSnapshot, newIndex) + 1L,
-                                FlushedCommitIndex = lastCommittedIndex,
-                            };
-                            flusherState.Write(in currentState);
+
+                            currentState.UnflushedIndex = newIndex + 1L;
                         }
                         else if (lastCommittedIndex != currentState.FlushedCommitIndex)
                         {
-                            Debug.Assert(newIndex == currentState.UnflushedIndex - 1L);
-
                             ts = new();
                             
                             // update commit index only
                             await checkpoint.UpdateAsync<CheckpointVersion1>(new(lastCommittedIndex, newIndex), token)
                                 .ConfigureAwait(false);
 
-                            using var scope = flusherState.EnterLock();
-                            scope.Value.FlushedCommitIndex = lastCommittedIndex;
+                            currentState.UnflushedIndex = flushFrom;
                         }
+                        else
+                        {
+                            goto exit;
+                        }
+
+                        currentState.FlushedCommitIndex = lastCommittedIndex;
+                        flusherState.Write(in currentState);
+                        exit: ;
                     }
                     finally
                     {
@@ -118,7 +120,7 @@ partial class WriteAheadLog
         }
     }
 
-    private Task Flush(long fromIndex, long toIndex, CancellationToken token)
+    private Task FlushAsync(long fromIndex, long toIndex, CancellationToken token)
     {
         var metadataTask = metadataPages.FlushAsync(fromIndex, toIndex, token).AsTask();
 
@@ -139,7 +141,7 @@ partial class WriteAheadLog
         var registration = linkedTokenSource.Token.UnsafeRegister(Signal, flushCompleted);
         try
         {
-            while (checker.IsNotFlushed(flusherState.Value))
+            while (checker.IsNotFlushed(flusherState.Read<long, TChecker>()))
             {
                 await flushCompleted.WaitAsync().ConfigureAwait(false);
                 if (linkedTokenSource.Token.IsCancellationRequested)
@@ -307,22 +309,28 @@ partial class WriteAheadLog
         public long UnflushedIndex, FlushedCommitIndex;
     }
     
-    private interface IFlushStateChecker
+    private interface IFlushStateChecker : Atomic<FlushState>.IFieldReference<long>
     {
-        bool IsNotFlushed(FlushState state);
+        bool IsNotFlushed(long index);
     }
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct FlushedIndexChecker(long index) : IFlushStateChecker
     {
-        bool IFlushStateChecker.IsNotFlushed(FlushState state)
-            => state.UnflushedIndex < index;
+        bool IFlushStateChecker.IsNotFlushed(long unflushedIndex)
+            => unflushedIndex < index;
+
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.Read(in FlushState value)
+            => ref value.UnflushedIndex;
     }
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct FlushedCommitIndexChecker(long commitIndex) : IFlushStateChecker
     {
-        bool IFlushStateChecker.IsNotFlushed(FlushState state)
-            => state.FlushedCommitIndex < commitIndex;
+        bool IFlushStateChecker.IsNotFlushed(long flushedCommitIndex)
+            => flushedCommitIndex < commitIndex;
+
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.Read(in FlushState value)
+            => ref value.FlushedCommitIndex;
     }
 }
