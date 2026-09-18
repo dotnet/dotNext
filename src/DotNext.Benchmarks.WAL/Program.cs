@@ -25,6 +25,7 @@ static async Task DotNextWalPerformanceTest(CancellationToken token)
         Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
         ChunkSize = 512 * 1024, // page size is 512 KB
         MemoryManagement = WriteAheadLog.MemoryManagementStrategy.PrivateMemory,
+        FlushOnCommit = false,
     };
 
     var wal = new WriteAheadLog(options, new NoOpStateMachine());
