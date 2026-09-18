@@ -35,7 +35,7 @@ partial class WriteAheadLog
                 switch (RandomAccess.Read(readHandle, readBuf, 0L))
                 {
                     case 0:
-                        Debug.Assert(CurrentVersion == CheckpointVersion0.Version);
+                        Debug.Assert(CurrentVersion == CheckpointVersion1.Version);
                         
                         Version = CurrentVersion;
                         checkpoint = new CheckpointVersion1(commitIndex: 0L, lastIndex: 0L);

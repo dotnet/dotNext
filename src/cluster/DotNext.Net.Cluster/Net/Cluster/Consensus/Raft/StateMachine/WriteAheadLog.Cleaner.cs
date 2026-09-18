@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
