@@ -10,7 +10,7 @@ partial struct Atomic<T>
     /// <typeparam name="TResult">The type of the field.</typeparam>
     /// <typeparam name="TReference">The field reference.</typeparam>
     /// <returns>The field value.</returns>
-    public TResult Read<TResult, TReference>()
+    public readonly TResult Read<TResult, TReference>()
         where TReference : IFieldReference<TResult>, allows ref struct
     {
         var spinner = new SpinWait();
