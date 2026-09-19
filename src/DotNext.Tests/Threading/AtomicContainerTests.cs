@@ -160,13 +160,13 @@ public sealed class AtomicContainerTests : Test
 
     private struct XReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long Atomic<Point>.IFieldReference<long>.Read(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetFieldReference(in Point value)
             => ref value.X;
     }
     
     private struct YReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long Atomic<Point>.IFieldReference<long>.Read(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetFieldReference(in Point value)
             => ref value.Y;
     }
 }

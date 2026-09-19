@@ -29,7 +29,7 @@ partial struct Atomic<T>
         /// </summary>
         /// <param name="value">The underlying value.</param>
         /// <returns>The field reference.</returns>
-        public static abstract ref readonly TResult Read(in T value);
+        public static abstract ref readonly TResult GetFieldReference(in T value);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -37,6 +37,6 @@ partial struct Atomic<T>
         where TReader : IFieldReference<TResult>, allows ref struct
     {
         static void IReadOperation<TResult>.Invoke(in T input, out TResult output)
-            => output = TReader.Read(in input);
+            => output = TReader.GetFieldReference(in input);
     }
 }

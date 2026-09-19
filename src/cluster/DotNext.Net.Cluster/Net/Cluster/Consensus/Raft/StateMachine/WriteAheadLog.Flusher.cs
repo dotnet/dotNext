@@ -320,7 +320,7 @@ partial class WriteAheadLog
         bool IFlushStateChecker.IsNotFlushed(long unflushedIndex)
             => unflushedIndex < index;
 
-        static ref readonly long Atomic<FlushState>.IFieldReference<long>.Read(in FlushState value)
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetFieldReference(in FlushState value)
             => ref value.UnflushedIndex;
     }
 
@@ -330,7 +330,7 @@ partial class WriteAheadLog
         bool IFlushStateChecker.IsNotFlushed(long flushedCommitIndex)
             => flushedCommitIndex < commitIndex;
 
-        static ref readonly long Atomic<FlushState>.IFieldReference<long>.Read(in FlushState value)
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetFieldReference(in FlushState value)
             => ref value.FlushedCommitIndex;
     }
 }
