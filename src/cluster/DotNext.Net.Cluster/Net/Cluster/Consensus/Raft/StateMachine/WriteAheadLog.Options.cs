@@ -205,5 +205,23 @@ partial class WriteAheadLog
             get;
             init;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating that every appended or committed log entry must be flushed
+        /// to disk before <see cref="CommitAsync"/> method returns.
+        /// </summary>
+        /// <remarks>
+        /// Raft requires that even an uncommitted log entry survive a restart, because it may be committed
+        /// later by a new leader. Enabling this option relaxes the durability requirement for the commit
+        /// index itself (its checkpoint value may be lost and recomputed on restart) while guaranteeing
+        /// that the log entry content is never lost. This option is respected only when
+        /// <see cref="FlushInterval"/> is <see cref="TimeSpan.Zero"/>; otherwise it's ignored and log
+        /// entries are flushed according to the configured interval.
+        /// </remarks>
+        public bool FlushOnCommit
+        {
+            get => !field;
+            init => field = !value;
+        }
     }
 }

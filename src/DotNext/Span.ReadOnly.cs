@@ -412,32 +412,32 @@ partial class Span
 
         return false;
     }
+}
 
-    [StructLayout(LayoutKind.Sequential)]
-    private ref struct ReadOnlySpanList2<T> : IReadOnlySpanList<T>
+[StructLayout(LayoutKind.Sequential)]
+file ref struct ReadOnlySpanList2<T> : IReadOnlySpanList<T>
+{
+    private ReadOnlySpan<T> span1, span2;
+
+    int IReadOnlySpanList<T>.Count => 2;
+
+    public ReadOnlySpan<T> this[int index]
     {
-        private ReadOnlySpan<T> span1, span2;
-
-        int IReadOnlySpanList<T>.Count => 2;
-
-        public ReadOnlySpan<T> this[int index]
-        {
-            get => Unsafe.Add(ref span1, index);
-            init => Unsafe.Add(ref span1, index) = value;
-        }
+        get => Unsafe.Add(ref span1, index);
+        init => Unsafe.Add(ref span1, index) = value;
     }
-    
-    [StructLayout(LayoutKind.Sequential)]
-    private ref struct ReadOnlySpanList3<T> : IReadOnlySpanList<T>
+}
+
+[StructLayout(LayoutKind.Sequential)]
+file ref struct ReadOnlySpanList3<T> : IReadOnlySpanList<T>
+{
+    private ReadOnlySpan<T> span1, span2, span3;
+
+    int IReadOnlySpanList<T>.Count => 3;
+
+    public ReadOnlySpan<T> this[int index]
     {
-        private ReadOnlySpan<T> span1, span2, span3;
-
-        int IReadOnlySpanList<T>.Count => 3;
-
-        public ReadOnlySpan<T> this[int index]
-        {
-            get => Unsafe.Add(ref span1, index);
-            init => Unsafe.Add(ref span1, index) = value;
-        }
+        get => Unsafe.Add(ref span1, index);
+        init => Unsafe.Add(ref span1, index) = value;
     }
 }

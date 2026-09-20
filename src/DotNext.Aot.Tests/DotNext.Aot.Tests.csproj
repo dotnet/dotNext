@@ -7,7 +7,7 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <PublishAot>true</PublishAot>
+    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <InvariantGlobalization>true</InvariantGlobalization>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -27,14 +27,44 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext\DotNext.csproj"/>
+    <!--Core Classes-->
+    <Compile Include="..\DotNext.Tests\Test.cs" Link="Test.cs" />
+    <Compile Include="..\DotNext.Tests\Point.cs" Link="Point.cs" />
+    <Compile Include="..\DotNext.Tests\TestCollections.cs" Link="TestCollections.cs" />
+    <Compile Include="..\DotNext.Tests\DelegateHelpersTests.cs" Link="DelegateHelpersTests.cs" />
+    <Compile Include="..\DotNext.Tests\ResultTests.cs" Link="ResultTests.cs" />
+    <Compile Include="..\DotNext.Tests\OptionalTests.cs" Link="OptionalTests.cs" />
+    <Compile Include="..\DotNext.Tests\SpanTests.cs" Link="SpanTests.cs" />
+    <Compile Include="..\DotNext.Tests\FunctionalInterfacesTests.cs" Link="FunctionalInterfacesTests.cs" />
+    <Compile Include="..\DotNext.Tests\BasicExtensionsTests.cs" Link="BasicExtensionsTests.cs" />
+    <Compile Include="..\DotNext.Tests\Buffers\SpanOwnerTests.cs" Link="Buffers\SpanOwnerTests.cs" />
+    <Compile Include="..\DotNext.Tests\Threading\AtomicContainerTests.cs" Link="Threading\AtomicContainerTests.cs" />
+    <!--Runtime Intrinsics-->
+    <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\VariantTests.cs" Link="Runtime\VariantTests.cs" />
+    <!--Raft Tests-->
+    <Compile Include="..\DotNext.Tests\IO\TestTransferObject.cs" Link="IO\TestTransferObject.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\RaftTest.cs" Link="Net\Cluster\Consensus\Raft\RaftTest.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\NetworkTransport\TransportTestSuite.cs" Link="Net\Cluster\Consensus\Raft\NetworkTransport\TransportTestSuite.cs" />
+    <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\NetworkTransport\ConnectionOriented\Tcp\TcpTransportTests.cs" Link="Net\Cluster\Consensus\Raft\NetworkTransport\ConnectionOriented\Tcp\TcpTransportTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <EmbeddedResource Include="..\DotNext.Tests\node.pfx">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
     
   <ItemGroup>
     <CodeCoverageExclude Include="**/*.g.cs" />
+    <RuntimeHostConfigurationOption Include="DotNext.Buffers.NativeAllocation" Value="False" Trim="True" />
+    <RuntimeHostConfigurationOption Include="DotNext.IsDynamicCodeAllowed" Value="False" Trim="True" />
   </ItemGroup>
+
 </Project>

@@ -149,4 +149,24 @@ public sealed class AtomicContainerTests : Test
         False(atomic.IsWriteLockHeld);
         Equal(42L, atomic.Value);
     }
+
+    [Fact]
+    public static void ReadField()
+    {
+        var atomic = new Atomic<Point> { Value = new() { X = 10L, Y = 20L } };
+        Equal(10L, atomic.Read<long, XReference>());
+        Equal(20L, atomic.Read<long, YReference>());
+    }
+
+    private struct XReference : Atomic<Point>.IFieldReference<long>
+    {
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetFieldReference(in Point value)
+            => ref value.X;
+    }
+    
+    private struct YReference : Atomic<Point>.IFieldReference<long>
+    {
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetFieldReference(in Point value)
+            => ref value.Y;
+    }
 }

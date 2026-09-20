@@ -24,7 +24,7 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ReadOnlySpanActionHelpers<TItem, TArg>.Create(target: null, (nint)ptr)
                 : MethodPointer.Create<TItem, TArg>(ptr);
         }
@@ -43,7 +43,7 @@ partial class DelegateHelpers
         {
             ArgumentNullException.ThrowIfNull(ptr);
 
-            return RuntimeFeature.IsDynamicCodeCompiled
+            return AppContext.IsJit
                 ? ReadOnlySpanActionHelpers<TItem, TArg>.Create(obj, (nint)ptr)
                 : MethodPointer<T>.Create<TItem, TArg>(ptr, obj);
         }

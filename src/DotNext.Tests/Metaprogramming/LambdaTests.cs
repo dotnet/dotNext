@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -35,7 +34,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             Assign(result, new AsyncResultExpression(arg1 + arg2, false));
         });
-        Equal(42, lambda.Compile().Invoke(40, 2).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(42, lambda.Compile().Invoke(40, 2).GetResult(TestToken));
     }
 
     [Fact]
@@ -72,7 +71,7 @@ public sealed class LambdaTests : Test
             var (arg1, arg2) = fun;
             Assign(result, new AsyncResultExpression(arg1 + arg2, true));
         });
-        Equal(42, lambda.Compile().Invoke(40, 2).AsTask().GetResult(TimeSpan.FromMinutes(1)));
+        Equal(42, lambda.Compile().Invoke(40, 2).AsTask().GetResult(TestToken));
     }
 
     private static Task<long> Sum(long x, long y)
@@ -81,11 +80,9 @@ public sealed class LambdaTests : Test
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public static void SimpleAsyncLambda(bool usePooling)
+    public static void SimpleAsyncFunc(bool usePooling)
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
-        
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         var lambda = AsyncLambda<Func<long, long, Task<long>>>(usePooling, fun =>
         {
             var (arg1, arg2) = fun;
@@ -94,7 +91,31 @@ public sealed class LambdaTests : Test
             Return(temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
-        Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(35L, fn(5L, 10L).GetResult(TestToken));
+    }
+    
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static void SimpleAsyncAction(bool usePooling)
+    {
+        var sumMethod = new Func<long, long, StrongBox<long>, Task>(SumAction).Method;
+        
+        var lambda = AsyncLambda<Func<long, long, StrongBox<long>, Task>>(usePooling, fun =>
+        {
+            var (arg1, arg2, arg3) = fun;
+            Await(Expression.Call(null, sumMethod, arg1, arg2, arg3), configureAwait: true);
+        });
+        var fn = lambda.Compile();
+        var result = new StrongBox<long>();
+        fn(5L, 10L, result).Wait(TestToken);
+        Equal(15L, result.Value);
+
+        static Task SumAction(long x, long y, StrongBox<long> result)
+        {
+            result.Value = x + y;
+            return Task.CompletedTask;
+        }
     }
 
     [Theory]
@@ -102,8 +123,7 @@ public sealed class LambdaTests : Test
     [InlineData(AsyncLambdaFlags.UseTaskPooling)]
     public static void SimpleUntypedAsyncLambda(AsyncLambdaFlags flags)
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
 
         var lambda = AsyncLambda([typeof(long), typeof(long)], typeof(long), flags, fun =>
         {
@@ -114,7 +134,7 @@ public sealed class LambdaTests : Test
         });
         var fn = lambda.Compile() as Func<long, long, Task<long>>;
         NotNull(fn);
-        Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(35L, fn(5L, 10L).GetResult(TestToken));
     }
 
     [Fact]
@@ -139,8 +159,7 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void SimpleAsyncLambdaImplicitResult()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
@@ -150,14 +169,13 @@ public sealed class LambdaTests : Test
             Assign(result, temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
-        Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(35L, fn(5L, 10L).GetResult(TestToken));
     }
 
     [Fact]
     public static void SimpleAsyncLambdaImplicitResult2()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
@@ -168,14 +186,13 @@ public sealed class LambdaTests : Test
             Return();
         });
         var fn = lambda.Compile();
-        Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(35L, fn(5L, 10L).GetResult(TestToken));
     }
 
     [Fact]
     public static void SimpleAsyncLambdaValueTask()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, long, ValueTask<long>>>(fun =>
         {
@@ -185,14 +202,13 @@ public sealed class LambdaTests : Test
             Return(temp + 20L.Quoted);
         });
         var fn = lambda.Compile();
-        Equal(35L, fn(5L, 10L).AsTask().GetResult(TimeSpan.FromMinutes(1)));
+        Equal(35L, fn(5L, 10L).AsTask().GetResult(TestToken));
     }
 
     [Fact]
     public static void AsyncLambdaWithConditional()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
         {
@@ -208,15 +224,14 @@ public sealed class LambdaTests : Test
                 .End();
         });
         var fn = lambda.Compile();
-        Equal(25L, fn(15L).GetResult(TimeSpan.FromMinutes(1)));
-        Equal(99L, fn(9L).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(25L, fn(15L).GetResult(TestToken));
+        Equal(99L, fn(9L).GetResult(TestToken));
     }
 
     [Fact]
     public static void TryFinallyAsync()
     {
-        var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        NotNull(sumMethod);
+        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
         
         var lambda = AsyncLambda<Func<long[], Task<long>>>(fun =>
         {
@@ -229,8 +244,8 @@ public sealed class LambdaTests : Test
             Return(result);
         });
         var fn = lambda.Compile();
-        Equal(15L, fn([3L, 2L, 10L]).GetResult(TimeSpan.FromMinutes(1)));
-        Equal(5, fn([3L, 2L, 0L, 10L]).GetResult(TimeSpan.FromMinutes(1)));
+        Equal(15L, fn([3L, 2L, 10L]).GetResult(TestToken));
+        Equal(5, fn([3L, 2L, 0L, 10L]).GetResult(TestToken));
     }
 
     private sealed class FinallyCallback : StrongBox<bool>
@@ -271,9 +286,9 @@ public sealed class LambdaTests : Test
             .End();
         });
         var fn = lambda.Compile();
-        Equal(5L, fn(5L).GetResult(TimeSpan.FromMinutes(1)));
-        Equal(-42L, fn(80L).GetResult(TimeSpan.FromMinutes(1)));
-        var exception = fn(-10L).GetResult(TimeSpan.FromMinutes(1)).Error;
+        Equal(5L, fn(5L).GetResult(TestToken));
+        Equal(-42L, fn(80L).GetResult(TestToken));
+        var exception = fn(-10L).GetResult(TestToken).Error;
         IsType<InvalidOperationException>(exception);
     }
 
@@ -288,7 +303,7 @@ public sealed class LambdaTests : Test
             });
         });
         var fn = lambda.Compile();
-        Null(fn([1L]).GetResult(TimeSpan.FromMinutes(1)).Value);
+        Null(fn([1L]).GetResult(TestToken).Value);
     }
 
     [Fact]
@@ -302,7 +317,7 @@ public sealed class LambdaTests : Test
             Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Quoted));
             Return(typeof(int).CallStatic(nameof(int.Parse), result));
         }).Compile();
-        Equal(423, lambda().GetResult(TimeSpan.FromMinutes(1)));
+        Equal(423, lambda().GetResult(TestToken));
     }
 
     [Fact]

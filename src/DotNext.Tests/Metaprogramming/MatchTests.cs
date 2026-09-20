@@ -36,11 +36,6 @@ public sealed class MatchTests : Test
         Equal(-1, lambda(3));
     }
 
-    private struct Point
-    {
-        internal long X, Y;
-    }
-
     [Fact]
     public static void StructMatch()
     {

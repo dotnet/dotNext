@@ -277,9 +277,11 @@ public sealed class WriteAheadLogTests : Test
     }
 
     [Theory]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
-    public static async Task Commit(WriteAheadLog.MemoryManagementStrategy strategy)
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, false)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, true)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory, false)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory, true)]
+    public static async Task Commit(WriteAheadLog.MemoryManagementStrategy strategy, bool flushOnCommit)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -292,8 +294,9 @@ public sealed class WriteAheadLogTests : Test
             Location = GetTempPath(),
             FlushInterval = InfiniteTimeSpan,
             MemoryManagement = strategy,
+            FlushOnCommit = flushOnCommit,
         };
-
+        
         await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOp()))
         {
             Equal(1L, await wal.AppendAsync(entry1, TestToken));
@@ -313,7 +316,7 @@ public sealed class WriteAheadLogTests : Test
         await using (var wal = new WriteAheadLog(options, new ContextAwareStateMachine()))
         {
             Equal(3L, wal.LastCommittedEntryIndex);
-            Equal(3L, wal.LastEntryIndex);
+            Equal(5L, wal.LastEntryIndex);
 
             using var reader = await wal.ReadAsync(1L, wal.LastEntryIndex, TestToken);
             False(reader[0].IsSnapshot);
@@ -368,7 +371,6 @@ public sealed class WriteAheadLogTests : Test
 
             await wal.CommitAsync(index, TestToken);
             await wal.WaitForApplyAsync(index, TestToken);
-            await wal.FlushAsync(TestToken);
         }
 
         await using var stateMachine = new SumStateMachine(new(dir));

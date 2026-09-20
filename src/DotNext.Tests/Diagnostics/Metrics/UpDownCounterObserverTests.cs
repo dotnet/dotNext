@@ -2,7 +2,7 @@ using System.Diagnostics.Metrics;
 
 namespace DotNext.Diagnostics.Metrics;
 
-public sealed class UpDownCounterObserverTests : Test
+public sealed class UpDownCounterObserverTests : InstrumentObserverTest
 {
     [Fact]
     public static void ObserveValue()
@@ -28,8 +28,5 @@ public sealed class UpDownCounterObserverTests : Test
 
         counter.Add(56, [new("key", "value")]);
         Equal(42, observer.Value);
-
-        static bool Filter(UpDownCounter<int> counter, ReadOnlySpan<KeyValuePair<string, object>> tags)
-            => tags is [];
     }
 }

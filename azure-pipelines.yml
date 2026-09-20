@@ -34,11 +34,23 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-windows
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug AOT Emul
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 2
             inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              command: test
+              projects: $(AotTestProject)
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              nobuild: false
+              testRunTitle: 'Debug on Windows (NoDynamicCode)'
+              publishTestResults: true
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact (NoDynamicCode)'
+            artifact: coverage-windows-aot
       - job: Linux
         pool:
           vmImage: ubuntu-latest
@@ -58,12 +70,19 @@ stages:
               publishWebProjects: false
               zipAfterPublish: false
               projects: $(AotTestProject)
-              arguments: --configuration Release --output $(AotTestFolder)/bin/aot
+              arguments: --configuration Release --output $(AotTestFolder)/bin/aot -p:PublishAot=true
           - task: CmdLine@2
             displayName: Run AOT Tests
             inputs:
               workingDirectory: $(AotTestFolder)/bin/aot/DotNext.Aot.Tests
-              script: ./DotNext.Aot.Tests
+              script: ./DotNext.Aot.Tests --report-trx --report-trx-filename aot-tests.trx --results-directory $(Agent.TempDirectory)/AotTestResults
+          - task: PublishTestResults@2
+            displayName: 'Publish AOT Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '$(Agent.TempDirectory)/AotTestResults/*.trx'
+              testRunTitle: 'Debug on Linux (AOT)'
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             timeoutInMinutes: 10
@@ -75,11 +94,23 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-linux
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug AOT Emul
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 2
             inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              command: test
+              projects: $(AotTestProject)
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              nobuild: false
+              testRunTitle: 'Debug on Linux (NoDynamicCode)'
+              publishTestResults: true
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact (NoDynamicCode)'
+            artifact: coverage-linux-aot
       - job: MacOS
         pool:
           vmImage: macOS-latest
@@ -105,11 +136,54 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact'
+            artifact: coverage-macos
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug AOT Emul
+            timeoutInMinutes: 10
+            retryCountOnTaskFailure: 2
+            inputs:
+              command: test
+              projects: $(AotTestProject)
+              arguments: --configuration Debug --coverage --coverage-output-format cobertura --coverage-output $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              nobuild: false
+              testRunTitle: 'Debug on MacOS (NoDynamicCode)'
+              publishTestResults: true
+          - publish: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+            displayName: 'Publish coverage artifact (NoDynamicCode)'
+            artifact: coverage-macos-aot
+      - job: MergeCoverage
+        dependsOn:
+          - Windows
+          - Linux
+          - MacOS
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - download: current
+            displayName: Download Windows coverage
+            artifact: coverage-windows
+          - download: current
+            displayName: Download Linux coverage
+            artifact: coverage-linux
+          - download: current
+            displayName: Download MacOS coverage
+            artifact: coverage-macos
+          - download: current
+            displayName: Download Windows coverage (NoDynamicCode)
+            artifact: coverage-windows-aot
+          - download: current
+            displayName: Download Linux coverage (NoDynamicCode)
+            artifact: coverage-linux-aot
+          - download: current
+            displayName: Download MacOS coverage (NoDynamicCode)
+            artifact: coverage-macos-aot
           - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
+            displayName: 'Publish merged code coverage'
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: $(Agent.TempDirectory)/CoverageResults/coverage.cobertura.xml
+              summaryFileLocation: $(Pipeline.Workspace)/coverage-*/coverage.cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:

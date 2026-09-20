@@ -155,7 +155,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
             writtenCount = last.Write(input);
 
             // no more space in the last chunk, allocate a new one
-            if (writtenCount == 0)
+            if (writtenCount is 0)
                 last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last);
             else
                 input = input.Slice(writtenCount);

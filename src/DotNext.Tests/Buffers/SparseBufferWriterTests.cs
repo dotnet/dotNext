@@ -167,4 +167,25 @@ public sealed class SparseBufferWriterTests : Test
 
         Equal("Hello, world!", writer.ToString());
     }
+
+    [Fact]
+    public static void ImportAndGetMemory()
+    {
+        const string input = "Hello, world!";
+        using var writer = new SparseBufferWriter<char>();
+        writer.Write(input.AsMemory(), copyMemory: false);
+        var memory = writer.As<IBufferWriter<char>>().GetMemory(sizeHint: 0);
+        False(memory.IsEmpty);
+        Equal(input.Length, writer.WrittenCount);
+    }
+
+    [Fact]
+    public static void ImportAndWrite()
+    {
+        const string input = "Hello, world!";
+        using var writer = new SparseBufferWriter<char>();
+        writer.Write(input.AsMemory(), copyMemory: false);
+        writer.Add(' ');
+        Equal(input.Length + 1, writer.WrittenCount);
+    }
 }

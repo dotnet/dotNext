@@ -69,13 +69,13 @@ public static partial class DelegateHelpers
         where T : allows ref struct
         => obj.UnboxAny<TResult>();
 
-    private sealed unsafe partial class MethodPointer
+    private unsafe partial class MethodPointer
     {
-        private readonly nuint pointer;
+        private protected readonly nuint pointer;
 
-        private MethodPointer(void* pointer) => this.pointer = new(pointer);
+        private protected MethodPointer(void* pointer) => this.pointer = new(pointer);
 
-        public override string ToString() => new nuint(pointer).ToString("X");
+        public sealed override string ToString() => pointer.ToString("X");
 
         public override bool Equals([NotNullWhen(true)] object? other)
             => other is MethodPointer methodPtr && methodPtr.pointer == pointer;
@@ -83,19 +83,14 @@ public static partial class DelegateHelpers
         public override int GetHashCode() => pointer.GetHashCode();
     }
 
-    private sealed unsafe partial class MethodPointer<TTarget>
+    private sealed unsafe partial class MethodPointer<TTarget> : MethodPointer
         where TTarget : class?
     {
         private readonly TTarget target;
-        private readonly nuint pointer;
 
         private MethodPointer(void* pointer, TTarget target)
-        {
-            this.pointer = new(pointer);
-            this.target = target;
-        }
-        
-        public override string ToString() => pointer.ToString("X");
+            : base(pointer)
+            => this.target = target;
 
         public override bool Equals([NotNullWhen(true)] object? other)
             => other is MethodPointer<TTarget> methodPtr
