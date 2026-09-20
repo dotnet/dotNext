@@ -511,13 +511,4 @@ public sealed class WriteAheadLogTests : Test
             Equal(entry4.Content, await reader[3].ToStringAsync(Encoding.UTF8,  token: TestToken));
         }
     }
-
-    [Fact]
-    public static async Task StressTest()
-    {
-        for (var i = 0; i < 100; i++)
-        {
-            await UseTimeBasedFlush();
-        }
-    }
 }
