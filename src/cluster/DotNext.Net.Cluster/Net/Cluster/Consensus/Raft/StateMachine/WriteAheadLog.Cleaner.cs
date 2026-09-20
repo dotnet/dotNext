@@ -3,9 +3,12 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Runtime.CompilerServices;
+using Threading;
 
 partial class WriteAheadLog
 {
+    private long lastWrittenIndex;
+    
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task CleanUpAsync(long upToIndex, CancellationToken token)
     {
@@ -33,10 +36,26 @@ partial class WriteAheadLog
 
     private void RemoveSquashedPages(long toIndex)
     {
-        if (!metadataPages.TryGetMetadata(toIndex, out var metadata))
-            return;
+        var lastWrittenIndexCopy = Atomic.Read(in lastWrittenIndex);
+        
+        long removedBytes;
+        LogEntryMetadata metadata;
+        switch (lastWrittenIndexCopy.CompareTo(toIndex))
+        {
+            case <= 0 when lastWrittenIndexCopy is not 0L
+                           && metadataPages.TryGetMetadata(lastWrittenIndexCopy, out metadata):
+                removedBytes = dataPages.DeletePages(metadata.End);
+                Interlocked.CompareExchange(ref lastWrittenIndex, 0L, lastWrittenIndexCopy);
+                break;
+            case > 0 when metadataPages.TryGetMetadata(toIndex + 1L, out metadata):
+                removedBytes = dataPages.DeletePages(metadata.Offset);
+                break;
+            default:
+                removedBytes = 0L;
+                break;
+        }
 
-        var removedBytes = dataPages.DeletePages(metadata.End) + metadataPages.DeletePages(toIndex);
+        removedBytes += metadataPages.DeletePages(toIndex);
         if (removedBytes > 0L)
             BytesDeletedMeter.Record(removedBytes, measurementTags);
     }

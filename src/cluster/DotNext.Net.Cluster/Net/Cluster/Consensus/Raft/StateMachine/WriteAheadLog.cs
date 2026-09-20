@@ -145,7 +145,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             if (interval == TimeSpan.Zero)
             {
                 flushTrigger = new(initialState: false);
-                flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, out flushCompleted), lifetimeToken);
+                flushCompleted = new(initialState: false);
+
+                flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, flushCompleted), lifetimeToken);
                 flushOnCommit = configuration.FlushOnCommit;
             }
             else if (interval == InfiniteTimeSpan)
@@ -540,6 +542,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         }
 
         LastEntryIndex = index;
+        Atomic.Write(ref lastWrittenIndex, index);
         AppendRateMeter.Add(1L, measurementTags);
         BytesWrittenMeter.Record(length + LogEntryMetadata.Size, measurementTags);
     }

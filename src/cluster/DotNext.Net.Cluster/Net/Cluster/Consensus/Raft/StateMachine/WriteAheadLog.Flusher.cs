@@ -24,18 +24,12 @@ partial class WriteAheadLog
         where T : struct, IFlushTrigger
     {
         if (T.IsBackground)
+        {
             await Task.Yield();
+        }
         
-        // Weak ref tracks the task, but allows GC to collect associated state machine
-        // as soon as possible. While the task is running, it cannot be collected, because it's referenced
-        // by the async state machine.
         try
         {
-            if (T.IsBackground)
-            {
-                flusherOldSnapshot = SnapshotIndex;
-            }
-
             while (!token.IsCancellationRequested && backgroundTaskFailure is null)
             {
                 var newSnapshot = SnapshotIndex; // everything is flushed and committed up to this index
@@ -97,8 +91,7 @@ partial class WriteAheadLog
                     }
                 }
 
-                if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshot < newSnapshot)
-                    cleanupTask.SetTarget(CleanUpAsync(newSnapshot, lifetimeToken));
+                StartCleanupIfNeeded(newSnapshot);
 
                 trigger.NotifyCompleted();
                 if (!await trigger.WaitAsync(token).ConfigureAwait(false))
@@ -117,6 +110,18 @@ partial class WriteAheadLog
         finally
         {
             trigger.Dispose();
+        }
+    }
+
+    private void StartCleanupIfNeeded(long snapshotIndex)
+    {
+        // Weak ref tracks the task, but allows GC to collect associated state machine
+        // as soon as possible. While the task is running, it cannot be collected, because it's referenced
+        // by the async state machine.
+        if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshot < snapshotIndex)
+        {
+            cleanupTask.SetTarget(CleanUpAsync(snapshotIndex, lifetimeToken));
+            flusherOldSnapshot = snapshotIndex;
         }
     }
 
@@ -243,20 +248,12 @@ partial class WriteAheadLog
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct BackgroundTrigger : IFlushTrigger
+    private readonly struct BackgroundTrigger(AsyncAutoResetEventSlim resetEvent, AsyncAutoResetEventSlim notification) : IFlushTrigger
     {
-        private readonly AsyncAutoResetEventSlim flushTrigger, flushNotification;
-        
-        public BackgroundTrigger(AsyncAutoResetEventSlim resetEvent, out AsyncAutoResetEventSlim notification)
-        {
-            flushTrigger = resetEvent;
-            notification = flushNotification = new();
-        }
-        
         ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
-            => flushTrigger.WaitAsync();
+            => resetEvent.WaitAsync();
 
-        void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
+        void IFlushTrigger.NotifyCompleted() => notification.Set();
 
         void IDisposable.Dispose()
         {
