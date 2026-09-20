@@ -7,6 +7,10 @@ using Threading;
 
 partial class WriteAheadLog
 {
+    // Tracks the highest index actually populated via WriteMetadata (never touched by snapshot
+    // installation, which can jump LastEntryIndex over a range of indices whose metadata slots
+    // were never written). Used by RemoveSquashedPages to avoid trusting a snapshot's own,
+    // possibly-garbage metadata slot when computing the data-page deletion boundary.
     private long lastWrittenIndex;
     
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
