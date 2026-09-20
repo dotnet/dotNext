@@ -33,7 +33,7 @@ partial struct Atomic<T>
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct FieldReadOperation<TResult, TReader>() : IReadOperation<TResult>
+    private readonly ref struct FieldReadOperation<TResult, TReader> : IReadOperation<TResult>
         where TReader : IFieldReference<TResult>, allows ref struct
     {
         static void IReadOperation<TResult>.Invoke(in T input, out TResult output)
