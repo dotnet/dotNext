@@ -16258,24 +16258,6 @@ references:
   fullName.vb: DotNext.IO.Log.IAuditTrail(Of TEntry).ReadAsync(Of TResult)(DotNext.IO.Log.ILogEntryConsumer(Of TEntry, TResult), Long, Long, System.Threading.CancellationToken)
   nameWithType: IAuditTrail<TEntry>.ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult>, long, long, CancellationToken)
   nameWithType.vb: IAuditTrail(Of TEntry).ReadAsync(Of TResult)(ILogEntryConsumer(Of TEntry, TResult), Long, Long, CancellationToken)
-- uid: DotNext.IO.Log.ILogCompactionSupport
-  name: ILogCompactionSupport
-  href: api/DotNext.IO.Log.ILogCompactionSupport.html
-  commentId: T:DotNext.IO.Log.ILogCompactionSupport
-  fullName: DotNext.IO.Log.ILogCompactionSupport
-  nameWithType: ILogCompactionSupport
-- uid: DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync(System.Threading.CancellationToken)
-  name: ForceCompactionAsync(CancellationToken)
-  href: api/DotNext.IO.Log.ILogCompactionSupport.html#DotNext_IO_Log_ILogCompactionSupport_ForceCompactionAsync_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync(System.Threading.CancellationToken)
-  fullName: DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync(System.Threading.CancellationToken)
-  nameWithType: ILogCompactionSupport.ForceCompactionAsync(CancellationToken)
-- uid: DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync*
-  name: ForceCompactionAsync
-  href: api/DotNext.IO.Log.ILogCompactionSupport.html#DotNext_IO_Log_ILogCompactionSupport_ForceCompactionAsync_
-  commentId: Overload:DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync
-  fullName: DotNext.IO.Log.ILogCompactionSupport.ForceCompactionAsync
-  nameWithType: ILogCompactionSupport.ForceCompactionAsync
 - uid: DotNext.IO.Log.ILogEntry
   name: ILogEntry
   href: api/DotNext.IO.Log.ILogEntry.html
@@ -32324,6 +32306,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushInterval
   fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushInterval
   nameWithType: WriteAheadLog.Options.FlushInterval
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit
+  name: FlushOnCommit
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_FlushOnCommit
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit
+  nameWithType: WriteAheadLog.Options.FlushOnCommit
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit*
+  name: FlushOnCommit
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_FlushOnCommit_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.FlushOnCommit
+  nameWithType: WriteAheadLog.Options.FlushOnCommit
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.HashAlgorithm
   name: HashAlgorithm
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_HashAlgorithm
@@ -52508,6 +52502,32 @@ references:
   fullName.vb: DotNext.Threading.Atomic(Of T).GetAndUpdate
   nameWithType: Atomic<T>.GetAndUpdate
   nameWithType.vb: Atomic(Of T).GetAndUpdate
+- uid: DotNext.Threading.Atomic`1.IFieldReference`1
+  name: Atomic<T>.IFieldReference<TResult>
+  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html
+  commentId: T:DotNext.Threading.Atomic`1.IFieldReference`1
+  name.vb: Atomic(Of T).IFieldReference(Of TResult)
+  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>
+  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult)
+  nameWithType: Atomic<T>.IFieldReference<TResult>
+  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult)
+- uid: DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference(`0@)
+  name: GetFieldReference(in T)
+  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html#DotNext_Threading_Atomic_1_IFieldReference_1_GetFieldReference__0__
+  commentId: M:DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference(`0@)
+  name.vb: GetFieldReference(T)
+  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>.GetFieldReference(in T)
+  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult).GetFieldReference(T)
+  nameWithType: Atomic<T>.IFieldReference<TResult>.GetFieldReference(in T)
+  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult).GetFieldReference(T)
+- uid: DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference*
+  name: GetFieldReference
+  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html#DotNext_Threading_Atomic_1_IFieldReference_1_GetFieldReference_
+  commentId: Overload:DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference
+  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>.GetFieldReference
+  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult).GetFieldReference
+  nameWithType: Atomic<T>.IFieldReference<TResult>.GetFieldReference
+  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult).GetFieldReference
 - uid: DotNext.Threading.Atomic`1.IsWriteLockHeld
   name: IsWriteLockHeld
   href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_IsWriteLockHeld
@@ -52541,6 +52561,15 @@ references:
   fullName.vb: DotNext.Threading.Atomic(Of T).Read
   nameWithType: Atomic<T>.Read
   nameWithType.vb: Atomic(Of T).Read
+- uid: DotNext.Threading.Atomic`1.Read``2
+  name: Read<TResult, TReference>()
+  href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_Read__2
+  commentId: M:DotNext.Threading.Atomic`1.Read``2
+  name.vb: Read(Of TResult, TReference)()
+  fullName: DotNext.Threading.Atomic<T>.Read<TResult, TReference>()
+  fullName.vb: DotNext.Threading.Atomic(Of T).Read(Of TResult, TReference)()
+  nameWithType: Atomic<T>.Read<TResult, TReference>()
+  nameWithType.vb: Atomic(Of T).Read(Of TResult, TReference)()
 - uid: DotNext.Threading.Atomic`1.Swap(DotNext.Threading.Atomic{`0}@)
   name: Swap(ref Atomic<T>)
   href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_Swap_DotNext_Threading_Atomic__0___
