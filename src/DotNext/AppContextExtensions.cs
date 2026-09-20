@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
@@ -8,6 +9,8 @@ namespace DotNext;
 /// </summary>
 public static class AppContextExtensions
 {
+    private const string DynamicCodeSupportFeature = "DotNext.IsDynamicCodeAllowed";
+    
     /// <summary>
     /// Extends <see cref="AppContext"/> type with static members.
     /// </summary>
@@ -26,5 +29,10 @@ public static class AppContextExtensions
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static bool IsFeatureSupported([ConstantExpected] string featureName)
             => !AppContext.TryGetSwitch(featureName, out var isEnabled) || isEnabled;
+
+        internal static bool IsJit => RuntimeFeature.IsDynamicCodeSupported && IsDynamicCodeAllowed;
     }
+    
+    [FeatureSwitchDefinition(DynamicCodeSupportFeature)]
+    private static bool IsDynamicCodeAllowed { get; } = IsFeatureSupported(DynamicCodeSupportFeature);
 }

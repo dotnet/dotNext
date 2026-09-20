@@ -21,15 +21,16 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ApplyAsync(CancellationToken token)
     {
-        for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync().ConfigureAwait(false))
+        for (long newIndex, lastAppliedIndexCopy; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync().ConfigureAwait(false))
         {
             newIndex = LastCommittedEntryIndex;
 
             // Ensure that the appender is not running with the snapshot installation process concurrently
             await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
+            lastAppliedIndexCopy = LastAppliedIndex;
             try
             {
-                await ApplyAsync(LastAppliedIndex + 1L, newIndex, token).ConfigureAwait(false);
+                await ApplyAsync(lastAppliedIndexCopy + 1L, newIndex, token).ConfigureAwait(false);
             }
             catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
             {
@@ -42,7 +43,7 @@ partial class WriteAheadLog
                 lockManager.ReleaseReadLock();
             }
 
-            LastAppliedIndex = newIndex;
+            LastAppliedIndex = long.Max(lastAppliedIndexCopy, newIndex);
         }
     }
 
@@ -55,8 +56,10 @@ partial class WriteAheadLog
         
         private set
         {
-            Atomic.Write(ref appliedIndex, value);
-            appliedEvent.Signal(resumeAll: true);
+            var previousIndex = Interlocked.Exchange(ref appliedIndex, value);
+
+            if (value > previousIndex)
+                appliedEvent.Signal(resumeAll: true);
         }
     }
 

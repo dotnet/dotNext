@@ -5,8 +5,6 @@ namespace DotNext.IO;
 
 internal sealed class UnbufferedFileStream(SafeFileHandle handle, FileAccess access) : RandomAccessStream
 {
-    private static readonly Action<SafeFileHandle> FlushToDiskAction = RandomAccess.FlushToDisk;
-
     public override bool CanRead => access.HasFlag(FileAccess.Read);
 
     public override bool CanWrite => access.HasFlag(FileAccess.Write);
@@ -35,8 +33,8 @@ internal sealed class UnbufferedFileStream(SafeFileHandle handle, FileAccess acc
 
     public override void Flush() => RandomAccess.FlushToDisk(handle);
 
-    public override Task FlushAsync(CancellationToken token)
-        => Task.Run(FlushToDiskAction.Bind(handle), token);
+    public override unsafe Task FlushAsync(CancellationToken token)
+        => Task.Run(Action.FromPointer(&RandomAccess.FlushToDisk, handle), token);
     
     public override void SetLength(long value)
     {

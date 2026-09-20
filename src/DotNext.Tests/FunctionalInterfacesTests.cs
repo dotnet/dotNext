@@ -1,4 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext;
+
+using Runtime;
+using Runtime.CompilerServices;
 
 public sealed class FunctionalInterfacesTests : Test
 {
@@ -55,5 +60,40 @@ public sealed class FunctionalInterfacesTests : Test
         Activator<object> activator = default;
 
         NotNull(activator.As<ISupplier<object>>().Invoke());
+    }
+
+    [Fact]
+    public static unsafe void Supplier()
+    {
+        True(default(Supplier<int>).IsEmpty);
+        
+        delegate*<int> funcPtr = &GetValue;
+        Supplier<int> supplier = funcPtr;
+        False(supplier.IsEmpty);
+        Equal(42, ((Func<int>)supplier).Invoke());
+        Equal(42, supplier.As<ISupplier<int>>().Invoke());
+
+        static int GetValue() => 42;
+    }
+
+    [Fact]
+    public static void DynamicInvoke()
+    {
+        IFunctional functional = new DelegatingSupplier<int, int, int>(Sum);
+        var x = 10;
+        var y = 20;
+        var result = 0;
+        scoped var args = new Variant2 { Var1 = Variant.Immutable(in x), Var2 = Variant.Immutable(in y) };
+        functional.DynamicInvoke(in args.Var1, count: 2, Variant.Mutable(ref result));
+        Equal(30, result);
+        
+        static int Sum(int x, int y) => x + y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private ref struct Variant2
+    {
+        public Variant Var1;
+        public Variant Var2;
     }
 }
