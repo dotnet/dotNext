@@ -53,6 +53,7 @@ Release Date: 09-20-2026
 * Fixed a race in `WriteAheadLog`'s background flusher where the commit index could be considered "flushed" before it was actually written to the checkpoint, causing `FlushAsync` to return prematurely
 * Fixed a bug where installing a snapshot that skips over a range of log indices (e.g. via `InstallSnapshot`) could leave the flusher and page-compaction logic reading uninitialized metadata for that boundary index, in rare cases causing background flushes to stall for extended periods or, more seriously, causing compaction to delete data pages still needed by log entries appended after the snapshot
 * Fixed a bug in `WriteAheadLog`'s cleanup scheduling that could repeatedly re-trigger page compaction for the same snapshot on every flush cycle instead of once per snapshot advancement
+* `WriteAheadLog` writes the checkpoint in a durable way on `DisposeAsync` call, no need to call `FlushAsync` explicitly before it
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.8.0">DotNext.AspNetCore.Cluster 6.8.0</a>
 * Updated dependencies
