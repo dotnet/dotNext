@@ -371,7 +371,6 @@ public sealed class WriteAheadLogTests : Test
 
             await wal.CommitAsync(index, TestToken);
             await wal.WaitForApplyAsync(index, TestToken);
-            await wal.FlushAsync(TestToken);
         }
 
         await using var stateMachine = new SumStateMachine(new(dir));

@@ -709,6 +709,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         await flusherTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         await appenderTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
+        // Ensure that commit index is saved to the checkpoint file
+        await FlushAsync(new ForegroundTrigger(), CancellationToken.None).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+
         if (cleanupTask.TryGetTarget(out var task))
             await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         
