@@ -120,9 +120,7 @@ partial class WriteAheadLog
             var programHandle = NativeLibrary.GetMainProgramHandle();
 
             // detect sector size
-            sectorSize = NativeLibrary.TryGetExport(programHandle, "statvfs", out var statvfs)
-                ? (uint)GetSectorSize(location, (delegate*unmanaged<byte*, void*, int>)statvfs)
-                : (uint)Environment.SystemPageSize;
+            sectorSize = GetSectorSize(location, programHandle);
 
             if (NativeLibrary.TryGetExport(programHandle, "open", out var openFn))
             {
@@ -137,33 +135,41 @@ partial class WriteAheadLog
                 throw new ArgumentOutOfRangeException(nameof(pageSize));
 
             Initialize(location, pages);
+        }
 
-            [SkipLocalsInit]
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            static nuint GetSectorSize(DirectoryInfo location, delegate*unmanaged<byte*, void*, int> statvfs)
+        public static bool IsAllowed(DirectoryInfo location, int pageSize)
+            => GetSectorSize(location, NativeLibrary.GetMainProgramHandle()) % (uint)pageSize is 0;
+
+        private static unsafe uint GetSectorSize(DirectoryInfo location, nint programHandle)
+            => NativeLibrary.TryGetExport(programHandle, "statvfs", out var statvfs)
+                ? (uint)GetSectorSize(location, (delegate*unmanaged<byte*, void*, int>)statvfs)
+                : (uint)Environment.SystemPageSize;
+        
+        [SkipLocalsInit]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static unsafe nuint GetSectorSize(DirectoryInfo location, delegate*unmanaged<byte*, void*, int> statvfs)
+        {
+            var path = location.FullName;
+            var byteCount = Encoding.UTF8.GetByteCount(path) + 1;
+            using var pathBuffer = (uint)byteCount <= (uint)SpanOwner<byte>.StackallocThreshold
+                ? stackalloc byte[byteCount]
+                : new SpanOwner<byte>(byteCount);
+            Encoding.UTF8.GetBytes(path, pathBuffer.Span);
+            pathBuffer[^1] = 0;
+
+            // f_bsize is the first member of struct statvfs on both glibc and musl, represented
+            // as a native "unsigned long" in both. The rest of the layout differs between the
+            // two, so the buffer only needs to be large enough for the real struct to be written
+            // into without corrupting the stack; nothing past the first field is inspected.
+            var resultPtr = stackalloc byte[256];
+
+            int errorCode;
+            fixed (byte* pathPtr = pathBuffer)
             {
-                var path = location.FullName;
-                var byteCount = Encoding.UTF8.GetByteCount(path) + 1;
-                using var pathBuffer = (uint)byteCount <= (uint)SpanOwner<byte>.StackallocThreshold
-                    ? stackalloc byte[byteCount]
-                    : new SpanOwner<byte>(byteCount);
-                Encoding.UTF8.GetBytes(path, pathBuffer.Span);
-                pathBuffer[^1] = 0;
-
-                // f_bsize is the first member of struct statvfs on both glibc and musl, represented
-                // as a native "unsigned long" in both. The rest of the layout differs between the
-                // two, so the buffer only needs to be large enough for the real struct to be written
-                // into without corrupting the stack; nothing past the first field is inspected.
-                var resultPtr = stackalloc byte[256];
-
-                int errorCode;
-                fixed (byte* pathPtr = pathBuffer)
-                {
-                    errorCode = statvfs(pathPtr, resultPtr);
-                }
-
-                return errorCode is 0 ? *(nuint*)resultPtr : (uint)Environment.SystemPageSize;
+                errorCode = statvfs(pathPtr, resultPtr);
             }
+
+            return errorCode is 0 ? *(nuint*)resultPtr : (uint)Environment.SystemPageSize;
         }
 
         protected override unsafe LinuxDirectPage CreatePage(bool reusable)
