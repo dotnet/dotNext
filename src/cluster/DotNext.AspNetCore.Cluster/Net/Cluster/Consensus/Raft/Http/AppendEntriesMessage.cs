@@ -40,7 +40,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
             : base(section.Body, true)
         {
             Term = ParseHeader(section.Headers, VoteMessageBase.RecordTermHeader, Int64Parser);
-            CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
+            CommandId = TryParseHeader(section.Headers, CommandIdHeader, Int32Parser).OrNull();
             IsConfiguration = ParseHeader(section.Headers, IsConfigurationHeader, BooleanParser);
         }
 
@@ -489,7 +489,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             Term = ParseTerm(response),
             Value = new()
             {
-                LastIndex = ParseHeaderAsNullable(response.Headers, LastIndexHeader, Int64Parser).GetValueOrDefault(PrevLogIndex),
+                LastIndex = TryParseHeader(response.Headers, LastIndexHeader, Int64Parser).Or(PrevLogIndex),
                 Result = await HttpMessage.ParseEnumResponseAsync<HeartbeatResult>(response, token).ConfigureAwait(false),
             }
         };
