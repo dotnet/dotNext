@@ -360,8 +360,8 @@ public partial class RaftCluster<TMember>
             switch (membersCopy.LocalMember)
             {
                 case null when members.LocalMember is not null:
-                    // local member is removed
-                    await MoveToStandbyState(resumable: false).ConfigureAwait(false);
+                    // local member is removed, but can be added later, so the state is resumable
+                    await FreezeAsync().ConfigureAwait(false);
                     break;
                 case not null when state is not UnstartedState && members.LocalMember is null:
                     // local member is added
