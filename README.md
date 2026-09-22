@@ -31,35 +31,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-20-2026
+Release Date: 09-22-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.8.0">DotNext 6.8.0</a>
-* Added read-only concurrent access to custom struct field in `Atomic<T>` container
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.8.1">DotNext.Net.Cluster 6.8.1</a>
+* Fixed [299](https://github.com/dotnet/dotNext/issues/299)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.8.0">DotNext.Metaprogramming 6.8.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.8.0">DotNext.Unsafe 6.8.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/6.8.0">DotNext.Threading 6.8.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.8.0">DotNext.IO 6.8.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.8.0">DotNext.Net.Cluster 6.8.0</a>
-* Added `FlushOnCommit` option to `WriteAheadLog.Options`: guarantees that a log entry is durably flushed to disk before `AppendAsync`/`CommitAsync` returns, even if not yet committed — closes a gap where a follower could lose an uncommitted entry on restart and later end up with a conflicting committed entry once a new leader replicates a different value at the same index. Trades away eager durability of the checkpoint's commit index (which is safely recomputed from committed entries on restart) for this guarantee
-* Fixed a race in `WriteAheadLog`'s background flusher where the commit index could be considered "flushed" before it was actually written to the checkpoint, causing `FlushAsync` to return prematurely
-* Fixed a bug where installing a snapshot that skips over a range of log indices (e.g. via `InstallSnapshot`) could leave the flusher and page-compaction logic reading uninitialized metadata for that boundary index, in rare cases causing background flushes to stall for extended periods or, more seriously, causing compaction to delete data pages still needed by log entries appended after the snapshot
-* Fixed a bug in `WriteAheadLog`'s cleanup scheduling that could repeatedly re-trigger page compaction for the same snapshot on every flush cycle instead of once per snapshot advancement
-* `WriteAheadLog` writes the checkpoint in a durable way on `DisposeAsync` call, no need to call `FlushAsync` explicitly before it
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.8.0">DotNext.AspNetCore.Cluster 6.8.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.8.0">DotNext.MaintenanceServices 1.8.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.8.1">DotNext.AspNetCore.Cluster 6.8.1</a>
+* Fixed [299](https://github.com/dotnet/dotNext/issues/299)
 
 # Release & Support Policy
 The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).
