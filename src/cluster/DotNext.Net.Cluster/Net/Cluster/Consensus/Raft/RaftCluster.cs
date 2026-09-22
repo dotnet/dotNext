@@ -27,12 +27,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly CancellationTokenSource transitionCancellation;
     private readonly double heartbeatThreshold, clockDriftBound;
     private readonly Random random;
-    private readonly TaskCompletionSource readinessProbe;
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
     private readonly TagList measurementTags;
     private readonly CancellationTokenMultiplexer cancellationTokens;
     private readonly int replicationLag;
 
+    private TaskCompletionSource readinessProbe;
     private RaftState<TMember> state;
     private TaskCompletionSource<TMember> electionEvent;
     private TaskCompletionSource<LeaderState<TMember>> leadershipEvent;
@@ -135,7 +135,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Represents a task indicating that the current node is ready to serve requests.
     /// </summary>
-    public Task Readiness => readinessProbe.Task;
+    public Task Readiness => Volatile.Read(in readinessProbe).Task;
 
     private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue * heartbeatThreshold);
 
@@ -291,6 +291,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         // log entry as write barrier.
         await AuditTrail.WaitForApplyAsync(leaderState.WriteBarrier, token).ConfigureAwait(false);
         return leaderState.Token;
+    }
+
+    private ValueTask FreezeAsync()
+    {
+        Debug.Assert(transitionLock.IsLockHeld);
+
+        if (readinessProbe.Task.IsCompletedSuccessfully)
+        {
+            readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        // local member is removed, but can be added later, so the state is resumable
+        return MoveToStandbyState();
     }
 
     private ValueTask UnfreezeAsync()

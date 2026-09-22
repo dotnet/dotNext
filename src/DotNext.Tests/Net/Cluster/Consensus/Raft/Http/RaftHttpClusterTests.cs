@@ -54,29 +54,14 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task CommunicationWithLeader()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"requestTimeout", "00:01:00"}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true,
+            ("requestTimeout", "00:01:00"));
 
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"requestTimeout", "00:01:00"}
-            };
+        var config2 = CreateConfiguration(3263, coldStart: false,
+            ("requestTimeout", "00:01:00"));
 
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"requestTimeout", "00:01:00"}
-            };
+        var config3 = CreateConfiguration(3264, coldStart: false,
+            ("requestTimeout", "00:01:00"));
 
         var listener = new LeaderTracker();
         using var host1 = CreateHost<Startup>(3262, config1, listener);
@@ -206,26 +191,15 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task TypedMessageExchange()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"lowerElectionTimeout", "600" },
-                {"upperElectionTimeout", "900" },
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"requestTimeout", "00:01:00"}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true,
+            ("lowerElectionTimeout", "600"),
+            ("upperElectionTimeout", "900"),
+            ("requestTimeout", "00:01:00"));
 
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"lowerElectionTimeout", "600" },
-                {"upperElectionTimeout", "900" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"standby", "true"},
-                {"requestTimeout", "00:01:00"}
-            };
+        var config2 = CreateConfiguration(3263, coldStart: false,
+            ("lowerElectionTimeout", "600"),
+            ("upperElectionTimeout", "900"),
+            ("requestTimeout", "00:01:00"));
 
         var listener = new LeaderTracker();
         using var host1 = CreateHost<Startup>(3262, config1, listener);
@@ -274,30 +248,17 @@ public sealed class RaftHttpClusterTests : RaftTest
     [InlineData(false)]
     public static async Task Leadership(bool optimizedLogEntryTransfer)
     {
-        var config1 = new Dictionary<string, string>
-        {
-            { "partitioning", "false" },
-            { "publicEndPoint", "http://localhost:3262" },
-            { "coldStart", "true" },
-            { "metadata:nodeName", "node1" },
-            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
-        };
-        var config2 = new Dictionary<string, string>
-        {
-            { "partitioning", "false" },
-            { "publicEndPoint", "http://localhost:3263" },
-            { "coldStart", "false" },
-            { "metadata:nodeName", "node2" },
-            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
-        };
-        var config3 = new Dictionary<string, string>
-        {
-            { "partitioning", "false" },
-            { "publicEndPoint", "http://localhost:3264" },
-            { "coldStart", "false" },
-            { "metadata:nodeName", "node3" },
-            { Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString() }
-        };
+        var config1 = CreateConfiguration(3262, coldStart: true,
+            ("metadata:nodeName", "node1"),
+            (Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString()));
+
+        var config2 = CreateConfiguration(3263, coldStart: false,
+            ("metadata:nodeName", "node2"),
+            (Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString()));
+
+        var config3 = CreateConfiguration(3264, coldStart: false,
+            ("metadata:nodeName", "node3"),
+            (Startup.OptimizedLogEntryTransferKey, optimizedLogEntryTransfer.ToString()));
 
         var listener = new LeaderTracker();
         using var host1 = CreateHost<Startup>(3262, config1, listener);
@@ -345,27 +306,9 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task FailureDetection()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"}
-            };
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"}
-            };
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true);
+        var config2 = CreateConfiguration(3263, coldStart: false);
+        var config3 = CreateConfiguration(3264, coldStart: false);
 
         var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         Action<IPeerMesh, PeerEventArgs> peerGoneHandler = (_, args) =>
@@ -412,27 +355,9 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task StandbyMode()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"}
-            };
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"}
-            };
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true);
+        var config2 = CreateConfiguration(3263, coldStart: false);
+        var config3 = CreateConfiguration(3264, coldStart: false);
 
         var listener = new LeaderTracker();
         using var host1 = CreateHost<Startup>(3262, config1, listener);
@@ -485,30 +410,12 @@ public sealed class RaftHttpClusterTests : RaftTest
         var configRoot = GetTempPath();
         Directory.CreateDirectory(configRoot);
 
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"},
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")}
-            };
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"},
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")}
-            };
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"},
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")));
+        var config2 = CreateConfiguration(3263, coldStart: false,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")));
+        var config3 = CreateConfiguration(3264, coldStart: false,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")));
 
         using (var host1 = CreateHost<Startup>(3262, config1))
         {
@@ -572,34 +479,12 @@ public sealed class RaftHttpClusterTests : RaftTest
         var configRoot = GetTempPath();
         Directory.CreateDirectory(configRoot);
 
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"},
-                // {"requestTimeout", "00:00:01"},
-                // {"rpcTimeout", "00:00:01"},
-                // {"lowerElectionTimeout", "6000" },
-                // {"upperElectionTimeout", "9000" },
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")}
-            };
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"},
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")}
-            };
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"},
-                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")));
+        var config2 = CreateConfiguration(3263, coldStart: false,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")));
+        var config3 = CreateConfiguration(3264, coldStart: false,
+            (Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")));
 
         // two nodes in frozen state
         using var host2 = CreateHost<Startup>(3263, config2);
@@ -649,13 +534,7 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task DependencyInjection()
     {
-        var config = new Dictionary<string, string>
-            {
-                {"metadata:nodeName", "TestNode"},
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-            };
+        var config = CreateConfiguration(3262, coldStart: true);
 
         using var host = CreateHost<Startup>(3262, config);
         await host.StartAsync(TestToken);
@@ -679,27 +558,9 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public async Task RegressionIssue153()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                {"metadata:nodeName", "node1"},
-            };
-        var config2 = new Dictionary<string, string>
-            {
-                {"partitioning", "false" },
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node2"},
-            };
-        var config3 = new Dictionary<string, string>
-            {
-                {"partitioning", "false"},
-                {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"},
-                {"metadata:nodeName", "node3"},
-            };
+        var config1 = CreateConfiguration(3262, coldStart: true);
+        var config2 = CreateConfiguration(3263, coldStart: false);
+        var config3 = CreateConfiguration(3264, coldStart: false);
 
         var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         Action<IPeerMesh, PeerEventArgs> peerGoneHandler = (_, args) =>
@@ -764,27 +625,10 @@ public sealed class RaftHttpClusterTests : RaftTest
     [Fact]
     public static async Task ConsensusToken()
     {
-        var config1 = new Dictionary<string, string>
-            {
-                {"publicEndPoint", "http://localhost:3262"},
-                {"coldStart", "true"},
-                // {"requestTimeout", "00:00:01"},
-                // {"rpcTimeout", "00:00:01"},
-                // {"lowerElectionTimeout", "6000" },
-                // {"upperElectionTimeout", "9000" },
-            };
-
-        var config2 = new Dictionary<string, string>
-            {
-                {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"},
-                {"standby", "true"},
-            };
-
-        using var host1 = CreateHost<Startup>(3262, config1);
+        using var host1 = CreateHost<Startup>(3262, CreateConfiguration(3262, coldStart: true));
         await host1.StartAsync(TestToken);
 
-        using var host2 = CreateHost<Startup>(3263, config2);
+        using var host2 = CreateHost<Startup>(3263, CreateConfiguration(3263, coldStart: false));
         True(GetLocalClusterView(host2).ConsensusToken.IsCancellationRequested);
         await host2.StartAsync(TestToken);
 
@@ -801,5 +645,70 @@ public sealed class RaftHttpClusterTests : RaftTest
 
         await token.WaitAsync();
         await host2.StopAsync(TestToken);
+    }
+    
+    [Fact]
+    public static async Task RemovedLiveMemberCanRejoin()
+    {
+        using var host1 = CreateHost<Startup>(3262,
+            CreateConfiguration(3262, true, ("requestTimeout", "00:00:05")));
+        using var host2 = CreateHost<Startup>(3263,
+            CreateConfiguration(3263, false, ("requestTimeout", "00:00:05")));
+        using var host3 = CreateHost<Startup>(3264,
+            CreateConfiguration(3264, false, ("requestTimeout", "00:00:05")));
+        await host1.StartAsync(TestToken);
+        await host2.StartAsync(TestToken);
+        await host3.StartAsync(TestToken);
+        var leader = GetLocalClusterView(host1);
+        var second = GetLocalClusterView(host2);
+        var removed = GetLocalClusterView(host3);
+        await leader.WaitForLeaderAsync(DefaultTimeout, TestToken);
+        True(await leader.AddMemberAsync(second.LocalMemberAddress, TestToken));
+        True(await leader.AddMemberAsync(removed.LocalMemberAddress, TestToken));
+        await removed.Readiness.WaitAsync(TestToken);
+
+        True(await leader.RemoveMemberAsync(removed.LocalMemberAddress, TestToken));
+        await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
+        True(await leader.AddMemberAsync(removed.LocalMemberAddress, TestToken));
+        await leader.ForceReplicationAsync(TestToken);
+        var index = leader.AuditTrail.LastCommittedEntryIndex;
+        
+        // Catch-up applies the removal before receiving the re-addition. The old
+        // election task has faulted, but subsequent AppendEntries must still work.
+        await removed.AuditTrail.WaitForApplyAsync(index, TestToken);
+        Equal(new UriEndPoint(leader.LocalMemberAddress), removed.Leader?.EndPoint, UriEndPoint.Comparer);
+        await leader.ReplicateAsync(new EmptyLogEntry { Term = leader.Term }, TestToken);
+        await removed.AuditTrail.WaitForApplyAsync(leader.AuditTrail.LastCommittedEntryIndex, TestToken)
+            .AsTask().WaitAsync(DefaultTimeout, TestToken);
+
+        using (var leadershipWaitCancellation = CancellationTokenSource.CreateLinkedTokenSource(TestToken))
+        {
+            var leadershipWait = removed.WaitForLeadershipAsync(leadershipWaitCancellation.Token);
+            False(leadershipWait.IsCompleted);
+            await leadershipWaitCancellation.CancelAsync();
+            Equal(leadershipWaitCancellation.Token, (await ThrowsAnyAsync<OperationCanceledException>(leadershipWait)).CancellationToken);
+        }
+
+        await host3.StopAsync(TestToken);
+        await host2.StopAsync(TestToken);
+        await host1.StopAsync(TestToken);
+    }
+
+    private static Dictionary<string, string> CreateConfiguration(int port,
+        bool coldStart,
+        params ReadOnlySpan<(string, string)> parameters)
+    {
+        var result = new Dictionary<string, string>
+        {
+            ["publicEndPoint"] = $"http://localhost:{port}",
+            ["coldStart"] = coldStart.ToString(),
+        };
+
+        foreach (var pair in parameters)
+        {
+            result.Add(pair.Item1, pair.Item2);
+        }
+
+        return result;
     }
 }

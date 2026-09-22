@@ -95,7 +95,7 @@ internal abstract class HttpMessage
     }
 
     // we have two versions of this method to avoid allocations caused by StringValues.GetEnumerator()
-    private static Optional<T> ParseHeaderCore<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
+    private protected static Optional<T> TryParseHeader<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
         where T : notnull
     {
         if (headers is not null && headers.TryGetValue(headerName, out var values))
@@ -113,20 +113,16 @@ internal abstract class HttpMessage
     private protected static T ParseHeader<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
         where T : notnull
     {
-        var result = ParseHeaderCore(headers, headerName, parser);
+        var result = TryParseHeader(headers, headerName, parser);
         return result.HasValue
             ? result.ValueOrDefault
             : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
     }
 
-    private protected static T? ParseHeaderAsNullable<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
-        where T : struct
-        => ParseHeaderCore(headers, headerName, parser).OrNull();
-
     private protected static string ParseHeader(IDictionary<string, StringValues>? headers, string headerName)
         => ParseHeader(headers, headerName, StringParser);
 
-    private static Optional<T> ParseHeaderCore<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
+    private protected static Optional<T> TryParseHeader<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
         where T : notnull
     {
         if (headers is not null && headers.TryGetValues(headerName, out var values))
@@ -144,7 +140,7 @@ internal abstract class HttpMessage
     private protected static T ParseHeader<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
         where T : notnull
     {
-        var result = ParseHeaderCore(headers, headerName, parser);
+        var result = TryParseHeader(headers, headerName, parser);
         return result.HasValue
             ? result.ValueOrDefault
             : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
