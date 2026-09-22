@@ -628,7 +628,8 @@ public sealed class RaftHttpClusterTests : RaftTest
         using var host1 = CreateHost<Startup>(3262, CreateConfiguration(3262, coldStart: true));
         await host1.StartAsync(TestToken);
 
-        using var host2 = CreateHost<Startup>(3263, CreateConfiguration(3263, coldStart: false));
+        using var host2 = CreateHost<Startup>(3263, CreateConfiguration(3263, coldStart: false,
+            ("standby", "true")));
         True(GetLocalClusterView(host2).ConsensusToken.IsCancellationRequested);
         await host2.StartAsync(TestToken);
 
