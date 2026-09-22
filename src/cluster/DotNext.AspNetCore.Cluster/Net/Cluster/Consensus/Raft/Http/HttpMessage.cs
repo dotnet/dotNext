@@ -150,6 +150,10 @@ internal abstract class HttpMessage
             : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
     }
 
+    private protected static T? ParseHeaderAsNullable<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
+        where T : struct
+        => ParseHeaderCore(headers, headerName, parser).OrNull();
+
     private protected static string ParseHeader(HttpHeaders? headers, string headerName)
         => ParseHeader(headers, headerName, StringParser);
 }

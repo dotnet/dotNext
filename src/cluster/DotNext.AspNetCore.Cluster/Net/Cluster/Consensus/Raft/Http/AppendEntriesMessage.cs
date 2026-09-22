@@ -489,7 +489,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             Term = ParseTerm(response),
             Value = new()
             {
-                LastIndex = ParseHeader(response.Headers, LastIndexHeader, Int64Parser),
+                LastIndex = ParseHeaderAsNullable(response.Headers, LastIndexHeader, Int64Parser).GetValueOrDefault(PrevLogIndex),
                 Result = await HttpMessage.ParseEnumResponseAsync<HeartbeatResult>(response, token).ConfigureAwait(false),
             }
         };
