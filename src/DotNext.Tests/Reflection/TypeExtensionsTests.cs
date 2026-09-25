@@ -107,24 +107,28 @@ public sealed class TypeExtensionsTests : Test
     public static void Devirtualization()
     {
         var toStringMethod = typeof(object).GetMethod(nameof(ToString));
+        NotNull(toStringMethod);
         var overriddenMethod = typeof(string).Devirtualize(toStringMethod);
+        NotNull(overriddenMethod);
         NotEqual(toStringMethod, overriddenMethod);
         Equal(typeof(string), overriddenMethod.DeclaringType);
     }
 
     [Fact]
-    public static void IntefaceMethodResolution()
+    public static void InterfaceMethodResolution()
     {
         var toInt32Method = typeof(IConvertible).GetMethod(nameof(IConvertible.ToInt32));
+        NotNull(toInt32Method);
         var overriddenMethod = typeof(int).Devirtualize(toInt32Method);
         NotEqual(toInt32Method, overriddenMethod);
-        Equal(typeof(int), overriddenMethod.DeclaringType);
+        Equal(typeof(int), overriddenMethod?.DeclaringType);
     }
 
     [Fact]
     public static void EqualsMethodResolution()
     {
         var getTypeMethod = typeof(object).GetMethod(nameof(GetType));
+        NotNull(getTypeMethod);
         var overriddenMethod = typeof(string).Devirtualize(getTypeMethod);
         Equal(getTypeMethod, overriddenMethod);
     }
