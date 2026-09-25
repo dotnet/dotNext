@@ -42,32 +42,32 @@ public static class DictionaryType
         /// </summary>
         public static Action<IDictionary<TKey, TValue>, TKey, TValue> IndexerSetter => Indexer<TKey, TValue>.Setter;
     }
-    
-    private static class Indexer<TKey, TValue>
+}
+
+file static class Indexer<TKey, TValue>
+{
+    public static readonly Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue> ReadOnly;
+        
+    public static readonly Func<IDictionary<TKey, TValue>, TKey, TValue> Getter;
+        
+    public static readonly Action<IDictionary<TKey, TValue>, TKey, TValue> Setter;
+
+    static Indexer()
     {
-        public static readonly Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue> ReadOnly;
-        
-        public static readonly Func<IDictionary<TKey, TValue>, TKey, TValue> Getter;
-        
-        public static readonly Action<IDictionary<TKey, TValue>, TKey, TValue> Setter;
+        Ldtoken(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
+        Pop(out RuntimeMethodHandle method);
+        Ldtoken(Type<IReadOnlyDictionary<TKey, TValue>>());
+        Pop(out RuntimeTypeHandle type);
+        ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>>();
 
-        static Indexer()
-        {
-            Ldtoken(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
-            Pop(out RuntimeMethodHandle method);
-            Ldtoken(Type<IReadOnlyDictionary<TKey, TValue>>());
-            Pop(out RuntimeTypeHandle type);
-            ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>>();
+        Ldtoken(PropertyGet(Type<IDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
+        Pop(out method);
+        Ldtoken(Type<IDictionary<TKey, TValue>>());
+        Pop(out type);
+        Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IDictionary<TKey, TValue>, TKey, TValue>>();
 
-            Ldtoken(PropertyGet(Type<IDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
-            Pop(out method);
-            Ldtoken(Type<IDictionary<TKey, TValue>>());
-            Pop(out type);
-            Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IDictionary<TKey, TValue>, TKey, TValue>>();
-
-            Ldtoken(PropertySet(Type<IDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
-            Pop(out method);
-            Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IDictionary<TKey, TValue>, TKey, TValue>>();
-        }
+        Ldtoken(PropertySet(Type<IDictionary<TKey, TValue>>(), CollectionType.ItemIndexerName));
+        Pop(out method);
+        Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IDictionary<TKey, TValue>, TKey, TValue>>();
     }
 }
