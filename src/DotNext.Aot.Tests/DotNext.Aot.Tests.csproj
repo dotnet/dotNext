@@ -41,6 +41,7 @@
     <Compile Include="..\DotNext.Tests\Threading\AtomicContainerTests.cs" Link="Threading\AtomicContainerTests.cs" />
     <!-- Reflection -->
     <Compile Include="..\DotNext.Tests\Reflection\EnumTypeTests.cs" Link="Reflection\EnumTypeTests.cs" />
+    <Compile Include="..\DotNext.Tests\Reflection\DictionaryTypeTests.cs" Link="Reflection\DictionaryTypeTests.cs" />
     <!--Runtime Intrinsics-->
     <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
