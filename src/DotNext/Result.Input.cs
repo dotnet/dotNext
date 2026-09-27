@@ -76,19 +76,19 @@ partial struct Result<T>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Failure(Exception error) : IResultMonad<T>
     {
-        private readonly ExceptionDispatchInfo exception = ExceptionDispatchInfo.Capture(error);
+        private readonly ExceptionDispatchInfo error = ExceptionDispatchInfo.Capture(error);
 
         /// <summary>
         /// Gets the underlying exception.
         /// </summary>
-        public Exception Error => exception.SourceException;
+        public Exception Error => error.SourceException;
 
         /// <inheritdoc/>
         T IResultMonad<T>.Value
         {
             get
             {
-                exception.Throw();
+                error.Throw();
                 return default;
             }
         }
@@ -114,7 +114,7 @@ partial struct Result<T>
         /// </summary>
         /// <param name="result">The result to convert.</param>
         /// <returns>An instance of <seealso cref="Result{T}"/> that represents the successful result.</returns>
-        public static implicit operator Result<T>(Failure result) => new(result.exception);
+        public static implicit operator Result<T>(Failure result) => new(result.error);
         
         /// <summary>
         /// Converts the exception to the monad.
