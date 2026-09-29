@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "dotnext",
+  "description": "Agent skills for writing efficient .NET code with the .NEXT libraries",
+  "owner": {
+    "name": ".NET Foundation and Contributors",
+    "url": "https://github.com/dotnet/dotNext"
+  },
+  "plugins": [
+    {
+      "name": "dotnext",
+      "source": "./ai/plugins/dotnext",
+      "description": "Agent skills for writing efficient .NET code with the .NEXT libraries",
+      "category": "development",
+      "tags": ["dotnet", "csharp", "performance", "async", "threading"]
+    }
+  ]
+}

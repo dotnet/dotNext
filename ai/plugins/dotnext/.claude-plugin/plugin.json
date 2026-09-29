@@ -1,0 +1,13 @@
+{
+  "name": "dotnext",
+  "displayName": ".NEXT",
+  "description": "Guidance for AI agents on writing efficient .NET code with the .NEXT libraries",
+  "author": {
+    "name": ".NET Foundation and Contributors",
+    "url": "https://github.com/dotnet/dotNext"
+  },
+  "homepage": "https://dotnet.github.io/dotNext/index.html",
+  "repository": "https://github.com/dotnet/dotNext",
+  "license": "MIT",
+  "keywords": ["dotnet", "csharp", "performance", "async", "threading"]
+}
