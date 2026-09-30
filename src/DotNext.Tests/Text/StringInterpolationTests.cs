@@ -47,8 +47,14 @@ public sealed class StringInterpolationTests : Test
     {
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
         buffer.Interpolate($"{x,4:X} = {y,-3:X}");
-        Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
-        buffer.Dispose();
+        try
+        {
+            Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+        }
+        finally
+        {
+            buffer.Dispose();
+        }
     }
 
     [Theory]
