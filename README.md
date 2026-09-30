@@ -30,6 +30,32 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
+# AI Agent Skills
+.NEXT provides [Agent Skills](https://agentskills.io) that teach AI coding agents (Claude Code, Codex, GitHub Copilot, Cursor and others) how to use the libraries efficiently:
+* `dotnext-threading` - asynchronous programming, async locks, etc.
+* `dotnext-concurrency` - concurrent data structures
+
+To install:
+
+Claude Code:
+```sh
+/plugin marketplace add dotnet/dotNext
+/plugin install dotnext-skills@dotnext
+```
+
+Codex:
+```sh
+codex plugin marketplace add dotnet/dotNext
+codex plugin add dotnext-skills@dotnext
+```
+
+Any agent supporting Agent Skills, via [skills CLI](https://github.com/vercel-labs/skills):
+```sh
+npx skills add dotnet/dotNext
+```
+
+Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
+
 # What's new
 Release Date: 09-22-2026
 
