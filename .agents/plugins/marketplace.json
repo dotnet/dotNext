@@ -9,10 +9,10 @@
   },
   "plugins": [
     {
-      "name": "dotnext",
+      "name": "dotnext-skills",
       "source": {
         "source": "local",
-        "path": "./ai/plugins/dotnext"
+        "path": "./ai/plugins/dotnext-skills"
       },
       "description": "Agent skills for writing efficient .NET code with the .NEXT libraries"
     }
