@@ -11,7 +11,7 @@ public sealed class StringInterpolationTests : Test
     public static void AllocateString()
     {
         int x = 10, y = 20;
-        using var actual = StringInterpolation.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
+        using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
         Equal($"{x} + {y} = {x + y}", actual.Span.ToString());
     }
     
