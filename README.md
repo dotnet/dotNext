@@ -34,6 +34,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 .NEXT provides [Agent Skills](https://agentskills.io) that teach AI coding agents (Claude Code, Codex, GitHub Copilot, Cursor and others) how to use the libraries efficiently:
 * `dotnext-threading` - asynchronous programming, async locks, etc.
 * `dotnext-concurrency` - concurrent data structures
+* `dotnext-memory` - allocation-free memory routines, buffer writers, memory pooling
 
 To install:
 

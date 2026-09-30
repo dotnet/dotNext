@@ -13,7 +13,7 @@ metadata:
   dotnext-version: "6.x"
 ---
 
-# DotNext.Threading: concurrent data structures
+# Concurrent data structures
 
 ## Before you start
 

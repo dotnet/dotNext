@@ -13,7 +13,7 @@ metadata:
   dotnext-version: "6.x"
 ---
 
-# DotNext.Threading
+# Async Programming Patterns and Primitives
 
 ## Before you start
 
