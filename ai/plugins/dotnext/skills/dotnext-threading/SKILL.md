@@ -1,13 +1,13 @@
 ---
 name: dotnext-threading
 description: Async synchronization primitives from the DotNext.Threading NuGet package - async
-  exclusive lock, reader/writer lock, manual/auto reset events, countdown event, barrier, trigger,
-  counter, async lazy initialization (AsyncLazy), and awaiting WaitHandle/CancellationToken. Use
-  when writing async .NET code that needs mutual exclusion, signaling or one-time async
-  initialization without blocking threads, and when converting synchronous primitives
-  (lock/Monitor, ReaderWriterLockSlim, ManualResetEventSlim, AutoResetEvent, CountdownEvent,
-  Barrier, Monitor.Wait/Pulse, WaitHandle, Lazy<T>) to async, e.g. after
-  "CS1996 cannot await in the body of a lock statement".
+  exclusive and reader/writer locks (with sync acquisition for mixed callers), auto/manual reset
+  events, countdown event, barrier, AsyncTrigger, awaiting WaitHandle/CancellationToken, and
+  custom primitives via QueuedSynchronizer<T>. Use when writing async .NET code that needs mutual
+  exclusion or signaling without blocking threads, or that must await a WaitHandle or a
+  CancellationToken; and when converting lock/Monitor, Monitor.Wait/Pulse, ReaderWriterLockSlim,
+  ManualResetEventSlim, AutoResetEvent, CountdownEvent, Barrier or WaitHandle.WaitOne to async,
+  e.g. after "CS1996 cannot await in the body of a lock statement".
 license: MIT
 metadata:
   dotnext-version: "6.x"
@@ -28,28 +28,20 @@ All types live in the `DotNext.Threading` namespace or nested namespaces.
 
 ## Use Cases
 
-- Async primitives. Consider [rules](references/common_rules.md) when using these primitives
-  - Use `AsyncExclusiveLock` if you need exclusive lock behavior in async code, or you need async-friendly replacement of **lock** or `System.Threading.Monitor`. Consider this type as well when `System.Threading.Channels.Channel<T>` is used to organize the behavior similar to exclusive lock: once the item is placed in the channel, it cannot be removed or canceled without the actual processing by the consumer, but `AsyncExclusiveLock` supports cancellation of the suspended caller
-  - Use `AsyncReaderWriterLock` if you need reader/writer lock behavior in async code, or you need async-friendly replacement of `System.Threading.ReaderWriterLock` or `System.Threading.ReaderWriterLockSlim` classes.
-  - Use `AsyncAutoResetEvent` or `AsyncManualResetEvent` for signal-based synchronization in async code, or as async-friendly replacement of `System.Threading.AutoResetEvent` or `System.Threading.ManualResetEvent` classes.
-  - Use `AsyncCountdownEvent` if you need async-friendly replacement of `System.Threading.CountdownEvent` class.
-  - Use `AsyncBarrier` if you need async-friendly replacement of `System.Threading.Barrier` class. Post-phase handling is provided via `PostPhase` virtual method, which replaces `postPhaseAction` delegate in the constructor of of `System.Threading.Barrier` class.
-  - Use `await AsyncBridge.WaitAsync(CancellationToken, bool)` to replace `CancellationToken.WaitHandle.WaitOne()` synchronous calls to wait for the cancellation in async methods
-  - Use `await AsyncBridge.WaitAsync(WaitHandle, TimeSpan, CancellationToken)` or `await AsyncBridge.WaitAsync(WaitHandle, CancellationToken)` to replace `WaitHandle.WaitOne()` variations of synchronous calls in async methods
-- Advanced async primitives:
-  - Consider `AsyncLazy<T>` as async-friendly replacement of `System.Lazy<T>` class:
-    - Failures are cached unless `resettable: true`, and the first caller's token cancels the computation for everyone
-  - Consider `TaskCompletionPipe<T>` as alternative to `Task.WhenEach` method call in the following cases
-    - There is no way to supply a list of tasks to be awaited in the form of the list. Pipe supports adding new tasks dynamically via `Add` method
-    - To reuse the same pipe between enumerations (which leads to reduced memory allocation) by calling `Reset` method
-    - Ability to attach user data to every task to be tracked
-  - Consider `ValueTaskCompletionSource` as alternative to `System.Threading.Tasks.TaskCompletionSource` class if cases when the source can be reused between completions to reduce memory allocation
-  - Consider generic `ValueTaskCompletionSource<T>` as alternative to `System.Threading.Tasks.TaskCompletionSource<T>` generic class if cases when the source can be reused between completions to reduce memory allocation
-  - Consider `CancellationTokenMultiplexer` when multiple cancellation tokens need to be linked with each other and/or with the timeout in hot execution paths to replace memory allocation with pooling
-  - Consider `AsyncCounter` to organize rate limiting or throttling. Back-pressure is controlled by `HasConcurrencyLimit` and `ConcurrencyLevel` properties inherited from `QueuedSynchronizer` base class
-  - Consider `AsyncStateTracker` to track object changes asynchronously. It can be used to implement `System.Collections.Generic.IAsyncEnumerable<T>` interface to supply changed versions of the object. The producer calls `TryAdvance()` on each change and `TryComplete()` at the end. The consumer takes `CurrentState` and awaits `WaitNextAsync(state, token)`. That returns **false** once the tracker is completed. After it returns **true**, read the resource and take `CurrentState` again.
-  - Consider `LeaseConsumer` and `LeaseProvider<TMetadata>` types instead of custom implementation of client-side and server-side distributed leases accordingly.
+- Use `AsyncExclusiveLock` if you need exclusive lock behavior in async code, or you need async-friendly replacement of **lock** or `System.Threading.Monitor`. Consider this type as well when `System.Threading.Channels.Channel<T>` is used to organize the behavior similar to exclusive lock: once the item is placed in the channel, it cannot be removed or canceled without the actual processing by the consumer, but `AsyncExclusiveLock` supports cancellation of the suspended caller
+- Use `AsyncReaderWriterLock` if you need reader/writer lock behavior in async code, or you need async-friendly replacement of `System.Threading.ReaderWriterLock` or `System.Threading.ReaderWriterLockSlim` classes.
+- Use `AsyncAutoResetEvent` or `AsyncManualResetEvent` for signal-based synchronization in async code, or as async-friendly replacement of `System.Threading.AutoResetEvent` or `System.Threading.ManualResetEvent` classes.
+- Use `AsyncCountdownEvent` if you need async-friendly replacement of `System.Threading.CountdownEvent` class.
+- Use `AsyncBarrier` if you need async-friendly replacement of `System.Threading.Barrier` class. Post-phase handling is provided via `PostPhase` virtual method, which replaces `postPhaseAction` delegate in the constructor of `System.Threading.Barrier` class.
+- Use `AsyncTrigger` to suspend and resume async flows on demand, or as async-friendly replacement of `Monitor.Wait`/`Monitor.Pulse`/`Monitor.PulseAll`: `Pulse` → `Signal()`, `PulseAll` → `Signal(resumeAll: true)`, `Wait` → `WaitAsync(token)`.
+  - The trigger is not tied to a lock and has no memory: `Signal()` resumes only callers that are already waiting and returns **false** if there are none. Where a signal must not be lost, use `AsyncAutoResetEvent` or `AsyncManualResetEvent` instead.
+  - For "wait until condition" loops (`while (!condition) Monitor.Wait(obj)`), use `SpinWaitAsync(condition, token)`. The condition implements `DotNext.ISupplier<bool>` (a struct avoids allocation). It is checked before suspending, and a signal resumes the caller only if the condition is true at that moment.
+  - `SignalAndWaitAsync(resumeAll, throwOnEmptyQueue, token)` resumes waiters and suspends the caller in one step, the async equivalent of the `Pulse` + `Wait` handoff.
+- Use `await AsyncBridge.WaitAsync(CancellationToken, bool)` to replace `CancellationToken.WaitHandle.WaitOne()` synchronous calls to wait for the cancellation in async methods
+- Use `await AsyncBridge.WaitAsync(WaitHandle, TimeSpan, CancellationToken)` or `await AsyncBridge.WaitAsync(WaitHandle, CancellationToken)` to replace `WaitHandle.WaitOne()` variations of synchronous calls in async methods
 - If custom synchronization is needed for async scenarios, consider `QueuedSynchronizer<T>` as a base class
+
+Consider [rules](references/common_rules.md) when using these primitives.
 
 ## Migration Tips
 Read this when existing code uses blocking synchronization and needs to become async.
@@ -113,7 +105,7 @@ public void Flush() // must stay synchronous
   A sync acquisition on a thread that already holds the lock via `await`, or the other way round, is not detected and
   just waits: `false` after the timeout for sync, forever for async.
 - **`TryUpgradeToWriteLock()` that returns `false` has already released the caller's read lock.** Don't call `Release()`
-  for the read lock afterwards. Reacquire if you still need it.
+  for the read lock afterward. Reacquire if you still need it.
 
 ## Canonical example
 

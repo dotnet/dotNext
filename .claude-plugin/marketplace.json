@@ -12,7 +12,7 @@
       "source": "./ai/plugins/dotnext",
       "description": "Agent skills for writing efficient .NET code with the .NEXT libraries",
       "category": "development",
-      "tags": ["dotnet", "csharp", "performance", "async", "threading"]
+      "tags": ["dotnet", "csharp", "performance", "async", "threading", "sieve", "cache"]
     }
   ]
 }
