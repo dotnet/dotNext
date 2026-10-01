@@ -165,7 +165,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal partial struct Bucket(AsyncExclusiveLock bucketLock)
+    internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
         internal readonly AsyncExclusiveLock Lock = bucketLock;
         private KeyValuePair? addedPair;
