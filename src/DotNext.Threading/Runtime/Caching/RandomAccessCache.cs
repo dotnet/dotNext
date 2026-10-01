@@ -102,7 +102,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, cts.Token).ConfigureAwait(false))
             {
-                Bucket.Ref bucket;
+                ArrayDataReference<Bucket> bucket;
 
                 bucketsCopy = buckets;
                 for (BucketList newCopy;; bucketsCopy = newCopy)
@@ -192,7 +192,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, cts.Token).ConfigureAwait(false))
             {
-                Bucket.Ref bucket;
+                ArrayDataReference<Bucket> bucket;
 
                 bucketsCopy = buckets;
                 for (BucketList newCopy;; bucketsCopy = newCopy)
@@ -317,7 +317,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
-            Bucket.Ref bucket;
+            ArrayDataReference<Bucket> bucket;
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
@@ -396,7 +396,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         KeyValuePair? removedPair;
         try
         {
-            Bucket.Ref bucket;
+            ArrayDataReference<Bucket> bucket;
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
@@ -686,11 +686,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
         private readonly object lockOrValueHolder; // AsyncExclusiveLock or KeyValuePair
-        private readonly Bucket.Ref bucket;
+        private readonly ArrayDataReference<Bucket> bucket;
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal ReadWriteSession(RandomAccessCache<TKey, TValue> cache, in Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
+        internal ReadWriteSession(RandomAccessCache<TKey, TValue> cache, in ArrayDataReference<Bucket> bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
         {
             this.cache = cache;
             lockOrValueHolder = bucketLock;

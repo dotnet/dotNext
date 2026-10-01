@@ -356,13 +356,6 @@ public partial class RandomAccessCache<TKey, TValue>
             
             public readonly KeyValuePair Current => current!;
         }
-        
-        [StructLayout(LayoutKind.Auto)]
-        internal readonly struct Ref(Bucket[] buckets, int index)
-        {
-            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -439,12 +432,12 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int Count => buckets.Length;
 
-        internal void GetByHash(int hashCode, out Bucket.Ref bucket)
+        internal void GetByHash(int hashCode, out ArrayDataReference<Bucket> bucket)
         {
             var index = fastMod.GetRemainder((uint)hashCode);
             Debug.Assert(index < (uint)buckets.Length);
 
-            bucket = new(buckets, (int)index);
+            bucket = new(buckets, index);
         }
 
         internal ref Bucket GetByHash(int hashCode)
