@@ -68,4 +68,28 @@ public static partial class DelegateHelpers
     public static TDelegate ChangeType<TDelegate>(this Delegate d)
         where TDelegate : Delegate
         => d is TDelegate ? Unsafe.As<TDelegate>(d) : ChangeType<TDelegate, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
+
+    /// <summary>
+    /// Extends <see cref="Delegate"/> type.
+    /// </summary>
+    extension(Delegate)
+    {
+        /// <summary>
+        /// Forces C# compiler to apply delegate type inference.
+        /// </summary>
+        /// <remarks>
+        /// The method works whenever the argument has a natural delegate type, which is
+        /// <see cref="Action"/> or <see cref="Func{TResult}"/> family of delegates if the signature fits,
+        /// or the delegate type synthesized by the compiler otherwise (e.g., for <c>ref</c> or <c>out</c> parameters,
+        /// <c>params</c> or optional parameters). The method group must not have overloads.
+        /// The type of the returned delegate is always inferred from the argument and doesn't depend on the type
+        /// used to access the method, i.e. <c>Action.Infer(Sum)</c> returns <see cref="Func{T1, T2, TResult}"/>
+        /// if <c>Sum</c> is <c>int Sum(int, int)</c>.
+        /// </remarks>
+        /// <param name="d">The delegate instance.</param>
+        /// <typeparam name="TDelegate">The inferred type of the delegate.</typeparam>
+        /// <returns>The inferred delegate.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TDelegate Infer<TDelegate>(TDelegate d) where TDelegate : Delegate => d;
+    }
 }

@@ -70,7 +70,7 @@ public sealed class TypeExtensionsTests : Test
         True(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged);
         False(typeof(ManagedStruct).IsUnmanaged);
         False(typeof((int, string)).IsUnmanaged);
-        var method = new Func<int>(SizeOf<long>).Method;
+        var method = Delegate.Infer(SizeOf<long>).Method;
         method = method.GetGenericMethodDefinition();
         True(method.GetGenericArguments()[0].IsUnmanaged);
     }
