@@ -40,6 +40,7 @@ public partial class FileReader : Disposable
 
         maxBufferSize = DefaultBufferSize;
         this.handle = handle;
+        Allocator = null;
     }
 
     /// <summary>
@@ -62,8 +63,8 @@ public partial class FileReader : Disposable
     [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get => field ??= MemoryAllocator<byte>.Default;
-        init;
+        get;
+        init => field = value ?? MemoryAllocator<byte>.Default;
     }
 
     /// <summary>

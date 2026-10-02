@@ -38,6 +38,7 @@ public partial class FileWriter : Disposable, IFlushable
 
         maxBufferSize = DefaultBufferSize;
         this.handle = handle;
+        Allocator = null;
     }
 
     /// <summary>
@@ -53,15 +54,15 @@ public partial class FileWriter : Disposable, IFlushable
 
         FilePosition = destination.Position;
     }
-    
+
     /// <summary>
     /// Gets buffer allocator.
     /// </summary>
     [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get => field ??= MemoryAllocator<byte>.Default;
-        init;
+        get;
+        init => field = value ?? MemoryAllocator<byte>.Default;
     }
 
     /// <summary>
