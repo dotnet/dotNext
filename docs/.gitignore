@@ -1,3 +1,4 @@
 api/*.yml
 api/.manifest
 log.txt
+llms.txt
