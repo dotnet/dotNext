@@ -53,6 +53,16 @@
       },
       "_gitUrlPattern": "github"
     },
+    "sitemap": {
+      "baseUrl": "https://dotnet.github.io/dotNext/",
+      "changefreq": "monthly",
+      "priority": 0.8,
+      "fileOptions": {
+        "**/api/**.yml": {
+          "priority": 0.3
+        }
+      }
+    },
     "content": [
       {
         "files": [
