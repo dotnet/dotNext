@@ -1,8 +1,15 @@
 Release Notes
 ====
 
-# 09-22-2026
+# 10-06-2026
 
+
+# 09-22-2026
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.8.1">DotNext.Net.Cluster 6.8.1</a>
+* Fixed [299](https://github.com/dotnet/dotNext/issues/299)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.8.1">DotNext.AspNetCore.Cluster 6.8.1</a>
+* Fixed [299](https://github.com/dotnet/dotNext/issues/299)
 
 # 09-20-2026
 <a href="https://www.nuget.org/packages/dotnext/6.8.0">DotNext 6.8.0</a>
