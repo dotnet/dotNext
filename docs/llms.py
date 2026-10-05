@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generates llms.txt (https://llmstxt.org) from docfx toc.yml files.
 
-Articles are linked by their raw Markdown sources, which GitHub Pages serves from the docs/ folder.
+Articles are linked by their HTML pages, because docfx resolves xref links only in the generated HTML.
 API reference is linked by namespace pages; run 'docfx metadata' first to get api/toc.yml.
 Usage: python3 llms.py [--base-url URL] [--output FILE]
 """
@@ -24,10 +24,6 @@ class Generator:
         self.sections = []  # list of (title, [lines])
         self.resources = []
 
-    def article_url(self, path):
-        # Raw Markdown is served from the 'docs/' folder of the gh-pages branch
-        return f'{self.base_url}docs/{path}'
-
     def page_url(self, path):
         return self.base_url + path
 
@@ -43,7 +39,7 @@ class Generator:
             return f'- [{name}]({href})'
         path = posixpath.normpath(posixpath.join(folder, href))
         if path.endswith('.md'):
-            return f'- [{name}]({self.article_url(path)})'
+            path = path[:-3] + '.html'
         return f'- [{name}]({self.page_url(path)})'
 
     def items(self, entries, folder, depth=0):
@@ -91,7 +87,7 @@ class Generator:
         with open(DOCS_DIR / 'docfx.json', encoding='utf-8') as f:
             title = json.load(f)['build']['globalMetadata']['_appTitle']
 
-        out = [f'# {title}', '', f'> {intro()}', '', f'- [Overview]({self.article_url("index.md")})', '']
+        out = [f'# {title}', '', f'> {intro()}', '', f'- [Overview]({self.page_url("index.html")})', '']
         for name, lines in self.sections + [('Resources', self.resources)]:
             if lines:
                 out += [f'## {name}', '', *lines, '']
