@@ -78,6 +78,7 @@ A set of skills for AI agents has been released: skills explain how to use .NEXT
 <a href="https://www.nuget.org/packages/dotnext.threading/6.9.0">DotNext.Threading 6.9.0</a>
 * Fixed XML docs for `AsyncStateTracker` class
 * Added collection builder support to `AsyncEventHub.EventGroup` inner type
+* Fixed [302](https://github.com/dotnet/dotNext/issues/302)
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.9.0">DotNext.IO 6.9.0</a>
 * Removed null check in hot execution paths for `FileReader` and `FileWriter` types
