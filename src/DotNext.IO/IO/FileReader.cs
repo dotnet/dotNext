@@ -17,7 +17,6 @@ using Buffers;
 public partial class FileReader : Disposable
 {
     private const int MinBufferSize = 16;
-    private const int DefaultBufferSize = 4096;
     
     /// <summary>
     /// Represents the file handle.
@@ -38,8 +37,9 @@ public partial class FileReader : Disposable
         ArgumentNullException.ThrowIfNull(handle);
         ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
 
-        maxBufferSize = DefaultBufferSize;
+        maxBufferSize = Environment.SystemPageSize;
         this.handle = handle;
+        Allocator = null;
     }
 
     /// <summary>
@@ -62,8 +62,8 @@ public partial class FileReader : Disposable
     [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get => field ??= MemoryAllocator<byte>.Default;
-        init;
+        get;
+        init => field = value ?? MemoryAllocator<byte>.Default;
     }
 
     /// <summary>

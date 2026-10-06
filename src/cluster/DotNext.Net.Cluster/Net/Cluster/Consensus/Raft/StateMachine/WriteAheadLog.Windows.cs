@@ -54,16 +54,19 @@ partial class WriteAheadLog
             : base(location, pageSize, out var pages)
         {
             sectorSize = GetSectorSize(location);
-            if ((uint)pageSize % sectorSize is not 0)
+            if (!IsAllowed(location, pageSize))
                 throw new ArgumentOutOfRangeException(nameof(pageSize));
 
             Initialize(location, pages);
-
-            static uint GetSectorSize(DirectoryInfo location)
-                => GetDiskFreeSpace(location.Root.FullName, out _, out var bytesPerSector, out _, out _)
-                    ? bytesPerSector
-                    : throw new Win32Exception(Marshal.GetLastPInvokeError());
         }
+
+        public static bool IsAllowed(DirectoryInfo location, int pageSize)
+            => (uint)pageSize % GetSectorSize(location) is 0;
+        
+        private static uint GetSectorSize(DirectoryInfo location)
+            => GetDiskFreeSpace(location.Root.FullName, out _, out var bytesPerSector, out _, out _)
+                ? bytesPerSector
+                : throw new Win32Exception(Marshal.GetLastPInvokeError());
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceW", StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

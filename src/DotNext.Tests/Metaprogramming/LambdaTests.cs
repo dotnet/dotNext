@@ -82,7 +82,7 @@ public sealed class LambdaTests : Test
     [InlineData(true)]
     public static void SimpleAsyncFunc(bool usePooling)
     {
-        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
+        var sumMethod = Delegate.Infer(Sum).Method;
         var lambda = AsyncLambda<Func<long, long, Task<long>>>(usePooling, fun =>
         {
             var (arg1, arg2) = fun;
@@ -99,7 +99,7 @@ public sealed class LambdaTests : Test
     [InlineData(true)]
     public static void SimpleAsyncAction(bool usePooling)
     {
-        var sumMethod = new Func<long, long, StrongBox<long>, Task>(SumAction).Method;
+        var sumMethod = Delegate.Infer(SumAction).Method;
         
         var lambda = AsyncLambda<Func<long, long, StrongBox<long>, Task>>(usePooling, fun =>
         {
@@ -123,7 +123,7 @@ public sealed class LambdaTests : Test
     [InlineData(AsyncLambdaFlags.UseTaskPooling)]
     public static void SimpleUntypedAsyncLambda(AsyncLambdaFlags flags)
     {
-        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
+        var sumMethod = Delegate.Infer(Sum).Method;
 
         var lambda = AsyncLambda([typeof(long), typeof(long)], typeof(long), flags, fun =>
         {
@@ -159,7 +159,7 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void SimpleAsyncLambdaImplicitResult()
     {
-        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
+        var sumMethod = Delegate.Infer(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
@@ -175,7 +175,7 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void SimpleAsyncLambdaImplicitResult2()
     {
-        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
+        var sumMethod = Delegate.Infer(Sum).Method;
         
         var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
         {
@@ -231,7 +231,7 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void TryFinallyAsync()
     {
-        var sumMethod = new Func<long, long, Task<long>>(Sum).Method;
+        var sumMethod = Delegate.Infer(Sum).Method;
         
         var lambda = AsyncLambda<Func<long[], Task<long>>>(fun =>
         {
@@ -437,8 +437,8 @@ public sealed class LambdaTests : Test
     [Fact]
     public static async Task RegressionIssue70()
     {
-        var exprThrowException = new Func<Task<string>>(ThrowException).Method;
-        var exprReprocess = new Func<Task<string>>(Reprocess).Method;
+        var exprThrowException = Delegate.Infer(ThrowException).Method;
+        var exprReprocess = Delegate.Infer(Reprocess).Method;
 
         var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((_, result) =>
         {

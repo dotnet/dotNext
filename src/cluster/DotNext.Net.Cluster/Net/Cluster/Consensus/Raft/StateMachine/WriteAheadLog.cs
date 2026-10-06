@@ -104,25 +104,29 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             PageManager m, d;
             switch (configuration.MemoryManagement)
             {
-                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsWindows() && configuration.NoBuffering:
-                    m = new WindowsDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsWindows()
+                                                                 && configuration.NoBuffering
+                                                                 && WindowsDirectPageManager.IsAllowed(metadataLocation, Page.MinSize):
+                    m = new WindowsDirectPageManager(metadataLocation, Page.MinSize);
                     d = new WindowsDirectPageManager(dataLocation, configuration.ChunkSize);
                     break;
-                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsLinux() && configuration.NoBuffering:
-                    m = new LinuxDirectPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                case MemoryManagementStrategy.PrivateMemory when OperatingSystem.IsLinux()
+                                                                 && configuration.NoBuffering
+                                                                 && LinuxDirectPageManager.IsAllowed(metadataLocation, Page.MinSize):
+                    m = new LinuxDirectPageManager(metadataLocation, Page.MinSize);
                     d = new LinuxDirectPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.PrivateMemory:
-                    m = new AnonymousPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new AnonymousPageManager(metadataLocation, Page.MinSize);
                     d = new AnonymousPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.SharedMemory:
                 default:
-                    m = new MemoryMappedPageManager(metadataLocation, int.Max(Page.MinSize, Environment.SystemPageSize));
+                    m = new MemoryMappedPageManager(metadataLocation, Page.MinSize);
                     d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }
-            
+
             metadataPages = new(m, hash?.HashLengthInBytes ?? 0);
             dataPages = new(d)
             {

@@ -74,7 +74,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 if (!removed && !removedPair.ReleaseCounter())
                 {
                     OnRemoved(removedPair);
-                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode));
+                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode).Value);
                 }
             }
         }

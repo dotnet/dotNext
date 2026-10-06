@@ -165,7 +165,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal partial struct Bucket(AsyncExclusiveLock bucketLock)
+    internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
         internal readonly AsyncExclusiveLock Lock = bucketLock;
         private KeyValuePair? addedPair;
@@ -356,13 +356,6 @@ public partial class RandomAccessCache<TKey, TValue>
             
             public readonly KeyValuePair Current => current!;
         }
-        
-        [StructLayout(LayoutKind.Auto)]
-        internal readonly struct Ref(Bucket[] buckets, int index)
-        {
-            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -431,7 +424,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     var newPair = CreatePair(pair.Key, GetValue(pair), pair.KeyHashCode);
                     newPair.Import(pair);
-                    GetByHash(newPair.KeyHashCode).Add(newPair);
+                    GetByHash(newPair.KeyHashCode).Value.Add(newPair);
                 }
             }
         }
@@ -439,16 +432,13 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int Count => buckets.Length;
 
-        internal void GetByHash(int hashCode, out Bucket.Ref bucket)
+        internal ArrayDataReference<Bucket> GetByHash(int hashCode)
         {
             var index = fastMod.GetRemainder((uint)hashCode);
             Debug.Assert(index < (uint)buckets.Length);
 
-            bucket = new(buckets, (int)index);
+            return new(buckets, index);
         }
-
-        internal ref Bucket GetByHash(int hashCode)
-            => ref GetByIndex((int)fastMod.GetRemainder((uint)hashCode));
 
         internal ref Bucket GetByIndex(int index)
         {
@@ -459,7 +449,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal KeyValuePair? FindPair<TPredicate>(TPredicate predicate, int keyHashCode)
             where TPredicate : struct, IEquatable<TKey>, allows ref struct
-            => GetByHash(keyHashCode).TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
+            => GetByHash(keyHashCode).Value.TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
 
         internal void Release(int count)
         {

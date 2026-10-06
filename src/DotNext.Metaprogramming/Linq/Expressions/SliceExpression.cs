@@ -37,7 +37,7 @@ public sealed class SliceExpression : CustomExpression
         }
         else if (collection.Type == typeof(string))
         {
-            slice = new Func<string, Range, string>(StringExtensions.Substring).Method;
+            slice = Delegate.Infer(StringExtensions.Substring).Method;
             count = null;
             resolved = true;
         }

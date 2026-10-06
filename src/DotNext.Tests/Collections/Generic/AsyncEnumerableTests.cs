@@ -65,7 +65,7 @@ public sealed class AsyncEnumerableTests : Test
     }
 
     [Fact]
-    public static async Task SkipNullsTestAsync()
+    public static async Task SkipNullsAsync()
     {
         var list = new LinkedList<string>();
         list.AddLast("a");
@@ -78,6 +78,22 @@ public sealed class AsyncEnumerableTests : Test
         Equal(2, array.Length);
         True(Array.Exists(array, "a".Equals));
         True(Array.Exists(array, "b".Equals));
+    }
+
+    [Fact]
+    public static async Task SkipNullsValueTypeAsync()
+    {
+        var list = new List<int?> { 42, null, 43, null };
+        var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync(TestToken);
+        Equal([42, 43], array);
+    }
+
+    [Fact]
+    public static async Task SkipEmptyOptionalValuesAsync()
+    {
+        var list = new List<Optional<int>> { 42, Optional<int>.None, 43, Optional<int>.None };
+        var array = await list.ToAsyncEnumerable().Flatten<int, Optional<int>>().ToArrayAsync(TestToken);
+        Equal([42, 43], array);
     }
 
     [Fact]

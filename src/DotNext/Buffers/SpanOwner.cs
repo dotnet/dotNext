@@ -39,7 +39,7 @@ public ref struct SpanOwner<T> : IDisposable
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public static int StackallocThreshold { get; } = int.Min(1, Features.StackallocThreshold / Unsafe.SizeOf<T>());
+    public static int StackallocThreshold { get; } = int.Max(1, Features.StackallocThreshold / Unsafe.SizeOf<T>());
 
     private readonly object? owner;
     private readonly Span<T> memory;

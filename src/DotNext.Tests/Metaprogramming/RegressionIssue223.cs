@@ -14,7 +14,7 @@ public sealed class RegressionIssue223 : Test
         {
             Try(() =>
                 {
-                    var methodInfo = new Func<Task<int>>(Throw).Method;
+                    var methodInfo = Delegate.Infer(Throw).Method;
                     var methodResult = Expression.Call(null, methodInfo);
 
                     Return(methodResult.Await());

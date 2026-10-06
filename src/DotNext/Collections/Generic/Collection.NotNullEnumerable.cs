@@ -5,28 +5,63 @@ namespace DotNext.Collections.Generic;
 public static partial class Collection
 {
     /// <summary>
-    /// Skip <see langword="null"/> values in the collection.
+    /// Skips <see langword="null"/> values in the collection.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>
     /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
     /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
     public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
         where T : class
-        => new NotNullEnumerable<T>(collection);
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        
+        return new NotNullEnumerable<T?, T, NotNullFilter<T>>(collection);
+    }
+
+    /// <summary>
+    /// Skips <see langword="null"/> values in the collection.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the collection.</typeparam>
+    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
+    public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
+        where T : struct
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        return new NotNullEnumerable<T?, T, HasValueFilter<T>>(collection);
+    }
+
+    /// <summary>
+    /// Returns only elements which has values.
+    /// </summary>
+    /// <typeparam name="T">Type of the monad.</typeparam>
+    /// <typeparam name="TMonad">Type of the elements in the collection.</typeparam>
+    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>Modified lazy collection of values.</returns>
+    public static IEnumerable<T> Flatten<T, TMonad>(this IEnumerable<TMonad> collection)
+        where T : notnull
+        where TMonad : struct, IOptionMonad<T>
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        return new NotNullEnumerable<TMonad, T, NotEmptyFilter<TMonad, T>>(collection);
+    }
 }
 
-file sealed class NotNullEnumerable<T>(IEnumerable<T?> enumerable) : IEnumerable<T>
-    where T : class
+file sealed class NotNullEnumerable<TInput, TOutput, TFilter>(IEnumerable<TInput?> enumerable) : IEnumerable<TOutput>
+    where TOutput : notnull
+    where TFilter : INullabilityFilter<TInput, TOutput>, allows ref struct
 {
-    private sealed class Enumerator : Disposable, IEnumerator<T>
+    private sealed class Enumerator : Disposable, IEnumerator<TOutput>
     {
-        private readonly IEnumerator<T?> enumerator;
-        private T? current;
+        private readonly IEnumerator<TInput?> enumerator;
+        private TOutput? current;
 
-        internal Enumerator(IEnumerable<T?> enumerable)
+        internal Enumerator(IEnumerable<TInput?> enumerable)
             => enumerator = enumerable.GetEnumerator();
 
-        public T Current => current ?? throw new InvalidOperationException();
+        public TOutput Current => current!;
 
         object IEnumerator.Current => Current;
 
@@ -34,11 +69,8 @@ file sealed class NotNullEnumerable<T>(IEnumerable<T?> enumerable) : IEnumerable
         {
             while (enumerator.MoveNext())
             {
-                if (enumerator.Current is { } currentValue)
-                {
-                    current = currentValue;
+                if (TFilter.TryGet(enumerator.Current, out current))
                     return true;
-                }
             }
 
             return false;
@@ -50,7 +82,7 @@ file sealed class NotNullEnumerable<T>(IEnumerable<T?> enumerable) : IEnumerable
         {
             if (disposing)
             {
-                current = null;
+                current = default;
                 enumerator.Dispose();
             }
 
@@ -58,7 +90,7 @@ file sealed class NotNullEnumerable<T>(IEnumerable<T?> enumerable) : IEnumerable
         }
     }
 
-    public IEnumerator<T> GetEnumerator() => new Enumerator(enumerable);
+    public IEnumerator<TOutput> GetEnumerator() => new Enumerator(enumerable);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
