@@ -47,3 +47,4 @@ metadata:
   - SIEVE is not scan resistant: enumerating the cache doesn't update the recency of entries
   - It doesn't behave like dictionary. Instead, it exposes read or write session, which guarantee liveness of the cache entry during read or modification in case of concurrent eviction.
   - Use [this example](https://github.com/dotnet/dotNext/blob/master/src/examples/RandomAccessCacheBenchmark/Program.cs) to see how to consume its API.
+- Consider `ReferenceCounted<T>` and `ReferenceCountedOwner<T>` classes (`DotNext.Threading`) to replace handwritten reference counting mechanism
