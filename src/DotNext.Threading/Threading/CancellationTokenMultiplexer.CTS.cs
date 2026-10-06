@@ -26,7 +26,7 @@ partial struct CancellationTokenMultiplexer
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
             // register inlined tokens
-            var inlinedCount = int.Min(InlinedListCapacity, tokens.Length);
+            var inlinedCount = int.Min(InlinedListCapacity, count = tokens.Length);
 
             for (var i = 0; i < inlinedCount; i++)
             {
@@ -35,7 +35,6 @@ partial struct CancellationTokenMultiplexer
 
             // register extra tokens
             tokens = tokens.Slice(inlinedCount);
-            count = inlinedCount + tokens.Length;
             if (tokens.IsEmpty)
                 return;
 
