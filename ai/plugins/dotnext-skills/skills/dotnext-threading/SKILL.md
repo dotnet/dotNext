@@ -13,9 +13,7 @@ metadata:
   dotnext-version: "6.x"
 ---
 
-# Async Programming Patterns and Primitives
-
-## Before you start
+# Before you start
 
 1. Check which version of `DotNext.Threading` the project references (`.csproj` or
    `Directory.Packages.props`). This skill describes 6.x. For older versions, verify each
@@ -26,7 +24,7 @@ metadata:
 
 All types live in the `DotNext.Threading` namespace or nested namespaces.
 
-## Use Cases
+# Use Cases
 
 - Use `AsyncExclusiveLock` if you need exclusive lock behavior in async code, or you need async-friendly replacement of **lock** or `System.Threading.Monitor`. Consider this type as well when `System.Threading.Channels.Channel<T>` is used to organize the behavior similar to exclusive lock: once the item is placed in the channel, it cannot be removed or canceled without the actual processing by the consumer, but `AsyncExclusiveLock` supports cancellation of the suspended caller
 - Use `AsyncReaderWriterLock` if you need reader/writer lock behavior in async code, or you need async-friendly replacement of `System.Threading.ReaderWriterLock` or `System.Threading.ReaderWriterLockSlim` classes.
@@ -43,7 +41,7 @@ All types live in the `DotNext.Threading` namespace or nested namespaces.
 
 Consider [rules](references/common_rules.md) when using these primitives.
 
-## Migration Tips
+# Migration Tips
 Read this when existing code uses blocking synchronization and needs to become async.
 Typical triggers: `CS1996` (await inside `lock`), thread-pool starvation, or `.Wait()`/`.Result` in async code.
 
@@ -64,7 +62,7 @@ Typical triggers: `CS1996` (await inside `lock`), thread-pool starvation, or `.W
 6. Check for reentrancy (below) before finishing.
 7. If the owner type is `IDisposable`, dispose the new primitive there, preferably via `IAsyncDisposable`.
 
-## Mixed sync and async callers
+# Mixed sync and async callers
 
 `AsyncExclusiveLock` and `AsyncReaderWriterLock` can also be acquired synchronously. One lock instance can then
 serve callers that have to stay synchronous (sync interface implementations, `Dispose()`, legacy APIs, code
@@ -107,7 +105,7 @@ public void Flush() // must stay synchronous
 - **`TryUpgradeToWriteLock()` that returns `false` has already released the caller's read lock.** Don't call `Release()`
   for the read lock afterward. Reacquire if you still need it.
 
-## Canonical example
+# Canonical example
 
 ```csharp
 using DotNext.Threading;
@@ -156,14 +154,14 @@ public sealed class Inventory : IAsyncDisposable
 }
 ```
 
-## Don't use this skill for
+# Don't use this skill for
 
 - CPU-bound parallelism → `Parallel`, PLINQ.
 - Producer/consumer queues → `System.Threading.Channels`
 - Code that is fully synchronous, never awaits while holding the lock, and shares no state with async code.
   `lock` is fine there and faster.
 
-## Pitfalls
+# Pitfalls
 
 - **Reentrancy.** `lock`/`Monitor` and `ReaderWriterLockSlim` (with `LockRecursionPolicy.SupportsRecursion`) allow the
   owning thread to re-enter. DotNext async locks do not. Async acquisition has no thread owner, so re-entering

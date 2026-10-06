@@ -13,9 +13,7 @@ metadata:
   dotnext-version: "6.x"
 ---
 
-# Memory Routines
-
-## Before you start
+# Before you start
 
 1. Check which version of `DotNext` and `DotNext.Unsafe` the project references (`.csproj` or
    `Directory.Packages.props`). This skill describes 6.x. For older versions, verify each
@@ -24,7 +22,7 @@ metadata:
 
 Most of the types are in `DotNext` package. In case of unmanaged memory allocations, add `DotNext.Unsafe` dependency as well.
 
-## Use Cases
+# Use Cases
 - Avoid **stackalloc** which length is an input from the untrusted source: user input, request parameter, etc. If the length is expected to be small, but you need safe fallback, use `SpanOwner<T>` (`DotNext.Buffers`) data type.
   - Always declare it with `using`. When the length exceeds the threshold, `SpanOwner<T>` rents the memory from the pool, and `Dispose` returns it. For a stack-allocated span, `Dispose` does nothing.
   - Choose the threshold in bytes, not elements: divide by `Unsafe.SizeOf<T>()` for other element types.
