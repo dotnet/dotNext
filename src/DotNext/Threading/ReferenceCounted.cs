@@ -122,10 +122,8 @@ public abstract class ReferenceCounted<T>
         [MemberNotNullWhen(true, nameof(arc))]
         public readonly bool IsValid => arc is not null;
 
-        /// <summary>
-        /// Gets the protected resource.
-        /// </summary>
-        public readonly T Value
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly ReferenceCounted<T> Container
         {
             get
             {
@@ -133,9 +131,14 @@ public abstract class ReferenceCounted<T>
                 if (containerCopy is null)
                     InvalidOperationException.Throw();
 
-                return containerCopy.resource;
+                return containerCopy;
             }
         }
+
+        /// <summary>
+        /// Gets the protected resource.
+        /// </summary>
+        public readonly T Value => Container.resource;
 
         /// <summary>
         /// Gets a reference to the protected resource.
@@ -143,17 +146,8 @@ public abstract class ReferenceCounted<T>
         /// <remarks>
         /// This property is useful when the underlying resource is a value type.
         /// </remarks>
-        public readonly ref T ValueRef
-        {
-            get
-            {
-                var containerCopy = arc;
-                if (containerCopy is null)
-                    InvalidOperationException.Throw();
-
-                return ref containerCopy.resource;
-            }
-        }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public readonly ref T ValueRef => ref Container.resource;
 
         /// <summary>
         /// Releases the strong reference.
