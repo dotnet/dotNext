@@ -32,6 +32,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 
 # AI Agent Skills
 .NEXT provides [Agent Skills](https://agentskills.io) that teach AI coding agents (Claude Code, Codex, GitHub Copilot, Cursor and others) how to use the libraries efficiently:
+* `dotnext-core` - Optional and Result monads, timestamps, type maps, console app lifetime, etc.
 * `dotnext-threading` - asynchronous programming, async locks, etc.
 * `dotnext-concurrency` - concurrent data structures
 * `dotnext-memory` - allocation-free memory routines, buffer writers, memory pooling
@@ -68,6 +69,7 @@ A set of skills for AI agents has been released: skills explain how to use .NEXT
 * Added `SkipNulls` extension method overload for nullable value types
 * Added `Flatten` extension method to skip empty values of Optional monadic type in enumerations
 * Introduced `Infer` extension method to force automatic delegate type inference in C#
+* Added `ReferenceCounted<T>` class which implements concurrent reference counting for a generic resource
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.9.0">DotNext.Metaprogramming 6.9.0</a>
 * Updated dependencies

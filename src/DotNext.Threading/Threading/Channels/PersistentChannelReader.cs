@@ -225,7 +225,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             Debug.Assert(reader is not null);
 
             this.reader = reader;
-            tokenSource = LinkedCancellationTokenSource.Combine(ref producerToken, consumerToken);
+            tokenSource = CancellationToken.Combine(ref producerToken, consumerToken);
             token = producerToken;
             offset = long.MinValue;
         }
