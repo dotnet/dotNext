@@ -21,6 +21,8 @@ metadata:
 2. This skill is applicable in the following scenarios:
    - Writing new async code
    - Converting existing synchronous code
+3. If this skill doesn't cover what you need (API details, more examples), find the relevant article
+   in the documentation index: https://dotnet.github.io/dotNext/llms.txt
 
 All types live in the `DotNext.Threading` namespace or nested namespaces.
 

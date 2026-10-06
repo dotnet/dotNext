@@ -19,6 +19,8 @@ metadata:
    `Directory.Packages.props`). This skill describes 6.x. For older versions, verify each
    member you use against the XML docs/IntelliSense of the referenced version.
 2. The types below are in several namespaces. Add the `using` shown next to each type.
+3. If this skill doesn't cover what you need (API details, more examples), find the relevant article
+   in the documentation index: https://dotnet.github.io/dotNext/llms.txt
 
 Most of the types are in `DotNext` package. In case of unmanaged memory allocations, add `DotNext.Unsafe` dependency as well.
 

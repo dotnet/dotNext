@@ -18,7 +18,11 @@ metadata:
 1. Check which version of `DotNext.Threading` the project references (`.csproj` or
    `Directory.Packages.props`). This skill describes 6.x. For older versions, verify each
    member you use against the XML docs/IntelliSense of the referenced version.
-2. The types below are in several namespaces. Add the `using` shown next to each type.
+2. The types below are in several namespaces. Each type is given either with its namespace
+   (e.g. `DotNext.Threading.AsyncLazy<T>`) or with the namespace in parentheses next to it
+   (e.g. `AsyncCounter` (`DotNext.Threading`)). Add the `using` for that namespace and use the short type name in code.
+3. If this skill doesn't cover what you need (API details, more examples), find the relevant article
+   in the documentation index: https://dotnet.github.io/dotNext/llms.txt
 
 # Use Cases
 
@@ -46,4 +50,8 @@ metadata:
   - It doesn't behave like dictionary. Instead, it exposes read or write session, which guarantee liveness of the cache entry during read or modification in case of concurrent eviction.
   - Use [this example](https://github.com/dotnet/dotNext/blob/master/src/examples/RandomAccessCacheBenchmark/Program.cs) to see how to consume its API.
 - Consider `ReferenceCounted<T>` and `ReferenceCountedOwner<T>` classes (`DotNext.Threading`) to replace handwritten reference counting mechanism
-- Consider `DotNext.Threading.Atomic<T>` container type for synchronized access to the custom struct instead classic monitor lock. This type has no contention between concurrent readers, so multiple threads can read the value in parallel. But all writers are serialized with memory barriers (no thread suspension).
+- Consider `DotNext.Threading.Atomic<T>` container type for synchronized access to the custom struct instead classic monitor lock. This type has no contention between concurrent readers, so multiple threads can read the value in parallel. But all writers are serialized.
+  - It is a spin-based seqlock: readers retry while a write is in progress, and contended writers spin instead of blocking on a monitor. Use it for small structs and short updates, not for long critical sections.
+
+# Pitfalls
+- `Atomic<T>` is a mutable struct. Store it in a non-**readonly** field and access it by reference. A copy is an independent value with no synchronization with the original.
