@@ -8,14 +8,6 @@ namespace DotNext.Threading;
 using Runtime.CompilerServices;
 using InlinedToken = ValueTuple<object?>;
 
-/// <summary>
-/// Gets cancellation token source that allows to obtain the token that causes
-/// cancellation.
-/// </summary>
-/// <remarks>
-/// This source is not resettable. Calling of <see cref="CancellationTokenSource.TryReset"/>
-/// may lead to unpredictable results.
-/// </remarks>
 internal abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
 {
     // represents inlined CancellationToken
