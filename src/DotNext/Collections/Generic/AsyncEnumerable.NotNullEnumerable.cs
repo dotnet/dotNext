@@ -3,38 +3,70 @@ namespace DotNext.Collections.Generic;
 public static partial class AsyncEnumerable
 {
     /// <summary>
-    /// Skip <see langword="null"/> values in the collection.
+    /// Skips <see langword="null"/> values in the collection.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>
     /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
     /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
     public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
         where T : class
-        => new NotNullEnumerable<T>(collection);
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        
+        return new NotNullEnumerable<T?, T, NotNullFilter<T>>(collection);
+    }
+
+    /// <summary>
+    /// Skips <see langword="null"/> values in the collection.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the collection.</typeparam>
+    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
+    public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
+        where T : struct
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        
+        return new NotNullEnumerable<T?, T, HasValueFilter<T>>(collection);
+    }
+
+    /// <summary>
+    /// Returns only elements which has values.
+    /// </summary>
+    /// <typeparam name="T">Type of the monad.</typeparam>
+    /// <typeparam name="TMonad">Type of the elements in the collection.</typeparam>
+    /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>Modified lazy collection of values.</returns>
+    public static IAsyncEnumerable<T> Flatten<T, TMonad>(this IAsyncEnumerable<TMonad> collection)
+        where T : notnull
+        where TMonad : struct, IOptionMonad<T>
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        return new NotNullEnumerable<TMonad, T, NotEmptyFilter<TMonad, T>>(collection);
+    }
 }
 
-file sealed class NotNullEnumerable<T>(IAsyncEnumerable<T?> enumerable) : IAsyncEnumerable<T>
-    where T : class
+file sealed class NotNullEnumerable<TInput, TOutput, TFilter>(IAsyncEnumerable<TInput?> enumerable) : IAsyncEnumerable<TOutput>
+    where TOutput : notnull
+    where TFilter : INullabilityFilter<TInput, TOutput>, allows ref struct
 {
-    private sealed class Enumerator : IAsyncEnumerator<T>
+    private sealed class Enumerator : IAsyncEnumerator<TOutput>
     {
-        private readonly IAsyncEnumerator<T?> enumerator;
-        private T? current;
+        private readonly IAsyncEnumerator<TInput?> enumerator;
+        private TOutput? current;
 
-        internal Enumerator(IAsyncEnumerable<T?> enumerable, CancellationToken token)
+        internal Enumerator(IAsyncEnumerable<TInput?> enumerable, CancellationToken token)
             => enumerator = enumerable.GetAsyncEnumerator(token);
 
-        public T Current => current ?? throw new InvalidOperationException();
+        public TOutput Current => current!;
 
         public async ValueTask<bool> MoveNextAsync()
         {
             while (await enumerator.MoveNextAsync().ConfigureAwait(false))
             {
-                if (enumerator.Current is { } currentValue)
-                {
-                    current = currentValue;
+                if (TFilter.TryGet(enumerator.Current, out current))
                     return true;
-                }
             }
 
             return false;
@@ -42,11 +74,11 @@ file sealed class NotNullEnumerable<T>(IAsyncEnumerable<T?> enumerable) : IAsync
 
         public ValueTask DisposeAsync()
         {
-            current = null;
+            current = default;
             return enumerator.DisposeAsync();
         }
     }
 
-    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
+    public IAsyncEnumerator<TOutput> GetAsyncEnumerator(CancellationToken token)
         => new Enumerator(enumerable, token);
 }

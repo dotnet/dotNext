@@ -229,7 +229,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         out CancellationToken leaseToken,
         CancellationToken token)
     {
-        cts = LinkedCancellationTokenSource.Combine(ref token, leaseToken = Token);
+        cts = CancellationToken.Combine(ref token, leaseToken = Token);
         return Fork(worker, token);
 
         static Task<TResult> Fork(Func<CancellationToken, Task<TResult>> function, CancellationToken token)

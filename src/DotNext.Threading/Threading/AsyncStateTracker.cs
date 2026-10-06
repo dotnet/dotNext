@@ -130,7 +130,7 @@ public partial class AsyncStateTracker
 
     /// <summary>
     /// Completes state change notifications so any subsequent calls to <see cref="WaitNextAsync"/> return immediately
-    /// with <see langword="null"/>.
+    /// with <see langword="false"/>.
     /// </summary>
     /// <param name="resumed"><see langword="true"/> if at least one suspended caller is resumed; otherwise, <see langword="false"/>.</param>
     /// <returns><see langword="true"/> if the tracker is completed successfully; <see langword="false"/> if it's already completed.</returns>
@@ -139,7 +139,7 @@ public partial class AsyncStateTracker
 
     /// <summary>
     /// Completes state change notifications so any subsequent calls to <see cref="WaitNextAsync"/> return immediately
-    /// with <see langword="null"/>.
+    /// with <see langword="false"/>.
     /// </summary>
     /// <returns><see langword="true"/> if the tracker is completed successfully; <see langword="false"/> if it's already completed.</returns>
     public bool TryComplete() => TryComplete(out _);

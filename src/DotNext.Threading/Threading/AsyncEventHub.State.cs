@@ -19,7 +19,7 @@ partial class AsyncEventHub
     /// Represents event state as a series of bits.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal struct State : IResettable, IEnumerable<int>
+    internal struct State : IResettable, IEnumerable<int>, IEquatable<State>
     {
         private UInt128 inlined;
         private BitArray? array;
@@ -122,18 +122,6 @@ partial class AsyncEventHub
 
         public readonly bool IsZeroed
             => array is null ? inlined == UInt128.Zero : ReadOnlySpan.IsZeroed;
-
-        public void SetAll()
-        {
-            if (array is null)
-            {
-                inlined = UInt128.MaxValue;
-            }
-            else
-            {
-                array.SetAll(value: true);
-            }
-        }
 
         public bool Pop(int index)
         {
@@ -299,6 +287,38 @@ partial class AsyncEventHub
         readonly IEnumerator<int> IEnumerable<int>.GetEnumerator() => GetClassicEnumerator();
 
         readonly IEnumerator IEnumerable.GetEnumerator() => GetClassicEnumerator();
+
+        readonly bool IEquatable<State>.Equals(State other) => Equals(in other);
+
+        private readonly bool Equals(in State other)
+        {
+            var x = ReadOnlySpan;
+            var y = other.ReadOnlySpan;
+            scoped ReadOnlySpan<byte> rest;
+
+            if (x.Length > y.Length)
+            {
+                x = x.Slice(0, y.Length);
+                rest = x.Slice(y.Length);
+            }
+            else
+            {
+                y = y.Slice(0, x.Length);
+                rest = y.Slice(x.Length);
+            }
+
+            return x.SequenceEqual(y) && rest.IsZeroed;
+        }
+
+        public readonly override bool Equals([NotNullWhen(true)] object? other)
+            => other is State state && Equals(in state);
+
+        public readonly override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.AddBytes(ReadOnlySpan);
+            return hash.ToHashCode();
+        }
 
         [StructLayout(LayoutKind.Auto)]
         public struct Enumerator(in State state) : IEnumerator<Enumerator, int>

@@ -76,8 +76,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
 
-    private ParameterExpression NewStateSlot(Type type)
-        => NewStateSlot(new Func<Type, ParameterExpression>(Expression.Variable).Bind(type));
+    private unsafe ParameterExpression NewStateSlot(Type type)
+        => NewStateSlot(Func<ParameterExpression>.FromPointer(&Expression.Variable, type));
 
     private ParameterExpression NewStateSlot(Func<ParameterExpression> factory)
     {

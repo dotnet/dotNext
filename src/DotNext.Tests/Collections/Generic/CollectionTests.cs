@@ -8,7 +8,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void AddingItemsToList()
     {
-        var expected = new HashSet<int>(new[] { 1, 3, 5 });
+        var expected = new HashSet<int>([1, 3, 5]);
         AddItems<List<int>>(expected);
         AddItems<HashSet<int>>(expected);
         AddItems<LinkedList<int>>(expected);
@@ -96,7 +96,7 @@ public sealed class CollectionTests : Test
     }
 
     [Fact]
-    public static void SkipNullsTest()
+    public static void SkipNulls()
     {
         var list = new LinkedList<string>();
         list.AddLast("a");
@@ -108,6 +108,20 @@ public sealed class CollectionTests : Test
         Equal(2, array.Length);
         True(Array.Exists(array, "a".Equals));
         True(Array.Exists(array, "b".Equals));
+    }
+    
+    [Fact]
+    public static void SkipNullsValueType()
+    {
+        var list = new List<int?> { 42, null, 43, null };
+        Equal([42, 43], list.SkipNulls().ToArray());
+    }
+
+    [Fact]
+    public static void SkipEmptyOptionalValuesAsync()
+    {
+        var list = new List<Optional<int>> { 42, Optional<int>.None, 43, Optional<int>.None };
+        Equal([42, 43], list.Flatten<int, Optional<int>>().ToArray());
     }
 
     [Fact]

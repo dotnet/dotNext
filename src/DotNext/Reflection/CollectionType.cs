@@ -119,32 +119,32 @@ public static class CollectionType
         /// </summary>
         public static Action<IList<T>, int, T> IndexerSetter => Indexer<T>.Setter;
     }
-    
-    private static class Indexer<T>
+}
+
+file static class Indexer<T>
+{
+    public static readonly Func<IReadOnlyList<T>, int, T> ReadOnly;
+
+    public static readonly Func<IList<T>, int, T> Getter;
+
+    public static readonly Action<IList<T>, int, T> Setter;
+
+    static Indexer()
     {
-        public static readonly Func<IReadOnlyList<T>, int, T> ReadOnly;
+        Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), CollectionType.ItemIndexerName));
+        Pop(out RuntimeMethodHandle method);
+        Ldtoken(Type<IReadOnlyList<T>>());
+        Pop(out RuntimeTypeHandle type);
+        ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
 
-        public static readonly Func<IList<T>, int, T> Getter;
+        Ldtoken(PropertyGet(Type<IList<T>>(), CollectionType.ItemIndexerName));
+        Pop(out method);
+        Ldtoken(Type<IList<T>>());
+        Pop(out type);
+        Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
 
-        public static readonly Action<IList<T>, int, T> Setter;
-
-        static Indexer()
-        {
-            Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-            Pop(out RuntimeMethodHandle method);
-            Ldtoken(Type<IReadOnlyList<T>>());
-            Pop(out RuntimeTypeHandle type);
-            ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
-
-            Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Ldtoken(Type<IList<T>>());
-            Pop(out type);
-            Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
-
-            Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
-        }
+        Ldtoken(PropertySet(Type<IList<T>>(), CollectionType.ItemIndexerName));
+        Pop(out method);
+        Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
     }
 }

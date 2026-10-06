@@ -201,9 +201,9 @@ public sealed class CommandInterpreterTests : Test
         var state = new StrongBox<int>();
 
         var interpreter = new CommandInterpreter.Builder()
-            .Add(new Func<BinaryOperationCommand, CancellationToken, ValueTask>(BinaryOp))
-            .Add(new Func<UnaryOperationCommand, CancellationToken, ValueTask>(UnaryOp))
-            .Add(new Func<AssignCommand, object, CancellationToken, ValueTask>(AssignOp))
+            .Add<BinaryOperationCommand>(BinaryOp)
+            .Add<UnaryOperationCommand>(UnaryOp)
+            .Add<AssignCommand>(AssignOp)
             .Build();
 
         var entry1 = new LogEntry<BinaryOperationCommand>()

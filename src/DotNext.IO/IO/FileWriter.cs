@@ -16,7 +16,6 @@ using Buffers;
 public partial class FileWriter : Disposable, IFlushable
 {
     private const int MinBufferSize = 16;
-    private const int DefaultBufferSize = 4096;
     
     /// <summary>
     /// Represents the file handle.
@@ -36,8 +35,9 @@ public partial class FileWriter : Disposable, IFlushable
     {
         ArgumentNullException.ThrowIfNull(handle);
 
-        maxBufferSize = DefaultBufferSize;
+        maxBufferSize = Environment.SystemPageSize;
         this.handle = handle;
+        Allocator = null;
     }
 
     /// <summary>
@@ -53,15 +53,15 @@ public partial class FileWriter : Disposable, IFlushable
 
         FilePosition = destination.Position;
     }
-    
+
     /// <summary>
     /// Gets buffer allocator.
     /// </summary>
     [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get => field ??= MemoryAllocator<byte>.Default;
-        init;
+        get;
+        init => field = value ?? MemoryAllocator<byte>.Default;
     }
 
     /// <summary>

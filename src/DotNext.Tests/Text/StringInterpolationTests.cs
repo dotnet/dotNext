@@ -11,7 +11,7 @@ public sealed class StringInterpolationTests : Test
     public static void AllocateString()
     {
         int x = 10, y = 20;
-        using var actual = StringInterpolation.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
+        using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
         Equal($"{x} + {y} = {x + y}", actual.Span.ToString());
     }
     
@@ -47,8 +47,14 @@ public sealed class StringInterpolationTests : Test
     {
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
         buffer.Interpolate($"{x,4:X} = {y,-3:X}");
-        Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
-        buffer.Dispose();
+        try
+        {
+            Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+        }
+        finally
+        {
+            buffer.Dispose();
+        }
     }
 
     [Theory]

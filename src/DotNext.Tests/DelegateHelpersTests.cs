@@ -58,10 +58,10 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static void FuncBindingChain()
     {
-        var func = new Func<string, string, string, string, string, string>(Concat) << "abc" << "d" << "e" << "f" << "g";
+        var func = Delegate.Infer(Concat) << "abc" << "d" << "e" << "f" << "g";
         Equal("abcdefg", func());
 
-        func = new Func<string, string, string, string, string, string>(Concat)
+        func = Delegate.Infer(Concat)
             .Bind("abc")
             .Bind("d")
             .Bind("e")
@@ -85,12 +85,12 @@ public sealed partial class DelegateHelpersTests : Test
     public static void ActionBindingChain()
     {
         var acc = new Accumulator();
-        var action = new Action<string, string, string, string, string>(acc.Sum) << "abc" << "d" << "e" << "f" << "g";
+        var action = Delegate.Infer(acc.Sum) << "abc" << "d" << "e" << "f" << "g";
         action.Invoke();
         Equal("abcdefg", acc.Value);
 
         acc.Value = null;
-        action = new Action<string, string, string, string, string>(acc.Sum)
+        action = Delegate.Infer(acc.Sum)
             .Bind("abc")
             .Bind("d")
             .Bind("e")
@@ -494,7 +494,7 @@ public sealed partial class DelegateHelpersTests : Test
     public static void ActionWrapper()
     {
         var i = 0;
-        Equal(42, new Action<int>(SetLocalValue).Identity.Invoke(42));
+        Equal(42, Delegate.Infer(SetLocalValue).Identity.Invoke(42));
         Equal(42, i);
 
         void SetLocalValue(int value) => i = value;
@@ -509,7 +509,7 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static void ToAsync1()
     {
-        var func = new Action(static () => { }).ToAsync();
+        var func = Delegate.Infer(static () => { }).ToAsync();
         True(func.Invoke(new(canceled: false)).IsCompletedSuccessfully);
         True(func.Invoke(new(canceled: true)).IsCanceled);
 
@@ -520,7 +520,7 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static void ToAsync2()
     {
-        var func = new Action<int>(static _ => { }).ToAsync();
+        var func = Delegate.Infer(static (int _) => { }).ToAsync();
         True(func.Invoke(42, new(canceled: false)).IsCompletedSuccessfully);
         True(func.Invoke(42, new(canceled: true)).IsCanceled);
 
@@ -531,7 +531,7 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static void ToAsync3()
     {
-        var func = new Action<int, int>(static (_, _) => { }).ToAsync();
+        var func = Delegate.Infer(static (int _, int _) => { }).ToAsync();
         True(func.Invoke(42, 42, new(canceled: false)).IsCompletedSuccessfully);
         True(func.Invoke(42, 42, new(canceled: true)).IsCanceled);
 
@@ -542,7 +542,7 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static async Task ToAsync4()
     {
-        var func = new Func<int, int, int>(static (x, y) => x + y).ToAsync();
+        var func = Delegate.Infer(static (int x, int y) => x + y).ToAsync();
         Equal(84, await func.Invoke(42, 42, new(canceled: false)));
         True(func.Invoke(42, 42, new(canceled: true)).IsCanceled);
 
@@ -553,7 +553,7 @@ public sealed partial class DelegateHelpersTests : Test
     [Fact]
     public static async Task ToAsync5()
     {
-        var func = new Func<int, int>(Func<int, int>.Identity).ToAsync();
+        var func = Delegate.Infer(Func<int, int>.Identity).ToAsync();
         Equal(42, await func.Invoke(42, new(canceled: false)));
         True(func.Invoke(42, new(canceled: true)).IsCanceled);
 
@@ -576,7 +576,7 @@ public sealed partial class DelegateHelpersTests : Test
     public static void HideReturnValue1()
     {
         var box = new StrongBox<int>();
-        var action = new Func<int>(ChangeValue).HideReturnValue();
+        var action = Delegate.Infer(ChangeValue).HideReturnValue();
         action.Invoke();
         Equal(42, box.Value);
         
@@ -587,7 +587,7 @@ public sealed partial class DelegateHelpersTests : Test
     public static void HideReturnValue2()
     {
         var box = new StrongBox<int>();
-        var action = new Func<int, int>(ChangeValue).HideReturnValue();
+        var action = Delegate.Infer(ChangeValue).HideReturnValue();
         action.Invoke(42);
         Equal(42, box.Value);
         

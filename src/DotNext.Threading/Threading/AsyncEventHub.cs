@@ -1,4 +1,5 @@
 using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -462,6 +463,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// due to performance reasons.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [CollectionBuilder(typeof(AsyncEventHub), nameof(CreateEventGroup))]
     public readonly record struct EventGroup : IReadOnlyCollection<int>
     {
         internal readonly State Mask;
@@ -473,7 +475,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         /// </summary>
         /// <param name="indices">Indices of the events.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="indices"/> has at least one negative index.</exception>
-        public EventGroup(ReadOnlySpan<int> indices)
+        public EventGroup(params ReadOnlySpan<int> indices)
         {
             var mask = new State();
             foreach (var index in indices)
@@ -588,6 +590,17 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         static bool ILockManager.RequiresEmptyQueue => false;
     }
+
+    /// <summary>
+    /// Creates <see cref="EventGroup"/> from a set of indices.
+    /// </summary>
+    /// <remarks>
+    /// This method provides supports collection builder pattern.
+    /// </remarks>
+    /// <param name="indices">A set of indices.</param>
+    /// <returns>A new group of events.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static EventGroup CreateEventGroup(ReadOnlySpan<int> indices) => new(indices);
 }
 
 file static class CollectionExtensions

@@ -1,0 +1,20 @@
+{
+  "name": "dotnext",
+  "owner": {
+    "name": ".NET Foundation and Contributors",
+    "url": "https://github.com/dotnet/dotNext"
+  },
+  "interface": {
+    "displayName": ".NEXT Agent Skills"
+  },
+  "plugins": [
+    {
+      "name": "dotnext-skills",
+      "source": {
+        "source": "local",
+        "path": "./ai/plugins/dotnext-skills"
+      },
+      "description": "Agent skills for writing efficient .NET code with the .NEXT libraries"
+    }
+  ]
+}

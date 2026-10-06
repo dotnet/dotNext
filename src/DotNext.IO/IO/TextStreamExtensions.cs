@@ -76,7 +76,7 @@ public static class TextStreamExtensions
         public ValueTask WriteAsync(MemoryAllocator<char>? allocator, IFormatProvider? provider,
             [InterpolatedStringHandlerArgument(nameof(allocator), nameof(provider))] ref PoolingInterpolatedStringHandler handler,
             CancellationToken token = default)
-            => receiver.WriteAsync(StringInterpolation.Interpolate(allocator, provider, ref handler), token);
+            => receiver.WriteAsync(string.Interpolate(allocator, provider, ref handler), token);
         
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         private async ValueTask WriteAsync(MemoryOwner<char> buffer, CancellationToken token)
@@ -133,7 +133,7 @@ public static class TextStreamExtensions
         /// <param name="handler">The interpolated string handler.</param>
         public void Write(MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
         {
-            using var buffer = StringInterpolation.Interpolate(allocator, provider, ref handler);
+            using var buffer = string.Interpolate(allocator, provider, ref handler);
             receiver.Write(buffer.Span);
         }
 
@@ -154,7 +154,7 @@ public static class TextStreamExtensions
         public void WriteLine(MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
         {
             handler.AppendLiteral(Environment.NewLine);
-            using var buffer = StringInterpolation.Interpolate(allocator, provider, ref handler);
+            using var buffer = string.Interpolate(allocator, provider, ref handler);
             receiver.Write(buffer.Span);
         }
 

@@ -32,7 +32,7 @@ public sealed class AsyncEventHubTests : Test
     {
         using var hub = new AsyncEventHub(count);
 
-        var flags = hub.Pulse(new AsyncEventHub.EventGroup([0]));
+        var flags = hub.Pulse([0]);
         True(flags.Contains(0));
 
         var set = new HashSet<int>();
@@ -40,7 +40,7 @@ public sealed class AsyncEventHubTests : Test
         Equal(0, Single(set));
 
         set.Clear();
-        await hub.WaitAnyAsync(new AsyncEventHub.EventGroup([0, 1]), set, TestToken);
+        await hub.WaitAnyAsync([0, 1], set, TestToken);
         Equal(0, Single(set));
     }
 
@@ -50,8 +50,8 @@ public sealed class AsyncEventHubTests : Test
     public static async Task WaitAny2(int count)
     {
         using var hub = new AsyncEventHub(count);
-        
-        var flags = hub.ResetAndPulse(new AsyncEventHub.EventGroup([0]));
+
+        var flags = hub.ResetAndPulse([0]);
         True(flags.Contains(0));
 
         await hub.WaitAnyAsync(InfiniteTimeSpan, TestToken);
@@ -87,7 +87,7 @@ public sealed class AsyncEventHubTests : Test
         Contains(1, flags);
         Contains(2, flags);
 
-        await hub.WaitAllAsync(new([0, 1]), InfiniteTimeSpan, TestToken);
+        await hub.WaitAllAsync([0, 1], InfiniteTimeSpan, TestToken);
         await hub.WaitAllAsync(TestToken);
         await hub.WaitAllAsync(InfiniteTimeSpan, TestToken);
     }
@@ -130,9 +130,9 @@ public sealed class AsyncEventHubTests : Test
 
         True(hub.Pulse(1));
         False(hub.ResetAndPulse(1));
-        Empty(hub.ResetAndPulse(new AsyncEventHub.EventGroup([1])));
+        Empty(hub.ResetAndPulse([1]));
 
-        var flags = hub.ResetAndPulse(new AsyncEventHub.EventGroup([0, 2]));
+        var flags = hub.ResetAndPulse([0, 2]);
         Equal(2, flags.Count);
         True(flags.Contains(0));
         True(flags.Contains(2));
@@ -145,8 +145,8 @@ public sealed class AsyncEventHubTests : Test
     public static void Pulse(int count)
     {
         using var hub = new AsyncEventHub(count);
-        Equal(1, Single(hub.Pulse(new AsyncEventHub.EventGroup([1]))));
-        Empty(hub.Pulse(new AsyncEventHub.EventGroup([1])));
+        Equal(1, Single(hub.Pulse([1])));
+        Empty(hub.Pulse([1]));
     }
 
     [Theory]
@@ -155,7 +155,7 @@ public sealed class AsyncEventHubTests : Test
     public static async Task IncorrectGroup(int count)
     {
         using var hub = new AsyncEventHub(count);
-        var group = new AsyncEventHub.EventGroup([count]);
+        AsyncEventHub.EventGroup group = [count];
         Throws<ArgumentOutOfRangeException>(() => hub.ResetAndPulse(group));
         Throws<ArgumentOutOfRangeException>(() => hub.Pulse(group));
         await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group, TestToken).AsTask);
@@ -184,10 +184,24 @@ public sealed class AsyncEventHubTests : Test
     [Fact]
     public static void LargeEventGroup()
     {
-        var group = new AsyncEventHub.EventGroup([1, 512, 514]);
+        var group = new AsyncEventHub.EventGroup(1, 512, 514);
         Contains(512, group);
         Contains(514, group);
         Contains(1, group);
         Equal(3, group.Count);
+    }
+
+    [Fact]
+    public static void EventGroupOperators()
+    {
+        AsyncEventHub.EventGroup group1 = [0, 3, 5];
+        AsyncEventHub.EventGroup group2 = [0, 3, 5];
+        Equal(group1, group2);
+
+        group2 = [0, 1, 512, 514];
+        NotEqual(group1, group2);
+
+        group1 = [514, 512, 1, 0];
+        Equal(group1, group2);
     }
 }
