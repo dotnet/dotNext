@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Patterns;
-
 partial struct CancellationTokenMultiplexer
 {
     private sealed partial class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
