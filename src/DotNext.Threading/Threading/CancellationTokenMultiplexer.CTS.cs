@@ -14,11 +14,12 @@ partial struct CancellationTokenMultiplexer
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
 
-        public void DetachLinkedTokens()
+        public void DetachLinkedTokens<TCleanup>()
+            where TCleanup : struct, IRegistrationCleanup, allows ref struct
         {
-            for (var i = 0; i < Count; i++)
+            for (var i = 0; i < count; i++)
             {
-                this[i].Dispose();
+                TCleanup.Clear(in this[i]);
             }
         }
 
@@ -92,9 +93,12 @@ partial struct CancellationTokenMultiplexer
         {
             if (disposing)
             {
+                DetachLinkedTokens<CancelRegistration>();
+                inlinedList = default;
                 extraTokens = null; // help GC
             }
 
+            count = 0;
             base.Dispose(disposing);
         }
     }
@@ -109,5 +113,24 @@ partial struct CancellationTokenMultiplexer
 
         Scope IMultiplexedCancellationTokenSourceFactory<Scope>.Create(scoped ReadOnlySpan<CancellationToken> tokens)
             => new(multiplexer, tokens);
+    }
+    
+    private interface IRegistrationCleanup
+    {
+        public static abstract void Clear(ref readonly CancellationTokenRegistration registration);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct DisposeRegistration : IRegistrationCleanup
+    {
+        static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
+            => registration.Dispose();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct CancelRegistration : IRegistrationCleanup
+    {
+        static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
+            => registration.Unregister();
     }
 }

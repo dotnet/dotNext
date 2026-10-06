@@ -32,7 +32,7 @@ partial struct CancellationTokenMultiplexer
             Debug.Assert(result.IsCancellationRequested);
             Debug.Assert(!IsCancellationRequested);
 
-            DetachLinkedTokens();
+            DetachLinkedTokens<DisposeRegistration>();
             var poolCopy = pool;
             Reset();
 

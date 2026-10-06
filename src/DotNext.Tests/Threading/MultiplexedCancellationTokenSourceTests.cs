@@ -19,18 +19,27 @@ public sealed class MultiplexedCancellationTokenSourceTests : Test
         Equal(cts.Token, source.CancellationOrigin);
     }
 
-    [Fact]
-    public static void MultipleTokens()
+    [Theory]
+    [InlineData(2)]
+    [InlineData(5)]
+    [InlineData(10)]
+    public static void MultipleTokens(int count)
     {
-        using var cts1 = new CancellationTokenSource();
-        using var cts2 = new CancellationTokenSource();
+        var sources = new CancellationTokenSource[count];
+        Span.Initialize(sources);
+
+        using var source = CancellationToken.Combine([.. sources.Select(static source => source.Token)]);
+        foreach (var cts in sources)
+        {
+            NotEqual(cts.Token, source.Token);
+        }
         
-        using var source = CancellationToken.Combine(cts1.Token, cts2.Token);
-        NotEqual(cts1.Token, source.Token);
-        NotEqual(cts2.Token, source.Token);
-        
-        cts1.Cancel();
-        Equal(source.CancellationOrigin, cts1.Token);
-        NotEqual(source.CancellationOrigin, cts2.Token);
+        sources[0].Cancel();
+        Equal(source.CancellationOrigin, sources[0].Token);
+
+        for (var i = 1; i < count; i++)
+        {
+            NotEqual(source.CancellationOrigin, sources[i].Token);
+        }
     }
 }
