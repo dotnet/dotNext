@@ -1,0 +1,178 @@
+# .NEXT
+
+> .NEXT (dotNext) is the family of powerful libraries aimed to improve development productivity and extend the .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
+
+- [Overview](https://dotnet.github.io/dotNext/index.html)
+
+## BCL Enhancements
+
+- [Overview](https://dotnet.github.io/dotNext/features/core/index.html)
+- [Efficient String Building](https://dotnet.github.io/dotNext/features/core/stringb.html)
+- [Ad-hoc User Data](https://dotnet.github.io/dotNext/features/core/userdata.html)
+- [Enum Enhancements](https://dotnet.github.io/dotNext/features/core/enum.html)
+- [Collection Enhancements](https://dotnet.github.io/dotNext/features/core/collections.html)
+- [Optional Type](https://dotnet.github.io/dotNext/features/core/optional.html)
+- [Result Type](https://dotnet.github.io/dotNext/features/core/result.html)
+- [Atomic Operations](https://dotnet.github.io/dotNext/features/core/atomic.html)
+- [Synchronization Enhancements](https://dotnet.github.io/dotNext/features/core/sync.html)
+- [Intrinsics](https://dotnet.github.io/dotNext/features/core/intrinsics.html)
+- [Path MTU Discovery](https://dotnet.github.io/dotNext/features/core/mtu.html)
+- [Base64 Encoding/Decoding](https://dotnet.github.io/dotNext/features/core/base64.html)
+- [Value Type Enhancements](https://dotnet.github.io/dotNext/features/core/valuetype.html)
+- [Soft Reference](https://dotnet.github.io/dotNext/features/core/softref.html)
+- [TypeMap](https://dotnet.github.io/dotNext/features/core/typem.html)
+- [GC Notifications](https://dotnet.github.io/dotNext/features/core/gcnotif.html)
+- [Value References](https://dotnet.github.io/dotNext/features/core/valueref.html)
+
+## I/O Enhancements
+
+- [Overview](https://dotnet.github.io/dotNext/features/io/index.html)
+- [Alloc vs Pooling](https://dotnet.github.io/dotNext/features/io/rental.html)
+- [Dynamic Buffers](https://dotnet.github.io/dotNext/features/io/buffers.html)
+- [Memory-Mapped File](https://dotnet.github.io/dotNext/features/io/mmfile.html)
+
+## Concurrent Cache
+
+- [Overview](https://dotnet.github.io/dotNext/features/cache/index.html)
+- [On-disk cache](https://dotnet.github.io/dotNext/features/cache/ondisk.html)
+
+## Threading
+
+- [Overview](https://dotnet.github.io/dotNext/features/threading/index.html)
+- [Async Lock](https://dotnet.github.io/dotNext/features/threading/exclusive.html)
+- [Async Reader/Writer Lock](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
+- [Async Reset Event](https://dotnet.github.io/dotNext/features/threading/event.html)
+- [Async Countdown Latch](https://dotnet.github.io/dotNext/features/threading/counter.html)
+- [Async Barrier](https://dotnet.github.io/dotNext/features/threading/barrier.html)
+- [Async Trigger](https://dotnet.github.io/dotNext/features/threading/trigger.html)
+- [Correlation Source](https://dotnet.github.io/dotNext/features/threading/correl.html)
+- [Exchanger](https://dotnet.github.io/dotNext/features/threading/exchanger.html)
+- [Event Hub](https://dotnet.github.io/dotNext/features/threading/hub.html)
+- [Task Completion Pipe](https://dotnet.github.io/dotNext/features/threading/taskpipe.html)
+- [Interop with Other Asynchronous Patterns](https://dotnet.github.io/dotNext/features/threading/interop.html)
+- [Async Lazy](https://dotnet.github.io/dotNext/features/threading/lazy.html)
+- [Persistent Channels](https://dotnet.github.io/dotNext/features/threading/channel.html)
+- [ValueTask Completion Source](https://dotnet.github.io/dotNext/features/threading/tasksrc.html)
+- [Delayed Tasks](https://dotnet.github.io/dotNext/features/threading/dtask.html)
+
+## Advanced Reflection
+
+- [Overview](https://dotnet.github.io/dotNext/features/reflection/index.html)
+- [Open and Closed Delegates](https://dotnet.github.io/dotNext/features/reflection/delegate.html)
+
+## Metaprogramming
+
+- [Overview](https://dotnet.github.io/dotNext/features/metaprogramming/index.html)
+- [Building Expression Trees](https://dotnet.github.io/dotNext/features/metaprogramming/dynamic.html)
+- [Compound Expressions](https://dotnet.github.io/dotNext/features/metaprogramming/compound.html)
+- [Multi-line Lambdas](https://dotnet.github.io/dotNext/features/metaprogramming/lambda.html)
+- [Async Lambda](https://dotnet.github.io/dotNext/features/metaprogramming/async.html)
+- [using Statement](https://dotnet.github.io/dotNext/features/metaprogramming/using.html)
+- [Loops](https://dotnet.github.io/dotNext/features/metaprogramming/loop.html)
+- [lock Statement](https://dotnet.github.io/dotNext/features/metaprogramming/lock.html)
+- [Ranges and Indicies](https://dotnet.github.io/dotNext/features/metaprogramming/range.html)
+- [String Interpolation](https://dotnet.github.io/dotNext/features/metaprogramming/interp.html)
+- [Pattern Matching](https://dotnet.github.io/dotNext/features/metaprogramming/match.html)
+- [with Expression and record types](https://dotnet.github.io/dotNext/features/metaprogramming/with.html)
+- [Miscellaneous Statements](https://dotnet.github.io/dotNext/features/metaprogramming/misc.html)
+
+## Unsafe Data Structures
+
+- [Overview](https://dotnet.github.io/dotNext/features/unsafe/index.html)
+- [Structured Memory Access](https://dotnet.github.io/dotNext/features/unsafe/struct.html)
+
+## Cluster Programming Suite
+
+- [Overview](https://dotnet.github.io/dotNext/features/cluster/index.html)
+- [P2P Gossip](https://dotnet.github.io/dotNext/features/cluster/gossip.html)
+- [Raft](https://dotnet.github.io/dotNext/features/cluster/raft.html)
+- [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)
+- [Multiplexing](https://dotnet.github.io/dotNext/features/cluster/multiplex.html)
+
+## Application Maintenance Interface
+
+- [Overview](https://dotnet.github.io/dotNext/features/ami/index.html)
+- [K8s Probes](https://dotnet.github.io/dotNext/features/ami/probes.html)
+- [Authentication and Authorization](https://dotnet.github.io/dotNext/features/ami/auth.html)
+
+## API Reference
+
+- [DotNext](https://dotnet.github.io/dotNext/api/DotNext.html)
+- [DotNext.Buffers](https://dotnet.github.io/dotNext/api/DotNext.Buffers.html)
+- [DotNext.Buffers.Binary](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Binary.html)
+- [DotNext.Buffers.Text](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.html)
+- [DotNext.Collections](https://dotnet.github.io/dotNext/api/DotNext.Collections.html)
+- [DotNext.Collections.Concurrent](https://dotnet.github.io/dotNext/api/DotNext.Collections.Concurrent.html)
+- [DotNext.Collections.Generic](https://dotnet.github.io/dotNext/api/DotNext.Collections.Generic.html)
+- [DotNext.Collections.Specialized](https://dotnet.github.io/dotNext/api/DotNext.Collections.Specialized.html)
+- [DotNext.ComponentModel.DataAnnotations](https://dotnet.github.io/dotNext/api/DotNext.ComponentModel.DataAnnotations.html)
+- [DotNext.Diagnostics](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.html)
+- [DotNext.Diagnostics.Metrics](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Metrics.html)
+- [DotNext.Hosting](https://dotnet.github.io/dotNext/api/DotNext.Hosting.html)
+- [DotNext.IO](https://dotnet.github.io/dotNext/api/DotNext.IO.html)
+- [DotNext.IO.Hashing](https://dotnet.github.io/dotNext/api/DotNext.IO.Hashing.html)
+- [DotNext.IO.Log](https://dotnet.github.io/dotNext/api/DotNext.IO.Log.html)
+- [DotNext.IO.MemoryMappedFiles](https://dotnet.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.html)
+- [DotNext.IO.Pipelines](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.html)
+- [DotNext.Linq.Expressions](https://dotnet.github.io/dotNext/api/DotNext.Linq.Expressions.html)
+- [DotNext.Maintenance](https://dotnet.github.io/dotNext/api/DotNext.Maintenance.html)
+- [DotNext.Maintenance.CommandLine](https://dotnet.github.io/dotNext/api/DotNext.Maintenance.CommandLine.html)
+- [DotNext.Maintenance.CommandLine.Authentication](https://dotnet.github.io/dotNext/api/DotNext.Maintenance.CommandLine.Authentication.html)
+- [DotNext.Maintenance.CommandLine.Authorization](https://dotnet.github.io/dotNext/api/DotNext.Maintenance.CommandLine.Authorization.html)
+- [DotNext.Metaprogramming](https://dotnet.github.io/dotNext/api/DotNext.Metaprogramming.html)
+- [DotNext.Net](https://dotnet.github.io/dotNext/api/DotNext.Net.html)
+- [DotNext.Net.Cluster](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.html)
+- [DotNext.Net.Cluster.Consensus](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.html)
+- [DotNext.Net.Cluster.Consensus.Raft](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.html)
+- [DotNext.Net.Cluster.Consensus.Raft.Commands](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html)
+- [DotNext.Net.Cluster.Consensus.Raft.Extensions](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Extensions.html)
+- [DotNext.Net.Cluster.Consensus.Raft.Http](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.html)
+- [DotNext.Net.Cluster.Consensus.Raft.Membership](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Membership.html)
+- [DotNext.Net.Cluster.Consensus.Raft.StateMachine](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.html)
+- [DotNext.Net.Cluster.Discovery](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Discovery.html)
+- [DotNext.Net.Cluster.Discovery.HyParView](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Discovery.HyParView.html)
+- [DotNext.Net.Cluster.Discovery.HyParView.Http](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Discovery.HyParView.Http.html)
+- [DotNext.Net.Cluster.Messaging](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Messaging.html)
+- [DotNext.Net.Cluster.Messaging.Gossip](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Messaging.Gossip.html)
+- [DotNext.Net.Cluster.Replication](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Replication.html)
+- [DotNext.Net.ConsistentHash](https://dotnet.github.io/dotNext/api/DotNext.Net.ConsistentHash.html)
+- [DotNext.Net.Http](https://dotnet.github.io/dotNext/api/DotNext.Net.Http.html)
+- [DotNext.Net.Mime](https://dotnet.github.io/dotNext/api/DotNext.Net.Mime.html)
+- [DotNext.Net.Multiplexing](https://dotnet.github.io/dotNext/api/DotNext.Net.Multiplexing.html)
+- [DotNext.Net.NetworkInformation](https://dotnet.github.io/dotNext/api/DotNext.Net.NetworkInformation.html)
+- [DotNext.Net.Security](https://dotnet.github.io/dotNext/api/DotNext.Net.Security.html)
+- [DotNext.Numerics](https://dotnet.github.io/dotNext/api/DotNext.Numerics.html)
+- [DotNext.Patterns](https://dotnet.github.io/dotNext/api/DotNext.Patterns.html)
+- [DotNext.Reflection](https://dotnet.github.io/dotNext/api/DotNext.Reflection.html)
+- [DotNext.Resources](https://dotnet.github.io/dotNext/api/DotNext.Resources.html)
+- [DotNext.Runtime](https://dotnet.github.io/dotNext/api/DotNext.Runtime.html)
+- [DotNext.Runtime.Caching](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Caching.html)
+- [DotNext.Runtime.CompilerServices](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.html)
+- [DotNext.Runtime.ExceptionServices](https://dotnet.github.io/dotNext/api/DotNext.Runtime.ExceptionServices.html)
+- [DotNext.Runtime.InteropServices](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.html)
+- [DotNext.Runtime.Reflection](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Reflection.html)
+- [DotNext.Runtime.Serialization](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Serialization.html)
+- [DotNext.Security.Principal](https://dotnet.github.io/dotNext/api/DotNext.Security.Principal.html)
+- [DotNext.Text](https://dotnet.github.io/dotNext/api/DotNext.Text.html)
+- [DotNext.Text.Encodings.Web](https://dotnet.github.io/dotNext/api/DotNext.Text.Encodings.Web.html)
+- [DotNext.Text.Json](https://dotnet.github.io/dotNext/api/DotNext.Text.Json.html)
+- [DotNext.Threading](https://dotnet.github.io/dotNext/api/DotNext.Threading.html)
+- [DotNext.Threading.Channels](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.html)
+- [DotNext.Threading.Leases](https://dotnet.github.io/dotNext/api/DotNext.Threading.Leases.html)
+- [DotNext.Threading.Tasks](https://dotnet.github.io/dotNext/api/DotNext.Threading.Tasks.html)
+
+## Old Versions
+
+- [Migration](https://dotnet.github.io/dotNext/migration/index.html)
+- [1.x](https://dotnet.github.io/dotNext/migration/1.html)
+- [2.x](https://dotnet.github.io/dotNext/migration/2.html)
+- [3.x](https://dotnet.github.io/dotNext/migration/3.html)
+- [4.x](https://dotnet.github.io/dotNext/migration/4.html)
+- [5.x](https://dotnet.github.io/dotNext/migration/5.html)
+
+## Resources
+
+- [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
+- [NuGet](https://www.nuget.org/profiles/rvsakno)
+- [Source Code](https://github.com/dotnet/dotNext)
+- [Changelog](https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md)

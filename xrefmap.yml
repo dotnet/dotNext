@@ -6503,6 +6503,21 @@ references:
   fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.FirstOrNullAsync(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T), System.Threading.CancellationToken)
   nameWithType: AsyncEnumerable.FirstOrNullAsync<T>(IAsyncEnumerable<T>, CancellationToken)
   nameWithType.vb: AsyncEnumerable.FirstOrNullAsync(Of T)(IAsyncEnumerable(Of T), CancellationToken)
+- uid: DotNext.Collections.Generic.AsyncEnumerable.Flatten*
+  name: Flatten
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_Flatten_
+  commentId: Overload:DotNext.Collections.Generic.AsyncEnumerable.Flatten
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.Flatten
+  nameWithType: AsyncEnumerable.Flatten
+- uid: DotNext.Collections.Generic.AsyncEnumerable.Flatten``2(System.Collections.Generic.IAsyncEnumerable{``1})
+  name: Flatten<T, TMonad>(IAsyncEnumerable<TMonad>)
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_Flatten__2_System_Collections_Generic_IAsyncEnumerable___1__
+  commentId: M:DotNext.Collections.Generic.AsyncEnumerable.Flatten``2(System.Collections.Generic.IAsyncEnumerable{``1})
+  name.vb: Flatten(Of T, TMonad)(IAsyncEnumerable(Of TMonad))
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.Flatten<T, TMonad>(System.Collections.Generic.IAsyncEnumerable<TMonad>)
+  fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.Flatten(Of T, TMonad)(System.Collections.Generic.IAsyncEnumerable(Of TMonad))
+  nameWithType: AsyncEnumerable.Flatten<T, TMonad>(IAsyncEnumerable<TMonad>)
+  nameWithType.vb: AsyncEnumerable.Flatten(Of T, TMonad)(IAsyncEnumerable(Of TMonad))
 - uid: DotNext.Collections.Generic.AsyncEnumerable.ForEach*
   name: ForEach
   href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEach_
@@ -6602,6 +6617,15 @@ references:
   commentId: Overload:DotNext.Collections.Generic.AsyncEnumerable.SkipNulls
   fullName: DotNext.Collections.Generic.AsyncEnumerable.SkipNulls
   nameWithType: AsyncEnumerable.SkipNulls
+- uid: DotNext.Collections.Generic.AsyncEnumerable.SkipNulls``1(System.Collections.Generic.IAsyncEnumerable{System.Nullable{``0}})
+  name: SkipNulls<T>(IAsyncEnumerable<T?>)
+  href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_SkipNulls__1_System_Collections_Generic_IAsyncEnumerable_System_Nullable___0___
+  commentId: M:DotNext.Collections.Generic.AsyncEnumerable.SkipNulls``1(System.Collections.Generic.IAsyncEnumerable{System.Nullable{``0}})
+  name.vb: SkipNulls(Of T)(IAsyncEnumerable(Of T?))
+  fullName: DotNext.Collections.Generic.AsyncEnumerable.SkipNulls<T>(System.Collections.Generic.IAsyncEnumerable<T?>)
+  fullName.vb: DotNext.Collections.Generic.AsyncEnumerable.SkipNulls(Of T)(System.Collections.Generic.IAsyncEnumerable(Of T?))
+  nameWithType: AsyncEnumerable.SkipNulls<T>(IAsyncEnumerable<T?>)
+  nameWithType.vb: AsyncEnumerable.SkipNulls(Of T)(IAsyncEnumerable(Of T?))
 - uid: DotNext.Collections.Generic.AsyncEnumerable.SkipNulls``1(System.Collections.Generic.IAsyncEnumerable{``0})
   name: SkipNulls<T>(IAsyncEnumerable<T?>)
   href: api/DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_SkipNulls__1_System_Collections_Generic_IAsyncEnumerable___0__
@@ -6788,6 +6812,21 @@ references:
   fullName.vb: DotNext.Collections.Generic.Collection.FirstOrNone(Of T)(System.Collections.Generic.IEnumerable(Of T))
   nameWithType: Collection.FirstOrNone<T>(IEnumerable<T>)
   nameWithType.vb: Collection.FirstOrNone(Of T)(IEnumerable(Of T))
+- uid: DotNext.Collections.Generic.Collection.Flatten*
+  name: Flatten
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Flatten_
+  commentId: Overload:DotNext.Collections.Generic.Collection.Flatten
+  fullName: DotNext.Collections.Generic.Collection.Flatten
+  nameWithType: Collection.Flatten
+- uid: DotNext.Collections.Generic.Collection.Flatten``2(System.Collections.Generic.IEnumerable{``1})
+  name: Flatten<T, TMonad>(IEnumerable<TMonad>)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Flatten__2_System_Collections_Generic_IEnumerable___1__
+  commentId: M:DotNext.Collections.Generic.Collection.Flatten``2(System.Collections.Generic.IEnumerable{``1})
+  name.vb: Flatten(Of T, TMonad)(IEnumerable(Of TMonad))
+  fullName: DotNext.Collections.Generic.Collection.Flatten<T, TMonad>(System.Collections.Generic.IEnumerable<TMonad>)
+  fullName.vb: DotNext.Collections.Generic.Collection.Flatten(Of T, TMonad)(System.Collections.Generic.IEnumerable(Of TMonad))
+  nameWithType: Collection.Flatten<T, TMonad>(IEnumerable<TMonad>)
+  nameWithType.vb: Collection.Flatten(Of T, TMonad)(IEnumerable(Of TMonad))
 - uid: DotNext.Collections.Generic.Collection.ForEach*
   name: ForEach
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach_
@@ -6869,6 +6908,15 @@ references:
   commentId: Overload:DotNext.Collections.Generic.Collection.SkipNulls
   fullName: DotNext.Collections.Generic.Collection.SkipNulls
   nameWithType: Collection.SkipNulls
+- uid: DotNext.Collections.Generic.Collection.SkipNulls``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})
+  name: SkipNulls<T>(IEnumerable<T?>)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable_System_Nullable___0___
+  commentId: M:DotNext.Collections.Generic.Collection.SkipNulls``1(System.Collections.Generic.IEnumerable{System.Nullable{``0}})
+  name.vb: SkipNulls(Of T)(IEnumerable(Of T?))
+  fullName: DotNext.Collections.Generic.Collection.SkipNulls<T>(System.Collections.Generic.IEnumerable<T?>)
+  fullName.vb: DotNext.Collections.Generic.Collection.SkipNulls(Of T)(System.Collections.Generic.IEnumerable(Of T?))
+  nameWithType: Collection.SkipNulls<T>(IEnumerable<T?>)
+  nameWithType.vb: Collection.SkipNulls(Of T)(IEnumerable(Of T?))
 - uid: DotNext.Collections.Generic.Collection.SkipNulls``1(System.Collections.Generic.IEnumerable{``0})
   name: SkipNulls<T>(IEnumerable<T?>)
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__
@@ -10502,6 +10550,21 @@ references:
   fullName.vb: DotNext.DelegateHelpers.Identity(Of T)(T)
   nameWithType: DelegateHelpers.Identity<T>(T)
   nameWithType.vb: DelegateHelpers.Identity(Of T)(T)
+- uid: DotNext.DelegateHelpers.Infer*
+  name: Infer
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Infer_
+  commentId: Overload:DotNext.DelegateHelpers.Infer
+  fullName: DotNext.DelegateHelpers.Infer
+  nameWithType: DelegateHelpers.Infer
+- uid: DotNext.DelegateHelpers.Infer``1(``0)
+  name: Infer<TDelegate>(TDelegate)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Infer__1___0_
+  commentId: M:DotNext.DelegateHelpers.Infer``1(``0)
+  name.vb: Infer(Of TDelegate)(TDelegate)
+  fullName: DotNext.DelegateHelpers.Infer<TDelegate>(TDelegate)
+  fullName.vb: DotNext.DelegateHelpers.Infer(Of TDelegate)(TDelegate)
+  nameWithType: DelegateHelpers.Infer<TDelegate>(TDelegate)
+  nameWithType.vb: DelegateHelpers.Infer(Of TDelegate)(TDelegate)
 - uid: DotNext.DelegateHelpers.IsNotNull*
   name: IsNotNull
   href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_IsNotNull_
@@ -49747,13 +49810,13 @@ references:
   fullName: DotNext.Threading.AsyncEventHub.EventGroup
   nameWithType: AsyncEventHub.EventGroup
 - uid: DotNext.Threading.AsyncEventHub.EventGroup.#ctor(System.ReadOnlySpan{System.Int32})
-  name: EventGroup(ReadOnlySpan<int>)
+  name: EventGroup(params ReadOnlySpan<int>)
   href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup__ctor_System_ReadOnlySpan_System_Int32__
   commentId: M:DotNext.Threading.AsyncEventHub.EventGroup.#ctor(System.ReadOnlySpan{System.Int32})
   name.vb: New(ReadOnlySpan(Of Integer))
-  fullName: DotNext.Threading.AsyncEventHub.EventGroup.EventGroup(System.ReadOnlySpan<int>)
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.EventGroup(params System.ReadOnlySpan<int>)
   fullName.vb: DotNext.Threading.AsyncEventHub.EventGroup.New(System.ReadOnlySpan(Of Integer))
-  nameWithType: AsyncEventHub.EventGroup.EventGroup(ReadOnlySpan<int>)
+  nameWithType: AsyncEventHub.EventGroup.EventGroup(params ReadOnlySpan<int>)
   nameWithType.vb: AsyncEventHub.EventGroup.New(ReadOnlySpan(Of Integer))
 - uid: DotNext.Threading.AsyncEventHub.EventGroup.#ctor*
   name: EventGroup
@@ -55431,6 +55494,168 @@ references:
   commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.UpgradeToWriteLock
   fullName: DotNext.Threading.ReaderWriterSpinLock.UpgradeToWriteLock
   nameWithType: ReaderWriterSpinLock.UpgradeToWriteLock
+- uid: DotNext.Threading.ReferenceCounted
+  name: ReferenceCounted
+  href: api/DotNext.Threading.ReferenceCounted.html
+  commentId: T:DotNext.Threading.ReferenceCounted
+  fullName: DotNext.Threading.ReferenceCounted
+  nameWithType: ReferenceCounted
+- uid: DotNext.Threading.ReferenceCounted.Acquire*
+  name: Acquire
+  href: api/DotNext.Threading.ReferenceCounted.html#DotNext_Threading_ReferenceCounted_Acquire_
+  commentId: Overload:DotNext.Threading.ReferenceCounted.Acquire
+  fullName: DotNext.Threading.ReferenceCounted.Acquire
+  nameWithType: ReferenceCounted.Acquire
+- uid: DotNext.Threading.ReferenceCounted.Acquire``1(DotNext.Threading.ReferenceCounted{``0},``0@)
+  name: Acquire<T>(ReferenceCounted<T>, out T?)
+  href: api/DotNext.Threading.ReferenceCounted.html#DotNext_Threading_ReferenceCounted_Acquire__1_DotNext_Threading_ReferenceCounted___0____0__
+  commentId: M:DotNext.Threading.ReferenceCounted.Acquire``1(DotNext.Threading.ReferenceCounted{``0},``0@)
+  name.vb: Acquire(Of T)(ReferenceCounted(Of T), T)
+  fullName: DotNext.Threading.ReferenceCounted.Acquire<T>(DotNext.Threading.ReferenceCounted<T>, out T?)
+  fullName.vb: DotNext.Threading.ReferenceCounted.Acquire(Of T)(DotNext.Threading.ReferenceCounted(Of T), T)
+  nameWithType: ReferenceCounted.Acquire<T>(ReferenceCounted<T>, out T?)
+  nameWithType.vb: ReferenceCounted.Acquire(Of T)(ReferenceCounted(Of T), T)
+- uid: DotNext.Threading.ReferenceCountedOwner`1
+  name: ReferenceCountedOwner<T>
+  href: api/DotNext.Threading.ReferenceCountedOwner-1.html
+  commentId: T:DotNext.Threading.ReferenceCountedOwner`1
+  name.vb: ReferenceCountedOwner(Of T)
+  fullName: DotNext.Threading.ReferenceCountedOwner<T>
+  fullName.vb: DotNext.Threading.ReferenceCountedOwner(Of T)
+  nameWithType: ReferenceCountedOwner<T>
+  nameWithType.vb: ReferenceCountedOwner(Of T)
+- uid: DotNext.Threading.ReferenceCountedOwner`1.#ctor(`0)
+  name: ReferenceCountedOwner(T)
+  href: api/DotNext.Threading.ReferenceCountedOwner-1.html#DotNext_Threading_ReferenceCountedOwner_1__ctor__0_
+  commentId: M:DotNext.Threading.ReferenceCountedOwner`1.#ctor(`0)
+  name.vb: New(T)
+  fullName: DotNext.Threading.ReferenceCountedOwner<T>.ReferenceCountedOwner(T)
+  fullName.vb: DotNext.Threading.ReferenceCountedOwner(Of T).New(T)
+  nameWithType: ReferenceCountedOwner<T>.ReferenceCountedOwner(T)
+  nameWithType.vb: ReferenceCountedOwner(Of T).New(T)
+- uid: DotNext.Threading.ReferenceCountedOwner`1.#ctor*
+  name: ReferenceCountedOwner
+  href: api/DotNext.Threading.ReferenceCountedOwner-1.html#DotNext_Threading_ReferenceCountedOwner_1__ctor_
+  commentId: Overload:DotNext.Threading.ReferenceCountedOwner`1.#ctor
+  name.vb: New
+  fullName: DotNext.Threading.ReferenceCountedOwner<T>.ReferenceCountedOwner
+  fullName.vb: DotNext.Threading.ReferenceCountedOwner(Of T).New
+  nameWithType: ReferenceCountedOwner<T>.ReferenceCountedOwner
+  nameWithType.vb: ReferenceCountedOwner(Of T).New
+- uid: DotNext.Threading.ReferenceCountedOwner`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.ReferenceCountedOwner-1.html#DotNext_Threading_ReferenceCountedOwner_1_Dispose
+  commentId: M:DotNext.Threading.ReferenceCountedOwner`1.Dispose
+  fullName: DotNext.Threading.ReferenceCountedOwner<T>.Dispose()
+  fullName.vb: DotNext.Threading.ReferenceCountedOwner(Of T).Dispose()
+  nameWithType: ReferenceCountedOwner<T>.Dispose()
+  nameWithType.vb: ReferenceCountedOwner(Of T).Dispose()
+- uid: DotNext.Threading.ReferenceCountedOwner`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.ReferenceCountedOwner-1.html#DotNext_Threading_ReferenceCountedOwner_1_Dispose_
+  commentId: Overload:DotNext.Threading.ReferenceCountedOwner`1.Dispose
+  fullName: DotNext.Threading.ReferenceCountedOwner<T>.Dispose
+  fullName.vb: DotNext.Threading.ReferenceCountedOwner(Of T).Dispose
+  nameWithType: ReferenceCountedOwner<T>.Dispose
+  nameWithType.vb: ReferenceCountedOwner(Of T).Dispose
+- uid: DotNext.Threading.ReferenceCounted`1
+  name: ReferenceCounted<T>
+  href: api/DotNext.Threading.ReferenceCounted-1.html
+  commentId: T:DotNext.Threading.ReferenceCounted`1
+  name.vb: ReferenceCounted(Of T)
+  fullName: DotNext.Threading.ReferenceCounted<T>
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T)
+  nameWithType: ReferenceCounted<T>
+  nameWithType.vb: ReferenceCounted(Of T)
+- uid: DotNext.Threading.ReferenceCounted`1.Acquire
+  name: Acquire()
+  href: api/DotNext.Threading.ReferenceCounted-1.html#DotNext_Threading_ReferenceCounted_1_Acquire
+  commentId: M:DotNext.Threading.ReferenceCounted`1.Acquire
+  fullName: DotNext.Threading.ReferenceCounted<T>.Acquire()
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Acquire()
+  nameWithType: ReferenceCounted<T>.Acquire()
+  nameWithType.vb: ReferenceCounted(Of T).Acquire()
+- uid: DotNext.Threading.ReferenceCounted`1.Acquire*
+  name: Acquire
+  href: api/DotNext.Threading.ReferenceCounted-1.html#DotNext_Threading_ReferenceCounted_1_Acquire_
+  commentId: Overload:DotNext.Threading.ReferenceCounted`1.Acquire
+  fullName: DotNext.Threading.ReferenceCounted<T>.Acquire
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Acquire
+  nameWithType: ReferenceCounted<T>.Acquire
+  nameWithType.vb: ReferenceCounted(Of T).Acquire
+- uid: DotNext.Threading.ReferenceCounted`1.Scope
+  name: ReferenceCounted<T>.Scope
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html
+  commentId: T:DotNext.Threading.ReferenceCounted`1.Scope
+  name.vb: ReferenceCounted(Of T).Scope
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope
+  nameWithType: ReferenceCounted<T>.Scope
+  nameWithType.vb: ReferenceCounted(Of T).Scope
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_Dispose
+  commentId: M:DotNext.Threading.ReferenceCounted`1.Scope.Dispose
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.Dispose()
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.Dispose()
+  nameWithType: ReferenceCounted<T>.Scope.Dispose()
+  nameWithType.vb: ReferenceCounted(Of T).Scope.Dispose()
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_Dispose_
+  commentId: Overload:DotNext.Threading.ReferenceCounted`1.Scope.Dispose
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.Dispose
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.Dispose
+  nameWithType: ReferenceCounted<T>.Scope.Dispose
+  nameWithType.vb: ReferenceCounted(Of T).Scope.Dispose
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.IsValid
+  name: IsValid
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_IsValid
+  commentId: P:DotNext.Threading.ReferenceCounted`1.Scope.IsValid
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.IsValid
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.IsValid
+  nameWithType: ReferenceCounted<T>.Scope.IsValid
+  nameWithType.vb: ReferenceCounted(Of T).Scope.IsValid
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.IsValid*
+  name: IsValid
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_IsValid_
+  commentId: Overload:DotNext.Threading.ReferenceCounted`1.Scope.IsValid
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.IsValid
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.IsValid
+  nameWithType: ReferenceCounted<T>.Scope.IsValid
+  nameWithType.vb: ReferenceCounted(Of T).Scope.IsValid
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.Value
+  name: Value
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_Value
+  commentId: P:DotNext.Threading.ReferenceCounted`1.Scope.Value
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.Value
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.Value
+  nameWithType: ReferenceCounted<T>.Scope.Value
+  nameWithType.vb: ReferenceCounted(Of T).Scope.Value
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.Value*
+  name: Value
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_Value_
+  commentId: Overload:DotNext.Threading.ReferenceCounted`1.Scope.Value
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.Value
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.Value
+  nameWithType: ReferenceCounted<T>.Scope.Value
+  nameWithType.vb: ReferenceCounted(Of T).Scope.Value
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.ValueRef
+  name: ValueRef
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_ValueRef
+  commentId: P:DotNext.Threading.ReferenceCounted`1.Scope.ValueRef
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.ValueRef
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.ValueRef
+  nameWithType: ReferenceCounted<T>.Scope.ValueRef
+  nameWithType.vb: ReferenceCounted(Of T).Scope.ValueRef
+- uid: DotNext.Threading.ReferenceCounted`1.Scope.ValueRef*
+  name: ValueRef
+  href: api/DotNext.Threading.ReferenceCounted-1.Scope.html#DotNext_Threading_ReferenceCounted_1_Scope_ValueRef_
+  commentId: Overload:DotNext.Threading.ReferenceCounted`1.Scope.ValueRef
+  fullName: DotNext.Threading.ReferenceCounted<T>.Scope.ValueRef
+  fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.ValueRef
+  nameWithType: ReferenceCounted<T>.Scope.ValueRef
+  nameWithType.vb: ReferenceCounted(Of T).Scope.ValueRef
 - uid: DotNext.Threading.Tasks
   name: DotNext.Threading.Tasks
   href: api/DotNext.Threading.Tasks.html
