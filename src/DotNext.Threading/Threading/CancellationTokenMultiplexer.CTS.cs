@@ -14,7 +14,7 @@ partial struct CancellationTokenMultiplexer
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
 
-        public void DetachLinkedTokens<TCleanup>()
+        private void Detach<TCleanup>()
             where TCleanup : struct, IRegistrationCleanup, allows ref struct
         {
             for (var i = 0; i < count; i++)
@@ -23,35 +23,48 @@ partial struct CancellationTokenMultiplexer
             }
         }
 
-        public void AddRange(ReadOnlySpan<CancellationToken> tokens)
+        public void Detach() => Detach<DisposeRegistration>();
+
+        public async ValueTask DetachAsync()
         {
-            // register inlined tokens
-            var inlinedCount = int.Min(InlinedListCapacity, count = tokens.Length);
-
-            for (var i = 0; i < inlinedCount; i++)
+            for (var i = 0; i < count; i++)
             {
-                inlinedList[i] = Attach(tokens[i]);
+                await this[i].DisposeAsync().ConfigureAwait(false);
             }
+        }
 
-            // register extra tokens
-            tokens = tokens.Slice(inlinedCount);
+        public void Attach(ReadOnlySpan<CancellationToken> tokens)
+        {
+            count = tokens.Length;
+            
+            // register inlined tokens
+            tokens = tokens.Slice(Attach(tokens, inlinedList));
             if (tokens.IsEmpty)
                 return;
 
+            // register extra tokens
             if (extraTokens is null || extraTokens.Length < tokens.Length)
             {
                 extraTokens = new CancellationTokenRegistration[tokens.Length];
             }
 
-            for (var i = 0; i < tokens.Length; i++)
+            Attach(tokens, extraTokens);
+        }
+
+        private int Attach(ReadOnlySpan<CancellationToken> tokens, Span<CancellationTokenRegistration> registrations)
+        {
+            var length = int.Min(tokens.Length, registrations.Length);
+            for (var i = 0; i < length; i++)
             {
-                extraTokens[i] = Attach(tokens[i]);
+                registrations[i] = Attach(tokens[i]);
             }
+
+            return length;
         }
 
         public int Count => count;
 
-        public ref readonly CancellationTokenRegistration this[int index]
+        private ref readonly CancellationTokenRegistration this[int index]
         {
             get
             {
@@ -92,13 +105,32 @@ partial struct CancellationTokenMultiplexer
         {
             if (disposing)
             {
-                DetachLinkedTokens<CancelRegistration>();
+                Detach<CancelRegistration>();
                 inlinedList = default;
                 extraTokens = null; // help GC
             }
 
             count = 0;
             base.Dispose(disposing);
+        }
+        
+        private interface IRegistrationCleanup
+        {
+            public static abstract void Clear(ref readonly CancellationTokenRegistration registration);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly ref struct DisposeRegistration : IRegistrationCleanup
+        {
+            static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
+                => registration.Dispose();
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly ref struct CancelRegistration : IRegistrationCleanup
+        {
+            static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
+                => registration.Unregister();
         }
     }
     
@@ -112,24 +144,5 @@ partial struct CancellationTokenMultiplexer
 
         Scope IMultiplexedCancellationTokenSourceFactory<Scope>.Create(scoped ReadOnlySpan<CancellationToken> tokens)
             => new(multiplexer, tokens);
-    }
-    
-    private interface IRegistrationCleanup
-    {
-        public static abstract void Clear(ref readonly CancellationTokenRegistration registration);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct DisposeRegistration : IRegistrationCleanup
-    {
-        static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
-            => registration.Dispose();
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct CancelRegistration : IRegistrationCleanup
-    {
-        static void IRegistrationCleanup.Clear(ref readonly CancellationTokenRegistration registration)
-            => registration.Unregister();
     }
 }
