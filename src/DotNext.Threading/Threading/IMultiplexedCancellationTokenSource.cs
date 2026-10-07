@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
+
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents multiplexed cancellation token source.
@@ -143,6 +146,11 @@ public static class MultiplexedCancellationTokenSource
 
             return result;
         }
+        
+        // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
+        // is safe. If not, just box the token.
+        internal static bool CanBeInlined => Unsafe.AreCompatible<CancellationToken, ValueTuple<object>>()
+                                               && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
     }
 }
 

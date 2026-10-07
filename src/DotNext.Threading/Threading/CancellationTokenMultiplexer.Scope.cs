@@ -44,12 +44,12 @@ partial struct CancellationTokenMultiplexer
             => multiplexerOrToken = InlineToken(token);
 
         private static MultiplexerOrToken InlineToken(CancellationToken token)
-            => LinkedCancellationTokenSource.CanInlineToken
+            => CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<CancellationToken, MultiplexerOrToken>(token)
                 : new(token);
 
         private static CancellationToken GetToken(MultiplexerOrToken value)
-            => LinkedCancellationTokenSource.CanInlineToken
+            => CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<MultiplexerOrToken, CancellationToken>(value)
                 : Unsafe.Unbox<CancellationToken>(value.Item1);
 
