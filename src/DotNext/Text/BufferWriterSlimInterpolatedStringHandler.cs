@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -9,7 +8,7 @@ using Buffers;
 
 /// <summary>
 /// Represents handler of the interpolated string
-/// that can be written to <see cref="IBufferWriter{T}"/> without temporary allocations.
+/// that can be written to <see cref="BufferWriterSlim{T}"/> without temporary allocations.
 /// </summary>
 [InterpolatedStringHandler]
 [EditorBrowsable(EditorBrowsableState.Advanced)]
