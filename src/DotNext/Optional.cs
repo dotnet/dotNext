@@ -239,8 +239,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     static Optional()
     {
-        var type = typeof(T);
-        IsOptional = type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
+        IsOptional = typeof(T) is { IsConstructedGenericType: true } type && type.GetGenericTypeDefinition() == typeof(Optional<>);
     }
 
     private readonly T? value;
