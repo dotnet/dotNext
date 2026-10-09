@@ -17,9 +17,8 @@ using Buffers;
 public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen = false) : ModernStream
 {
     private const int MinBufferSize = 16;
-    private const int DefaultBufferSize = 4096;
 
-    private readonly int maxBufferSize = DefaultBufferSize;
+    private readonly int maxBufferSize = Environment.SystemPageSize;
     private int readPosition, writePosition, readLength;
     private MemoryOwner<byte> buffer;
     private Stream? stream = stream ?? throw new ArgumentNullException(nameof(stream));

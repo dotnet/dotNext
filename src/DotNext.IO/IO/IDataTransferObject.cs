@@ -16,8 +16,6 @@ using Buffers.Binary;
 /// <seealso cref="IAsyncBinaryWriter"/>
 public interface IDataTransferObject
 {
-    private const int DefaultBufferSize = 256;
-
     /// <summary>
     /// Gets empty data transfer object.
     /// </summary>
@@ -99,7 +97,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        var buffer = allocator.DefaultIfNull.AllocateAtLeast(DefaultBufferSize);
+        var buffer = allocator.DefaultIfNull.AllocateAtLeast(Environment.SystemPageSize);
         try
         {
             return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -153,7 +151,7 @@ public interface IDataTransferObject
         where TTransformation : ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
-        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
+        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(Environment.SystemPageSize);
         try
         {
             // serialize
@@ -191,12 +189,12 @@ public interface IDataTransferObject
             Mode = FileMode.CreateNew,
             Access = FileAccess.ReadWrite,
             Share = FileShare.None,
-            BufferSize = DefaultBufferSize,
+            BufferSize = Environment.SystemPageSize,
             Options = tempFileOptions,
             PreallocationSize = length,
         });
 
-        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
+        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(Environment.SystemPageSize);
         try
         {
             // serialize
