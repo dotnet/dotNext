@@ -23,7 +23,7 @@ partial class AdvancedHelpers
         /// <typeparam name="T">The type to check.</typeparam>
         /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullable<T>() => default(T) is null;
+        public static bool IsNullable<T>() where T : allows ref struct => default(T) is null;
 
         /// <summary>
         /// Indicates that specified value type is the default value.
