@@ -35,7 +35,7 @@ partial interface IInterpolatedStringHandler
         int bufferSize, bytesWritten = 0;
         switch (value)
         {
-            case IUtf8SpanFormattable when IsUtf8(encoder):
+            case IUtf8SpanFormattable when encoder.IsUtf8:
                 for (bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
                     var span = writer.GetSpan(bufferSize);
@@ -69,7 +69,7 @@ partial interface IInterpolatedStringHandler
                 bytesWritten = AppendFormatted(writer, encoder, ((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
                 break;
             case not null:
-                bytesWritten = AppendFormatted(writer, encoder, value.ToString());
+                bytesWritten = AppendFormatted(writer, encoder, ToStringNonBoxing(value));
                 break;
         }
 
@@ -125,7 +125,7 @@ partial interface IInterpolatedStringHandler
 
         switch (value)
         {
-            case IUtf8SpanFormattable when IsUtf8(encoder):
+            case IUtf8SpanFormattable when encoder.IsUtf8:
                 for (bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
                     var span = writer.GetSpan(bufferSize);
@@ -161,7 +161,7 @@ partial interface IInterpolatedStringHandler
                 bytesWritten = AppendFormatted(writer, encoder, buffer, ((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
                 break;
             case not null:
-                bytesWritten = AppendFormatted(writer, encoder, buffer, value.ToString().AsSpan(), alignment, leftAlign);
+                bytesWritten = AppendFormatted(writer, encoder, buffer, ToStringNonBoxing(value), alignment, leftAlign);
                 break;
         }
 

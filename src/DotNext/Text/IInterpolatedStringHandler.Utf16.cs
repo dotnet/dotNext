@@ -1,9 +1,11 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Text;
 
 using Buffers;
+using Runtime.CompilerServices;
 
 partial interface IInterpolatedStringHandler
 {
@@ -31,10 +33,9 @@ partial interface IInterpolatedStringHandler
             case IFormattable:
                 // constrained call avoiding boxing for value types
                 charsWritten = Write(writer, ((IFormattable)value).ToString(format, provider));
-
                 break;
             case not null:
-                charsWritten = Write(writer, value.ToString());
+                charsWritten = Write(writer, ToStringNonBoxing(value));
                 break;
             default:
                 charsWritten = 0;
@@ -136,7 +137,7 @@ partial interface IInterpolatedStringHandler
                 writtenCount = AppendFormatted(writer, ((IFormattable)value).ToString(format, provider), alignment, leftAlign);
                 break;
             case not null:
-                writtenCount = AppendFormatted(writer, value.ToString(), alignment, leftAlign);
+                writtenCount = AppendFormatted(writer, ToStringNonBoxing(value), alignment, leftAlign);
                 break;
         }
 
@@ -147,5 +148,15 @@ partial interface IInterpolatedStringHandler
     {
         var length = literalLength + formattedCount * CharsPerPlaceholder;
         return int.CreateSaturating(length);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<char> ToStringNonBoxing<T>(T value)
+    {
+        Debug.Assert(value is not null);
+
+        return typeof(T).IsValueType && RuntimeHelpers.ToStringRequiresBoxing<T>()
+            ? typeof(T).ToString()
+            : value.ToString();
     }
 }

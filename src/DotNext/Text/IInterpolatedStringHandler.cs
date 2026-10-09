@@ -2,6 +2,9 @@ namespace DotNext.Text;
 
 internal partial interface IInterpolatedStringHandler
 {
+    private const int MaxBufferSize = int.MaxValue / 2;
+    private const long CharsPerPlaceholder = 10;
+    
     void AppendLiteral(string? value);
 
     void AppendFormatted<T>(T value, string? format);
