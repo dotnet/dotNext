@@ -88,6 +88,26 @@ partial class AdvancedHelpers
             Ceq();
             return Return<bool>();
         }
+
+        /// <summary>
+        /// Gets a value indicating that the value type has overridden <see cref="ValueType.ToString"/> method.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Enum.ToString()"/> is not considered as overridden method because it causes boxing.
+        /// </remarks>
+        /// <typeparam name="T">The type to check.</typeparam>
+        /// <returns><see langword="true"/> if <typeparamref name="T"/> has overridden <see cref="ValueType.ToString"/> method.</returns>
+        public static bool ToStringRequiresBoxing<T>()
+            where T : allows ref struct
+        {
+            Ldftn(Method(Type<object>(), nameof(ToString)));
+            Constrained<T>();
+            Ldftn(Method(Type<object>(), nameof(ToString)));
+            Ceq();
+            Ldc_I4_1();
+            Ceq();
+            return Return<bool>();
+        }
     }
 
     /// <summary>

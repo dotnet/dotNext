@@ -50,7 +50,7 @@ public class AdvancedHelpersTests : Test
     {
         char[] chars1 = ['a', 'b', 'c'];
         var chars2 = new char[2];
-        Unsafe.Copy(in chars1[1], out chars2[0], (nuint)2);
+        Unsafe.Copy(in chars1[1], out chars2[0], 2);
         Equal('b', chars2[0]);
         Equal('c', chars2[1]);
     }
@@ -63,6 +63,7 @@ public class AdvancedHelpersTests : Test
         True(RuntimeHelpers.IsNullable<int?>());
         False(RuntimeHelpers.IsNullable<int>());
         False(RuntimeHelpers.IsNullable<IntPtr>());
+        False(RuntimeHelpers.IsNullable<ReadOnlySpan<byte>>());
     }
 
     [Fact]
@@ -141,6 +142,17 @@ public class AdvancedHelpersTests : Test
         True(RuntimeHelpers.HasFinalizer(new WeakReference(null)));
         False(RuntimeHelpers.HasFinalizer(string.Empty));
         False(RuntimeHelpers.HasFinalizer(new object()));
+    }
+
+    [Fact]
+    public static void HasToString()
+    {
+        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<Span<char>>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<int>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<EnvironmentVariableTarget>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<string>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<object>());
     }
 
     [Fact]
