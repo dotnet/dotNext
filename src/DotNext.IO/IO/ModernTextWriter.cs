@@ -344,7 +344,7 @@ public abstract class ModernTextWriter : TextWriter, IFlushable
     /// <inheritdoc/>
     public override Task WriteLineAsync(char value) => WriteLineAsync([value]);
 
-    private Task WriteLineAsync(CancellationToken token) => WriteLineAsync(CoreNewLine, token);
+    private Task WriteLineAsync(CancellationToken token) => WriteAsync(CoreNewLine, token);
 
     /// <inheritdoc/>
     public override Task WriteLineAsync(StringBuilder? value, CancellationToken token = default)

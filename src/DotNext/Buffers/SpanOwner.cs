@@ -137,6 +137,12 @@ public ref struct SpanOwner<T> : IDisposable
         }
     }
 
+    internal SpanOwner(scoped in ArraySegment<T> segment)
+    {
+        owner = segment.Array;
+        memory = segment;
+    }
+
     private static bool UseNativeAllocation
         => Features.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 

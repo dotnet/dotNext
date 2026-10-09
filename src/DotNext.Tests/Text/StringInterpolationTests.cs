@@ -14,6 +14,17 @@ public sealed class StringInterpolationTests : Test
         using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
         Equal($"{x} + {y} = {x + y}", actual.Span.ToString());
     }
+
+    [Theory]
+    [InlineData(4)]
+    [InlineData(16)]
+    public static void InterpolateStringOnStack(int bufferSize)
+    {
+        Span<char> buffer = stackalloc char[bufferSize];
+        int x = 10, y = 20;
+        using var actual = string.Interpolate(buffer, provider: null, $"{x} + {y} = {x + y}");
+        Equal($"{x} + {y} = {x + y}", actual.Span);
+    }
     
     [Theory]
     [InlineData(10, 10)]
@@ -46,9 +57,10 @@ public sealed class StringInterpolationTests : Test
     public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
     {
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
-        buffer.Interpolate($"{x,4:X} = {y,-3:X}");
+        
         try
         {
+            buffer.Interpolate($"{x,4:X} = {y,-3:X}");
             Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
         }
         finally
