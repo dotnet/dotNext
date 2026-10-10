@@ -127,7 +127,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 
         if (IsEmpty)
         {
-            result = ThrowNullReferenceException;
+            result = NullReferenceException.Throw;
         }
         else if (ReferenceEquals(owner, Sentinel.Instance))
         {
@@ -140,9 +140,6 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
         }
 
         return result;
-        
-        [DoesNotReturn]
-        static void ThrowNullReferenceException(T value) => throw new NullReferenceException();
     }
 
     /// <inheritdoc/>
@@ -307,7 +304,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         Func<T> result;
         if (IsEmpty)
         {
-            result = ThrowNullReferenceException;
+            result = NullReferenceException.Throw<T>;
         }
         else if (ReferenceEquals(owner, Sentinel.Instance))
         {
@@ -320,10 +317,6 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         }
 
         return result;
-        
-        [DoesNotReturn]
-        static T ThrowNullReferenceException()
-            => throw new NullReferenceException();
     }
 
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
