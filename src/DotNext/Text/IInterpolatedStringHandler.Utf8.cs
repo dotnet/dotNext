@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Numerics;
 using System.Text;
 
 namespace DotNext.Text;
@@ -9,7 +8,7 @@ using Buffers;
 
 partial interface IInterpolatedStringHandler
 {
-    private const byte WhitespaceUtf8 = (byte)' ';
+    private const byte WhitespaceUtf8 = (byte)WhitespaceUtf16;
     
     protected static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, ReadOnlySpan<char> value)
         where TWriter : IBufferWriter<byte>, allows ref struct
@@ -166,31 +165,6 @@ partial interface IInterpolatedStringHandler
         }
 
         return bytesWritten;
-    }
-    
-    private static int Align<T>(Span<T> buffer, T whitespace, int alignment, int bytesWritten, bool leftAlign)
-        where T : struct, IBinaryNumber<T>
-    {
-        Span<T> filler;
-        var padding = alignment - bytesWritten;
-
-        if (padding <= 0)
-        {
-            alignment = bytesWritten;
-        }
-        else if (leftAlign)
-        {
-            filler = buffer.Slice(bytesWritten, padding);
-            filler.Fill(whitespace);
-        }
-        else
-        {
-            filler = buffer.TrimLength(padding, out var rest);
-            buffer.Slice(0, bytesWritten).CopyTo(rest);
-            filler.Fill(whitespace);
-        }
-
-        return alignment;
     }
 
     protected static int EstimateUtf8BufferSize(int literalLength, int formattedCount)

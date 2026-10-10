@@ -277,4 +277,13 @@ public sealed class EnumTests : Test
             Equal(expected, e);
         }
     }
+
+    [Theory]
+    [InlineData(NumberStyles.AllowTrailingWhite)]
+    [InlineData(NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingWhite | NumberStyles.AllowDecimalPoint)]
+    public static void ConvertToString(NumberStyles style)
+    {
+        var value = new Enum<NumberStyles>(style);
+        Equal(style.ToString(), value.ToString());
+    }
 }

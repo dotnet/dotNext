@@ -1,11 +1,9 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Text;
 
 using Buffers;
-using Runtime.CompilerServices;
 
 partial interface IInterpolatedStringHandler
 {
@@ -18,6 +16,9 @@ partial interface IInterpolatedStringHandler
 
         switch (value)
         {
+            case Enum:
+                charsWritten = UnsafeWriteEnum(value, writer, format);
+                break;
             case ISpanFormattable:
                 var span = writer.GetSpan();
 
@@ -102,30 +103,16 @@ partial interface IInterpolatedStringHandler
         var writtenCount = 0;
         switch (value)
         {
+            case Enum:
+                writtenCount = UnsafeWriteEnum(value, writer, format, alignment, leftAlign);
+                break;
             case ISpanFormattable:
-                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+                for (var bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    Span<char> span = writer.GetSpan(bufferSize), filler;
+                    var span = writer.GetSpan(bufferSize);
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
-                        var padding = alignment - charsWritten;
-
-                        if (padding <= 0)
-                        {
-                            alignment = charsWritten;
-                        }
-                        else if (leftAlign)
-                        {
-                            filler = span.Slice(charsWritten, padding);
-                            filler.Fill(WhitespaceUtf16);
-                        }
-                        else
-                        {
-                            filler = span.TrimLength(padding, out var rest);
-                            span.Slice(0, charsWritten).CopyTo(rest);
-                            filler.Fill(WhitespaceUtf16);
-                        }
-
+                        alignment = Align(span, WhitespaceUtf16, alignment, charsWritten, leftAlign);
                         writer.Advance(alignment);
                         writtenCount += alignment;
                         break;
@@ -148,15 +135,5 @@ partial interface IInterpolatedStringHandler
     {
         var length = literalLength + formattedCount * CharsPerPlaceholder;
         return int.CreateSaturating(length);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ReadOnlySpan<char> ToStringNonBoxing<T>(T value)
-    {
-        Debug.Assert(value is not null);
-
-        return typeof(T).IsValueType && RuntimeHelpers.ToStringRequiresBoxing<T>()
-            ? typeof(T).ToString()
-            : value.ToString();
     }
 }
