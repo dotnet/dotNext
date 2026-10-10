@@ -147,9 +147,12 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void HasToString()
     {
-        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
         False(RuntimeHelpers.ToStringRequiresBoxing<Span<char>>());
         False(RuntimeHelpers.ToStringRequiresBoxing<int>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<int?>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<Optional<int>>());
+        
+        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
         True(RuntimeHelpers.ToStringRequiresBoxing<EnvironmentVariableTarget>());
         True(RuntimeHelpers.ToStringRequiresBoxing<string>());
         True(RuntimeHelpers.ToStringRequiresBoxing<object>());
