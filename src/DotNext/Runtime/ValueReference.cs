@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Represents a mutable reference to the field.
@@ -146,7 +147,14 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 
     /// <inheritdoc/>
     public override string? ToString()
-        => IsEmpty ? null : Value?.ToString();
+    {
+        if (IsEmpty)
+            return null;
+
+        return typeof(T).IsValueType && RuntimeHelpers.ToStringRequiresBoxing<T>()
+            ? typeof(T).ToString()
+            : Value?.ToString();
+    }
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)
@@ -322,7 +330,12 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 
     /// <inheritdoc/>
     public override string? ToString()
-        => IsEmpty ? null : Value?.ToString();
+    {
+        T copy;
+        return IsEmpty || (copy = Value) is null
+            ? null
+            : ToStringNonBoxing(copy);
+    }
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)

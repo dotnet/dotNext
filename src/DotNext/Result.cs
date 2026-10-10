@@ -9,6 +9,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Represents extension methods for type <see cref="Result{T}"/>.
@@ -480,7 +481,13 @@ public readonly partial struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Returns textual representation of this object.
     /// </summary>
     /// <returns>The textual representation of this object.</returns>
-    public override string ToString() => exception?.SourceException.ToString() ?? value?.ToString() ?? "<NULL>";
+    public override string? ToString()
+    {
+        if (exception is not null)
+            return exception.SourceException.ToString();
+
+        return value is null ? null : ToStringNonBoxing(value);
+    }
 }
 
 /// <summary>
@@ -762,7 +769,13 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// Returns textual representation of this object.
     /// </summary>
     /// <returns>The textual representation of this object.</returns>
-    public override string? ToString() => IsSuccessful ? value?.ToString() : errorCode.ToString();
+    public override string? ToString()
+    {
+        if (!IsSuccessful)
+            return ToStringNonBoxing(errorCode);
+
+        return value is null ? null : ToStringNonBoxing(value);
+    }
 
     /// <summary>
     /// Returns the value if present; otherwise return default value.

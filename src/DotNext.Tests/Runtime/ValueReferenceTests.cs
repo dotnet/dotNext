@@ -205,22 +205,6 @@ public sealed class ValueReferenceTests : Test
         True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
 
-    private record MyClass : IResettable
-    {
-        internal static string StaticObject;
-        
-        [FixedAddressValueType]
-        internal static int StaticValueType;
-        
-        internal int Field;
-        internal string AnotherField;
-
-        public virtual void Reset()
-        {
-            
-        }
-    }
-
     [Fact]
     public static unsafe void PinAnonymousValue()
     {
@@ -234,5 +218,41 @@ public sealed class ValueReferenceTests : Test
         {
             Equal(42, *ptr);
         }
+    }
+    
+    [Fact]
+    public static void ToStringMutatesInstance()
+    {
+        var box = new MyStruct[1];
+        var valueRef = new ValueReference<MyStruct>(box, 0);
+        valueRef.ToString();
+        Equal(0, box[0].Value);
+    }
+}
+
+file record MyClass : IResettable
+{
+    internal static string StaticObject;
+        
+    [FixedAddressValueType]
+    internal static int StaticValueType;
+        
+    internal int Field;
+    internal string AnotherField;
+
+    public virtual void Reset()
+    {
+            
+    }
+}
+
+file struct MyStruct
+{
+    public int Value;
+
+    public override string ToString()
+    {
+        Value = 42;
+        return string.Empty;
     }
 }

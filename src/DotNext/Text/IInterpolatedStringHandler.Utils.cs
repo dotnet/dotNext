@@ -15,10 +15,9 @@ partial interface IInterpolatedStringHandler
         if (typeof(T).IsEnum)
             return UnsafeEnumToString(value);
 
-        if (typeof(T).IsValueType && RuntimeHelpers.ToStringRequiresBoxing<T>())
-            return typeof(T).ToString();
-
-        return value.ToString();
+        return RuntimeHelpers.IsNullable<T>() || !RuntimeHelpers.ToStringRequiresBoxing<T>()
+            ? value.ToString()
+            : typeof(T).ToString();
     }
     
     private static int Align<T>(Span<T> buffer, [ConstantExpected] T whitespace, int alignment, int elementsWritten, bool leftAlign)

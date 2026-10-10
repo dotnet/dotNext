@@ -10,6 +10,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Various extension and factory methods for constructing optional value.
@@ -655,7 +656,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         UndefinedValue => "<Undefined>",
         NullValue => "<Null>",
-        _ => value!.ToString()
+        _ => value is null ? null : ToStringNonBoxing(value),
     };
 
     /// <summary>
