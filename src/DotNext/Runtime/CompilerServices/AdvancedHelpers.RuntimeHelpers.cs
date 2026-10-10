@@ -104,8 +104,6 @@ partial class AdvancedHelpers
             Constrained<T>();
             Ldftn(Method(Type<object>(), nameof(ToString)));
             Ceq();
-            Ldc_I4_1();
-            Ceq();
             return Return<bool>();
         }
     }
