@@ -225,25 +225,26 @@ public sealed class ValueReferenceTests : Test
     {
         var box = new MyStruct[1];
         var valueRef = new ValueReference<MyStruct>(box, 0);
-        valueRef.ToString();
-        Equal(0, box[0].Value);
+        NotNull(valueRef.ToString());
+        Equal(42, box[0].Value);
     }
 }
 
 file record MyClass : IResettable
 {
     internal static string StaticObject;
-        
+    
     [FixedAddressValueType]
     internal static int StaticValueType;
         
     internal int Field;
     internal string AnotherField;
 
-    public virtual void Reset()
+    public void Reset()
     {
-            
     }
+
+    public override string ToString() => Field.ToString();
 }
 
 file struct MyStruct
