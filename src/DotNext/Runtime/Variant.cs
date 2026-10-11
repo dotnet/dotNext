@@ -1,6 +1,8 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using DotNext.Reflection;
 
@@ -31,14 +33,12 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// </summary>
     /// <param name="typedRef">The typed reference to convert.</param>
     [CLSCompliant(false)]
-    public Variant(TypedReference typedRef)
+    public unsafe Variant(TypedReference typedRef)
     {
+        TypedReferenceAlias.AssertLayout();
         targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
 #pragma warning disable CS8500
-        unsafe
-        {
-            location = ref Unsafe.AsRef<TypedReferenceAlias>(&typedRef).Location;
-        }
+        location = ref TypedReferenceAlias.Create(&typedRef).Location;
 #pragma warning restore CS8500
     }
 
@@ -211,8 +211,38 @@ public readonly ref struct Variant : IEquatable<Variant>
 
 file readonly ref struct TypedReferenceAlias
 {
-#pragma warning disable CS0649, CS9265
+#pragma warning disable CS0649, CS9265, CS8500
     public readonly ref byte Location;
     public readonly nint TypeHandle;
-#pragma warning restore CS0649, CS9265
+
+    public static unsafe ref TypedReferenceAlias Create(TypedReference* typedRef)
+        => ref Unsafe.AsRef<TypedReferenceAlias>(typedRef);
+    
+    [Conditional("DEBUG")]
+    [Conditional("PUBLISH_AOT")]
+    public static unsafe void AssertLayout()
+    {
+        byte i = 42;
+        var typedRef = __makeref(i);
+        ref readonly var alias = ref Create(&typedRef);
+
+        if (sizeof(TypedReference) == sizeof(TypedReferenceAlias)
+            && Unsafe.AreSame(in i, in alias.Location)
+            && TypedReference.TargetTypeToken(typedRef).Equals(RuntimeTypeHandle.FromIntPtr(alias.TypeHandle)))
+        {
+            // layout is correct
+        }
+        else if (Debugger.IsAttached)
+        {
+            Debugger.Break();
+        }
+        else
+        {
+            const string message = "Unexpected TypedReference memory layout";
+            var e = new UnreachableException(message);
+            ExceptionDispatchInfo.SetCurrentStackTrace(e);
+            Environment.FailFast(message, e);
+        }
+    }
+#pragma warning restore CS0649, CS9265, CS8500
 }
