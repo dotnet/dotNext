@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using DotNext.Reflection;
 
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using Reflection;
 
 /// <summary>
 /// Represents the variant value on the stack.
