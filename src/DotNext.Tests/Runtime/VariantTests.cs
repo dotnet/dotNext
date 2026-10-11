@@ -90,4 +90,16 @@ public sealed class VariantTests : Test
         False(v.IsMutable);
         Equal(56, v.Immutable<int>());
     }
+
+    [Fact]
+    public static void FromTypedReference()
+    {
+        var i = 42;
+        Variant v = __makeref(i);
+        v.Mutable<int>() = 56;
+        Equal(56, i);
+
+        v = default(TypedReference);
+        True(v.IsEmpty);
+    }
 }

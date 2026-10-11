@@ -18,12 +18,27 @@ using CompilerServices;
 public readonly ref struct Variant : IEquatable<Variant>
 {
     private readonly ref byte location;
-    private readonly Type targetType;
+    private readonly Type? targetType;
 
     private Variant(ref byte location, Type type, bool mutable)
     {
         this.location = ref location;
         targetType = mutable ? type.MakeByRefType() : type;
+    }
+
+    /// <summary>
+    /// Converts <see cref="TypedReference"/> to the variant value.
+    /// </summary>
+    /// <param name="typedRef">The typed reference to convert.</param>
+    public Variant(TypedReference typedRef)
+    {
+        targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
+#pragma warning disable CS8500
+        unsafe
+        {
+            location = ref Unsafe.AsRef<TypedReferenceAlias>(&typedRef).Location;
+        }
+#pragma warning restore CS8500
     }
 
     /// <summary>
@@ -183,4 +198,19 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <returns><see langword="true"/> if both containers reference the different values and types; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(Variant x, Variant y)
         => !x.Equals(y);
+
+    /// <summary>
+    /// Converts <see cref="TypedReference"/> to the variant value.
+    /// </summary>
+    /// <param name="typedRef">The typed reference to convert.</param>
+    /// <returns>The variant points to the same location as <paramref name="typedRef"/>.</returns>
+    public static implicit operator Variant(TypedReference typedRef) => new(typedRef);
+}
+
+file ref struct TypedReferenceAlias
+{
+#pragma warning disable CS0649
+    public readonly ref byte Location;
+    public readonly nint TypeHandle;
+#pragma warning restore CS0649
 }
