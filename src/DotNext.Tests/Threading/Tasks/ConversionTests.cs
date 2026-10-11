@@ -62,8 +62,8 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task CatchException()
     {
-        NotNull(await Task.FromException(new Exception()).CatchException());
-        NotNull(await ValueTask.FromException(new Exception()).CatchException());
+        NotNull(await Task.FromException(new Exception()).CatchException().ConfigureAwait(true));
+        NotNull(await ValueTask.FromException(new Exception()).CatchException().ConfigureAwait(true));
         
         Null(await Task.CompletedTask.CatchException());
         Null(await ValueTask.CompletedTask.CatchException());
