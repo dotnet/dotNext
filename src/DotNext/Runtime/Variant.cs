@@ -33,12 +33,15 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// </summary>
     /// <param name="typedRef">The typed reference to convert.</param>
     [CLSCompliant(false)]
-    public unsafe Variant(TypedReference typedRef)
+    public Variant(TypedReference typedRef)
     {
         TypedReferenceAlias.AssertLayout();
         targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
 #pragma warning disable CS8500
-        location = ref TypedReferenceAlias.Create(&typedRef).Location;
+        unsafe
+        {
+            location = ref TypedReferenceAlias.Create(&typedRef).Location;
+        }
 #pragma warning restore CS8500
     }
 
