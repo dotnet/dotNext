@@ -17,9 +17,13 @@ public readonly struct AwaitableResult<T>
     {
     }
 
-    internal AwaitableResult(ValueTask<T> task) => this.task = task;
+    internal AwaitableResult(ValueTask<T> task)
+    {
+        this.task = task;
+        ContinueOnCapturedContext = true;
+    }
     
-    internal bool ContinueOnCapturedContext
+    private bool ContinueOnCapturedContext
     {
         get;
         init;
@@ -105,9 +109,10 @@ public readonly struct AwaitableResult<T, TError>
     {
         this.task = task;
         this.converter = converter;
+        ContinueOnCapturedContext = true;
     }
     
-    internal bool ContinueOnCapturedContext
+    private bool ContinueOnCapturedContext
     {
         get;
         init;
