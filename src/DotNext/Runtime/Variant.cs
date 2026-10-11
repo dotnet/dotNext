@@ -30,6 +30,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// Converts <see cref="TypedReference"/> to the variant value.
     /// </summary>
     /// <param name="typedRef">The typed reference to convert.</param>
+    [CLSCompliant(false)]
     public Variant(TypedReference typedRef)
     {
         targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
@@ -204,13 +205,14 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// </summary>
     /// <param name="typedRef">The typed reference to convert.</param>
     /// <returns>The variant points to the same location as <paramref name="typedRef"/>.</returns>
+    [CLSCompliant(false)]
     public static implicit operator Variant(TypedReference typedRef) => new(typedRef);
 }
 
-file ref struct TypedReferenceAlias
+file readonly ref struct TypedReferenceAlias
 {
-#pragma warning disable CS0649
+#pragma warning disable CS0649, CS9265
     public readonly ref byte Location;
     public readonly nint TypeHandle;
-#pragma warning restore CS0649
+#pragma warning restore CS0649, CS9265
 }
