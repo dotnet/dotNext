@@ -2,6 +2,7 @@ using System.Net.Mime;
 
 namespace DotNext.Net.Cluster.Messaging;
 
+using Collections.Specialized;
 using Runtime.Serialization;
 
 /// <summary>
@@ -14,7 +15,7 @@ public abstract class MessageAttribute : Attribute
     /// Initializes a new instance of the attribute.
     /// </summary>
     /// <param name="name">The name of the message.</param>
-    protected MessageAttribute(string name)
+    private protected MessageAttribute(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -36,6 +37,8 @@ public abstract class MessageAttribute : Attribute
     }
 
     internal abstract Type MessageType { get; }
+
+    internal abstract void Register(ITypeMap<(string MessageName, ContentType MessageType)> registry);
 }
 
 /// <summary>
@@ -52,4 +55,7 @@ public sealed class MessageAttribute<TMessage>(string name) : MessageAttribute(n
     where TMessage : ISerializable<TMessage>
 {
     internal override Type MessageType => typeof(TMessage);
+
+    internal override void Register(ITypeMap<(string MessageName, ContentType MessageType)> registry)
+        => registry.Add<TMessage>((Name, new ContentType(MimeType)));
 }
