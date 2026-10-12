@@ -41,6 +41,7 @@ public static class RuntimeHelpersExtensions
         /// </summary>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
+        [CLSCompliant(false)]
         public static nuint ExecutionStackSize => StackInfoCachePerThread.Size;
 
         /// <summary>
@@ -48,6 +49,7 @@ public static class RuntimeHelpersExtensions
         /// </summary>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
+        [CLSCompliant(false)]
         public static nuint RemainingExecutionStack
         {
             [MethodImpl(MethodImplOptions.NoInlining)]
