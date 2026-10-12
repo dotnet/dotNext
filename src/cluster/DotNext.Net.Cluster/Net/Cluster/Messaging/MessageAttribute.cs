@@ -15,7 +15,7 @@ public abstract class MessageAttribute : Attribute
     /// Initializes a new instance of the attribute.
     /// </summary>
     /// <param name="name">The name of the message.</param>
-    private protected MessageAttribute(string name)
+    protected MessageAttribute(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
