@@ -76,7 +76,7 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void StructTypeDefaultTest()
     {
-        var value = default(Guid);
+        var value = Guid.Empty;
         True(RuntimeHelpers.IsDefault(value));
         value = Guid.NewGuid();
         False(RuntimeHelpers.IsDefault(value));
@@ -129,9 +129,9 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void ArrayLength()
     {
-        int[] array = { 42 };
+        int[] array = [42];
         Equal(1U, Array.GetLength(array));
-        array = Array.Empty<int>();
+        array = [];
         Equal(0U, Array.GetLength(array));
         Equal(4U, Array.GetLength(new int[2, 2]));
     }
