@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Diagnostics;
 using IO.Log;
+using Runtime.CompilerServices;
 using Threading;
 
 partial class WriteAheadLog
@@ -306,7 +307,7 @@ partial class WriteAheadLog
         public long UnflushedIndex, FlushedCommitIndex;
     }
     
-    private interface IFlushStateChecker : Atomic<FlushState>.IFieldReference<long>
+    private interface IFlushStateChecker : IFieldReference<FlushState, long>
     {
         bool IsNotFlushed(long index);
     }
@@ -317,7 +318,7 @@ partial class WriteAheadLog
         bool IFlushStateChecker.IsNotFlushed(long unflushedIndex)
             => unflushedIndex < index;
 
-        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetFieldReference(in FlushState value)
+        static ref readonly long IFieldReference<FlushState, long>.GetReference(in FlushState value)
             => ref value.UnflushedIndex;
     }
 
@@ -327,7 +328,7 @@ partial class WriteAheadLog
         bool IFlushStateChecker.IsNotFlushed(long flushedCommitIndex)
             => flushedCommitIndex < commitIndex;
 
-        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetFieldReference(in FlushState value)
+        static ref readonly long IFieldReference<FlushState, long>.GetReference(in FlushState value)
             => ref value.FlushedCommitIndex;
     }
 }
