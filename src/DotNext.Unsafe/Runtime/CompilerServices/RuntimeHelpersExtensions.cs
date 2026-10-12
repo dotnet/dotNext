@@ -57,11 +57,11 @@ public static class RuntimeHelpersExtensions
 file static class StackBase
 {
     [ThreadStatic]
-    private static StackInfo Stack;
+    private static StackInfo Info;
 
     public static bool IsOnStack(nuint address)
     {
-        ref var stackInfo = ref Stack;
+        ref var stackInfo = ref Info;
         if (!stackInfo.IsInitialized)
             stackInfo = new();
 
