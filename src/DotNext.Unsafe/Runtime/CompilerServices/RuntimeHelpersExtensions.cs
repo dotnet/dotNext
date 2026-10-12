@@ -28,7 +28,7 @@ public static class RuntimeHelpersExtensions
         [UnsupportedOSPlatform("wasi")]
         public static bool IsOnExecutionStack<T>(ref readonly T location)
             where T : allows ref struct
-            => StackInfoCachePerThread.IsOnStack((nuint)Unsafe.AddressOf(in location));
+            => StackInfoCachePerThread.Value.IsInRange((nuint)Unsafe.AddressOf(in location));
 
         /// <summary>
         /// Gets a value indicating that <see cref="RuntimeHelpersExtensions.IsOnExecutionStack{T}"/> method is supported on the target platform.
@@ -45,7 +45,7 @@ public static class RuntimeHelpersExtensions
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
         [CLSCompliant(false)]
-        public static nuint ExecutionStackSize => StackInfoCachePerThread.Size;
+        public static nuint ExecutionStackSize => StackInfoCachePerThread.Value.Size;
 
         /// <summary>
         /// Gets the remaining execution stack space.
@@ -62,7 +62,7 @@ public static class RuntimeHelpersExtensions
             get
             {
                 Unsafe.SkipInit(out byte marker);
-                return StackInfoCachePerThread.GetRemainingSpace((nuint)Unsafe.AddressOf(in marker));
+                return StackInfoCachePerThread.Value.GetRemainingSpace((nuint)Unsafe.AddressOf(in marker));
             }
         }
     }
@@ -88,24 +88,19 @@ public static class RuntimeHelpersExtensions
 file static class StackInfoCachePerThread
 {
     [ThreadStatic]
-    private static StackInfo Info;
+    private static StackInfo CachedValue;
 
-    private static ref StackInfo EnsureInitializedInfo()
+    public static ref StackInfo Value
     {
-        ref var stackInfo = ref Info;
-        if (!stackInfo.IsInitialized)
-            stackInfo = new();
+        get
+        {
+            ref var stackInfo = ref CachedValue;
+            if (!stackInfo.IsInitialized)
+                stackInfo = new();
 
-        return ref stackInfo;
+            return ref stackInfo;
+        }
     }
-
-    public static bool IsOnStack(nuint address)
-        => EnsureInitializedInfo().IsInRange(address);
-
-    public static nuint Size => EnsureInitializedInfo().Size;
-
-    public static nuint GetRemainingSpace(nuint stackPointer)
-        => EnsureInitializedInfo().GetRemainingSpace(stackPointer);
 }
 
 [StructLayout(LayoutKind.Auto)]
