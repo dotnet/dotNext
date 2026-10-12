@@ -27,7 +27,7 @@ public static class RuntimeHelpersExtensions
         [UnsupportedOSPlatform("wasi")]
         public static bool IsOnExecutionStack<T>(ref readonly T location)
             where T : allows ref struct
-            => StackBase.IsOnStack((nuint)Unsafe.AddressOf(in location));
+            => StackInfoCachePerThread.IsOnStack((nuint)Unsafe.AddressOf(in location));
 
         /// <summary>
         /// Gets a value indicating that <see cref="RuntimeHelpersExtensions.IsOnExecutionStack{T}"/> method is supported on the target platform.
@@ -35,6 +35,29 @@ public static class RuntimeHelpersExtensions
         [UnsupportedOSPlatformGuard("browser")]
         [UnsupportedOSPlatformGuard("wasi")]
         public static bool IsStackDetectionSupported => StackInfo.IsSupported;
+
+        /// <summary>
+        /// Gets a value of the execution stack belongs to the current thread.
+        /// </summary>
+        [UnsupportedOSPlatform("browser")]
+        [UnsupportedOSPlatform("wasi")]
+        public static nuint ExecutionStackSize => StackInfoCachePerThread.Size;
+
+        /// <summary>
+        /// Gets the remaining execution stack space.
+        /// </summary>
+        [UnsupportedOSPlatform("browser")]
+        [UnsupportedOSPlatform("wasi")]
+        public static nuint RemainingExecutionStack
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            [SkipLocalsInit]
+            get
+            {
+                Unsafe.SkipInit(out byte marker);
+                return StackInfoCachePerThread.GetRemainingSpace((nuint)Unsafe.AddressOf(in marker));
+            }
+        }
     }
 
     /// <summary>
@@ -54,19 +77,27 @@ public static class RuntimeHelpersExtensions
     }
 }
 
-file static class StackBase
+file static class StackInfoCachePerThread
 {
     [ThreadStatic]
     private static StackInfo Info;
 
-    public static bool IsOnStack(nuint address)
+    private static ref StackInfo EnsureInitializedInfo()
     {
         ref var stackInfo = ref Info;
         if (!stackInfo.IsInitialized)
             stackInfo = new();
 
-        return stackInfo.IsInRange(address);
+        return ref stackInfo;
     }
+
+    public static bool IsOnStack(nuint address)
+        => EnsureInitializedInfo().IsInRange(address);
+
+    public static nuint Size => EnsureInitializedInfo().Size;
+
+    public static nuint GetRemainingSpace(nuint stackPointer)
+        => EnsureInitializedInfo().GetRemainingSpace(stackPointer);
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -107,17 +138,39 @@ file readonly struct StackInfo
                                       || OperatingSystem.IsIOS()
                                       || OperatingSystem.IsTvOS();
 
+    private bool IsInvalid => start == end;
+
     public bool IsInRange(nuint addressToCheck)
     {
-        if (start == end)
-            Throw();
+        if (IsInvalid)
+            ThrowNotSupportedException();
 
         return addressToCheck >= start && addressToCheck < end;
-        
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void Throw() => throw new PlatformNotSupportedException();
     }
+
+    public nuint Size
+    {
+        get
+        {
+            if (IsInvalid)
+                ThrowNotSupportedException();
+
+            return end - start;
+        }
+    }
+    
+    public nuint GetRemainingSpace(nuint stackPointer)
+    {
+        if (IsInvalid)
+            ThrowNotSupportedException();
+        
+        return stackPointer - start; // stack grows down on all supported platforms
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowNotSupportedException()
+        => throw new PlatformNotSupportedException();
 
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("android")]

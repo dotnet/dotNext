@@ -22,4 +22,18 @@ public class RuntimeHelpersExtensionsTests : Test
         span = new byte[8];
         False(span.IsStackAllocated);
     }
+
+    [Fact]
+    public static void CheckExecutionStackSize()
+    {
+        const int stackSize = 1024 * 1024 * 2;
+        var t = new Thread(static () =>
+        {
+            Equal((uint)stackSize, RuntimeHelpers.ExecutionStackSize);
+            True(RuntimeHelpers.RemainingExecutionStack < stackSize);
+        }, stackSize);
+        
+        t.Start();
+        t.Join();
+    }
 }
