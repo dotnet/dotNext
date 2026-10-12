@@ -31,7 +31,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.9.0">DotNext.AspNetCore.Cluster 6.9.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.8.0">DotNext.MaintenanceServices 1.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.9.0">DotNext.MaintenanceServices 1.9.0</a>
 * Updated dependencies
 
 # 09-22-2026
