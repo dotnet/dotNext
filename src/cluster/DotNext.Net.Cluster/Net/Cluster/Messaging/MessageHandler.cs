@@ -123,7 +123,7 @@ public partial class MessageHandler : IInputChannel
             var inputMessageInfo = messages[inputType];
             if (isSignalHandler)
             {
-                object[] args = { handler };
+                object[] args = [handler];
                 var d = Activator.CreateInstance(typeof(SignalHandler<>).MakeGenericType(inputType), args) as ISupplier<Delegate>;
                 if (d?.Invoke() is SignalHandler signal)
                     signalHandlers.Add(inputMessageInfo.Name, signal);
@@ -131,7 +131,7 @@ public partial class MessageHandler : IInputChannel
             else
             {
                 var outputMessageInfo = messages[returnType];
-                object[] args = { handler, outputMessageInfo.Name, outputMessageInfo.MimeType };
+                object[] args = [handler, outputMessageInfo.Name, outputMessageInfo.MimeType];
                 var d = Activator.CreateInstance(typeof(RpcHandler<,>).MakeGenericType(inputType, returnType), args) as ISupplier<Delegate>;
                 if (d?.Invoke() is RpcHandler rpc)
                     rpcHandlers.Add(inputMessageInfo.Name, rpc);
