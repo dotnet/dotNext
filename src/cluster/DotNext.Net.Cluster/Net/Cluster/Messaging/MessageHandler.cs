@@ -27,8 +27,8 @@ namespace DotNext.Net.Cluster.Messaging;
 /// </remarks>
 public partial class MessageHandler : IInputChannel
 {
-    private readonly IReadOnlyDictionary<string, RpcHandler> rpcHandlers;
-    private readonly IReadOnlyDictionary<string, SignalHandler> signalHandlers;
+    private readonly FrozenDictionary<string, RpcHandler> rpcHandlers;
+    private readonly FrozenDictionary<string, SignalHandler> signalHandlers;
 
     /// <summary>
     /// Initializes a new typed message handler and discover all methods suitable for handling messages.
@@ -38,13 +38,15 @@ public partial class MessageHandler : IInputChannel
     protected MessageHandler()
     {
         // inspect message types
-        var messages = GetType().GetCustomAttributes<MessageAttribute>().ToDictionary(static attr => attr.MessageType);
+        IReadOnlyDictionary<Type, MessageAttribute> messages = GetType()
+            .GetCustomAttributes<MessageAttribute>()
+            .ToDictionary(static attr => attr.MessageType);
 
         // inspect handlers
         const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
         var methods = GetType().GetMethods(publicInstanceMethod);
-        var rpcHandlers = new Dictionary<string, RpcHandler>(methods.Length, StringComparer.Ordinal);
-        var signalHandlers = new Dictionary<string, SignalHandler>(methods.Length, StringComparer.Ordinal);
+        var rpcHandlers = new Dictionary<string, RpcHandler>(methods.Length, NameComparer);
+        var signalHandlers = new Dictionary<string, SignalHandler>(methods.Length, NameComparer);
 
         foreach (var method in methods)
         {
@@ -75,48 +77,41 @@ public partial class MessageHandler : IInputChannel
             {
                 default:
                     continue;
-                case 2:
+                case 2 when parameters[1].ParameterType == typeof(CancellationToken):
                     // TInput, CancellationToken
                     inputType = parameters[0].ParameterType;
-
-                    if (parameters[1].ParameterType == typeof(CancellationToken))
+                    handler = method.CreateDelegate(typeof(Func<,,>).MakeGenericType(inputType, typeof(CancellationToken), method.ReturnType), this);
+                    break;
+                case 3 when parameters[2].ParameterType == typeof(CancellationToken):
+                    if (parameters[0].ParameterType == typeof(ISubscriber))
                     {
-                        handler = method.CreateDelegate(typeof(Func<,,>).MakeGenericType(inputType, typeof(CancellationToken), method.ReturnType), this);
+                        // ISubscriber, TInput, CancellationToken
+                        inputType = parameters[1].ParameterType;
+                        handler = method.CreateDelegate(
+                            typeof(Func<,,,>).MakeGenericType(typeof(ISubscriber), inputType, typeof(CancellationToken), method.ReturnType), this);
                         break;
                     }
 
-                    continue;
-                case 3:
-                    if (parameters[2].ParameterType == typeof(CancellationToken))
+                    if (parameters[1].ParameterType == typeof(object))
                     {
-                        if (parameters[0].ParameterType == typeof(ISubscriber))
-                        {
-                            // ISubscriber, TInput, CancellationToken
-                            inputType = parameters[1].ParameterType;
-                            handler = method.CreateDelegate(typeof(Func<,,,>).MakeGenericType(typeof(ISubscriber), inputType, typeof(CancellationToken), method.ReturnType), this);
-                            break;
-                        }
-                        else if (parameters[1].ParameterType == typeof(object))
-                        {
-                            // TInput, object, CancellationToken
-                            inputType = parameters[0].ParameterType;
-                            handler = method.CreateDelegate(typeof(Func<,,,>).MakeGenericType(inputType, typeof(object), typeof(CancellationToken), method.ReturnType), this);
-                            break;
-                        }
+                        // TInput, object, CancellationToken
+                        inputType = parameters[0].ParameterType;
+                        handler = method.CreateDelegate(
+                            typeof(Func<,,,>).MakeGenericType(inputType, typeof(object), typeof(CancellationToken), method.ReturnType),
+                            this);
+                        break;
                     }
 
-                    continue;
-                case 4:
+                    goto default;
+                case 4 when parameters[0].ParameterType == typeof(ISubscriber)
+                            && parameters[2].ParameterType == typeof(object)
+                            && parameters[3].ParameterType == typeof(CancellationToken):
                     // ISubscriber, TInput, object, CancellationToken
                     inputType = parameters[1].ParameterType;
-
-                    if (parameters[0].ParameterType == typeof(ISubscriber) && parameters[2].ParameterType == typeof(object) && parameters[3].ParameterType == typeof(CancellationToken))
-                    {
-                        handler = method.CreateDelegate(typeof(Func<,,,,>).MakeGenericType(typeof(ISubscriber), inputType, typeof(object), typeof(CancellationToken), method.ReturnType), this);
-                        break;
-                    }
-
-                    continue;
+                    handler = method.CreateDelegate(
+                        typeof(Func<,,,,>).MakeGenericType(typeof(ISubscriber), inputType, typeof(object), typeof(CancellationToken),
+                            method.ReturnType), this);
+                    break;
             }
 
             // instantiate handler and register it
@@ -138,11 +133,8 @@ public partial class MessageHandler : IInputChannel
             }
         }
 
-        rpcHandlers.TrimExcess();
-        this.rpcHandlers = rpcHandlers;
-
-        signalHandlers.TrimExcess();
-        this.signalHandlers = signalHandlers;
+        this.rpcHandlers = rpcHandlers.ToFrozenDictionary(NameComparer);
+        this.signalHandlers = signalHandlers.ToFrozenDictionary(NameComparer);
     }
 
     private MessageHandler(IDictionary<string, RpcHandler> rpcHandlers, IDictionary<string, SignalHandler> signalHandlers)
