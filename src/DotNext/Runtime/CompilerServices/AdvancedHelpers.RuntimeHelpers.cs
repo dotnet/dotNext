@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -78,15 +80,27 @@ partial class AdvancedHelpers
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns><see langword="true"/> if <see cref="object.Finalize()"/> is overridden; otherwise, <see langword="false"/>.</returns>
+        [RequiresUnreferencedCode("Finalizer must be preserved in Reflection metadata.")]
         public static bool HasFinalizer(object obj)
         {
-            Push(obj);
-            Ldvirtftn(Method(Type<object>(), nameof(Finalize)));
-            Ldftn(Method(Type<object>(), nameof(Finalize)));
-            Ceq();
-            Ldc_I4_0();
-            Ceq();
-            return Return<bool>();
+            // Value types cannot have finalizers
+            return obj is not ValueType && (AppContext.IsJit ? Fast(obj) : Slow(obj));
+            
+            static bool Fast(object obj)
+            {
+                Push(obj);
+                Ldvirtftn(Method(Type<object>(), nameof(Finalize)));
+                Ldftn(Method(Type<object>(), nameof(Finalize)));
+                Ceq();
+                Ldc_I4_0();
+                Ceq();
+                return Return<bool>();
+            }
+
+            static bool Slow(object obj) => obj
+                .GetType()
+                .GetMethod(nameof(Finalize), BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.DeclaringType != typeof(object);
         }
 
         /// <summary>

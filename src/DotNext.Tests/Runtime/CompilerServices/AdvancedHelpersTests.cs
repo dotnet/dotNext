@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -137,11 +138,13 @@ public class AdvancedHelpersTests : Test
     }
 
     [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(TestDisposable))]
     public static void HasFinalizer()
     {
         True(RuntimeHelpers.HasFinalizer(new TestDisposable()));
         False(RuntimeHelpers.HasFinalizer(string.Empty));
         False(RuntimeHelpers.HasFinalizer(new object()));
+        False(RuntimeHelpers.HasFinalizer(0));
     }
 
     [Fact]
