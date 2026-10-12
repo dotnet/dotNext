@@ -139,7 +139,7 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void HasFinalizer()
     {
-        True(RuntimeHelpers.HasFinalizer(new WeakReference(null)));
+        True(RuntimeHelpers.HasFinalizer(new TestDisposable()));
         False(RuntimeHelpers.HasFinalizer(string.Empty));
         False(RuntimeHelpers.HasFinalizer(new object()));
     }
@@ -167,3 +167,5 @@ public class AdvancedHelpersTests : Test
         Equal(nint.Size, string.Alignment);
     }
 }
+
+file sealed class TestDisposable : Disposable;
