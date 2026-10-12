@@ -22,7 +22,8 @@ public static class RuntimeHelpersExtensions
         /// <param name="location">The memory location.</param>
         /// <typeparam name="T">The type of the data at the memory location.</typeparam>
         /// <returns><see langword="true"/> if <paramref name="location"/> is on the stack; otherwise, <see langword="false"/>.</returns>
-        /// <seealso cref="IsStackDetectionSupported"/>
+        /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
+        /// <seealso cref="get_IsStackDetectionSupported"/>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
         public static bool IsOnExecutionStack<T>(ref readonly T location)
@@ -39,6 +40,8 @@ public static class RuntimeHelpersExtensions
         /// <summary>
         /// Gets a value of the execution stack belongs to the current thread.
         /// </summary>
+        /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
+        /// <seealso cref="get_IsStackDetectionSupported"/>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
         [CLSCompliant(false)]
@@ -47,6 +50,8 @@ public static class RuntimeHelpersExtensions
         /// <summary>
         /// Gets the remaining execution stack space.
         /// </summary>
+        /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
+        /// <seealso cref="get_IsStackDetectionSupported"/>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
         [CLSCompliant(false)]
@@ -72,6 +77,7 @@ public static class RuntimeHelpersExtensions
         /// <summary>
         /// Gets a value indicating that the span represents a memory allocated on the stack.
         /// </summary>
+        /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
         /// <seealso cref="RuntimeHelpersExtensions.get_IsStackDetectionSupported"/>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
