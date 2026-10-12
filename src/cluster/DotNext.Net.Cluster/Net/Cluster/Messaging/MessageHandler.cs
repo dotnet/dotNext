@@ -116,25 +116,33 @@ public partial class MessageHandler : IInputChannel
 
             // instantiate handler and register it
             var inputMessageInfo = messages[inputType];
-            if (isSignalHandler)
+            switch (isSignalHandler)
             {
-                object[] args = [handler];
-                var d = Activator.CreateInstance(typeof(SignalHandler<>).MakeGenericType(inputType), args) as ISupplier<Delegate>;
-                if (d?.Invoke() is SignalHandler signal)
+                case true when CreateSignalHandle(inputType, handler) is { } signal:
                     signalHandlers.Add(inputMessageInfo.Name, signal);
-            }
-            else
-            {
-                var outputMessageInfo = messages[returnType];
-                object[] args = [handler, outputMessageInfo.Name, outputMessageInfo.MimeType];
-                var d = Activator.CreateInstance(typeof(RpcHandler<,>).MakeGenericType(inputType, returnType), args) as ISupplier<Delegate>;
-                if (d?.Invoke() is RpcHandler rpc)
+                    break;
+                case false when CreateRpcHandler(inputType, handler, messages[returnType]) is { } rpc:
                     rpcHandlers.Add(inputMessageInfo.Name, rpc);
+                    break;
             }
         }
 
         this.rpcHandlers = rpcHandlers.ToFrozenDictionary(NameComparer);
         this.signalHandlers = signalHandlers.ToFrozenDictionary(NameComparer);
+
+        static SignalHandler? CreateSignalHandle(Type messageType, Delegate handler)
+        {
+            object[] args = [handler];
+            var factoryType = typeof(SignalHandler<>).MakeGenericType(messageType);
+            return (Activator.CreateInstance(factoryType, args) as ISupplier<SignalHandler>)?.Invoke();
+        }
+
+        static RpcHandler? CreateRpcHandler(Type inputType, Delegate handler, MessageAttribute outputMessageInfo)
+        {
+            object[] args = [handler, outputMessageInfo.Name, outputMessageInfo.MimeType];
+            var factoryType = typeof(RpcHandler<,>).MakeGenericType(inputType, outputMessageInfo.MessageType);
+            return (Activator.CreateInstance(factoryType, args) as ISupplier<RpcHandler>)?.Invoke();
+        }
     }
 
     private MessageHandler(IDictionary<string, RpcHandler> rpcHandlers, IDictionary<string, SignalHandler> signalHandlers)
