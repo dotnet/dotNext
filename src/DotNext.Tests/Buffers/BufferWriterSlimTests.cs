@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using static System.Globalization.CultureInfo;
 
@@ -301,6 +302,23 @@ public sealed class BufferWriterSlimTests : Test
 
         buffer.Advance(1);
         Equal(42, buffer[0]);
+    }
+
+    [Fact]
+    public static void RewindClearBufferIfReferenceType()
+    {
+        var buffer = new InlineArray3<string>();
+        var writer = new BufferWriterSlim<string>(buffer);
+
+        writer.Add("1");
+        writer.Add("2");
+        writer.Add("3");
+
+        writer.Rewind(count: 2);
+        writer.WrittenCount = 3;
+        Equal("1", writer[0]);
+        Null(writer[1]);
+        Null(writer[2]);
     }
 
     [Fact]

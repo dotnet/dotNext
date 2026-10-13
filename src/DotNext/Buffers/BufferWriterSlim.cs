@@ -237,7 +237,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position, nameof(count));
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-            buffer.Slice(count).Clear();
+            buffer.Slice(position - count, count).Clear();
 
         position -= count;
     }
