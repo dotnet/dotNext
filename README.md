@@ -59,7 +59,7 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 10-12-2026
+Release Date: 10-13-2026
 
 A set of skills for AI agents has been released: skills explain how to use .NEXT libraries in a new project or migration scenarios.
 
@@ -75,7 +75,7 @@ A set of skills for AI agents has been released: skills explain how to use .NEXT
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/6.10.0">DotNext.Unsafe 6.10.0</a>
-* Updated dependencies
+* Added `ExecutionStack` with extension properties and methods for execution stack inspection
 
 <a href="https://www.nuget.org/packages/dotnext.threading/6.10.0">DotNext.Threading 6.10.0</a>
 * `PersistentChannel` now uses system page size as default buffer size
