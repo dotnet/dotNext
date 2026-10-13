@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -23,7 +25,7 @@ partial class AdvancedHelpers
         /// <typeparam name="T">The type to check.</typeparam>
         /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullable<T>() => default(T) is null;
+        public static bool IsNullable<T>() where T : allows ref struct => default(T) is null;
 
         /// <summary>
         /// Indicates that specified value type is the default value.
@@ -78,13 +80,43 @@ partial class AdvancedHelpers
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns><see langword="true"/> if <see cref="object.Finalize()"/> is overridden; otherwise, <see langword="false"/>.</returns>
+        [RequiresUnreferencedCode("Finalizer must be preserved in Reflection metadata.")]
         public static bool HasFinalizer(object obj)
         {
-            Push(obj);
-            Ldvirtftn(Method(Type<object>(), nameof(Finalize)));
-            Ldftn(Method(Type<object>(), nameof(Finalize)));
-            Ceq();
-            Ldc_I4_0();
+            // Value types cannot have finalizers
+            return obj is not ValueType && (AppContext.IsJit ? Fast(obj) : Slow(obj));
+            
+            static bool Fast(object obj)
+            {
+                Push(obj);
+                Ldvirtftn(Method(Type<object>(), nameof(Finalize)));
+                Ldftn(Method(Type<object>(), nameof(Finalize)));
+                Ceq();
+                Ldc_I4_0();
+                Ceq();
+                return Return<bool>();
+            }
+
+            static bool Slow(object obj) => obj
+                .GetType()
+                .GetMethod(nameof(Finalize), BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.DeclaringType != typeof(object);
+        }
+
+        /// <summary>
+        /// Gets a value indicating that the value type has overridden <see cref="ValueType.ToString"/> method.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Enum.ToString()"/> is not considered as overridden method because it causes boxing.
+        /// </remarks>
+        /// <typeparam name="T">The type to check.</typeparam>
+        /// <returns><see langword="true"/> if <typeparamref name="T"/> has overridden <see cref="ValueType.ToString"/> method.</returns>
+        public static bool ToStringRequiresBoxing<T>()
+            where T : allows ref struct
+        {
+            Ldftn(Method(Type<object>(), nameof(ToString)));
+            Constrained<T>();
+            Ldftn(Method(Type<object>(), nameof(ToString)));
             Ceq();
             return Return<bool>();
         }

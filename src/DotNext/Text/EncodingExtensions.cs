@@ -70,4 +70,9 @@ public static class EncodingExtensions
             return owner;
         }
     }
+
+    extension(Encoder encoder)
+    {
+        internal bool IsUtf8 => ReferenceEquals(encoder.Fallback, Encoding.UTF8.EncoderFallback);
+    }
 }

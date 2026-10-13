@@ -19,6 +19,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
         
         this.task = task;
         this.filter = filter;
+        ContinueOnCapturedContext = true;
     }
 
     internal SuspendedExceptionTaskAwaitable(Task task, Predicate<Exception> filter)
@@ -26,7 +27,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
     {
     }
 
-    internal bool ContinueOnCapturedContext
+    private bool ContinueOnCapturedContext
     {
         get;
         init;
@@ -110,6 +111,7 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
         this.task = task;
         this.arg = arg;
         this.filter = filter;
+        ContinueOnCapturedContext = true;
     }
 
     internal SuspendedExceptionTaskAwaitable(Task task, TArg arg, Func<Exception, TArg, bool> filter)
@@ -117,7 +119,7 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
     {
     }
 
-    internal bool ContinueOnCapturedContext
+    private bool ContinueOnCapturedContext
     {
         get;
         init;

@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
 using InlinedToken = ValueTuple<object?>;
 
 internal abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
@@ -29,7 +27,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         }
     }
 
-    private static InlinedToken InlineToken(CancellationToken token) => CanInlineToken
+    private static InlinedToken InlineToken(CancellationToken token) => CancellationToken.CanBeInlined
         ? Unsafe.BitCast<CancellationToken, InlinedToken>(token)
         : new(token);
     
@@ -90,7 +88,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
             // if cancellation is requested for this source by timeout, switch cancellationOrigin to not-null
             // value in getter to prevent concurrent overwrite by the linked token cancellation callback.
             var tokenCopy = cancellationOrigin.Item1;
-            if (CanInlineToken)
+            if (CancellationToken.CanBeInlined)
             {
                 tokenCopy ??= IsCancellationRequested
                     ? Interlocked.CompareExchange(ref cancellationOrigin.Item1, this, comparand: null) ?? this
@@ -120,7 +118,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         get
         {
             var rawToken = RawToken;
-            return CanInlineToken
+            return CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<InlinedToken, CancellationToken>(new(rawToken))
                 : Unsafe.Unbox<CancellationToken>(rawToken);
         }
@@ -141,14 +139,9 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         get
         {
             var rawToken = RawToken;
-            return CanInlineToken
+            return CancellationToken.CanBeInlined
                 ? ReferenceEquals(rawToken, this)
                 : Unsafe.Unbox<CancellationToken>(rawToken) == Token;
         }
     }
-
-    // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
-    // is safe. If not, just box the token.
-    internal static bool CanInlineToken => Unsafe.AreCompatible<CancellationToken, InlinedToken>()
-                                           && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 }

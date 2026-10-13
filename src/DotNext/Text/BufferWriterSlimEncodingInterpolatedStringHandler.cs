@@ -48,7 +48,7 @@ public ref struct BufferWriterSlimEncodingInterpolatedStringHandler : IInterpola
     }
 
     /// <summary>
-    /// Gets number of written characters.
+    /// Gets the number of bytes written.
     /// </summary>
     public readonly int WrittenCount => count;
 

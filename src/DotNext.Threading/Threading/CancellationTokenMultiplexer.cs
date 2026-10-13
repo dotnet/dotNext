@@ -87,7 +87,7 @@ public readonly partial struct CancellationTokenMultiplexer()
             task = source.CreateTask(sources);
             
             // Synchronization: CreateTask should happen before AddRange
-            source.AddRange(tokens);
+            source.Attach(tokens);
         }
 
         return task;
@@ -98,7 +98,7 @@ public readonly partial struct CancellationTokenMultiplexer()
         var source = sources.TryGet() ?? new();
         Debug.Assert(source.Count is 0);
 
-        source.AddRange(tokens);
+        source.Attach(tokens);
         Debug.Assert(source.Count == tokens.Length);
         
         return source;

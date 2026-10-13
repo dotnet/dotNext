@@ -16,6 +16,9 @@ partial interface IInterpolatedStringHandler
 
         switch (value)
         {
+            case Enum:
+                charsWritten = UnsafeWriteEnum(value, writer, format);
+                break;
             case ISpanFormattable:
                 var span = writer.GetSpan();
 
@@ -31,10 +34,9 @@ partial interface IInterpolatedStringHandler
             case IFormattable:
                 // constrained call avoiding boxing for value types
                 charsWritten = Write(writer, ((IFormattable)value).ToString(format, provider));
-
                 break;
             case not null:
-                charsWritten = Write(writer, value.ToString());
+                charsWritten = Write(writer, ToStringNonBoxing(value));
                 break;
             default:
                 charsWritten = 0;
@@ -101,30 +103,16 @@ partial interface IInterpolatedStringHandler
         var writtenCount = 0;
         switch (value)
         {
+            case Enum:
+                writtenCount = UnsafeWriteEnum(value, writer, format, alignment, leftAlign);
+                break;
             case ISpanFormattable:
-                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+                for (var bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    Span<char> span = writer.GetSpan(bufferSize), filler;
+                    var span = writer.GetSpan(bufferSize);
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
-                        var padding = alignment - charsWritten;
-
-                        if (padding <= 0)
-                        {
-                            alignment = charsWritten;
-                        }
-                        else if (leftAlign)
-                        {
-                            filler = span.Slice(charsWritten, padding);
-                            filler.Fill(WhitespaceUtf16);
-                        }
-                        else
-                        {
-                            filler = span.TrimLength(padding, out var rest);
-                            span.Slice(0, charsWritten).CopyTo(rest);
-                            filler.Fill(WhitespaceUtf16);
-                        }
-
+                        alignment = Align(span, WhitespaceUtf16, alignment, charsWritten, leftAlign);
                         writer.Advance(alignment);
                         writtenCount += alignment;
                         break;
@@ -136,7 +124,7 @@ partial interface IInterpolatedStringHandler
                 writtenCount = AppendFormatted(writer, ((IFormattable)value).ToString(format, provider), alignment, leftAlign);
                 break;
             case not null:
-                writtenCount = AppendFormatted(writer, value.ToString(), alignment, leftAlign);
+                writtenCount = AppendFormatted(writer, ToStringNonBoxing(value), alignment, leftAlign);
                 break;
         }
 

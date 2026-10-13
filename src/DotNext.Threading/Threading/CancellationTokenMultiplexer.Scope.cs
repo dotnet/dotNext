@@ -44,12 +44,12 @@ partial struct CancellationTokenMultiplexer
             => multiplexerOrToken = InlineToken(token);
 
         private static MultiplexerOrToken InlineToken(CancellationToken token)
-            => LinkedCancellationTokenSource.CanInlineToken
+            => CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<CancellationToken, MultiplexerOrToken>(token)
                 : new(token);
 
         private static CancellationToken GetToken(MultiplexerOrToken value)
-            => LinkedCancellationTokenSource.CanInlineToken
+            => CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<MultiplexerOrToken, CancellationToken>(value)
                 : Unsafe.Unbox<CancellationToken>(value.Item1);
 
@@ -73,7 +73,7 @@ partial struct CancellationTokenMultiplexer
             {
                 Debug.Assert(multiplexerOrToken.Item1 is IObjectPool<PooledCancellationTokenSource>);
 
-                source.DetachLinkedTokens<DisposeRegistration>();
+                source.Detach();
 
                 // now we sure that no one can cancel the source concurrently
                 Return(Unsafe.As<IObjectPool<PooledCancellationTokenSource>>(multiplexerOrToken.Item1), source);
@@ -88,11 +88,7 @@ partial struct CancellationTokenMultiplexer
 
         private static async ValueTask ReturnAsync(IObjectPool<PooledCancellationTokenSource> multiplexer, PooledCancellationTokenSource source)
         {
-            for (var i = 0; i < source.Count; i++)
-            {
-                await source[i].DisposeAsync().ConfigureAwait(false);
-            }
-
+            await source.DetachAsync().ConfigureAwait(false);
             Return(multiplexer, source);
         }
 

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
-internal abstract class TextBufferReader : TextReader
+internal abstract class TextBufferReader : ModernTextReader
 {
     private protected const int InvalidChar = -1;
 
@@ -11,9 +11,6 @@ internal abstract class TextBufferReader : TextReader
         Unsafe.SkipInit(out char result);
         return Read(new Span<char>(ref result)) > 0 ? result : InvalidChar;
     }
-
-    public sealed override int Read(char[] buffer, int index, int count)
-        => Read(buffer.AsSpan(index, count));
 
     public sealed override int ReadBlock(Span<char> buffer)
     {
@@ -27,9 +24,6 @@ internal abstract class TextBufferReader : TextReader
 
         return total;
     }
-
-    public sealed override int ReadBlock(char[] buffer, int index, int count)
-        => ReadBlock(buffer.AsSpan(index, count));
 
     public sealed override ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken token = default)
     {
@@ -53,9 +47,6 @@ internal abstract class TextBufferReader : TextReader
         return result;
     }
 
-    public sealed override Task<int> ReadAsync(char[] buffer, int index, int count)
-        => ReadAsync(buffer.AsMemory(index, count)).AsTask();
-
     public sealed override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken token = default)
     {
         ValueTask<int> result;
@@ -78,10 +69,7 @@ internal abstract class TextBufferReader : TextReader
         return result;
     }
 
-    public sealed override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
-        => ReadBlockAsync(buffer.AsMemory(index, count)).AsTask();
-
-    public sealed override Task<string> ReadToEndAsync()
+    public sealed override Task<string> ReadToEndAsync(CancellationToken token)
     {
         Task<string> result;
         try
@@ -96,16 +84,23 @@ internal abstract class TextBufferReader : TextReader
         return result;
     }
 
-    public sealed override Task<string?> ReadLineAsync()
+    public sealed override ValueTask<string?> ReadLineAsync(CancellationToken token)
     {
-        Task<string?> result;
-        try
+        ValueTask<string?> result;
+        if (token.IsCancellationRequested)
         {
-            result = Task.FromResult(ReadLine());
+            result = ValueTask.FromCanceled<string?>(token);
         }
-        catch (Exception e)
+        else
         {
-            result = Task.FromException<string?>(e);
+            try
+            {
+                result = ValueTask.FromResult(ReadLine());
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<string?>(e);
+            }
         }
 
         return result;

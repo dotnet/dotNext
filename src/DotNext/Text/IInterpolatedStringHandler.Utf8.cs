@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Numerics;
 using System.Text;
 
 namespace DotNext.Text;
@@ -9,35 +8,41 @@ using Buffers;
 
 partial interface IInterpolatedStringHandler
 {
-    private const byte WhitespaceUtf8 = (byte)' ';
+    private const byte WhitespaceUtf8 = (byte)WhitespaceUtf16;
     
     protected static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, ReadOnlySpan<char> value)
         where TWriter : IBufferWriter<byte>, allows ref struct
     {
+        int bytesWritten;
         if (value.IsEmpty)
-            return 0;
-
-        var output = writer.GetSpan(encoder.GetByteCount(value, flush: true));
-        var writtenCount = encoder.GetBytes(value, output, flush: true);
-        writer.Advance(writtenCount);
-        return writtenCount;
+        {
+            bytesWritten = 0;
+        }
+        else
+        {
+            var output = writer.GetSpan(encoder.GetByteCount(value, flush: true));
+            bytesWritten = encoder.GetBytes(value, output, flush: true);
+            writer.Advance(bytesWritten);
+        }
+        
+        return bytesWritten;
     }
 
     protected static int AppendFormatted<T, TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, T value, string? format, IFormatProvider? provider)
         where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        int bufferSize, charsWritten = 0;
+        int bufferSize, bytesWritten = 0;
         switch (value)
         {
-            case IUtf8SpanFormattable when IsUtf8(encoder):
+            case IUtf8SpanFormattable when encoder.IsUtf8:
                 for (bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
                     var span = writer.GetSpan(bufferSize);
 
                     // constrained call avoiding boxing for value types
-                    if (((IUtf8SpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    if (((IUtf8SpanFormattable)value).TryFormat(span, out bytesWritten, format, provider))
                     {
-                        writer.Advance(charsWritten);
+                        writer.Advance(bytesWritten);
                         break;
                     }
                 }
@@ -51,23 +56,23 @@ partial interface IInterpolatedStringHandler
                         : new SpanOwner<char>(bufferSize, exactSize: false);
 
                     // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out charsWritten, format, provider))
+                    if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out bytesWritten, format, provider))
                     {
-                        charsWritten = AppendFormatted(writer, encoder, tempBuffer.Span.Slice(0, charsWritten));
+                        bytesWritten = AppendFormatted(writer, encoder, tempBuffer.Span.Slice(0, bytesWritten));
                         break;
                     }
                 }
 
                 break;
             case IFormattable:
-                charsWritten = AppendFormatted(writer, encoder, ((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
+                bytesWritten = AppendFormatted(writer, encoder, ((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
                 break;
             case not null:
-                charsWritten = AppendFormatted(writer, encoder, value.ToString());
+                bytesWritten = AppendFormatted(writer, encoder, ToStringNonBoxing(value));
                 break;
         }
 
-        return charsWritten;
+        return bytesWritten;
     }
 
     protected static int AppendFormatted<TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, scoped ReadOnlySpan<char> value, int alignment)
@@ -111,7 +116,7 @@ partial interface IInterpolatedStringHandler
     protected static int AppendFormatted<T, TWriter>(TWriter writer, Encoder encoder, Span<char> buffer, T value, int alignment, string? format, IFormatProvider? provider)
         where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        int bufferSize, charsWritten = 0;
+        int bufferSize, bytesWritten = 0;
         bool leftAlign;
 
         if (leftAlign = alignment < 0)
@@ -119,14 +124,14 @@ partial interface IInterpolatedStringHandler
 
         switch (value)
         {
-            case IUtf8SpanFormattable when IsUtf8(encoder):
+            case IUtf8SpanFormattable when encoder.IsUtf8:
                 for (bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
                     var span = writer.GetSpan(bufferSize);
-                    if (((IUtf8SpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    if (((IUtf8SpanFormattable)value).TryFormat(span, out bytesWritten, format, provider))
                     {
-                        charsWritten = Align(span, WhitespaceUtf8, alignment, charsWritten, leftAlign);
-                        writer.Advance(charsWritten);
+                        bytesWritten = Align(span, WhitespaceUtf8, alignment, bytesWritten, leftAlign);
+                        writer.Advance(bytesWritten);
                         break;
                     }
                 }
@@ -141,50 +146,25 @@ partial interface IInterpolatedStringHandler
                     
                     var span = tempBuffer.Span;
 
-                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    if (((ISpanFormattable)value).TryFormat(span, out bytesWritten, format, provider))
                     {
-                        charsWritten = AppendFormatted(writer,
+                        bytesWritten = AppendFormatted(writer,
                             encoder,
-                            span.Slice(0, Align(span, WhitespaceUtf16, alignment, charsWritten, leftAlign)));
+                            span.Slice(0, Align(span, WhitespaceUtf16, alignment, bytesWritten, leftAlign)));
                         break;
                     }
                 }
 
                 break;
             case IFormattable:
-                charsWritten = AppendFormatted(writer, encoder, buffer, ((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
+                bytesWritten = AppendFormatted(writer, encoder, buffer, ((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
                 break;
             case not null:
-                charsWritten = AppendFormatted(writer, encoder, buffer, value.ToString().AsSpan(), alignment, leftAlign);
+                bytesWritten = AppendFormatted(writer, encoder, buffer, ToStringNonBoxing(value), alignment, leftAlign);
                 break;
         }
 
-        return charsWritten;
-    }
-    
-    private static int Align<T>(Span<T> buffer, T whitespace, int alignment, int bytesWritten, bool leftAlign)
-        where T : struct, IBinaryNumber<T>
-    {
-        Span<T> filler;
-        var padding = alignment - bytesWritten;
-
-        if (padding <= 0)
-        {
-            alignment = bytesWritten;
-        }
-        else if (leftAlign)
-        {
-            filler = buffer.Slice(bytesWritten, padding);
-            filler.Fill(whitespace);
-        }
-        else
-        {
-            filler = buffer.TrimLength(padding, out var rest);
-            buffer.Slice(0, bytesWritten).CopyTo(rest);
-            filler.Fill(whitespace);
-        }
-
-        return alignment;
+        return bytesWritten;
     }
 
     protected static int EstimateUtf8BufferSize(int literalLength, int formattedCount)

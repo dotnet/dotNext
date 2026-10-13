@@ -7,7 +7,6 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <InvariantGlobalization>true</InvariantGlobalization>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -46,6 +45,8 @@
     <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\VariantTests.cs" Link="Runtime\VariantTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\CompilerServices\ExecutionStackTests.cs" Link="Runtime\CompilerServices\ExecutionStackTests.cs"/>
+    <Compile Include="..\DotNext.Tests\Runtime\CompilerServices\AdvancedHelpersTests.cs" Link="Runtime\CompilerServices\AdvancedHelpersTests.cs"/>
     <!--Raft Tests-->
     <Compile Include="..\DotNext.Tests\IO\TestTransferObject.cs" Link="IO\TestTransferObject.cs" />
     <Compile Include="..\DotNext.Tests\Net\Cluster\Consensus\Raft\RaftTest.cs" Link="Net\Cluster\Consensus\Raft\RaftTest.cs" />

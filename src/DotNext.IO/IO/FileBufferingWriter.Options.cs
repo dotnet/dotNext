@@ -52,10 +52,11 @@ public partial class FileBufferingWriter
     public readonly struct Options
     {
         internal const int DefaultMemoryThreshold = 32768;
-        internal const int DefaultFileBufferSize = 4096;
         private readonly string? path;
         private readonly bool keepFileAlive;
         private readonly int? fileBufferSize;
+
+        internal static int DefaultFileBufferSize => Environment.SystemPageSize;
 
         /// <summary>
         /// The maximum amount of memory in bytes to allocate before switching to a file on disk.

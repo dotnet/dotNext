@@ -22,7 +22,7 @@ public record struct CancellationTokenHandle : IDisposable
     {
         if (token.CanBeCanceled)
         {
-            var reference = LinkedCancellationTokenSource.CanInlineToken
+            var reference = CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token).Item1
                 : token;
 
@@ -44,7 +44,7 @@ public record struct CancellationTokenHandle : IDisposable
             if (!handle.IsAllocated || handle.Target is not { } reference)
                 return CancellationToken.None;
 
-            return LinkedCancellationTokenSource.CanInlineToken
+            return CancellationToken.CanBeInlined
                 ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(new(reference))
                 : Unsafe.Unbox<CancellationToken>(reference);
         }

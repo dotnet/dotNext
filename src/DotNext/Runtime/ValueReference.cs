@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Represents a mutable reference to the field.
@@ -126,7 +127,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 
         if (IsEmpty)
         {
-            result = ThrowNullReferenceException;
+            result = NullReferenceException.Throw;
         }
         else if (ReferenceEquals(owner, Sentinel.Instance))
         {
@@ -139,14 +140,18 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
         }
 
         return result;
-        
-        [DoesNotReturn]
-        static void ThrowNullReferenceException(T value) => throw new NullReferenceException();
     }
 
     /// <inheritdoc/>
     public override string? ToString()
-        => IsEmpty ? null : Value?.ToString();
+    {
+        if (IsEmpty)
+            return null;
+
+        return typeof(T).IsValueType && RuntimeHelpers.ToStringRequiresBoxing<T>()
+            ? typeof(T).ToString()
+            : Value?.ToString();
+    }
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)
@@ -299,7 +304,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         Func<T> result;
         if (IsEmpty)
         {
-            result = ThrowNullReferenceException;
+            result = NullReferenceException.Throw<T>;
         }
         else if (ReferenceEquals(owner, Sentinel.Instance))
         {
@@ -312,17 +317,18 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         }
 
         return result;
-        
-        [DoesNotReturn]
-        static T ThrowNullReferenceException()
-            => throw new NullReferenceException();
     }
 
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
     /// <inheritdoc/>
     public override string? ToString()
-        => IsEmpty ? null : Value?.ToString();
+    {
+        T copy;
+        return IsEmpty || (copy = Value) is null
+            ? null
+            : ToStringNonBoxing(copy);
+    }
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)

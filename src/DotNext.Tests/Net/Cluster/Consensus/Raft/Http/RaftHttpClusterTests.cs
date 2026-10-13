@@ -221,7 +221,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         var typedClient = new MessagingClient(client)
             .RegisterMessage<AddMessage>(AddMessage.Name)
             .RegisterMessage<SubtractMessage>(SubtractMessage.Name)
-            .RegisterMessage<ResultMessage>(ResultMessage.Name);
+            .RegisterMessage(new MessageAttribute<ResultMessage>(ResultMessage.Name));
 
         // duplex messages
         var result = await typedClient.SendMessageAsync<AddMessage, ResultMessage>(new() { X = 40, Y = 2 }, TestToken);

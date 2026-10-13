@@ -139,7 +139,7 @@ public static partial class AsyncBridge
         }
         else
         {
-            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new TaskToCancellationTokenCallback(out result).CancelAndDispose);
+            task.AttachTaskCallback(out result);
         }
 
         return result;
@@ -167,12 +167,17 @@ public static partial class AsyncBridge
         }
         else
         {
-            var callback = new TaskToCancellationTokenCallback(out result);
-            disposeTokenSource = callback.TryDispose;
-            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(callback.CancelAndDispose);
+            disposeTokenSource = task.AttachTaskCallback(out result).TryDispose;
         }
 
         return result;
+    }
+
+    private static TaskToCancellationTokenCallback AttachTaskCallback(this Task task, out CancellationToken token)
+    {
+        var callback = new TaskToCancellationTokenCallback(out token);
+        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(callback.CancelAndDispose);
+        return callback;
     }
     
     /// <summary>

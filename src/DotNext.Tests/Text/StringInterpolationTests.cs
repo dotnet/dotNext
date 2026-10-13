@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Globalization;
 using System.Text;
 
 namespace DotNext.Text;
@@ -10,9 +11,39 @@ public sealed class StringInterpolationTests : Test
     [Fact]
     public static void AllocateString()
     {
-        int x = 10, y = 20;
+        const int x = 10;
+        const int y = 20;
         using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
         Equal($"{x} + {y} = {x + y}", actual.Span.ToString());
+    }
+
+    [Fact]
+    public static void InterpolateEnums()
+    {
+        const NumberStyles x = NumberStyles.AllowTrailingWhite;
+        const NumberStyles y = NumberStyles.AllowDecimalPoint;
+        using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} | {y} = {x | y}");
+        Equal($"{x} | {y} = {x | y}", actual.Span.ToString());
+    }
+
+    [Fact]
+    public static void InterpolateEnumsUsingAlignment()
+    {
+        const NumberStyles x = NumberStyles.AllowTrailingWhite;
+        const NumberStyles y = NumberStyles.AllowDecimalPoint;
+        using var actual = string.Interpolate(MemoryAllocator<char>.Default, $"{x} | {y} = {x | y,8}");
+        Equal($"{x} | {y} = {x | y,8}", actual.Span.ToString());
+    }
+
+    [Theory]
+    [InlineData(4)]
+    [InlineData(16)]
+    public static void InterpolateStringOnStack(int bufferSize)
+    {
+        Span<char> buffer = stackalloc char[bufferSize];
+        int x = 10, y = 20;
+        using var actual = string.Interpolate(buffer, provider: null, $"{x} + {y} = {x + y}");
+        Equal($"{x} + {y} = {x + y}", actual.Span);
     }
     
     [Theory]
@@ -46,6 +77,7 @@ public sealed class StringInterpolationTests : Test
     public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
     {
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
+        
         buffer.Interpolate($"{x,4:X} = {y,-3:X}");
         try
         {

@@ -26,7 +26,7 @@ partial struct CancellationTokenMultiplexer
             ReadOnlySpan<CancellationToken> tokens)
         {
             var source = new PooledCancellationTokenSource();
-            source.AddRange(tokens);
+            source.Attach(tokens);
             return source;
         }
     }

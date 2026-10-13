@@ -30,28 +30,7 @@ internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, 
 
     public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
 
-    public override void Write(decimal value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(double value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(float value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(int value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(long value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(uint value)
-        => writer.Format(value, provider: FormatProvider);
-
-    public override void Write(ulong value)
-        => writer.Format(value, provider: FormatProvider);
-
-    private protected override void Write(ISpanFormattable formattable)
+    protected override void WriteValue<TFormattable>(TFormattable formattable)
         => writer.Format(formattable, provider: FormatProvider);
 
     public override string ToString()

@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace DotNext.Net.Cluster.Messaging;
 
+using Collections.Specialized;
 using Runtime.Serialization;
 
 /// <summary>
@@ -11,7 +12,7 @@ using Runtime.Serialization;
 public class MessagingClient
 {
     private readonly IOutputChannel channel;
-    private readonly Dictionary<Type, (string MessageName, ContentType MessageType)> messages;
+    private readonly TypeMap<(string MessageName, ContentType MessageType)> messages;
 
     /// <summary>
     /// Constructs a new typed client for messaging.
@@ -21,7 +22,12 @@ public class MessagingClient
     public MessagingClient(IOutputChannel channel)
     {
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
-        messages = GetType().GetCustomAttributes<MessageAttribute>(true).ToDictionary(static attr => attr.MessageType, static attr => (attr.Name, new ContentType(attr.MimeType)));
+
+        messages = new();
+        foreach (var attribute in GetType().GetCustomAttributes<MessageAttribute>(inherit: true))
+        {
+            attribute.Register(messages);
+        }
     }
 
     /// <summary>
@@ -32,7 +38,9 @@ public class MessagingClient
     /// <exception cref="GenericArgumentException{TMessage}"><typeparamref name="TMessage"/> is not registered via <see cref="RegisterMessage{TMessage}(string, ContentType?)"/>.</exception>
     protected virtual (string MessageName, ContentType MessageType) GetMessageInfo<TMessage>()
         where TMessage : ISerializable<TMessage>
-        => messages.TryGetValue(typeof(TMessage), out var info) ? info : throw new GenericArgumentException<TMessage>(ExceptionMessages.MissingMessageName);
+        => messages.TryGetValue<TMessage>(out var entry)
+            ? entry
+            : throw new GenericArgumentException<TMessage>(ExceptionMessages.MissingMessageName);
 
     /// <summary>
     /// Registers message type and its type.
@@ -44,7 +52,7 @@ public class MessagingClient
     public MessagingClient RegisterMessage<TMessage>(string name, ContentType? type = null)
         where TMessage : ISerializable<TMessage>
     {
-        messages.Add(typeof(TMessage), (name, type ?? new ContentType(MediaTypeNames.Application.Octet)));
+        messages.Add<TMessage>((name, type ?? new ContentType(MediaTypeNames.Application.Octet)));
         return this;
     }
 
@@ -56,7 +64,10 @@ public class MessagingClient
     /// <returns>This client.</returns>
     public MessagingClient RegisterMessage<TMessage>(MessageAttribute<TMessage> messageInfo)
         where TMessage : ISerializable<TMessage>
-        => RegisterMessage<TMessage>(messageInfo.Name, new(messageInfo.MimeType));
+    {
+        messageInfo.Register(messages);
+        return this;
+    }
 
     /// <summary>
     /// Sends a request message.

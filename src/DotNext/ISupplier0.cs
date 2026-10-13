@@ -5,6 +5,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Represents functional interface returning arbitrary value.
@@ -137,7 +138,7 @@ public readonly struct ValueSupplier<T>(T value) : ISupplier<T>
     public static implicit operator ValueSupplier<T>(T value) => new(value);
 
     /// <inheritdoc/>
-    public override string? ToString() => value?.ToString();
+    public override string? ToString() => value is null ? null : ToStringNonBoxing(value);
 }
 
 /// <summary>
