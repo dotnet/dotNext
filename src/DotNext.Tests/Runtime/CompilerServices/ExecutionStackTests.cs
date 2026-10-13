@@ -21,6 +21,8 @@ public class RuntimeHelpersExtensionsTests : Test
 
         span = new byte[8];
         False(span.IsStackAllocated);
+        
+        False(ReadOnlySpan<byte>.Empty.IsStackAllocated);
     }
 
     [Fact]

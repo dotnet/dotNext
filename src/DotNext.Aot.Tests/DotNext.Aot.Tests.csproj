@@ -45,7 +45,7 @@
     <Compile Include="..\DotNext.Tests\Runtime\BoxedValueTests.cs" Link="Runtime\BoxedValueTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\ValueReferenceTests.cs" Link="Runtime\ValueReferenceTests.cs" />
     <Compile Include="..\DotNext.Tests\Runtime\VariantTests.cs" Link="Runtime\VariantTests.cs" />
-    <Compile Include="..\DotNext.Tests\Runtime\CompilerServices\RuntimeHelpersExtensionsTests.cs" Link="Runtime\CompilerServices\RuntimeHelpersExtensionsTests.cs" />
+    <Compile Include="..\DotNext.Tests\Runtime\CompilerServices\ExecutionStackTests.cs" Link="Runtime\CompilerServices\ExecutionStackTests.cs"/>
     <Compile Include="..\DotNext.Tests\Runtime\CompilerServices\AdvancedHelpersTests.cs" Link="Runtime\CompilerServices\AdvancedHelpersTests.cs"/>
     <!--Raft Tests-->
     <Compile Include="..\DotNext.Tests\IO\TestTransferObject.cs" Link="IO\TestTransferObject.cs" />

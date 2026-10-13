@@ -7,9 +7,9 @@ using System.Runtime.Versioning;
 namespace DotNext.Runtime.CompilerServices;
 
 /// <summary>
-/// Extends <see cref="RuntimeHelpers"/> class.
+/// Extends <see cref="RuntimeHelpers"/> class with execution stack inspection routines.
 /// </summary>
-public static class RuntimeHelpersExtensions
+public static class ExecutionStack
 {
     /// <summary>
     /// Extends <see cref="RuntimeHelpers"/> type.
@@ -31,7 +31,7 @@ public static class RuntimeHelpersExtensions
             => StackInfoCachePerThread.Value.IsInRange((nuint)Unsafe.AddressOf(in location));
 
         /// <summary>
-        /// Gets a value indicating that <see cref="RuntimeHelpersExtensions.IsOnExecutionStack{T}"/> method is supported on the target platform.
+        /// Gets a value indicating that <see cref="ExecutionStack.IsOnExecutionStack{T}"/> method is supported on the target platform.
         /// </summary>
         [UnsupportedOSPlatformGuard("browser")]
         [UnsupportedOSPlatformGuard("wasi")]
@@ -78,7 +78,7 @@ public static class RuntimeHelpersExtensions
         /// Gets a value indicating that the span represents a memory allocated on the stack.
         /// </summary>
         /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
-        /// <seealso cref="RuntimeHelpersExtensions.get_IsStackDetectionSupported"/>
+        /// <seealso cref="ExecutionStack.get_IsStackDetectionSupported"/>
         [UnsupportedOSPlatform("browser")]
         [UnsupportedOSPlatform("wasi")]
         public bool IsStackAllocated => IsOnExecutionStack(in MemoryMarshal.GetReference(span));
@@ -90,7 +90,7 @@ file static class StackInfoCachePerThread
     [ThreadStatic]
     private static StackInfo CachedValue;
 
-    public static ref StackInfo Value
+    public static ref readonly StackInfo Value
     {
         get
         {
@@ -108,22 +108,22 @@ file readonly struct StackInfo
 {
     private readonly nuint start, end;
     public readonly bool IsInitialized;
-    
+
     public StackInfo()
     {
         nuint stackSize;
         if (OperatingSystem.IsLinux() || OperatingSystem.IsAndroid())
         {
-            (start, stackSize) = GetStackInfoOnLinux();
+            (start, stackSize) = LinuxApi.Get();
             end = start + stackSize;
         }
         else if (OperatingSystem.IsWindows())
         {
-            (start, end) = GetStackInfoOnWindows();
+            (start, end) = WindowsApi.Get();
         }
         else if (OperatingSystem.IsMacOS() || OperatingSystem.IsIOS() || OperatingSystem.IsTvOS())
         {
-            (start, stackSize) = GetStackInfoOnDarwin();
+            (start, stackSize) = DarwinApi.Get();
             end = start + stackSize;
         }
         else
@@ -133,7 +133,7 @@ file readonly struct StackInfo
 
         IsInitialized = true;
     }
-    
+
     public static bool IsSupported => OperatingSystem.IsLinux()
                                       || OperatingSystem.IsAndroid()
                                       || OperatingSystem.IsWindows()
@@ -161,12 +161,12 @@ file readonly struct StackInfo
             return end - start;
         }
     }
-    
+
     public nuint GetRemainingSpace(nuint stackPointer)
     {
         if (IsInvalid)
             ThrowNotSupportedException();
-        
+
         return stackPointer - start; // stack grows down on all supported platforms
     }
 
@@ -177,101 +177,113 @@ file readonly struct StackInfo
 
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("android")]
-    private static unsafe (nuint LowLimit, nuint Size) GetStackInfoOnLinux()
+    private static unsafe class LinuxApi
     {
-        nuint stackAddress = 0U, stackSize = 0U;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<nint> pthread_self;
+        private static readonly delegate* unmanaged<nint, void*, int> pthread_getattr_np;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<void*, nuint*, nuint*, int> pthread_attr_getstack;
+        private static readonly delegate* unmanaged<void*, int> pthread_attr_destroy;
 
-        var programHandle = NativeLibrary.GetMainProgramHandle();
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_self", out var nativeFunc))
-            goto exit;
-
-        var pthread_self = (delegate*unmanaged<nint>)nativeFunc;
-
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_getattr_np", out nativeFunc))
-            goto exit;
-
-        var pthread_getattr_np = (delegate*unmanaged<nint, void*, int>)nativeFunc;
-
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_attr_getstack", out nativeFunc))
-            goto exit;
-
-        var pthread_attr_getstack = (delegate*unmanaged<void*, nuint*, nuint*, int>)nativeFunc;
-
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_attr_destroy", out nativeFunc))
-            goto exit;
-
-        var pthread_attr_destroy = (delegate*unmanaged<void*, int>)nativeFunc;
-
-        var attr = stackalloc byte[64];
-        if (pthread_getattr_np(pthread_self(), attr) is 0)
+        static LinuxApi()
         {
-            try
+            var programHandle = NativeLibrary.GetMainProgramHandle();
+            if (NativeLibrary.TryGetExport(programHandle, "pthread_self", out var pthreadSelf)
+                && NativeLibrary.TryGetExport(programHandle, "pthread_getattr_np", out var pthreadGetAttr)
+                && NativeLibrary.TryGetExport(programHandle, "pthread_attr_getstack", out var pthreadAttrGetStack)
+                && NativeLibrary.TryGetExport(programHandle, "pthread_attr_destroy", out var pthreadAttrDestroy))
             {
-                pthread_attr_getstack(attr, &stackAddress, &stackSize);
-            }
-            finally
-            {
-                pthread_attr_destroy(attr);
+                pthread_self = (delegate* unmanaged[SuppressGCTransition]<nint>)pthreadSelf;
+                pthread_getattr_np = (delegate* unmanaged<nint, void*, int>)pthreadGetAttr;
+                pthread_attr_getstack = (delegate* unmanaged[SuppressGCTransition]<void*, nuint*, nuint*, int>)pthreadAttrGetStack;
+                pthread_attr_destroy = (delegate* unmanaged<void*, int>)pthreadAttrDestroy;
             }
         }
 
-        exit:
-        return (stackAddress, stackSize);
+        public static (nuint LowLimit, nuint Size) Get()
+        {
+            nuint stackAddress = 0U, stackSize = 0U;
+
+            if (pthread_self is not null)
+            {
+                var attr = stackalloc byte[64];
+                if (pthread_getattr_np(pthread_self(), attr) is 0)
+                {
+                    try
+                    {
+                        pthread_attr_getstack(attr, &stackAddress, &stackSize);
+                    }
+                    finally
+                    {
+                        pthread_attr_destroy(attr);
+                    }
+                }
+            }
+
+            return (stackAddress, stackSize);
+        }
     }
 
     [SupportedOSPlatform("windows")]
-    private static unsafe (nuint LowLimit, nuint HighLimit) GetStackInfoOnWindows()
+    private static unsafe class WindowsApi
     {
-        nuint lowLimit = 0U, highLimit = 0U;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<nuint*, nuint*, void> GetCurrentThreadStackLimits;
 
-        if (NativeLibrary.TryLoad("kernel32.dll", out var kernel32))
+        static WindowsApi()
         {
-            try
+            // kernel32.dll is never unloaded, so the handle is not released
+            if (NativeLibrary.TryLoad("kernel32.dll", out var kernel32)
+                && NativeLibrary.TryGetExport(kernel32, "GetCurrentThreadStackLimits", out var getCurrentThreadStackLimits))
             {
-                if (NativeLibrary.TryGetExport(kernel32, "GetCurrentThreadStackLimits", out var nativeFunc))
-                {
-                    var getCurrentThreadStackLimits = (delegate*unmanaged<nuint*, nuint*, void>)nativeFunc;
-                    getCurrentThreadStackLimits(&lowLimit, &highLimit);
-                }
-            }
-            finally
-            {
-                NativeLibrary.Free(kernel32);
+                GetCurrentThreadStackLimits = (delegate* unmanaged[SuppressGCTransition]<nuint*, nuint*, void>)getCurrentThreadStackLimits;
             }
         }
 
-        return (lowLimit, highLimit);
+        public static (nuint LowLimit, nuint HighLimit) Get()
+        {
+            nuint lowLimit = 0U, highLimit = 0U;
+
+            if (GetCurrentThreadStackLimits is not null)
+                GetCurrentThreadStackLimits(&lowLimit, &highLimit);
+
+            return (lowLimit, highLimit);
+        }
     }
 
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("ios")]
     [SupportedOSPlatform("tvos")]
-    private static unsafe (nuint LowLimit, nuint Size) GetStackInfoOnDarwin()
+    private static unsafe class DarwinApi
     {
-        nuint stackAddress = 0U, stackSize = 0U;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<nint> pthread_self;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<nint, nuint> pthread_get_stackaddr_np;
+        private static readonly delegate* unmanaged[SuppressGCTransition]<nint, nuint> pthread_get_stacksize_np;
 
-        var programHandle = NativeLibrary.GetMainProgramHandle();
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_self", out var nativeFunc))
-            goto exit;
+        static DarwinApi()
+        {
+            var programHandle = NativeLibrary.GetMainProgramHandle();
+            if (NativeLibrary.TryGetExport(programHandle, "pthread_self", out var pthreadSelf)
+                && NativeLibrary.TryGetExport(programHandle, "pthread_get_stackaddr_np", out var pthreadGetStackAddr)
+                && NativeLibrary.TryGetExport(programHandle, "pthread_get_stacksize_np", out var pthreadGetStackSize))
+            {
+                pthread_self = (delegate* unmanaged[SuppressGCTransition]<nint>)pthreadSelf;
+                pthread_get_stackaddr_np = (delegate* unmanaged[SuppressGCTransition]<nint, nuint>)pthreadGetStackAddr;
+                pthread_get_stacksize_np = (delegate* unmanaged[SuppressGCTransition]<nint, nuint>)pthreadGetStackSize;
+            }
+        }
 
-        var pthread_self = (delegate*unmanaged<nint>)nativeFunc;
+        public static (nuint LowLimit, nuint Size) Get()
+        {
+            nuint stackAddress = 0U, stackSize = 0U;
 
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_get_stackaddr_np", out nativeFunc))
-            goto exit;
+            if (pthread_self is not null)
+            {
+                // pthread_get_stackaddr_np returns the top of the stack (the stack grows down)
+                var currentThread = pthread_self();
+                stackSize = pthread_get_stacksize_np(currentThread);
+                stackAddress = pthread_get_stackaddr_np(currentThread) - stackSize;
+            }
 
-        var pthread_get_stackaddr_np = (delegate*unmanaged<nint, nuint>)nativeFunc;
-
-        if (!NativeLibrary.TryGetExport(programHandle, "pthread_get_stacksize_np", out nativeFunc))
-            goto exit;
-
-        var pthread_get_stacksize_np = (delegate*unmanaged<nint, nuint>)nativeFunc;
-
-        // pthread_get_stackaddr_np returns the top of the stack (the stack grows down)
-        var currentThread = pthread_self();
-        stackSize = pthread_get_stacksize_np(currentThread);
-        stackAddress = pthread_get_stackaddr_np(currentThread) - stackSize;
-
-        exit:
-        return (stackAddress, stackSize);
+            return (stackAddress, stackSize);
+        }
     }
 }
