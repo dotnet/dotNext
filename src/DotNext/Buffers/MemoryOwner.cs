@@ -14,13 +14,9 @@ using Runtime.CompilerServices;
 /// </summary>
 /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<ReadOnlyMemory<T>>
+public partial struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<ReadOnlyMemory<T>>
 {
-    // Of type ArrayPool<T> or IMemoryOwner<T>.
-    // If support of another type is needed then reconsider implementation
-    // of Memory and this[int index] members
-    private readonly object? owner;
-    private readonly T[]? array;  // not null only if owner is ArrayPool or null
+    private readonly Ownership ownership;
     private int length;
 
     internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
@@ -28,8 +24,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         Debug.Assert(length > 0);
         Debug.Assert(array.Length >= length);
 
-        this.array = array;
-        owner = pool;
+        ownership = new(pool, array);
         this.length = length;
     }
 
@@ -43,8 +38,8 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         }
         else
         {
-            array = pool.Rent(length);
-            owner = pool;
+            var array = pool.Rent(length);
+            ownership = new(pool, array);
             this.length = exactSize ? length : array.Length;
         }
     }
@@ -72,16 +67,15 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         }
         else
         {
-            array = null;
-            IMemoryOwner<T> owner = pool.Rent(length);
+            var owner = pool.Rent(length);
             if ((this.length = length < 0 ? owner.Memory.Length : length) > 0)
             {
-                this.owner = owner;
+                ownership = new(owner);
             }
             else
             {
                 owner.Dispose();
-                this.owner = null;
+                ownership = default;
             }
         }
     }
@@ -101,16 +95,15 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
                 this = default;
                 break;
             default:
-                array = null;
                 var owner = provider(length);
                 if ((this.length = int.Min(owner.Memory.Length, length)) > 0)
                 {
-                    this.owner = owner;
+                    ownership = new(owner);
                 }
                 else
                 {
                     owner.Dispose();
-                    this.owner = null;
+                    ownership = default;
                 }
 
                 break;
@@ -123,17 +116,16 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <param name="provider">The memory provider.</param>
     public MemoryOwner(Func<IMemoryOwner<T>> provider)
     {
-        array = null;
         var owner = provider();
 
         if ((length = owner.Memory.Length) > 0)
         {
-            this.owner = owner;
+            ownership = new(owner);
         }
         else
         {
             owner.Dispose();
-            this.owner = null;
+            ownership = default;
         }
     }
 
@@ -147,9 +139,8 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)length, (uint)array.Length, nameof(length));
 
-        this.array = length > 0 ? array : null;
+        ownership = length > 0 ? new(owner: null, array) : default;
         this.length = length;
-        owner = null;
     }
 
     /// <summary>
@@ -170,17 +161,11 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     internal void Truncate(int newLength)
     {
         Debug.Assert(newLength > 0);
-        Debug.Assert(newLength <= RawLength);
+        Debug.Assert(newLength <= ownership.Length);
 
         length = int.Min(length, newLength);
 
-        AssertValid();
-    }
-
-    private readonly int RawLength
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => array?.Length ?? Unsafe.As<IMemoryOwner<T>>(owner)?.Memory.Length ?? 0;
+        AssertState();
     }
 
     /// <summary>
@@ -203,14 +188,14 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
                 Dispose();
                 break;
             default:
-                if (newLength > RawLength)
+                if (newLength > ownership.Length)
                     return false;
 
                 length = newLength;
                 break;
         }
 
-        AssertValid();
+        AssertState();
         return true;
     }
 
@@ -227,11 +212,9 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     {
         get
         {
-            AssertValid();
+            AssertState();
 
-            return array?.AsMemory(0, length)
-                ?? Unsafe.As<IMemoryOwner<T>>(owner)?.Memory.Slice(0, length)
-                ?? Memory<T>.Empty;
+            return ownership.Memory.Slice(0, length);
         }
     }
 
@@ -243,20 +226,14 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     {
         get
         {
-            AssertValid();
+            AssertState();
 
-            return MemoryMarshal.CreateSpan(ref DataRef, length);
+            return ownership.Span.Slice(0, length);
         }
     }
 
     [Conditional("DEBUG")]
-    private readonly void AssertValid()
-    {
-        Debug.Assert(IsEmpty ^ (array is not null || owner is not null));
-        Debug.Assert(owner is null or ArrayPool<T> or IMemoryOwner<T>);
-        Debug.Assert(array is null or { Length: > 0 });
-        Debug.Assert(array is null ? owner is null or IMemoryOwner<T> : owner is null or ArrayPool<T>);
-    }
+    private readonly void AssertState() => ownership.AssertState(length);
 
     /// <inheritdoc/>
     readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
@@ -283,15 +260,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// Gets managed pointer to the first element in the rented memory block.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public readonly ref T DataRef
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ref array is not null
-                ? ref MemoryMarshal.GetArrayDataReference(array)
-                : ref owner is not null
-                ? ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span)
-                : ref Unsafe.NullRef<T>();
-    }
+    public readonly ref T DataRef => ref ownership.DataRef;
 
     /// <summary>
     /// Gets managed pointer to the item in the rented memory.
@@ -303,28 +272,10 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     {
         get
         {
-            AssertValid();
+            AssertState();
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)length, nameof(index));
 
             return ref Unsafe.Add(ref DataRef, index);
-        }
-    }
-
-    internal readonly void Clear(bool clearBuffer)
-    {
-        if (array is null)
-        {
-            Debug.Assert(owner is null or IDisposable);
-            Unsafe.As<IDisposable>(owner)?.Dispose();
-        }
-        else if (owner is not null)
-        {
-            Debug.Assert(owner is ArrayPool<T>);
-            Unsafe.As<ArrayPool<T>>(owner).Return(array, clearBuffer);
-        }
-        else if (clearBuffer)
-        {
-            Array.Clear(array);
         }
     }
 
@@ -333,10 +284,10 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// </summary>
     public void Dispose()
     {
-        Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        ownership.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         this = default;
     }
 
     /// <inheritdoc/>
-    public override readonly string ToString() => Span.ToString();
+    public readonly override string ToString() => Span.ToString();
 }
