@@ -148,14 +148,27 @@ public static class TextStreamExtensions
         /// <summary>
         /// Writes interpolated string and appends a new line after it.
         /// </summary>
+        /// <param name="initialBuffer">The initial buffer.</param>
+        /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+        /// <param name="handler">The interpolated string handler.</param>
+        public void Write(Span<char> initialBuffer, IFormatProvider? provider,
+            [InterpolatedStringHandlerArgument(nameof(provider), nameof(initialBuffer))]
+            scoped ref DefaultInterpolatedStringHandler handler)
+        {
+            using var owner = string.Interpolate(initialBuffer, provider, ref handler);
+            receiver.Write(owner.Span);
+        }
+
+        /// <summary>
+        /// Writes interpolated string and appends a new line after it.
+        /// </summary>
         /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
         /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
         /// <param name="handler">The interpolated string handler.</param>
         public void WriteLine(MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
         {
-            handler.AppendLiteral(Environment.NewLine);
-            using var buffer = string.Interpolate(allocator, provider, ref handler);
-            receiver.Write(buffer.Span);
+            Write(receiver, allocator, provider, ref handler);
+            receiver.WriteLine();
         }
 
         /// <summary>
@@ -165,6 +178,20 @@ public static class TextStreamExtensions
         /// <param name="handler">The interpolated string handler.</param>
         public void WriteLine(MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
             => WriteLine(receiver, allocator, null, ref handler);
+
+        /// <summary>
+        /// Writes interpolated string and appends a new line after it.
+        /// </summary>
+        /// <param name="initialBuffer">The initial buffer.</param>
+        /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+        /// <param name="handler">The interpolated string handler.</param>
+        public void WriteLine(Span<char> initialBuffer, IFormatProvider? provider,
+            [InterpolatedStringHandlerArgument(nameof(provider), nameof(initialBuffer))]
+            scoped ref DefaultInterpolatedStringHandler handler)
+        {
+            Write(receiver, initialBuffer, provider, ref handler);
+            receiver.WriteLine();
+        }
     }
 
     /// <summary>

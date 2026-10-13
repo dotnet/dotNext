@@ -348,7 +348,7 @@ file static class CancellationTokenRegistrationExtensions
         {
             unregistered = true;
         }
-        else if (LinkedCancellationTokenSource.CanInlineToken)
+        else if (CancellationToken.CanBeInlined)
         {
             var source = Unsafe.BitCast<CancellationToken, ValueTuple<CancellationTokenSource>>(token).Item1;
             

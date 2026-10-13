@@ -11,7 +11,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <VersionPrefix>6.9.0</VersionPrefix>
+    <VersionPrefix>6.10.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -39,6 +39,10 @@
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
     <DebugType>embedded</DebugType>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <DefineConstants>$(DefineConstants);PUBLISH_AOT</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

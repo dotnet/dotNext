@@ -16,9 +16,13 @@ public readonly struct ExceptionCapturingAwaitable
     {
     }
 
-    internal ExceptionCapturingAwaitable(ValueTask task) => this.task = task;
+    internal ExceptionCapturingAwaitable(ValueTask task)
+    {
+        this.task = task;
+        ContinueOnCapturedContext = true;
+    }
     
-    internal bool ContinueOnCapturedContext
+    private bool ContinueOnCapturedContext
     {
         get;
         init;

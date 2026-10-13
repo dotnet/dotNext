@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Numerics;
 
+using static Text.IInterpolatedStringHandler;
+
 /// <summary>
 /// Treats enum as a binary integer.
 /// </summary>
@@ -59,7 +61,7 @@ public readonly partial struct Enum<T>(T value) : IBinaryInteger<Enum<T>>
     }
 
     /// <inheritdoc/>
-    public override string ToString() => value.ToString();
+    public override string ToString() => ToStringNonBoxing(value) ?? string.Empty;
 
     /// <summary>
     /// Converts the enum container to its underlying value.

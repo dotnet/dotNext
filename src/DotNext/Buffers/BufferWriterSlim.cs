@@ -23,12 +23,12 @@ using Runtime.CompilerServices;
 /// <seealso cref="PoolingBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
 public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 {
-    private readonly Span<T> initialBuffer;
     private readonly MemoryAllocator<T> allocator;
-    private MemoryOwner<T> extraBuffer;
+    private Span<T> buffer;
+    private MemoryOwner<T>.Ownership extraBuffer;
     private int position;
 
     /// <summary>
@@ -44,7 +44,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </remarks>
     public BufferWriterSlim(Span<T> buffer, MemoryAllocator<T>? allocator = null)
     {
-        initialBuffer = buffer;
+        this.buffer = buffer;
         this.allocator = allocator.DefaultIfNull;
     }
 
@@ -60,16 +60,22 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
         allocator ??= MemoryAllocator<T>.Default;
         this.allocator = allocator;
-        extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
+        if (initialCapacity is 0)
+        {
+            buffer = Span<T>.Empty;
+            extraBuffer = default;
+        }
+        else
+        {
+            extraBuffer = allocator.AllocateAtLeast(initialCapacity).TakeOwnership();
+            buffer = extraBuffer.Span;
+        }
     }
 
     /// <summary>
     /// Initializes a new buffer writer.
     /// </summary>
-    public BufferWriterSlim()
-    {
-        allocator = MemoryAllocator<T>.Default;
-    }
+    public BufferWriterSlim() => allocator = MemoryAllocator<T>.Default;
 
     /// <summary>
     /// Get a value indicating that the internal buffer can't grow.
@@ -87,10 +93,6 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 allocator = MemoryAllocator<T>.Throwable;
         }
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    [ExcludeFromCodeCoverage]
-    private readonly int Overflow => int.Max(0, position - initialBuffer.Length);
 
     /// <summary>
     /// Gets the amount of data written to the underlying memory so far.
@@ -112,21 +114,18 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <summary>
     /// Gets the total amount of space within the underlying memory.
     /// </summary>
-    public readonly int Capacity => extraBuffer.IsEmpty ? initialBuffer.Length : extraBuffer.Length;
+    public readonly int Capacity => buffer.Length;
 
     /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
     /// </summary>
     public readonly int FreeCapacity => Capacity - WrittenCount;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private readonly Span<T> Buffer => extraBuffer.IsEmpty ? initialBuffer : extraBuffer.Span;
-
     /// <summary>
     /// Gets span over constructed memory block.
     /// </summary>
     /// <value>The constructed memory block.</value>
-    public readonly ReadOnlySpan<T> WrittenSpan => Buffer.Slice(0, position);
+    public readonly ReadOnlySpan<T> WrittenSpan => buffer.Slice(0, position);
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -147,20 +146,11 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     private Memory<T> GetMemory(int sizeHint)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
-        
-        if (extraBuffer.Length > 0)
-        {
-            // no need to copy initial buffer
-            EnsureExtraBufferSize(sizeHint);
-        }
-        else
-        {
-            // copy everything to the extra buffer, because it's not possible to return the stack pointer
-            IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize);
-            extraBuffer = allocator.AllocateAtLeast(newSize);
-            initialBuffer.Slice(0, position).CopyTo(extraBuffer.Span);
-        }
 
+        GrowIfNeeded(sizeHint);
+        if (extraBuffer.IsEmpty)
+            MigrateToExtraBuffer();
+        
         return extraBuffer.Memory.Slice(position);
     } 
 
@@ -168,31 +158,56 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         Debug.Assert(sizeHint >= 0);
 
-        Span<T> result;
-        if (extraBuffer.Length > 0)
+        GrowIfNeeded(sizeHint);
+        return buffer.Slice(position);
+    }
+
+    private void GrowIfNeeded(int sizeHint)
+    {
+        if (!IGrowableBuffer<T>.GetBufferSize(sizeHint, buffer.Length, position, out sizeHint))
         {
-            // no need to copy initial buffer
-            EnsureExtraBufferSize(sizeHint);
-            result = extraBuffer.Span;
+            // nothing to do, there is enough space in the existing buffer
         }
-        else if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize))
+        else if (extraBuffer.IsEmpty)
         {
-            extraBuffer = allocator.AllocateAtLeast(newSize);
-            initialBuffer.CopyTo(result = extraBuffer.Span);
+            // copy everything to the extra buffer, because it's not possible to return the stack pointer
+            MigrateToExtraBuffer(sizeHint);
         }
         else
         {
-            result = initialBuffer;
+            ExpandExtraBuffer(sizeHint);
         }
-
-        return result.Slice(position);
     }
 
-    private void EnsureExtraBufferSize(int sizeHint)
+    private void ExpandExtraBuffer(int newSize)
     {
-        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out sizeHint))
-            extraBuffer.ResizeCore(sizeHint, allocator);
+        Debug.Assert(!extraBuffer.IsEmpty);
+        Debug.Assert(newSize >= position);
+        
+        var currentBuffer = extraBuffer;
+        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer.AssertState(newSize);
+        currentBuffer.Span.CopyTo(buffer = extraBuffer.Span);
+        currentBuffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
+
+    private void MigrateToExtraBuffer(int newSize)
+    {
+        Debug.Assert(extraBuffer.IsEmpty);
+        Debug.Assert(newSize >= position);
+        
+        var currentBuffer = buffer.Slice(0, position);
+        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer.AssertState(newSize);
+        currentBuffer.CopyTo(buffer = extraBuffer.Span);
+
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
+            currentBuffer.Clear();
+        }
+    }
+
+    private void MigrateToExtraBuffer() => MigrateToExtraBuffer(buffer.Length);
 
     /// <summary>
     /// Notifies this writer that <paramref name="count"/> of data items were written.
@@ -222,7 +237,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position, nameof(count));
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-            Buffer.Slice(count).Clear();
+            buffer.Slice(position - count, count).Clear();
 
         position -= count;
     }
@@ -283,7 +298,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         if (position > 0)
         {
-            item = Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), position - 1);
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(buffer), position - 1);
             return true;
         }
 
@@ -300,7 +315,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         if (position > 0)
         {
-            item = Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), --position);
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(buffer), --position);
             return true;
         }
 
@@ -315,7 +330,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <returns><see langword="true"/> if items are removed successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryPop(scoped Span<T> output)
     {
-        if (position >= output.Length && Buffer.Slice(position - output.Length, output.Length).TryCopyTo(output))
+        if (position >= output.Length && buffer.Slice(position - output.Length, output.Length).TryCopyTo(output))
         {
             position -= output.Length;
             return true;
@@ -337,10 +352,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         // copy everything to the extra buffer
         if (extraBuffer.IsEmpty)
-        {
-            extraBuffer = allocator.AllocateAtLeast(position);
-            initialBuffer.Slice(0, position).CopyTo(extraBuffer.Span);
-        }
+            MigrateToExtraBuffer();
         
         return consumer.Invoke(extraBuffer.Memory.Slice(0, position), token);
     }
@@ -384,7 +396,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)position, nameof(index));
 
-            return ref Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), index);
+            return ref Unsafe.Add(ref MemoryMarshal.GetReference(buffer), index);
         }
     }
 
@@ -404,10 +416,10 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
             return false;
         }
 
-        owner = extraBuffer;
-        owner.Truncate(position);
+        owner = new(in extraBuffer, position);
         position = 0;
         extraBuffer = default;
+        buffer = default;
         return true;
     }
 
@@ -426,17 +438,11 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         else
         {
             if (extraBuffer.IsEmpty)
-            {
-                result = allocator.AllocateExactly(position);
-                initialBuffer.CopyTo(result.Span);
-            }
-            else
-            {
-                result = extraBuffer;
-                extraBuffer = default;
-            }
+                MigrateToExtraBuffer();
 
-            result.Truncate(position);
+            result = new(in extraBuffer, position);
+            buffer = default;
+            extraBuffer = default;
             position = 0;
         }
 
@@ -462,14 +468,16 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
     public void Clear(bool reuseBuffer = false)
     {
-        initialBuffer.Clear();
-        if (!reuseBuffer)
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            extraBuffer.Dispose();
+            buffer.Slice(0, position).Clear();
         }
-        else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+
+        if (!reuseBuffer && !extraBuffer.IsEmpty)
         {
-            extraBuffer.Span.Clear();
+            extraBuffer.Clear(clearBuffer: false);
+            extraBuffer = default;
+            buffer = default;
         }
 
         position = 0;
@@ -518,10 +526,10 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         using var enumerator = collection.GetEnumerator();
         if (collection.TryGetNonEnumeratedCount(out var count))
         {
-            var buffer = InternalGetSpan(count);
-            for (count = 0; count < buffer.Length && enumerator.MoveNext(); count++)
+            var freeBuf = InternalGetSpan(count);
+            for (count = 0; count < freeBuf.Length && enumerator.MoveNext(); count++)
             {
-                buffer[count] = enumerator.Current;
+                freeBuf[count] = enumerator.Current;
             }
 
             position += count;
@@ -538,14 +546,13 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </summary>
     public void Dispose()
     {
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        if (!extraBuffer.IsEmpty)
         {
-            initialBuffer.Clear();
-            extraBuffer.Clear(clearBuffer: true);
+            extraBuffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
-        else
+        else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            extraBuffer.Clear(clearBuffer: false);
+            buffer.Slice(0, position).Clear();
         }
 
         this = default;

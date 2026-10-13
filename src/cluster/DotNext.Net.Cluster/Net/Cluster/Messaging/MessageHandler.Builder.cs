@@ -24,6 +24,21 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
             signalHandlers = new(NameComparer);
         }
 
+        private Builder Add<TInput>(string messageName, SignalHandler<TInput> handler)
+            where TInput : ISerializable<TInput>
+        {
+            signalHandlers.Add(messageName, handler);
+            return this;
+        }
+
+        private Builder Add<TInput, TOutput>(string inputMessageName, RpcHandler<TInput, TOutput> handler)
+            where TInput : ISerializable<TInput>
+            where TOutput : ISerializable<TOutput>
+        {
+            rpcHandlers.Add(inputMessageName, handler);
+            return this;
+        }
+
         /// <summary>
         /// Registers signal handler.
         /// </summary>
@@ -33,10 +48,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<TInput, CancellationToken, Task> signalHandler)
             where TInput : ISerializable<TInput>
-        {
-            signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
-            return this;
-        }
+            => Add(messageName, new SignalHandler<TInput>(signalHandler));
 
         /// <summary>
         /// Registers signal handler.
@@ -47,10 +59,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<TInput, object?, CancellationToken, Task> signalHandler)
             where TInput : ISerializable<TInput>
-        {
-            signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
-            return this;
-        }
+            => Add(messageName, new SignalHandler<TInput>(signalHandler));
 
         /// <summary>
         /// Registers signal handler.
@@ -61,10 +70,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<ISubscriber, TInput, CancellationToken, Task> signalHandler)
             where TInput : ISerializable<TInput>
-        {
-            signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
-            return this;
-        }
+            => Add(messageName, new SignalHandler<TInput>(signalHandler));
 
         /// <summary>
         /// Registers signal handler.
@@ -75,10 +81,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<ISubscriber, TInput, object?, CancellationToken, Task> signalHandler)
             where TInput : ISerializable<TInput>
-        {
-            signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
-            return this;
-        }
+            => Add(messageName, new SignalHandler<TInput>(signalHandler));
 
         /// <summary>
         /// Registers duplex message handler.
@@ -90,13 +93,11 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageName">The name of <typeparamref name="TOutput"/> message.</param>
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
-        public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
+        public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, CancellationToken, Task<TOutput>> messageHandler,
+            string outputMessageName, string? outputMessageType = null)
             where TInput : ISerializable<TInput>
             where TOutput : ISerializable<TOutput>
-        {
-            rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
-            return this;
-        }
+            => Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
 
         /// <summary>
         /// Registers duplex message handler.
@@ -108,13 +109,11 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageName">The name of <typeparamref name="TOutput"/> message.</param>
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
-        public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, object?, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
+        public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, object?, CancellationToken, Task<TOutput>> messageHandler,
+            string outputMessageName, string? outputMessageType = null)
             where TInput : ISerializable<TInput>
             where TOutput : ISerializable<TOutput>
-        {
-            rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
-            return this;
-        }
+            => Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
 
         /// <summary>
         /// Registers duplex message handler.
@@ -126,13 +125,11 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageName">The name of <typeparamref name="TOutput"/> message.</param>
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
-        public Builder Add<TInput, TOutput>(string inputMessageName, Func<ISubscriber, TInput, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
+        public Builder Add<TInput, TOutput>(string inputMessageName, Func<ISubscriber, TInput, CancellationToken, Task<TOutput>> messageHandler,
+            string outputMessageName, string? outputMessageType = null)
             where TInput : ISerializable<TInput>
             where TOutput : ISerializable<TOutput>
-        {
-            rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
-            return this;
-        }
+            => Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
 
         /// <summary>
         /// Registers duplex message handler.
@@ -144,13 +141,12 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageName">The name of <typeparamref name="TOutput"/> message.</param>
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
-        public Builder Add<TInput, TOutput>(string inputMessageName, Func<ISubscriber, TInput, object?, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
+        public Builder Add<TInput, TOutput>(string inputMessageName,
+            Func<ISubscriber, TInput, object?, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName,
+            string? outputMessageType = null)
             where TInput : ISerializable<TInput>
             where TOutput : ISerializable<TOutput>
-        {
-            rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
-            return this;
-        }
+            => Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
 
         /// <summary>
         /// Clears this builder so it can be reused.

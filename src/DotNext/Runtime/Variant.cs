@@ -1,12 +1,14 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using DotNext.Reflection;
 
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using Reflection;
 
 /// <summary>
 /// Represents the variant value on the stack.
@@ -18,12 +20,29 @@ using CompilerServices;
 public readonly ref struct Variant : IEquatable<Variant>
 {
     private readonly ref byte location;
-    private readonly Type targetType;
+    private readonly Type? targetType;
 
     private Variant(ref byte location, Type type, bool mutable)
     {
         this.location = ref location;
         targetType = mutable ? type.MakeByRefType() : type;
+    }
+
+    /// <summary>
+    /// Converts <see cref="TypedReference"/> to the variant value.
+    /// </summary>
+    /// <param name="typedRef">The typed reference to convert.</param>
+    [CLSCompliant(false)]
+    public Variant(TypedReference typedRef)
+    {
+        TypedReferenceAlias.AssertLayout();
+        targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
+#pragma warning disable CS8500
+        unsafe
+        {
+            location = ref TypedReferenceAlias.Create(&typedRef).Location;
+        }
+#pragma warning restore CS8500
     }
 
     /// <summary>
@@ -183,4 +202,50 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <returns><see langword="true"/> if both containers reference the different values and types; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(Variant x, Variant y)
         => !x.Equals(y);
+
+    /// <summary>
+    /// Converts <see cref="TypedReference"/> to the variant value.
+    /// </summary>
+    /// <param name="typedRef">The typed reference to convert.</param>
+    /// <returns>The variant points to the same location as <paramref name="typedRef"/>.</returns>
+    [CLSCompliant(false)]
+    public static implicit operator Variant(TypedReference typedRef) => new(typedRef);
+}
+
+file readonly ref struct TypedReferenceAlias
+{
+#pragma warning disable CS0649, CS9265, CS8500
+    public readonly ref byte Location;
+    public readonly nint TypeHandle;
+
+    public static unsafe ref TypedReferenceAlias Create(TypedReference* typedRef)
+        => ref Unsafe.AsRef<TypedReferenceAlias>(typedRef);
+    
+    [Conditional("DEBUG")]
+    [Conditional("PUBLISH_AOT")]
+    public static unsafe void AssertLayout()
+    {
+        byte i = 42;
+        var typedRef = __makeref(i);
+        ref readonly var alias = ref Create(&typedRef);
+
+        if (sizeof(TypedReference) == sizeof(TypedReferenceAlias)
+            && Unsafe.AreSame(in i, in alias.Location)
+            && TypedReference.TargetTypeToken(typedRef).Equals(RuntimeTypeHandle.FromIntPtr(alias.TypeHandle)))
+        {
+            // layout is correct
+        }
+        else if (Debugger.IsAttached)
+        {
+            Debugger.Break();
+        }
+        else
+        {
+            const string message = "Unexpected TypedReference memory layout";
+            var e = new UnreachableException(message);
+            ExceptionDispatchInfo.SetCurrentStackTrace(e);
+            Environment.FailFast(message, e);
+        }
+    }
+#pragma warning restore CS0649, CS9265, CS8500
 }

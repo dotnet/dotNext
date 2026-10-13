@@ -9,7 +9,6 @@ namespace DotNext.Threading.Channels;
 public sealed class PersistentChannelOptions : ChannelOptions
 {
     private const int DefaultCapacity = 1000;
-    private const int DefaultBufferSize = 4096;
     private string location;
     private int bufferSize;
     private int capacity;
@@ -20,7 +19,7 @@ public sealed class PersistentChannelOptions : ChannelOptions
     public PersistentChannelOptions()
     {
         location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        bufferSize = DefaultBufferSize;
+        bufferSize = Environment.SystemPageSize;
         capacity = DefaultCapacity;
     }
 
@@ -30,7 +29,7 @@ public sealed class PersistentChannelOptions : ChannelOptions
     public int BufferSize
     {
         get => bufferSize;
-        set => bufferSize = value > 0 ? value : DefaultBufferSize;
+        set => bufferSize = value > 0 ? value : Environment.SystemPageSize;
     }
 
     /// <summary>

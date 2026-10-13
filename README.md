@@ -59,40 +59,39 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 10-06-2026
+Release Date: 10-13-2026
 
 A set of skills for AI agents has been released: skills explain how to use .NEXT libraries in a new project or migration scenarios.
 
-<a href="https://www.nuget.org/packages/dotnext/6.9.0">DotNext 6.9.0</a>
-* Fixed stack allocation threshold in `SpanOwner`
-* String interpolation helpers are available as static extension methods for [String](https://learn.microsoft.com/en-us/dotnet/api/system.string) class
-* Added `SkipNulls` extension method overload for nullable value types
-* Added `Flatten` extension method to skip empty values of Optional monadic type in enumerations
-* Introduced `Infer` extension method to force automatic delegate type inference in C#
-* Added `ReferenceCounted<T>` class which implements concurrent reference counting for a generic resource
+<a href="https://www.nuget.org/packages/dotnext/6.10.0">DotNext 6.10.0</a>
+* Added conversion from [TypedReference](https://learn.microsoft.com/en-us/dotnet/api/system.typedreference) to `Variant` data type
+* Interpolation string handlers do not box enum values anymore
+* `Optional<T>` and other monadic types don't box the underlying value on `ToString` call
+* Fixed [303](https://github.com/dotnet/dotNext/issues/303)
+* Added static extension method for on-stack string interpolation without converting the result to **string**. Instead, it can be consumed as [ReadOnlySpan&lt;char&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1)
+* Added [CompositeFormat](https://learn.microsoft.com/en-us/dotnet/api/system.text.compositeformat) interning: `IsInterned` or `Of` static extensions can return parsed template
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.9.0">DotNext.Metaprogramming 6.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.10.0">DotNext.Metaprogramming 6.10.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.9.0">DotNext.Unsafe 6.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.10.0">DotNext.Unsafe 6.10.0</a>
+* Added `ExecutionStack` with extension properties and methods for execution stack inspection
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.10.0">DotNext.Threading 6.10.0</a>
+* `PersistentChannel` now uses system page size as default buffer size
+* Improved performance of `CancellationTokenMultiplexer` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.10.0">DotNext.IO 6.10.0</a>
+* `FileBufferingWriter` and `PoolingBufferedStream` now use system page size as default buffer size
+* Introduced `ModernTextReader` and `ModernTextWriter` classes with all necessary overloads to implement text readers/writer
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.10.0">DotNext.Net.Cluster 6.10.0</a>
+* Improved performance of `MessagingClient` and `MessageHandler` message dispatching
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.10.0">DotNext.AspNetCore.Cluster 6.10.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.9.0">DotNext.Threading 6.9.0</a>
-* Fixed XML docs for `AsyncStateTracker` class
-* Added collection builder support to `AsyncEventHub.EventGroup` inner type
-* Fixed [302](https://github.com/dotnet/dotNext/issues/302)
-
-<a href="https://www.nuget.org/packages/dotnext.io/6.9.0">DotNext.IO 6.9.0</a>
-* Removed null check in hot execution paths for `FileReader` and `FileWriter` types
-* Default buffer size for `FileReader` and `FileWriter` is equal to the system page size
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.9.0">DotNext.Net.Cluster 6.9.0</a>
-* Fixed [301](https://github.com/dotnet/dotNext/issues/301)
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.9.0">DotNext.AspNetCore.Cluster 6.9.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.8.0">DotNext.MaintenanceServices 1.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.10.0">DotNext.MaintenanceServices 1.10.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

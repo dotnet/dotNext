@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -50,7 +51,7 @@ public class AdvancedHelpersTests : Test
     {
         char[] chars1 = ['a', 'b', 'c'];
         var chars2 = new char[2];
-        Unsafe.Copy(in chars1[1], out chars2[0], (nuint)2);
+        Unsafe.Copy(in chars1[1], out chars2[0], 2);
         Equal('b', chars2[0]);
         Equal('c', chars2[1]);
     }
@@ -63,6 +64,7 @@ public class AdvancedHelpersTests : Test
         True(RuntimeHelpers.IsNullable<int?>());
         False(RuntimeHelpers.IsNullable<int>());
         False(RuntimeHelpers.IsNullable<IntPtr>());
+        False(RuntimeHelpers.IsNullable<ReadOnlySpan<byte>>());
     }
 
     [Fact]
@@ -75,7 +77,7 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void StructTypeDefaultTest()
     {
-        var value = default(Guid);
+        var value = Guid.Empty;
         True(RuntimeHelpers.IsDefault(value));
         value = Guid.NewGuid();
         False(RuntimeHelpers.IsDefault(value));
@@ -128,19 +130,35 @@ public class AdvancedHelpersTests : Test
     [Fact]
     public static void ArrayLength()
     {
-        int[] array = { 42 };
+        int[] array = [42];
         Equal(1U, Array.GetLength(array));
-        array = Array.Empty<int>();
+        array = [];
         Equal(0U, Array.GetLength(array));
         Equal(4U, Array.GetLength(new int[2, 2]));
     }
 
     [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(TestDisposable))]
     public static void HasFinalizer()
     {
-        True(RuntimeHelpers.HasFinalizer(new WeakReference(null)));
+        True(RuntimeHelpers.HasFinalizer(new TestDisposable()));
         False(RuntimeHelpers.HasFinalizer(string.Empty));
         False(RuntimeHelpers.HasFinalizer(new object()));
+        False(RuntimeHelpers.HasFinalizer(0));
+    }
+
+    [Fact]
+    public static void HasToString()
+    {
+        False(RuntimeHelpers.ToStringRequiresBoxing<Span<char>>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<int>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<int?>());
+        False(RuntimeHelpers.ToStringRequiresBoxing<Optional<int>>());
+        
+        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<EnvironmentVariableTarget>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<string>());
+        True(RuntimeHelpers.ToStringRequiresBoxing<object>());
     }
 
     [Fact]
@@ -152,3 +170,5 @@ public class AdvancedHelpersTests : Test
         Equal(nint.Size, string.Alignment);
     }
 }
+
+file sealed class TestDisposable : Disposable;

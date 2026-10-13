@@ -10,6 +10,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Text.IInterpolatedStringHandler;
 
 /// <summary>
 /// Various extension and factory methods for constructing optional value.
@@ -239,8 +240,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     static Optional()
     {
-        var type = typeof(T);
-        IsOptional = type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
+        IsOptional = typeof(T) is { IsConstructedGenericType: true } type && type.GetGenericTypeDefinition() == typeof(Optional<>);
     }
 
     private readonly T? value;
@@ -656,7 +656,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         UndefinedValue => "<Undefined>",
         NullValue => "<Null>",
-        _ => value!.ToString()
+        _ => value is null ? null : ToStringNonBoxing(value),
     };
 
     /// <summary>

@@ -35,7 +35,7 @@ public sealed class GrowableBufferTests : Test
             Equal(2L, writer.WrittenCount);
             var actual = new byte[2];
             Equal(2, writer.CopyTo(actual));
-            Equal(new byte[] { 255, 0 }, actual);
+            Equal<byte>([255, 0], actual);
 
             writer.Reset();
             var expected = RandomBytes(5000);

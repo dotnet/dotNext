@@ -306,7 +306,29 @@ public sealed class TextStreamTests : Test
     {
         using var writer = new StringWriter();
         int x = 10, y = 20;
-        writer.WriteLine(default(MemoryAllocator<char>), $"{x} + {y} = {x + y}");
+        writer.WriteLine(MemoryAllocator<char>.Default, $"{x} + {y} = {x + y}");
+        Equal($"{x} + {y} = {x + y}{Environment.NewLine}", writer.ToString());
+    }
+    
+    [Fact]
+    public static void WriteInterpolatedString3()
+    {
+        using var writer = new StringWriter();
+        int x = 10, y = 20;
+        Span<char> buffer = stackalloc char[32];
+        writer.Write(buffer, provider: null, $"{x} + {y} = {x + y}");
+
+        Equal($"{x} + {y} = {x + y}", writer.ToString());
+    }
+
+    [Fact]
+    public static void WriteInterpolatedString4()
+    {
+        using var writer = new StringWriter();
+        int x = 10, y = 20;
+        Span<char> buffer = stackalloc char[32];
+        writer.WriteLine(buffer, provider: null, $"{x} + {y} = {x + y}");
+
         Equal($"{x} + {y} = {x + y}{Environment.NewLine}", writer.ToString());
     }
 }
