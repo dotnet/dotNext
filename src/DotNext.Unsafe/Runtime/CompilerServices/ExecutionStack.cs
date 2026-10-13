@@ -187,10 +187,10 @@ file readonly struct StackInfo
         static LinuxApi()
         {
             var programHandle = NativeLibrary.GetMainProgramHandle();
-            if (NativeLibrary.TryGetExport(programHandle, "pthread_self", out var pthreadSelf)
-                && NativeLibrary.TryGetExport(programHandle, "pthread_getattr_np", out var pthreadGetAttr)
-                && NativeLibrary.TryGetExport(programHandle, "pthread_attr_getstack", out var pthreadAttrGetStack)
-                && NativeLibrary.TryGetExport(programHandle, "pthread_attr_destroy", out var pthreadAttrDestroy))
+            if (NativeLibrary.TryGetExport(programHandle, nameof(pthread_self), out var pthreadSelf)
+                && NativeLibrary.TryGetExport(programHandle, nameof(pthread_getattr_np), out var pthreadGetAttr)
+                && NativeLibrary.TryGetExport(programHandle, nameof(pthread_attr_getstack), out var pthreadAttrGetStack)
+                && NativeLibrary.TryGetExport(programHandle, nameof(pthread_attr_destroy), out var pthreadAttrDestroy))
             {
                 pthread_self = (delegate* unmanaged[SuppressGCTransition]<nint>)pthreadSelf;
                 pthread_getattr_np = (delegate* unmanaged<nint, void*, int>)pthreadGetAttr;
@@ -232,7 +232,7 @@ file readonly struct StackInfo
         {
             // kernel32.dll is never unloaded, so the handle is not released
             if (NativeLibrary.TryLoad("kernel32.dll", out var kernel32)
-                && NativeLibrary.TryGetExport(kernel32, "GetCurrentThreadStackLimits", out var getCurrentThreadStackLimits))
+                && NativeLibrary.TryGetExport(kernel32, nameof(GetCurrentThreadStackLimits), out var getCurrentThreadStackLimits))
             {
                 GetCurrentThreadStackLimits = (delegate* unmanaged[SuppressGCTransition]<nuint*, nuint*, void>)getCurrentThreadStackLimits;
             }
@@ -261,9 +261,9 @@ file readonly struct StackInfo
         static DarwinApi()
         {
             var programHandle = NativeLibrary.GetMainProgramHandle();
-            if (NativeLibrary.TryGetExport(programHandle, "pthread_self", out var pthreadSelf)
-                && NativeLibrary.TryGetExport(programHandle, "pthread_get_stackaddr_np", out var pthreadGetStackAddr)
-                && NativeLibrary.TryGetExport(programHandle, "pthread_get_stacksize_np", out var pthreadGetStackSize))
+            if (NativeLibrary.TryGetExport(programHandle, nameof(pthread_self), out var pthreadSelf)
+                && NativeLibrary.TryGetExport(programHandle, nameof(pthread_get_stackaddr_np), out var pthreadGetStackAddr)
+                && NativeLibrary.TryGetExport(programHandle, nameof(pthread_get_stacksize_np), out var pthreadGetStackSize))
             {
                 pthread_self = (delegate* unmanaged[SuppressGCTransition]<nint>)pthreadSelf;
                 pthread_get_stackaddr_np = (delegate* unmanaged[SuppressGCTransition]<nint, nuint>)pthreadGetStackAddr;

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
-public class RuntimeHelpersExtensionsTests : Test
+public class ExecutionStackTests : Test
 {
     [Fact]
     public static void IsOnStack()
