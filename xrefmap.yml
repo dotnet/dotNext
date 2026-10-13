@@ -17273,6 +17273,687 @@ references:
   commentId: Overload:DotNext.IO.ModernStream.WriteByte
   fullName: DotNext.IO.ModernStream.WriteByte
   nameWithType: ModernStream.WriteByte
+- uid: DotNext.IO.ModernTextReader
+  name: ModernTextReader
+  href: api/DotNext.IO.ModernTextReader.html
+  commentId: T:DotNext.IO.ModernTextReader
+  fullName: DotNext.IO.ModernTextReader
+  nameWithType: ModernTextReader
+- uid: DotNext.IO.ModernTextReader.#ctor
+  name: ModernTextReader()
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader__ctor
+  commentId: M:DotNext.IO.ModernTextReader.#ctor
+  name.vb: New()
+  fullName: DotNext.IO.ModernTextReader.ModernTextReader()
+  fullName.vb: DotNext.IO.ModernTextReader.New()
+  nameWithType: ModernTextReader.ModernTextReader()
+  nameWithType.vb: ModernTextReader.New()
+- uid: DotNext.IO.ModernTextReader.#ctor*
+  name: ModernTextReader
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader__ctor_
+  commentId: Overload:DotNext.IO.ModernTextReader.#ctor
+  name.vb: New
+  fullName: DotNext.IO.ModernTextReader.ModernTextReader
+  fullName.vb: DotNext.IO.ModernTextReader.New
+  nameWithType: ModernTextReader.ModernTextReader
+  nameWithType.vb: ModernTextReader.New
+- uid: DotNext.IO.ModernTextReader.Read(System.Char[],System.Int32,System.Int32)
+  name: Read(char[], int, int)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_Read_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextReader.Read(System.Char[],System.Int32,System.Int32)
+  name.vb: Read(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextReader.Read(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextReader.Read(Char(), Integer, Integer)
+  nameWithType: ModernTextReader.Read(char[], int, int)
+  nameWithType.vb: ModernTextReader.Read(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextReader.Read(System.Span{System.Char})
+  name: Read(Span<char>)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_Read_System_Span_System_Char__
+  commentId: M:DotNext.IO.ModernTextReader.Read(System.Span{System.Char})
+  name.vb: Read(Span(Of Char))
+  fullName: DotNext.IO.ModernTextReader.Read(System.Span<char>)
+  fullName.vb: DotNext.IO.ModernTextReader.Read(System.Span(Of Char))
+  nameWithType: ModernTextReader.Read(Span<char>)
+  nameWithType.vb: ModernTextReader.Read(Span(Of Char))
+- uid: DotNext.IO.ModernTextReader.Read*
+  name: Read
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_Read_
+  commentId: Overload:DotNext.IO.ModernTextReader.Read
+  fullName: DotNext.IO.ModernTextReader.Read
+  nameWithType: ModernTextReader.Read
+- uid: DotNext.IO.ModernTextReader.ReadAsync(System.Char[],System.Int32,System.Int32)
+  name: ReadAsync(char[], int, int)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadAsync_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextReader.ReadAsync(System.Char[],System.Int32,System.Int32)
+  name.vb: ReadAsync(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextReader.ReadAsync(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadAsync(Char(), Integer, Integer)
+  nameWithType: ModernTextReader.ReadAsync(char[], int, int)
+  nameWithType.vb: ModernTextReader.ReadAsync(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextReader.ReadAsync(System.Memory{System.Char},System.Threading.CancellationToken)
+  name: ReadAsync(Memory<char>, CancellationToken)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadAsync_System_Memory_System_Char__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextReader.ReadAsync(System.Memory{System.Char},System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Char), CancellationToken)
+  fullName: DotNext.IO.ModernTextReader.ReadAsync(System.Memory<char>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadAsync(System.Memory(Of Char), System.Threading.CancellationToken)
+  nameWithType: ModernTextReader.ReadAsync(Memory<char>, CancellationToken)
+  nameWithType.vb: ModernTextReader.ReadAsync(Memory(Of Char), CancellationToken)
+- uid: DotNext.IO.ModernTextReader.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadAsync_
+  commentId: Overload:DotNext.IO.ModernTextReader.ReadAsync
+  fullName: DotNext.IO.ModernTextReader.ReadAsync
+  nameWithType: ModernTextReader.ReadAsync
+- uid: DotNext.IO.ModernTextReader.ReadBlock(System.Char[],System.Int32,System.Int32)
+  name: ReadBlock(char[], int, int)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlock_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextReader.ReadBlock(System.Char[],System.Int32,System.Int32)
+  name.vb: ReadBlock(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextReader.ReadBlock(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadBlock(Char(), Integer, Integer)
+  nameWithType: ModernTextReader.ReadBlock(char[], int, int)
+  nameWithType.vb: ModernTextReader.ReadBlock(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextReader.ReadBlock(System.Span{System.Char})
+  name: ReadBlock(Span<char>)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlock_System_Span_System_Char__
+  commentId: M:DotNext.IO.ModernTextReader.ReadBlock(System.Span{System.Char})
+  name.vb: ReadBlock(Span(Of Char))
+  fullName: DotNext.IO.ModernTextReader.ReadBlock(System.Span<char>)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadBlock(System.Span(Of Char))
+  nameWithType: ModernTextReader.ReadBlock(Span<char>)
+  nameWithType.vb: ModernTextReader.ReadBlock(Span(Of Char))
+- uid: DotNext.IO.ModernTextReader.ReadBlock*
+  name: ReadBlock
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlock_
+  commentId: Overload:DotNext.IO.ModernTextReader.ReadBlock
+  fullName: DotNext.IO.ModernTextReader.ReadBlock
+  nameWithType: ModernTextReader.ReadBlock
+- uid: DotNext.IO.ModernTextReader.ReadBlockAsync(System.Char[],System.Int32,System.Int32)
+  name: ReadBlockAsync(char[], int, int)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlockAsync_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextReader.ReadBlockAsync(System.Char[],System.Int32,System.Int32)
+  name.vb: ReadBlockAsync(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextReader.ReadBlockAsync(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadBlockAsync(Char(), Integer, Integer)
+  nameWithType: ModernTextReader.ReadBlockAsync(char[], int, int)
+  nameWithType.vb: ModernTextReader.ReadBlockAsync(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextReader.ReadBlockAsync(System.Memory{System.Char},System.Threading.CancellationToken)
+  name: ReadBlockAsync(Memory<char>, CancellationToken)
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlockAsync_System_Memory_System_Char__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextReader.ReadBlockAsync(System.Memory{System.Char},System.Threading.CancellationToken)
+  name.vb: ReadBlockAsync(Memory(Of Char), CancellationToken)
+  fullName: DotNext.IO.ModernTextReader.ReadBlockAsync(System.Memory<char>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextReader.ReadBlockAsync(System.Memory(Of Char), System.Threading.CancellationToken)
+  nameWithType: ModernTextReader.ReadBlockAsync(Memory<char>, CancellationToken)
+  nameWithType.vb: ModernTextReader.ReadBlockAsync(Memory(Of Char), CancellationToken)
+- uid: DotNext.IO.ModernTextReader.ReadBlockAsync*
+  name: ReadBlockAsync
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadBlockAsync_
+  commentId: Overload:DotNext.IO.ModernTextReader.ReadBlockAsync
+  fullName: DotNext.IO.ModernTextReader.ReadBlockAsync
+  nameWithType: ModernTextReader.ReadBlockAsync
+- uid: DotNext.IO.ModernTextReader.ReadLineAsync
+  name: ReadLineAsync()
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadLineAsync
+  commentId: M:DotNext.IO.ModernTextReader.ReadLineAsync
+  fullName: DotNext.IO.ModernTextReader.ReadLineAsync()
+  nameWithType: ModernTextReader.ReadLineAsync()
+- uid: DotNext.IO.ModernTextReader.ReadLineAsync*
+  name: ReadLineAsync
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadLineAsync_
+  commentId: Overload:DotNext.IO.ModernTextReader.ReadLineAsync
+  fullName: DotNext.IO.ModernTextReader.ReadLineAsync
+  nameWithType: ModernTextReader.ReadLineAsync
+- uid: DotNext.IO.ModernTextReader.ReadToEndAsync
+  name: ReadToEndAsync()
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadToEndAsync
+  commentId: M:DotNext.IO.ModernTextReader.ReadToEndAsync
+  fullName: DotNext.IO.ModernTextReader.ReadToEndAsync()
+  nameWithType: ModernTextReader.ReadToEndAsync()
+- uid: DotNext.IO.ModernTextReader.ReadToEndAsync*
+  name: ReadToEndAsync
+  href: api/DotNext.IO.ModernTextReader.html#DotNext_IO_ModernTextReader_ReadToEndAsync_
+  commentId: Overload:DotNext.IO.ModernTextReader.ReadToEndAsync
+  fullName: DotNext.IO.ModernTextReader.ReadToEndAsync
+  nameWithType: ModernTextReader.ReadToEndAsync
+- uid: DotNext.IO.ModernTextWriter
+  name: ModernTextWriter
+  href: api/DotNext.IO.ModernTextWriter.html
+  commentId: T:DotNext.IO.ModernTextWriter
+  fullName: DotNext.IO.ModernTextWriter
+  nameWithType: ModernTextWriter
+- uid: DotNext.IO.ModernTextWriter.#ctor(System.IFormatProvider)
+  name: ModernTextWriter(IFormatProvider?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter__ctor_System_IFormatProvider_
+  commentId: M:DotNext.IO.ModernTextWriter.#ctor(System.IFormatProvider)
+  name.vb: New(IFormatProvider)
+  fullName: DotNext.IO.ModernTextWriter.ModernTextWriter(System.IFormatProvider?)
+  fullName.vb: DotNext.IO.ModernTextWriter.New(System.IFormatProvider)
+  nameWithType: ModernTextWriter.ModernTextWriter(IFormatProvider?)
+  nameWithType.vb: ModernTextWriter.New(IFormatProvider)
+- uid: DotNext.IO.ModernTextWriter.#ctor*
+  name: ModernTextWriter
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter__ctor_
+  commentId: Overload:DotNext.IO.ModernTextWriter.#ctor
+  name.vb: New
+  fullName: DotNext.IO.ModernTextWriter.ModernTextWriter
+  fullName.vb: DotNext.IO.ModernTextWriter.New
+  nameWithType: ModernTextWriter.ModernTextWriter
+  nameWithType.vb: ModernTextWriter.New
+- uid: DotNext.IO.ModernTextWriter.FlushAsync
+  name: FlushAsync()
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_FlushAsync
+  commentId: M:DotNext.IO.ModernTextWriter.FlushAsync
+  fullName: DotNext.IO.ModernTextWriter.FlushAsync()
+  nameWithType: ModernTextWriter.FlushAsync()
+- uid: DotNext.IO.ModernTextWriter.FlushAsync*
+  name: FlushAsync
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_FlushAsync_
+  commentId: Overload:DotNext.IO.ModernTextWriter.FlushAsync
+  fullName: DotNext.IO.ModernTextWriter.FlushAsync
+  nameWithType: ModernTextWriter.FlushAsync
+- uid: DotNext.IO.ModernTextWriter.Write(System.Boolean)
+  name: Write(bool)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Boolean_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Boolean)
+  name.vb: Write(Boolean)
+  fullName: DotNext.IO.ModernTextWriter.Write(bool)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Boolean)
+  nameWithType: ModernTextWriter.Write(bool)
+  nameWithType.vb: ModernTextWriter.Write(Boolean)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Char)
+  name: Write(char)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Char_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Char)
+  name.vb: Write(Char)
+  fullName: DotNext.IO.ModernTextWriter.Write(char)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Char)
+  nameWithType: ModernTextWriter.Write(char)
+  nameWithType.vb: ModernTextWriter.Write(Char)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Char[])
+  name: Write(char[]?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Char___
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Char[])
+  name.vb: Write(Char())
+  fullName: DotNext.IO.ModernTextWriter.Write(char[]?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Char())
+  nameWithType: ModernTextWriter.Write(char[]?)
+  nameWithType.vb: ModernTextWriter.Write(Char())
+- uid: DotNext.IO.ModernTextWriter.Write(System.Char[],System.Int32,System.Int32)
+  name: Write(char[], int, int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Char[],System.Int32,System.Int32)
+  name.vb: Write(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextWriter.Write(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Char(), Integer, Integer)
+  nameWithType: ModernTextWriter.Write(char[], int, int)
+  nameWithType.vb: ModernTextWriter.Write(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Decimal)
+  name: Write(decimal)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Decimal_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Decimal)
+  name.vb: Write(Decimal)
+  fullName: DotNext.IO.ModernTextWriter.Write(decimal)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Decimal)
+  nameWithType: ModernTextWriter.Write(decimal)
+  nameWithType.vb: ModernTextWriter.Write(Decimal)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Double)
+  name: Write(double)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Double_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Double)
+  name.vb: Write(Double)
+  fullName: DotNext.IO.ModernTextWriter.Write(double)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Double)
+  nameWithType: ModernTextWriter.Write(double)
+  nameWithType.vb: ModernTextWriter.Write(Double)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Int32)
+  name: Write(int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Int32)
+  name.vb: Write(Integer)
+  fullName: DotNext.IO.ModernTextWriter.Write(int)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Integer)
+  nameWithType: ModernTextWriter.Write(int)
+  nameWithType.vb: ModernTextWriter.Write(Integer)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Int64)
+  name: Write(long)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Int64_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Int64)
+  name.vb: Write(Long)
+  fullName: DotNext.IO.ModernTextWriter.Write(long)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Long)
+  nameWithType: ModernTextWriter.Write(long)
+  nameWithType.vb: ModernTextWriter.Write(Long)
+- uid: DotNext.IO.ModernTextWriter.Write(System.Object)
+  name: Write(object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Object)
+  name.vb: Write(Object)
+  fullName: DotNext.IO.ModernTextWriter.Write(object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Object)
+  nameWithType: ModernTextWriter.Write(object?)
+  nameWithType.vb: ModernTextWriter.Write(Object)
+- uid: DotNext.IO.ModernTextWriter.Write(System.ReadOnlySpan{System.Char})
+  name: Write(ReadOnlySpan<char>)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_ReadOnlySpan_System_Char__
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.ReadOnlySpan{System.Char})
+  name.vb: Write(ReadOnlySpan(Of Char))
+  fullName: DotNext.IO.ModernTextWriter.Write(System.ReadOnlySpan<char>)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(System.ReadOnlySpan(Of Char))
+  nameWithType: ModernTextWriter.Write(ReadOnlySpan<char>)
+  nameWithType.vb: ModernTextWriter.Write(ReadOnlySpan(Of Char))
+- uid: DotNext.IO.ModernTextWriter.Write(System.Single)
+  name: Write(float)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Single_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Single)
+  name.vb: Write(Single)
+  fullName: DotNext.IO.ModernTextWriter.Write(float)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(Single)
+  nameWithType: ModernTextWriter.Write(float)
+  nameWithType.vb: ModernTextWriter.Write(Single)
+- uid: DotNext.IO.ModernTextWriter.Write(System.String)
+  name: Write(string?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String)
+  name.vb: Write(String)
+  fullName: DotNext.IO.ModernTextWriter.Write(string?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String)
+  nameWithType: ModernTextWriter.Write(string?)
+  nameWithType.vb: ModernTextWriter.Write(String)
+- uid: DotNext.IO.ModernTextWriter.Write(System.String,System.Object)
+  name: Write(string, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String,System.Object)
+  name.vb: Write(String, Object)
+  fullName: DotNext.IO.ModernTextWriter.Write(string, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String, Object)
+  nameWithType: ModernTextWriter.Write(string, object?)
+  nameWithType.vb: ModernTextWriter.Write(String, Object)
+- uid: DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object)
+  name: Write(string, object?, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_System_Object_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object)
+  name.vb: Write(String, Object, Object)
+  fullName: DotNext.IO.ModernTextWriter.Write(string, object?, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String, Object, Object)
+  nameWithType: ModernTextWriter.Write(string, object?, object?)
+  nameWithType.vb: ModernTextWriter.Write(String, Object, Object)
+- uid: DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object,System.Object)
+  name: Write(string, object?, object?, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_System_Object_System_Object_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object,System.Object)
+  name.vb: Write(String, Object, Object, Object)
+  fullName: DotNext.IO.ModernTextWriter.Write(string, object?, object?, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String, Object, Object, Object)
+  nameWithType: ModernTextWriter.Write(string, object?, object?, object?)
+  nameWithType.vb: ModernTextWriter.Write(String, Object, Object, Object)
+- uid: DotNext.IO.ModernTextWriter.Write(System.String,System.Object[])
+  name: Write(string, params object?[])
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_System_Object___
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String,System.Object[])
+  name.vb: Write(String, ParamArray Object())
+  fullName: DotNext.IO.ModernTextWriter.Write(string, params object?[])
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String, ParamArray Object())
+  nameWithType: ModernTextWriter.Write(string, params object?[])
+  nameWithType.vb: ModernTextWriter.Write(String, ParamArray Object())
+- uid: DotNext.IO.ModernTextWriter.Write(System.String,System.ReadOnlySpan{System.Object})
+  name: Write(string, params ReadOnlySpan<object?>)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_String_System_ReadOnlySpan_System_Object__
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.String,System.ReadOnlySpan{System.Object})
+  name.vb: Write(String, ReadOnlySpan(Of Object))
+  fullName: DotNext.IO.ModernTextWriter.Write(string, params System.ReadOnlySpan<object?>)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(String, System.ReadOnlySpan(Of Object))
+  nameWithType: ModernTextWriter.Write(string, params ReadOnlySpan<object?>)
+  nameWithType.vb: ModernTextWriter.Write(String, ReadOnlySpan(Of Object))
+- uid: DotNext.IO.ModernTextWriter.Write(System.Text.StringBuilder)
+  name: Write(StringBuilder?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_Text_StringBuilder_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.Text.StringBuilder)
+  name.vb: Write(StringBuilder)
+  fullName: DotNext.IO.ModernTextWriter.Write(System.Text.StringBuilder?)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(System.Text.StringBuilder)
+  nameWithType: ModernTextWriter.Write(StringBuilder?)
+  nameWithType.vb: ModernTextWriter.Write(StringBuilder)
+- uid: DotNext.IO.ModernTextWriter.Write(System.UInt32)
+  name: Write(uint)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_UInt32_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.UInt32)
+  name.vb: Write(UInteger)
+  fullName: DotNext.IO.ModernTextWriter.Write(uint)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(UInteger)
+  nameWithType: ModernTextWriter.Write(uint)
+  nameWithType.vb: ModernTextWriter.Write(UInteger)
+- uid: DotNext.IO.ModernTextWriter.Write(System.UInt64)
+  name: Write(ulong)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_System_UInt64_
+  commentId: M:DotNext.IO.ModernTextWriter.Write(System.UInt64)
+  name.vb: Write(ULong)
+  fullName: DotNext.IO.ModernTextWriter.Write(ulong)
+  fullName.vb: DotNext.IO.ModernTextWriter.Write(ULong)
+  nameWithType: ModernTextWriter.Write(ulong)
+  nameWithType.vb: ModernTextWriter.Write(ULong)
+- uid: DotNext.IO.ModernTextWriter.Write*
+  name: Write
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_Write_
+  commentId: Overload:DotNext.IO.ModernTextWriter.Write
+  fullName: DotNext.IO.ModernTextWriter.Write
+  nameWithType: ModernTextWriter.Write
+- uid: DotNext.IO.ModernTextWriter.WriteAsync(System.Char)
+  name: WriteAsync(char)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_System_Char_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteAsync(System.Char)
+  name.vb: WriteAsync(Char)
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync(char)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteAsync(Char)
+  nameWithType: ModernTextWriter.WriteAsync(char)
+  nameWithType.vb: ModernTextWriter.WriteAsync(Char)
+- uid: DotNext.IO.ModernTextWriter.WriteAsync(System.Char[],System.Int32,System.Int32)
+  name: WriteAsync(char[], int, int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteAsync(System.Char[],System.Int32,System.Int32)
+  name.vb: WriteAsync(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteAsync(Char(), Integer, Integer)
+  nameWithType: ModernTextWriter.WriteAsync(char[], int, int)
+  nameWithType.vb: ModernTextWriter.WriteAsync(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextWriter.WriteAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<char>, CancellationToken)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Char), CancellationToken)
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteAsync(System.ReadOnlyMemory(Of Char), System.Threading.CancellationToken)
+  nameWithType: ModernTextWriter.WriteAsync(ReadOnlyMemory<char>, CancellationToken)
+  nameWithType.vb: ModernTextWriter.WriteAsync(ReadOnlyMemory(Of Char), CancellationToken)
+- uid: DotNext.IO.ModernTextWriter.WriteAsync(System.String)
+  name: WriteAsync(string?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_System_String_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteAsync(System.String)
+  name.vb: WriteAsync(String)
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync(string?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteAsync(String)
+  nameWithType: ModernTextWriter.WriteAsync(string?)
+  nameWithType.vb: ModernTextWriter.WriteAsync(String)
+- uid: DotNext.IO.ModernTextWriter.WriteAsync(System.Text.StringBuilder,System.Threading.CancellationToken)
+  name: WriteAsync(StringBuilder?, CancellationToken)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_System_Text_StringBuilder_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteAsync(System.Text.StringBuilder,System.Threading.CancellationToken)
+  name.vb: WriteAsync(StringBuilder, CancellationToken)
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync(System.Text.StringBuilder?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteAsync(System.Text.StringBuilder, System.Threading.CancellationToken)
+  nameWithType: ModernTextWriter.WriteAsync(StringBuilder?, CancellationToken)
+  nameWithType.vb: ModernTextWriter.WriteAsync(StringBuilder, CancellationToken)
+- uid: DotNext.IO.ModernTextWriter.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteAsync_
+  commentId: Overload:DotNext.IO.ModernTextWriter.WriteAsync
+  fullName: DotNext.IO.ModernTextWriter.WriteAsync
+  nameWithType: ModernTextWriter.WriteAsync
+- uid: DotNext.IO.ModernTextWriter.WriteLine
+  name: WriteLine()
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine
+  fullName: DotNext.IO.ModernTextWriter.WriteLine()
+  nameWithType: ModernTextWriter.WriteLine()
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Boolean)
+  name: WriteLine(bool)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Boolean_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Boolean)
+  name.vb: WriteLine(Boolean)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(bool)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Boolean)
+  nameWithType: ModernTextWriter.WriteLine(bool)
+  nameWithType.vb: ModernTextWriter.WriteLine(Boolean)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Char)
+  name: WriteLine(char)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Char_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Char)
+  name.vb: WriteLine(Char)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(char)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Char)
+  nameWithType: ModernTextWriter.WriteLine(char)
+  nameWithType.vb: ModernTextWriter.WriteLine(Char)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Char[])
+  name: WriteLine(char[]?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Char___
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Char[])
+  name.vb: WriteLine(Char())
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(char[]?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Char())
+  nameWithType: ModernTextWriter.WriteLine(char[]?)
+  nameWithType.vb: ModernTextWriter.WriteLine(Char())
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Char[],System.Int32,System.Int32)
+  name: WriteLine(char[], int, int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Char[],System.Int32,System.Int32)
+  name.vb: WriteLine(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Char(), Integer, Integer)
+  nameWithType: ModernTextWriter.WriteLine(char[], int, int)
+  nameWithType.vb: ModernTextWriter.WriteLine(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Decimal)
+  name: WriteLine(decimal)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Decimal_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Decimal)
+  name.vb: WriteLine(Decimal)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(decimal)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Decimal)
+  nameWithType: ModernTextWriter.WriteLine(decimal)
+  nameWithType.vb: ModernTextWriter.WriteLine(Decimal)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Double)
+  name: WriteLine(double)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Double_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Double)
+  name.vb: WriteLine(Double)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(double)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Double)
+  nameWithType: ModernTextWriter.WriteLine(double)
+  nameWithType.vb: ModernTextWriter.WriteLine(Double)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Int32)
+  name: WriteLine(int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Int32)
+  name.vb: WriteLine(Integer)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(int)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Integer)
+  nameWithType: ModernTextWriter.WriteLine(int)
+  nameWithType.vb: ModernTextWriter.WriteLine(Integer)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Int64)
+  name: WriteLine(long)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Int64_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Int64)
+  name.vb: WriteLine(Long)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(long)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Long)
+  nameWithType: ModernTextWriter.WriteLine(long)
+  nameWithType.vb: ModernTextWriter.WriteLine(Long)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Object)
+  name: WriteLine(object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Object)
+  name.vb: WriteLine(Object)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Object)
+  nameWithType: ModernTextWriter.WriteLine(object?)
+  nameWithType.vb: ModernTextWriter.WriteLine(Object)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.ReadOnlySpan{System.Char})
+  name: WriteLine(ReadOnlySpan<char>)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_ReadOnlySpan_System_Char__
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.ReadOnlySpan{System.Char})
+  name.vb: WriteLine(ReadOnlySpan(Of Char))
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(System.ReadOnlySpan<char>)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(System.ReadOnlySpan(Of Char))
+  nameWithType: ModernTextWriter.WriteLine(ReadOnlySpan<char>)
+  nameWithType.vb: ModernTextWriter.WriteLine(ReadOnlySpan(Of Char))
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Single)
+  name: WriteLine(float)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Single_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Single)
+  name.vb: WriteLine(Single)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(float)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(Single)
+  nameWithType: ModernTextWriter.WriteLine(float)
+  nameWithType.vb: ModernTextWriter.WriteLine(Single)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String)
+  name: WriteLine(string?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String)
+  name.vb: WriteLine(String)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String)
+  nameWithType: ModernTextWriter.WriteLine(string?)
+  nameWithType.vb: ModernTextWriter.WriteLine(String)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object)
+  name: WriteLine(string, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object)
+  name.vb: WriteLine(String, Object)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String, Object)
+  nameWithType: ModernTextWriter.WriteLine(string, object?)
+  nameWithType.vb: ModernTextWriter.WriteLine(String, Object)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object)
+  name: WriteLine(string, object?, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object)
+  name.vb: WriteLine(String, Object, Object)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string, object?, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String, Object, Object)
+  nameWithType: ModernTextWriter.WriteLine(string, object?, object?)
+  nameWithType.vb: ModernTextWriter.WriteLine(String, Object, Object)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object,System.Object)
+  name: WriteLine(string, object?, object?, object?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_System_Object_System_Object_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object,System.Object)
+  name.vb: WriteLine(String, Object, Object, Object)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string, object?, object?, object?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String, Object, Object, Object)
+  nameWithType: ModernTextWriter.WriteLine(string, object?, object?, object?)
+  nameWithType.vb: ModernTextWriter.WriteLine(String, Object, Object, Object)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object[])
+  name: WriteLine(string, params object?[])
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object___
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object[])
+  name.vb: WriteLine(String, ParamArray Object())
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string, params object?[])
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String, ParamArray Object())
+  nameWithType: ModernTextWriter.WriteLine(string, params object?[])
+  nameWithType.vb: ModernTextWriter.WriteLine(String, ParamArray Object())
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.String,System.ReadOnlySpan{System.Object})
+  name: WriteLine(string, params ReadOnlySpan<object?>)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_String_System_ReadOnlySpan_System_Object__
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.String,System.ReadOnlySpan{System.Object})
+  name.vb: WriteLine(String, ReadOnlySpan(Of Object))
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(string, params System.ReadOnlySpan<object?>)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(String, System.ReadOnlySpan(Of Object))
+  nameWithType: ModernTextWriter.WriteLine(string, params ReadOnlySpan<object?>)
+  nameWithType.vb: ModernTextWriter.WriteLine(String, ReadOnlySpan(Of Object))
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.Text.StringBuilder)
+  name: WriteLine(StringBuilder?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_Text_StringBuilder_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.Text.StringBuilder)
+  name.vb: WriteLine(StringBuilder)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(System.Text.StringBuilder?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(System.Text.StringBuilder)
+  nameWithType: ModernTextWriter.WriteLine(StringBuilder?)
+  nameWithType.vb: ModernTextWriter.WriteLine(StringBuilder)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.UInt32)
+  name: WriteLine(uint)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_UInt32_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.UInt32)
+  name.vb: WriteLine(UInteger)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(uint)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(UInteger)
+  nameWithType: ModernTextWriter.WriteLine(uint)
+  nameWithType.vb: ModernTextWriter.WriteLine(UInteger)
+- uid: DotNext.IO.ModernTextWriter.WriteLine(System.UInt64)
+  name: WriteLine(ulong)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_System_UInt64_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLine(System.UInt64)
+  name.vb: WriteLine(ULong)
+  fullName: DotNext.IO.ModernTextWriter.WriteLine(ulong)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLine(ULong)
+  nameWithType: ModernTextWriter.WriteLine(ulong)
+  nameWithType.vb: ModernTextWriter.WriteLine(ULong)
+- uid: DotNext.IO.ModernTextWriter.WriteLine*
+  name: WriteLine
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLine_
+  commentId: Overload:DotNext.IO.ModernTextWriter.WriteLine
+  fullName: DotNext.IO.ModernTextWriter.WriteLine
+  nameWithType: ModernTextWriter.WriteLine
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync
+  name: WriteLineAsync()
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync()
+  nameWithType: ModernTextWriter.WriteLineAsync()
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char)
+  name: WriteLineAsync(char)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_System_Char_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char)
+  name.vb: WriteLineAsync(Char)
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync(char)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLineAsync(Char)
+  nameWithType: ModernTextWriter.WriteLineAsync(char)
+  nameWithType.vb: ModernTextWriter.WriteLineAsync(Char)
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char[],System.Int32,System.Int32)
+  name: WriteLineAsync(char[], int, int)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_System_Char___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char[],System.Int32,System.Int32)
+  name.vb: WriteLineAsync(Char(), Integer, Integer)
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync(char[], int, int)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLineAsync(Char(), Integer, Integer)
+  nameWithType: ModernTextWriter.WriteLineAsync(char[], int, int)
+  nameWithType.vb: ModernTextWriter.WriteLineAsync(Char(), Integer, Integer)
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)
+  name: WriteLineAsync(ReadOnlyMemory<char>, CancellationToken)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)
+  name.vb: WriteLineAsync(ReadOnlyMemory(Of Char), CancellationToken)
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLineAsync(System.ReadOnlyMemory(Of Char), System.Threading.CancellationToken)
+  nameWithType: ModernTextWriter.WriteLineAsync(ReadOnlyMemory<char>, CancellationToken)
+  nameWithType.vb: ModernTextWriter.WriteLineAsync(ReadOnlyMemory(Of Char), CancellationToken)
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync(System.String)
+  name: WriteLineAsync(string?)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_System_String_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync(System.String)
+  name.vb: WriteLineAsync(String)
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync(string?)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLineAsync(String)
+  nameWithType: ModernTextWriter.WriteLineAsync(string?)
+  nameWithType.vb: ModernTextWriter.WriteLineAsync(String)
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync(System.Text.StringBuilder,System.Threading.CancellationToken)
+  name: WriteLineAsync(StringBuilder?, CancellationToken)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_System_Text_StringBuilder_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteLineAsync(System.Text.StringBuilder,System.Threading.CancellationToken)
+  name.vb: WriteLineAsync(StringBuilder, CancellationToken)
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync(System.Text.StringBuilder?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteLineAsync(System.Text.StringBuilder, System.Threading.CancellationToken)
+  nameWithType: ModernTextWriter.WriteLineAsync(StringBuilder?, CancellationToken)
+  nameWithType.vb: ModernTextWriter.WriteLineAsync(StringBuilder, CancellationToken)
+- uid: DotNext.IO.ModernTextWriter.WriteLineAsync*
+  name: WriteLineAsync
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteLineAsync_
+  commentId: Overload:DotNext.IO.ModernTextWriter.WriteLineAsync
+  fullName: DotNext.IO.ModernTextWriter.WriteLineAsync
+  nameWithType: ModernTextWriter.WriteLineAsync
+- uid: DotNext.IO.ModernTextWriter.WriteValue*
+  name: WriteValue
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteValue_
+  commentId: Overload:DotNext.IO.ModernTextWriter.WriteValue
+  fullName: DotNext.IO.ModernTextWriter.WriteValue
+  nameWithType: ModernTextWriter.WriteValue
+- uid: DotNext.IO.ModernTextWriter.WriteValue``1(``0)
+  name: WriteValue<TFormattable>(TFormattable)
+  href: api/DotNext.IO.ModernTextWriter.html#DotNext_IO_ModernTextWriter_WriteValue__1___0_
+  commentId: M:DotNext.IO.ModernTextWriter.WriteValue``1(``0)
+  name.vb: WriteValue(Of TFormattable)(TFormattable)
+  fullName: DotNext.IO.ModernTextWriter.WriteValue<TFormattable>(TFormattable)
+  fullName.vb: DotNext.IO.ModernTextWriter.WriteValue(Of TFormattable)(TFormattable)
+  nameWithType: ModernTextWriter.WriteValue<TFormattable>(TFormattable)
+  nameWithType.vb: ModernTextWriter.WriteValue(Of TFormattable)(TFormattable)
 - uid: DotNext.IO.Pipelines
   name: DotNext.IO.Pipelines
   href: api/DotNext.IO.Pipelines.html
@@ -19804,6 +20485,15 @@ references:
   fullName.vb: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator(Of Char), System.IFormatProvider, DotNext.Text.PoolingInterpolatedStringHandler)
   nameWithType: TextStreamExtensions.Write(TextWriter, MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: TextStreamExtensions.Write(TextWriter, MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
+- uid: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name: Write(TextWriter, Span<char>, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)
+  href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_System_Span_System_Char__System_IFormatProvider_System_Runtime_CompilerServices_DefaultInterpolatedStringHandler__
+  commentId: M:DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name.vb: Write(TextWriter, Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
+  fullName: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, System.Span<char>, System.IFormatProvider?, scoped ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  fullName.vb: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, System.Span(Of Char), System.IFormatProvider, System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  nameWithType: TextStreamExtensions.Write(TextWriter, Span<char>, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)
+  nameWithType.vb: TextStreamExtensions.Write(TextWriter, Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
 - uid: DotNext.IO.TextStreamExtensions.Write*
   name: Write
   href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_
@@ -19861,6 +20551,15 @@ references:
   fullName.vb: DotNext.IO.TextStreamExtensions.WriteLine(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator(Of Char), System.IFormatProvider, DotNext.Text.PoolingInterpolatedStringHandler)
   nameWithType: TextStreamExtensions.WriteLine(TextWriter, MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: TextStreamExtensions.WriteLine(TextWriter, MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
+- uid: DotNext.IO.TextStreamExtensions.WriteLine(System.IO.TextWriter,System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name: WriteLine(TextWriter, Span<char>, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)
+  href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLine_System_IO_TextWriter_System_Span_System_Char__System_IFormatProvider_System_Runtime_CompilerServices_DefaultInterpolatedStringHandler__
+  commentId: M:DotNext.IO.TextStreamExtensions.WriteLine(System.IO.TextWriter,System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name.vb: WriteLine(TextWriter, Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
+  fullName: DotNext.IO.TextStreamExtensions.WriteLine(System.IO.TextWriter, System.Span<char>, System.IFormatProvider?, scoped ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  fullName.vb: DotNext.IO.TextStreamExtensions.WriteLine(System.IO.TextWriter, System.Span(Of Char), System.IFormatProvider, System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  nameWithType: TextStreamExtensions.WriteLine(TextWriter, Span<char>, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)
+  nameWithType.vb: TextStreamExtensions.WriteLine(TextWriter, Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
 - uid: DotNext.IO.TextStreamExtensions.WriteLine*
   name: WriteLine
   href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLine_
@@ -42079,6 +42778,21 @@ references:
   fullName.vb: DotNext.Runtime.CompilerServices.AdvancedHelpers.Swap(Of T)(T, T)
   nameWithType: AdvancedHelpers.Swap<T>(ref T, ref T)
   nameWithType.vb: AdvancedHelpers.Swap(Of T)(T, T)
+- uid: DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing*
+  name: ToStringRequiresBoxing
+  href: api/DotNext.Runtime.CompilerServices.AdvancedHelpers.html#DotNext_Runtime_CompilerServices_AdvancedHelpers_ToStringRequiresBoxing_
+  commentId: Overload:DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing
+  fullName: DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing
+  nameWithType: AdvancedHelpers.ToStringRequiresBoxing
+- uid: DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing``1
+  name: ToStringRequiresBoxing<T>()
+  href: api/DotNext.Runtime.CompilerServices.AdvancedHelpers.html#DotNext_Runtime_CompilerServices_AdvancedHelpers_ToStringRequiresBoxing__1
+  commentId: M:DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing``1
+  name.vb: ToStringRequiresBoxing(Of T)()
+  fullName: DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing<T>()
+  fullName.vb: DotNext.Runtime.CompilerServices.AdvancedHelpers.ToStringRequiresBoxing(Of T)()
+  nameWithType: AdvancedHelpers.ToStringRequiresBoxing<T>()
+  nameWithType.vb: AdvancedHelpers.ToStringRequiresBoxing(Of T)()
 - uid: DotNext.Runtime.CompilerServices.AdvancedHelpers.get_Alignment*
   name: get_Alignment
   href: api/DotNext.Runtime.CompilerServices.AdvancedHelpers.html#DotNext_Runtime_CompilerServices_AdvancedHelpers_get_Alignment_
@@ -42426,6 +43140,104 @@ references:
   commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
   fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
   nameWithType: ExceptionCapturingAwaitable.GetAwaiter
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack
+  name: ExecutionStack
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html
+  commentId: T:DotNext.Runtime.CompilerServices.ExecutionStack
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack
+  nameWithType: ExecutionStack
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack*
+  name: IsOnExecutionStack
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_IsOnExecutionStack_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack
+  nameWithType: ExecutionStack.IsOnExecutionStack
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack``1(``0@)
+  name: IsOnExecutionStack<T>(ref readonly T)
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_IsOnExecutionStack__1___0__
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack``1(``0@)
+  name.vb: IsOnExecutionStack(Of T)(T)
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack<T>(ref readonly T)
+  fullName.vb: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack(Of T)(T)
+  nameWithType: ExecutionStack.IsOnExecutionStack<T>(ref readonly T)
+  nameWithType.vb: ExecutionStack.IsOnExecutionStack(Of T)(T)
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize
+  name: get_ExecutionStackSize()
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_ExecutionStackSize
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize()
+  nameWithType: ExecutionStack.get_ExecutionStackSize()
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize*
+  name: get_ExecutionStackSize
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_ExecutionStackSize_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_ExecutionStackSize
+  nameWithType: ExecutionStack.get_ExecutionStackSize
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated*
+  name: get_IsStackAllocated
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_IsStackAllocated_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated
+  nameWithType: ExecutionStack.get_IsStackAllocated
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated``1(System.ReadOnlySpan{``0})
+  name: get_IsStackAllocated<T>(ReadOnlySpan<T>)
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_IsStackAllocated__1_System_ReadOnlySpan___0__
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated``1(System.ReadOnlySpan{``0})
+  name.vb: get_IsStackAllocated(Of T)(ReadOnlySpan(Of T))
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated<T>(System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackAllocated(Of T)(System.ReadOnlySpan(Of T))
+  nameWithType: ExecutionStack.get_IsStackAllocated<T>(ReadOnlySpan<T>)
+  nameWithType.vb: ExecutionStack.get_IsStackAllocated(Of T)(ReadOnlySpan(Of T))
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported
+  name: get_IsStackDetectionSupported()
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_IsStackDetectionSupported
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported()
+  nameWithType: ExecutionStack.get_IsStackDetectionSupported()
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported*
+  name: get_IsStackDetectionSupported
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_IsStackDetectionSupported_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_IsStackDetectionSupported
+  nameWithType: ExecutionStack.get_IsStackDetectionSupported
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack
+  name: get_RemainingExecutionStack()
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_RemainingExecutionStack
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack()
+  nameWithType: ExecutionStack.get_RemainingExecutionStack()
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack*
+  name: get_RemainingExecutionStack
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_get_RemainingExecutionStack_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.get_RemainingExecutionStack
+  nameWithType: ExecutionStack.get_RemainingExecutionStack
+- uid: DotNext.Runtime.CompilerServices.IFieldReference`2
+  name: IFieldReference<T, TResult>
+  href: api/DotNext.Runtime.CompilerServices.IFieldReference-2.html
+  commentId: T:DotNext.Runtime.CompilerServices.IFieldReference`2
+  name.vb: IFieldReference(Of T, TResult)
+  fullName: DotNext.Runtime.CompilerServices.IFieldReference<T, TResult>
+  fullName.vb: DotNext.Runtime.CompilerServices.IFieldReference(Of T, TResult)
+  nameWithType: IFieldReference<T, TResult>
+  nameWithType.vb: IFieldReference(Of T, TResult)
+- uid: DotNext.Runtime.CompilerServices.IFieldReference`2.GetReference(`0@)
+  name: GetReference(in T)
+  href: api/DotNext.Runtime.CompilerServices.IFieldReference-2.html#DotNext_Runtime_CompilerServices_IFieldReference_2_GetReference__0__
+  commentId: M:DotNext.Runtime.CompilerServices.IFieldReference`2.GetReference(`0@)
+  name.vb: GetReference(T)
+  fullName: DotNext.Runtime.CompilerServices.IFieldReference<T, TResult>.GetReference(in T)
+  fullName.vb: DotNext.Runtime.CompilerServices.IFieldReference(Of T, TResult).GetReference(T)
+  nameWithType: IFieldReference<T, TResult>.GetReference(in T)
+  nameWithType.vb: IFieldReference(Of T, TResult).GetReference(T)
+- uid: DotNext.Runtime.CompilerServices.IFieldReference`2.GetReference*
+  name: GetReference
+  href: api/DotNext.Runtime.CompilerServices.IFieldReference-2.html#DotNext_Runtime_CompilerServices_IFieldReference_2_GetReference_
+  commentId: Overload:DotNext.Runtime.CompilerServices.IFieldReference`2.GetReference
+  fullName: DotNext.Runtime.CompilerServices.IFieldReference<T, TResult>.GetReference
+  fullName.vb: DotNext.Runtime.CompilerServices.IFieldReference(Of T, TResult).GetReference
+  nameWithType: IFieldReference<T, TResult>.GetReference
+  nameWithType.vb: IFieldReference(Of T, TResult).GetReference
 - uid: DotNext.Runtime.CompilerServices.IFunctional
   name: IFunctional
   href: api/DotNext.Runtime.CompilerServices.IFunctional.html
@@ -46338,6 +47150,24 @@ references:
   commentId: T:DotNext.Runtime.Variant
   fullName: DotNext.Runtime.Variant
   nameWithType: Variant
+- uid: DotNext.Runtime.Variant.#ctor(System.TypedReference)
+  name: Variant(TypedReference)
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant__ctor_System_TypedReference_
+  commentId: M:DotNext.Runtime.Variant.#ctor(System.TypedReference)
+  name.vb: New(TypedReference)
+  fullName: DotNext.Runtime.Variant.Variant(System.TypedReference)
+  fullName.vb: DotNext.Runtime.Variant.New(System.TypedReference)
+  nameWithType: Variant.Variant(TypedReference)
+  nameWithType.vb: Variant.New(TypedReference)
+- uid: DotNext.Runtime.Variant.#ctor*
+  name: Variant
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant__ctor_
+  commentId: Overload:DotNext.Runtime.Variant.#ctor
+  name.vb: New
+  fullName: DotNext.Runtime.Variant.Variant
+  fullName.vb: DotNext.Runtime.Variant.New
+  nameWithType: Variant.Variant
+  nameWithType.vb: Variant.New
 - uid: DotNext.Runtime.Variant.Empty
   name: Empty
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Empty
@@ -46485,6 +47315,25 @@ references:
   fullName.vb: DotNext.Runtime.Variant.=
   nameWithType: Variant.operator ==
   nameWithType.vb: Variant.=
+- uid: DotNext.Runtime.Variant.op_Implicit(System.TypedReference)~DotNext.Runtime.Variant
+  name: implicit operator Variant(TypedReference)
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_op_Implicit_System_TypedReference__DotNext_Runtime_Variant
+  commentId: M:DotNext.Runtime.Variant.op_Implicit(System.TypedReference)~DotNext.Runtime.Variant
+  name.vb: CType(TypedReference)
+  fullName: DotNext.Runtime.Variant.implicit operator DotNext.Runtime.Variant(System.TypedReference)
+  fullName.vb: DotNext.Runtime.Variant.CType(System.TypedReference)
+  nameWithType: Variant.implicit operator Variant(TypedReference)
+  nameWithType.vb: Variant.CType(TypedReference)
+- uid: DotNext.Runtime.Variant.op_Implicit*
+  name: implicit operator
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_op_Implicit_
+  commentId: Overload:DotNext.Runtime.Variant.op_Implicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.Variant.implicit operator
+  fullName.vb: DotNext.Runtime.Variant.CType
+  nameWithType: Variant.implicit operator
+  nameWithType.vb: Variant.CType
 - uid: DotNext.Runtime.Variant.op_Inequality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)
   name: operator !=(Variant, Variant)
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_op_Inequality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_
@@ -47952,6 +48801,42 @@ references:
   commentId: Overload:DotNext.Text.BufferWriterSlimInterpolatedStringHandler.WrittenCount
   fullName: DotNext.Text.BufferWriterSlimInterpolatedStringHandler.WrittenCount
   nameWithType: BufferWriterSlimInterpolatedStringHandler.WrittenCount
+- uid: DotNext.Text.CompositeFormatExtensions
+  name: CompositeFormatExtensions
+  href: api/DotNext.Text.CompositeFormatExtensions.html
+  commentId: T:DotNext.Text.CompositeFormatExtensions
+  fullName: DotNext.Text.CompositeFormatExtensions
+  nameWithType: CompositeFormatExtensions
+- uid: DotNext.Text.CompositeFormatExtensions.IsInterned(System.String)
+  name: IsInterned(string)
+  href: api/DotNext.Text.CompositeFormatExtensions.html#DotNext_Text_CompositeFormatExtensions_IsInterned_System_String_
+  commentId: M:DotNext.Text.CompositeFormatExtensions.IsInterned(System.String)
+  name.vb: IsInterned(String)
+  fullName: DotNext.Text.CompositeFormatExtensions.IsInterned(string)
+  fullName.vb: DotNext.Text.CompositeFormatExtensions.IsInterned(String)
+  nameWithType: CompositeFormatExtensions.IsInterned(string)
+  nameWithType.vb: CompositeFormatExtensions.IsInterned(String)
+- uid: DotNext.Text.CompositeFormatExtensions.IsInterned*
+  name: IsInterned
+  href: api/DotNext.Text.CompositeFormatExtensions.html#DotNext_Text_CompositeFormatExtensions_IsInterned_
+  commentId: Overload:DotNext.Text.CompositeFormatExtensions.IsInterned
+  fullName: DotNext.Text.CompositeFormatExtensions.IsInterned
+  nameWithType: CompositeFormatExtensions.IsInterned
+- uid: DotNext.Text.CompositeFormatExtensions.Of(System.String)
+  name: Of(string)
+  href: api/DotNext.Text.CompositeFormatExtensions.html#DotNext_Text_CompositeFormatExtensions_Of_System_String_
+  commentId: M:DotNext.Text.CompositeFormatExtensions.Of(System.String)
+  name.vb: Of(String)
+  fullName: DotNext.Text.CompositeFormatExtensions.Of(string)
+  fullName.vb: DotNext.Text.CompositeFormatExtensions.Of(String)
+  nameWithType: CompositeFormatExtensions.Of(string)
+  nameWithType.vb: CompositeFormatExtensions.Of(String)
+- uid: DotNext.Text.CompositeFormatExtensions.Of*
+  name: Of
+  href: api/DotNext.Text.CompositeFormatExtensions.html#DotNext_Text_CompositeFormatExtensions_Of_
+  commentId: Overload:DotNext.Text.CompositeFormatExtensions.Of
+  fullName: DotNext.Text.CompositeFormatExtensions.Of
+  nameWithType: CompositeFormatExtensions.Of
 - uid: DotNext.Text.DecodingContext
   name: DecodingContext
   href: api/DotNext.Text.DecodingContext.html
@@ -49015,6 +49900,15 @@ references:
   fullName.vb: DotNext.Text.StringInterpolation.Interpolate(System.Buffers.IBufferWriter(Of Char), System.IFormatProvider, DotNext.Text.BufferWriterInterpolatedStringHandler)
   nameWithType: StringInterpolation.Interpolate(IBufferWriter<char>, IFormatProvider?, in BufferWriterInterpolatedStringHandler)
   nameWithType.vb: StringInterpolation.Interpolate(IBufferWriter(Of Char), IFormatProvider, BufferWriterInterpolatedStringHandler)
+- uid: DotNext.Text.StringInterpolation.Interpolate(System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name: Interpolate(scoped Span<char>, IFormatProvider?, ref DefaultInterpolatedStringHandler)
+  href: api/DotNext.Text.StringInterpolation.html#DotNext_Text_StringInterpolation_Interpolate_System_Span_System_Char__System_IFormatProvider_System_Runtime_CompilerServices_DefaultInterpolatedStringHandler__
+  commentId: M:DotNext.Text.StringInterpolation.Interpolate(System.Span{System.Char},System.IFormatProvider,System.Runtime.CompilerServices.DefaultInterpolatedStringHandler@)
+  name.vb: Interpolate(Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
+  fullName: DotNext.Text.StringInterpolation.Interpolate(scoped System.Span<char>, System.IFormatProvider?, ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  fullName.vb: DotNext.Text.StringInterpolation.Interpolate(System.Span(Of Char), System.IFormatProvider, System.Runtime.CompilerServices.DefaultInterpolatedStringHandler)
+  nameWithType: StringInterpolation.Interpolate(scoped Span<char>, IFormatProvider?, ref DefaultInterpolatedStringHandler)
+  nameWithType.vb: StringInterpolation.Interpolate(Span(Of Char), IFormatProvider, DefaultInterpolatedStringHandler)
 - uid: DotNext.Text.StringInterpolation.Interpolate*
   name: Interpolate
   href: api/DotNext.Text.StringInterpolation.html#DotNext_Text_StringInterpolation_Interpolate_
@@ -52565,32 +53459,6 @@ references:
   fullName.vb: DotNext.Threading.Atomic(Of T).GetAndUpdate
   nameWithType: Atomic<T>.GetAndUpdate
   nameWithType.vb: Atomic(Of T).GetAndUpdate
-- uid: DotNext.Threading.Atomic`1.IFieldReference`1
-  name: Atomic<T>.IFieldReference<TResult>
-  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html
-  commentId: T:DotNext.Threading.Atomic`1.IFieldReference`1
-  name.vb: Atomic(Of T).IFieldReference(Of TResult)
-  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>
-  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult)
-  nameWithType: Atomic<T>.IFieldReference<TResult>
-  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult)
-- uid: DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference(`0@)
-  name: GetFieldReference(in T)
-  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html#DotNext_Threading_Atomic_1_IFieldReference_1_GetFieldReference__0__
-  commentId: M:DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference(`0@)
-  name.vb: GetFieldReference(T)
-  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>.GetFieldReference(in T)
-  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult).GetFieldReference(T)
-  nameWithType: Atomic<T>.IFieldReference<TResult>.GetFieldReference(in T)
-  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult).GetFieldReference(T)
-- uid: DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference*
-  name: GetFieldReference
-  href: api/DotNext.Threading.Atomic-1.IFieldReference-1.html#DotNext_Threading_Atomic_1_IFieldReference_1_GetFieldReference_
-  commentId: Overload:DotNext.Threading.Atomic`1.IFieldReference`1.GetFieldReference
-  fullName: DotNext.Threading.Atomic<T>.IFieldReference<TResult>.GetFieldReference
-  fullName.vb: DotNext.Threading.Atomic(Of T).IFieldReference(Of TResult).GetFieldReference
-  nameWithType: Atomic<T>.IFieldReference<TResult>.GetFieldReference
-  nameWithType.vb: Atomic(Of T).IFieldReference(Of TResult).GetFieldReference
 - uid: DotNext.Threading.Atomic`1.IsWriteLockHeld
   name: IsWriteLockHeld
   href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_IsWriteLockHeld

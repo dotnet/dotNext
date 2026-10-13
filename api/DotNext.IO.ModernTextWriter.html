@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ModernTextWriter | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ModernTextWriter | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.ModernTextWriter">
+
+
+
+  <h1 id="DotNext_IO_ModernTextWriter" data-uid="DotNext.IO.ModernTextWriter" class="text-break">Class ModernTextWriter</h1>
+  <div class="markdown level0 summary"><p>Represents a modern base class for custom text writers that requires only necessary
+abstract methods to work correctly.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject">MarshalByRefObject</a></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter">TextWriter</a></div>
+    <div class="level3"><span class="xref">ModernTextWriter</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.null">TextWriter.Null</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.corenewline">TextWriter.CoreNewLine</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.close">TextWriter.Close()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.dispose#system-io-textwriter-dispose(system-boolean)">TextWriter.Dispose(bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.dispose#system-io-textwriter-dispose">TextWriter.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.disposeasync">TextWriter.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flush">TextWriter.Flush()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-char())">TextWriter.WriteAsync(char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-char())">TextWriter.WriteLineAsync(char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync#system-io-textwriter-flushasync(system-threading-cancellationtoken)">TextWriter.FlushAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.synchronized">TextWriter.Synchronized(TextWriter)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.createbroadcasting">TextWriter.CreateBroadcasting(params TextWriter[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.formatprovider">TextWriter.FormatProvider</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.encoding">TextWriter.Encoding</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.newline">TextWriter.NewLine</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice">MarshalByRefObject.GetLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice">MarshalByRefObject.InitializeLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.memberwiseclone">MarshalByRefObject.MemberwiseClone(bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_IO_ModernTextWriter_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class ModernTextWriter : TextWriter, IDisposable, IAsyncDisposable, IFlushable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter__ctor_" data-uid="DotNext.IO.ModernTextWriter.#ctor*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter__ctor_System_IFormatProvider_" data-uid="DotNext.IO.ModernTextWriter.#ctor(System.IFormatProvider)">ModernTextWriter(IFormatProvider?)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new text writer with the specified format provider.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ModernTextWriter(IFormatProvider? formatProvider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">formatProvider</span></td>
+        <td><p>An object that controls formatting.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_FlushAsync_" data-uid="DotNext.IO.ModernTextWriter.FlushAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_FlushAsync" data-uid="DotNext.IO.ModernTextWriter.FlushAsync">FlushAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Task FlushAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync#system-io-textwriter-flushasync">TextWriter.FlushAsync()</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Boolean_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Boolean)">Write(bool)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Write(bool value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-boolean)">TextWriter.Write(bool)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Char_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Char)">Write(char)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(char value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-char)">TextWriter.Write(char)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Char___" data-uid="DotNext.IO.ModernTextWriter.Write(System.Char[])">Write(char[]?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(char[]? buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-char())">TextWriter.Write(char[])</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Char___System_Int32_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Char[],System.Int32,System.Int32)">Write(char[], int, int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(char[] buffer, int index, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-char()-system-int32-system-int32)">TextWriter.Write(char[], int, int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Decimal_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Decimal)">Write(decimal)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(decimal value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-decimal)">TextWriter.Write(decimal)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Double_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Double)">Write(double)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(double value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-double)">TextWriter.Write(double)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Int32)">Write(int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(int value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-int32)">TextWriter.Write(int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Int64_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Int64)">Write(long)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(long value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-int64)">TextWriter.Write(long)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Object_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Object)">Write(object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(object? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-object)">TextWriter.Write(object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_ReadOnlySpan_System_Char__" data-uid="DotNext.IO.ModernTextWriter.Write(System.ReadOnlySpan{System.Char})">Write(ReadOnlySpan&lt;char&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override abstract void Write(ReadOnlySpan&lt;char&gt; chars)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">chars</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-readonlyspan((system-char)))">TextWriter.Write(ReadOnlySpan&lt;char&gt;)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Single_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Single)">Write(float)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(float value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-single)">TextWriter.Write(float)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_" data-uid="DotNext.IO.ModernTextWriter.Write(System.String)">Write(string?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string)">TextWriter.Write(string)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_System_Object_" data-uid="DotNext.IO.ModernTextWriter.Write(System.String,System.Object)">Write(string, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(string format, object? arg0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string-system-object)">TextWriter.Write(string, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_System_Object_System_Object_" data-uid="DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object)">Write(string, object?, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(string format, object? arg0, object? arg1)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg1</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string-system-object-system-object)">TextWriter.Write(string, object, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_System_Object_System_Object_System_Object_" data-uid="DotNext.IO.ModernTextWriter.Write(System.String,System.Object,System.Object,System.Object)">Write(string, object?, object?, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(string format, object? arg0, object? arg1, object? arg2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg1</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg2</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string-system-object-system-object-system-object)">TextWriter.Write(string, object, object, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_System_Object___" data-uid="DotNext.IO.ModernTextWriter.Write(System.String,System.Object[])">Write(string, params object?[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void Write(string format, params object?[] arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</td>
+        <td><span class="parametername">arg</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string-system-object())">TextWriter.Write(string, params object[])</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_String_System_ReadOnlySpan_System_Object__" data-uid="DotNext.IO.ModernTextWriter.Write(System.String,System.ReadOnlySpan{System.Object})">Write(string, params ReadOnlySpan&lt;object?&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Write(string format, params ReadOnlySpan&lt;object?&gt; arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
+        <td><span class="parametername">arg</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-string-system-readonlyspan((system-object)))">TextWriter.Write(string, params ReadOnlySpan&lt;object&gt;)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_Text_StringBuilder_" data-uid="DotNext.IO.ModernTextWriter.Write(System.Text.StringBuilder)">Write(StringBuilder?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Write(StringBuilder? sb)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">sb</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-text-stringbuilder)">TextWriter.Write(StringBuilder)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_UInt32_" data-uid="DotNext.IO.ModernTextWriter.Write(System.UInt32)">Write(uint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public override sealed void Write(uint value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-uint32)">TextWriter.Write(uint)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_Write_" data-uid="DotNext.IO.ModernTextWriter.Write*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_Write_System_UInt64_" data-uid="DotNext.IO.ModernTextWriter.Write(System.UInt64)">Write(ulong)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public override void Write(ulong value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.write#system-io-textwriter-write(system-uint64)">TextWriter.Write(ulong)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteAsync_System_Char_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync(System.Char)">WriteAsync(char)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteAsync(char value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-char)">TextWriter.WriteAsync(char)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteAsync_System_Char___System_Int32_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync(System.Char[],System.Int32,System.Int32)">WriteAsync(char[], int, int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Task WriteAsync(char[] buffer, int index, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-char()-system-int32-system-int32)">TextWriter.WriteAsync(char[], int, int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteAsync_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;char&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override abstract Task WriteAsync(ReadOnlyMemory&lt;char&gt; buffer, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-readonlymemory((system-char))-system-threading-cancellationtoken)">TextWriter.WriteAsync(ReadOnlyMemory&lt;char&gt;, CancellationToken)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteAsync_System_String_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync(System.String)">WriteAsync(string?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteAsync(string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-string)">TextWriter.WriteAsync(string)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteAsync_System_Text_StringBuilder_System_Threading_CancellationToken_" data-uid="DotNext.IO.ModernTextWriter.WriteAsync(System.Text.StringBuilder,System.Threading.CancellationToken)">WriteAsync(StringBuilder?, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteAsync(StringBuilder? value, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeasync#system-io-textwriter-writeasync(system-text-stringbuilder-system-threading-cancellationtoken)">TextWriter.WriteAsync(StringBuilder, CancellationToken)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine" data-uid="DotNext.IO.ModernTextWriter.WriteLine">WriteLine()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline">TextWriter.WriteLine()</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Boolean_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Boolean)">WriteLine(bool)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(bool value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-boolean)">TextWriter.WriteLine(bool)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Char_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Char)">WriteLine(char)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void WriteLine(char value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-char)">TextWriter.WriteLine(char)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Char___" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Char[])">WriteLine(char[]?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void WriteLine(char[]? buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-char())">TextWriter.WriteLine(char[])</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Char___System_Int32_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Char[],System.Int32,System.Int32)">WriteLine(char[], int, int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(char[] buffer, int index, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-char()-system-int32-system-int32)">TextWriter.WriteLine(char[], int, int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Decimal_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Decimal)">WriteLine(decimal)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(decimal value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-decimal)">TextWriter.WriteLine(decimal)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Double_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Double)">WriteLine(double)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(double value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-double)">TextWriter.WriteLine(double)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Int32)">WriteLine(int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(int value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-int32)">TextWriter.WriteLine(int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Int64_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Int64)">WriteLine(long)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(long value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-int64)">TextWriter.WriteLine(long)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Object_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Object)">WriteLine(object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(object? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-object)">TextWriter.WriteLine(object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_ReadOnlySpan_System_Char__" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.ReadOnlySpan{System.Char})">WriteLine(ReadOnlySpan&lt;char&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(ReadOnlySpan&lt;char&gt; buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-readonlyspan((system-char)))">TextWriter.WriteLine(ReadOnlySpan&lt;char&gt;)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Single_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Single)">WriteLine(float)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(float value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-single)">TextWriter.WriteLine(float)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String)">WriteLine(string?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string)">TextWriter.WriteLine(string)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object)">WriteLine(string, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string format, object? arg0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string-system-object)">TextWriter.WriteLine(string, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_System_Object_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object)">WriteLine(string, object?, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string format, object? arg0, object? arg1)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg1</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string-system-object-system-object)">TextWriter.WriteLine(string, object, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object_System_Object_System_Object_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object,System.Object,System.Object)">WriteLine(string, object?, object?, object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string format, object? arg0, object? arg1, object? arg2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg0</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg1</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">arg2</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string-system-object-system-object-system-object)">TextWriter.WriteLine(string, object, object, object)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_System_Object___" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String,System.Object[])">WriteLine(string, params object?[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string format, params object?[] arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</td>
+        <td><span class="parametername">arg</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string-system-object())">TextWriter.WriteLine(string, params object[])</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_String_System_ReadOnlySpan_System_Object__" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.String,System.ReadOnlySpan{System.Object})">WriteLine(string, params ReadOnlySpan&lt;object?&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed void WriteLine(string format, params ReadOnlySpan&lt;object?&gt; arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
+        <td><span class="parametername">arg</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-string-system-readonlyspan((system-object)))">TextWriter.WriteLine(string, params ReadOnlySpan&lt;object&gt;)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_Text_StringBuilder_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.Text.StringBuilder)">WriteLine(StringBuilder?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void WriteLine(StringBuilder? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-text-stringbuilder)">TextWriter.WriteLine(StringBuilder)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_UInt32_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.UInt32)">WriteLine(uint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public override void WriteLine(uint value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-uint32)">TextWriter.WriteLine(uint)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLine_" data-uid="DotNext.IO.ModernTextWriter.WriteLine*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLine_System_UInt64_" data-uid="DotNext.IO.ModernTextWriter.WriteLine(System.UInt64)">WriteLine(ulong)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public override void WriteLine(ulong value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writeline#system-io-textwriter-writeline(system-uint64)">TextWriter.WriteLine(ulong)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync">WriteLineAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Task WriteLineAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync">TextWriter.WriteLineAsync()</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync_System_Char_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char)">WriteLineAsync(char)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteLineAsync(char value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-char)">TextWriter.WriteLineAsync(char)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync_System_Char___System_Int32_System_Int32_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync(System.Char[],System.Int32,System.Int32)">WriteLineAsync(char[], int, int)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Task WriteLineAsync(char[] buffer, int index, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-char()-system-int32-system-int32)">TextWriter.WriteLineAsync(char[], int, int)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync(System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)">WriteLineAsync(ReadOnlyMemory&lt;char&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteLineAsync(ReadOnlyMemory&lt;char&gt; buffer, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-readonlymemory((system-char))-system-threading-cancellationtoken)">TextWriter.WriteLineAsync(ReadOnlyMemory&lt;char&gt;, CancellationToken)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync_System_String_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync(System.String)">WriteLineAsync(string?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Task WriteLineAsync(string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-string)">TextWriter.WriteLineAsync(string)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteLineAsync_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteLineAsync_System_Text_StringBuilder_System_Threading_CancellationToken_" data-uid="DotNext.IO.ModernTextWriter.WriteLineAsync(System.Text.StringBuilder,System.Threading.CancellationToken)">WriteLineAsync(StringBuilder?, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteLineAsync(StringBuilder? value, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.writelineasync#system-io-textwriter-writelineasync(system-text-stringbuilder-system-threading-cancellationtoken)">TextWriter.WriteLineAsync(StringBuilder, CancellationToken)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_ModernTextWriter_WriteValue_" data-uid="DotNext.IO.ModernTextWriter.WriteValue*"></a>
+  <h4 id="DotNext_IO_ModernTextWriter_WriteValue__1___0_" data-uid="DotNext.IO.ModernTextWriter.WriteValue``1(``0)">WriteValue&lt;TFormattable&gt;(TFormattable)</h4>
+  <div class="markdown level1 summary"><p>Writes formattable value synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void WriteValue&lt;TFormattable&gt;(TFormattable value) where TFormattable : ISpanFormattable</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TFormattable</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Formattable value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TFormattable</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Text_PoolingInterpolatedStringHandler__">TextStreamExtensions.Write(TextWriter, MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Text_PoolingInterpolatedStringHandler__">TextStreamExtensions.Write(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_System_Span_System_Char__System_IFormatProvider_System_Runtime_CompilerServices_DefaultInterpolatedStringHandler__">TextStreamExtensions.Write(TextWriter, Span&lt;char&gt;, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteAsync_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Text_PoolingInterpolatedStringHandler__System_Threading_CancellationToken_">TextStreamExtensions.WriteAsync(TextWriter, MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteAsync_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Text_PoolingInterpolatedStringHandler__System_Threading_CancellationToken_">TextStreamExtensions.WriteAsync(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteAsync_System_IO_TextWriter_System_Buffers_ReadOnlySequence_System_Char__System_Threading_CancellationToken_">TextStreamExtensions.WriteAsync(TextWriter, ReadOnlySequence&lt;char&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLine_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Text_PoolingInterpolatedStringHandler__">TextStreamExtensions.WriteLine(TextWriter, MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLine_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Text_PoolingInterpolatedStringHandler__">TextStreamExtensions.WriteLine(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLine_System_IO_TextWriter_System_Span_System_Char__System_IFormatProvider_System_Runtime_CompilerServices_DefaultInterpolatedStringHandler__">TextStreamExtensions.WriteLine(TextWriter, Span&lt;char&gt;, IFormatProvider?, scoped ref DefaultInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLineAsync_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Text_PoolingInterpolatedStringHandler__System_Threading_CancellationToken_">TextStreamExtensions.WriteLineAsync(TextWriter, MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_WriteLineAsync_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Text_PoolingInterpolatedStringHandler__System_Threading_CancellationToken_">TextStreamExtensions.WriteLineAsync(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler, CancellationToken)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/ModernTextWriter.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
