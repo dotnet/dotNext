@@ -186,7 +186,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         
         var currentBuffer = extraBuffer;
         extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
-        extraBuffer.AssertState(position);
+        extraBuffer.AssertState(newSize);
         currentBuffer.Span.CopyTo(buffer = extraBuffer.Span);
         currentBuffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
@@ -198,7 +198,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         
         var currentBuffer = buffer.Slice(0, position);
         extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
-        extraBuffer.AssertState(position);
+        extraBuffer.AssertState(newSize);
         currentBuffer.CopyTo(buffer = extraBuffer.Span);
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
