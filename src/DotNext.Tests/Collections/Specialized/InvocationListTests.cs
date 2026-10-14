@@ -56,14 +56,26 @@ public sealed class InvocationListTests : Test
     [Fact]
     public static void Combine()
     {
-        var box = new StrongBox<int>();
-        var list = new InvocationList<Action>() + Inc + Inc;
+        var box = new StrongBox();
+        var list = new InvocationList<Action>() + box.Increment + box.Increment;
         list.Combine()?.Invoke();
         Equal(2, box.Value);
 
         list = default;
         Null(list.Combine());
-
-        void Inc() => box.Value += 1;
     }
+
+    [Fact]
+    public static void UseCollectionBuilder()
+    {
+        var box = new StrongBox();
+        InvocationList<Action> actions = [box.Increment, box.Increment];
+        actions.Combine()?.Invoke();
+        Equal(2, box.Value);
+    }
+}
+
+file sealed class StrongBox : StrongBox<int>
+{
+    public void Increment() => Value += 1;
 }
