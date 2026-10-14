@@ -106,19 +106,20 @@ public static partial class DelegateHelpers
         public static TDelegate? Combine<TDelegate>(IEnumerable<TDelegate?>? delegates)
             where TDelegate : MulticastDelegate
         {
-            using var enumerator = (delegates ?? []).GetEnumerator();
-            var result = default(Delegate);
-            if (enumerator.MoveNext())
-            {
-                result = enumerator.Current;
-
-                while (enumerator.MoveNext())
-                {
-                    result = Delegate.Combine(result, enumerator.Current);
-                }
-            }
-
-            return result as TDelegate;
+            using var enumerator = delegates?.GetEnumerator();
+            return enumerator is not null && enumerator.MoveNext()
+                ? enumerator.Combine(enumerator.Current) as TDelegate
+                : null;
         }
+    }
+
+    private static Delegate? Combine(this IEnumerator<Delegate?> enumerator, Delegate? current)
+    {
+        while (enumerator.MoveNext())
+        {
+            current = Delegate.Combine(current, enumerator.Current);
+        }
+
+        return current;
     }
 }
