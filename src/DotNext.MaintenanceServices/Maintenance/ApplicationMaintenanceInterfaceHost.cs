@@ -34,9 +34,6 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
     private static readonly ReadOnlyMemory<char> NullTerminationCharMemory = new[] { '\0' };
 
     private readonly UnixDomainSocketEndPoint endPoint;
-    private readonly int backlog = 5;
-    private readonly int bufferSize = 512;
-    private readonly Encoding encoding = Encoding.UTF8;
     private readonly Socket listener;
     private readonly CancellationTokenSource stoppingTokenSource;
     private readonly CancellationToken stoppingToken;
@@ -68,45 +65,45 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
     /// </summary>
     public int Backlog
     {
-        get => backlog;
-        init => backlog = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 5;
 
     /// <summary>
     /// Gets or sets the internal buffer size.
     /// </summary>
     public int BufferSize
     {
-        get => bufferSize;
-        init => bufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        init => field = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = Environment.SystemPageSize;
 
     /// <summary>
     /// Gets or sets allocator for the buffer of bytes.
     /// </summary>
     public MemoryAllocator<byte> ByteBufferAllocator
     {
-        get => field.DefaultIfNull;
-        init;
-    }
+        get;
+        init => field = value.DefaultIfNull;
+    } = MemoryAllocator<byte>.Default;
 
     /// <summary>
     /// Gets or sets allocator for the buffer of characters.
     /// </summary>
     public MemoryAllocator<char> CharBufferAllocator
     {
-        get => field.DefaultIfNull;
-        init;
-    }
+        get;
+        init => field = value.DefaultIfNull;
+    } = MemoryAllocator<char>.Default;
 
     /// <summary>
     /// Gets or sets encoding of the command text and responses.
     /// </summary>
     public Encoding TextEncoding
     {
-        get => encoding;
-        init => encoding = value ?? throw new ArgumentNullException(nameof(value));
-    }
+        get;
+        init => field = value ?? throw new ArgumentNullException(nameof(value));
+    } = Encoding.UTF8;
 
     // detects new line chars sequence or null char
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -168,21 +165,21 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         {
             outputBuffer = new PoolingBufferWriter<byte>(ByteBufferAllocator)
             {
-                Capacity = bufferSize,
+                Capacity = BufferSize,
             };
             inputBuffer = new PoolingBufferWriter<char>(CharBufferAllocator)
             {
-                Capacity = bufferSize,
+                Capacity = BufferSize,
             };
 
-            session = new(clientSocket, encoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
-            for (var decoder = encoding.GetDecoder(); ; decoder.Reset())
+            session = new(clientSocket, TextEncoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
+            for (var decoder = TextEncoding.GetDecoder(); ; decoder.Reset())
             {
                 int commandLength;
 
-                using (var buffer = ByteBufferAllocator.AllocateAtLeast(bufferSize))
+                using (var buffer = ByteBufferAllocator.AllocateAtLeast(BufferSize))
                 {
-                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, stoppingToken).ConfigureAwait(false);
+                    commandLength = await ReadRequestAsync(clientSocket, TextEncoding, decoder, buffer.Memory, inputBuffer, stoppingToken).ConfigureAwait(false);
                 }
 
                 // skip empty input
@@ -232,7 +229,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         try
         {
             listener.Bind(endPoint);
-            listener.Listen(backlog);
+            listener.Listen(Backlog);
         }
         catch (Exception e)
         {
