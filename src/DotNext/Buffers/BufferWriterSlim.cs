@@ -423,6 +423,41 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         return true;
     }
 
+    internal bool TryDetachBuffer(out SpanOwner<T> owner)
+    {
+        var memory = extraBuffer.Memory;
+        if (position is 0)
+        {
+            owner = default;
+            
+            // release the rented memory anyway, even if the writer is empty
+            extraBuffer.Clear(clearBuffer: false);
+        }
+        else if (memory.IsEmpty)
+        {
+            owner = new(buffer, position);
+        }
+        else if (MemoryAllocator<T>.Array.Equals(allocator) && MemoryMarshal.TryGetArray<T>(memory, out var segment))
+        {
+            owner = new(segment.AsSpan());
+        }
+        else if (MemoryAllocator<T>.Default.Equals(allocator) && MemoryMarshal.TryGetArray<T>(memory, out segment))
+        {
+            owner = new(in segment);
+        }
+        else if (MemoryMarshal.TryGetMemoryManager<T, MemoryManager<T>>(memory, out var manager, out var start, out var length))
+        {
+            owner = new(manager, start, length);
+        }
+        else
+        {
+            owner = default;
+            return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Detaches or copies the underlying buffer with written content from this writer.
     /// </summary>
@@ -434,6 +469,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         if (position is 0)
         {
             result = default;
+            
+            // release the rented memory anyway, even if the writer is empty
+            extraBuffer.Clear(clearBuffer: false);
         }
         else
         {
@@ -441,11 +479,11 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 MigrateToExtraBuffer();
 
             result = new(in extraBuffer, position);
-            buffer = default;
-            extraBuffer = default;
             position = 0;
         }
 
+        buffer = default;
+        extraBuffer = default;
         return result;
     }
 

@@ -578,4 +578,15 @@ public sealed class BufferWriterSlimTests : Test
         
         True(exceptionThrown);
     }
+
+    [Fact]
+    public static void DetachOrCopyEmptyBuffer()
+    {
+        var writer = new BufferWriterSlim<byte>(initialCapacity: 64);
+        False(writer.Capacity is 0);
+        
+        using var owner = writer.DetachOrCopyBuffer();
+        True(writer.Capacity is 0);
+        True(owner.IsEmpty);
+    }
 }
