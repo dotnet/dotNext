@@ -155,25 +155,11 @@ public static class HostingServices
         var host = new CommandLineMaintenanceInterfaceHost(new(unixDomainSocketPath), services.GetService<ILoggerFactory>())
         {
             Authentication = services.GetService<IAuthenticationHandler>(),
-            Authorization = services.GetAuthorizationCallbacks(),
+            Authorization = Delegate.Combine(services.GetServices<AuthorizationCallback>()),
             ParserSettings = services.GetService<ParserConfiguration>(),
         };
 
         host.AddCommands(services.GetServices<ApplicationMaintenanceCommand>());
         return host;
-    }
-
-    /// <summary>
-    /// Constructs authorization callback from multiple callbacks registered in the DI.
-    /// </summary>
-    /// <param name="services">A registry of services in the DI.</param>
-    /// <returns>Combined authorization callback; or <see langword="null"/>.</returns>
-    public static AuthorizationCallback? GetAuthorizationCallbacks(this IServiceProvider services)
-    {
-        var buffer = new InlineArray8<AuthorizationCallback>();
-        using var owner = services.GetServices<AuthorizationCallback>().Copy(buffer);
-        return owner.IsEmpty
-            ? null
-            : Delegate.Combine(owner.Span) as AuthorizationCallback;
     }
 }
