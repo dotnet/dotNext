@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -30,7 +31,7 @@ public static partial class Collection
             T[] array => array.Copy(allocator),
             string str => Unsafe.BitCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
             ArraySegment<T> segment => segment.AsSpan().Copy(allocator),
-            ICollection<T> collection => collection.Count is 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
+            ICollection<T> collection => collection.Count is 0 ? default : allocator.IsNullOrDefault ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
             IReadOnlyCollection<T> collection => collection.Count is 0 ? default : CopySlow(enumerable, collection.Count, allocator),
             _ => CopySlow(enumerable, sizeHint, allocator),
         };
@@ -57,5 +58,31 @@ public static partial class Collection
 
             return writer.DetachOrCopyBuffer();
         }
+    }
+
+    /// <summary>
+    /// Creates a copy of the elements from the collection.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
+    /// <param name="enumerable">The collection to copy.</param>
+    /// <param name="buffer">The initial buffer.</param>
+    /// <param name="usePooledMemory">
+    /// <see langword="true"/> to use memory pooling if <paramref name="buffer"/> overflows;
+    /// <see langword="false"/> to use regular array allocation.
+    /// </param>
+    /// <returns>Rented memory block containing a copy of the elements from the collection.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
+    public static SpanOwner<T> Copy<T>(this IEnumerable<T> enumerable, Span<T> buffer, bool usePooledMemory = true)
+    {
+        var writer = new BufferWriterSlim<T>(buffer, usePooledMemory ? MemoryAllocator<T>.Default : MemoryAllocator<T>.Array);
+        writer.AddAll(enumerable);
+        return writer.TryDetachBuffer(out SpanOwner<T> owner)
+            ? owner
+            : throw new UnreachableException();
+    }
+
+    extension<T>(MemoryAllocator<T>? allocator)
+    {
+        private bool IsNullOrDefault => allocator is null || allocator.Equals(MemoryAllocator<T>.Default);
     }
 }
