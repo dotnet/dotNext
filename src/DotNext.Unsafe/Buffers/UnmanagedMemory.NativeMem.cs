@@ -1,11 +1,13 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
 using Numerics;
+using Runtime.CompilerServices;
 
 partial class UnmanagedMemory
 {
@@ -70,13 +72,17 @@ partial class UnmanagedMemory
         /// <exception cref="ArgumentOutOfRangeException">
         /// The length or the offset of <paramref name="memoryBlock"/> is not page-aligned.
         /// </exception>
+        /// <exception cref="ArgumentException"><paramref name="memoryBlock"/> represents stack-allocated memory.</exception>
         /// <seealso cref="AllocateSystemPages"/>
         public static unsafe void Discard<T>(Span<T> memoryBlock)
             where T : unmanaged
         {
+            if (RuntimeHelpers.IsStackDetectionSupported && memoryBlock.IsStackAllocated)
+                throw new ArgumentException(ExceptionMessages.UnableToDiscardMemory, nameof(memoryBlock));
+            
             fixed (void* ptr = memoryBlock)
             {
-                SystemPageManager.Discard((nint)ptr, memoryBlock.Length);
+                SystemPageManager.Discard((nint)ptr, (nint)sizeof(T) * memoryBlock.Length);
             }
         }
     }
