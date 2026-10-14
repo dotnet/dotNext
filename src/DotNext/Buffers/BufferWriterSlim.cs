@@ -8,6 +8,7 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Collections.Generic.Collection;
 
 /// <summary>
 /// Represents stack-allocated buffer writer.
@@ -543,17 +544,50 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 input = array;
                 break;
             case string str:
-                input = Unsafe.BitCast<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(str.AsMemory()).Span;
+                input = Unsafe.BitCast<ReadOnlySpan<char>, ReadOnlySpan<T>>(str);
                 break;
             case ArraySegment<T> segment:
                 input = segment;
                 break;
+            case ICollection<T> sizedCollection:
+                AddAll(sizedCollection);
+                return;
             default:
                 WriteSlow(collection);
                 return;
         }
 
         Write(input);
+    }
+
+    private void AddAll(ICollection<T> collection)
+    {
+        var collectionCount = collection.Count;
+        if (collectionCount <= 0)
+            return;
+
+        GrowIfNeeded(collectionCount);
+
+        if (TryGetWrittenMemory(out var memory) && collection.TryCopyTo(memory, out collectionCount))
+        {
+            position += collectionCount;
+        }
+        else
+        {
+            WriteSlow(collection);
+        }
+    }
+
+    private readonly bool TryGetWrittenMemory(out Memory<T> memory)
+    {
+        memory = extraBuffer.Memory;
+        var result = memory.Length >= position;
+        if (result)
+        {
+            memory = memory.Slice(position);
+        }
+
+        return result;
     }
 
     /// <inheritdoc cref="AddAll"/>
