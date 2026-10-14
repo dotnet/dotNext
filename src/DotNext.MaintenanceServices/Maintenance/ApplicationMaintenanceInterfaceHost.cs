@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +31,7 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedService
 {
     private const int MinBufferSize = 32;
+    internal const UnixFileMode DefaultSocketFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.GroupRead | UnixFileMode.GroupWrite;
     private static readonly ReadOnlyMemory<char> NewLineMemory = Environment.NewLine.AsMemory();
     private static readonly ReadOnlyMemory<char> NullTerminationCharMemory = new[] { '\0' };
 
@@ -104,6 +106,19 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         get;
         init => field = value ?? throw new ArgumentNullException(nameof(value));
     } = Encoding.UTF8;
+
+    /// <summary>
+    /// Gets or sets access permissions of the socket file.
+    /// </summary>
+    /// <remarks>
+    /// By default, only the processes running as the owner of the socket file or as a member of its group
+    /// (and privileged processes such as root) can connect to the socket. Use <see cref="UnixFileMode.UserRead"/> | <see cref="UnixFileMode.UserWrite"/>
+    /// to restrict access to the processes running with the same effective user ID only.
+    /// The permissions are applied before the host starts accepting connections.
+    /// The property is ignored on Windows and for abstract socket addresses.
+    /// </remarks>
+    [UnsupportedOSPlatform("windows")]
+    public UnixFileMode SocketFileMode { get; init; } = DefaultSocketFileMode;
 
     // detects new line chars sequence or null char
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -229,6 +244,13 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         try
         {
             listener.Bind(endPoint);
+
+            // connect() is refused until listen(), so there is no window with the default permissions
+            if (!OperatingSystem.IsWindows() && endPoint.ToString() is [not '@', ..] path)
+            {
+                File.SetUnixFileMode(path, SocketFileMode);
+            }
+
             listener.Listen(Backlog);
         }
         catch (Exception e)

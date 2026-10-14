@@ -45,7 +45,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     {
         root = new(RootCommand.ExecutableName + " Maintenance Interface")
         {
-            Action = new MyAction()
+            Action = new NoOpAction()
         };
         
         foreach (var subCommand in commands)
@@ -59,16 +59,6 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         this.authentication = authentication;
         this.authorization = authorization;
         this.configuration = configuration ?? new();
-    }
-    
-    private sealed class MyAction : SynchronousCommandLineAction
-    {
-        public override bool Terminating => false;
-
-        public override int Invoke(ParseResult parseResult)
-        {
-            return 0;
-        }
     }
 
     /// <inheritdoc />
@@ -99,4 +89,11 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             await errorWriter.DisposeAsync().ConfigureAwait(false);
         }
     }
+}
+
+file sealed class NoOpAction : SynchronousCommandLineAction
+{
+    public override bool Terminating => false;
+
+    public override int Invoke(ParseResult parseResult) => 0;
 }
