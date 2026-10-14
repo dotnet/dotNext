@@ -4,23 +4,8 @@ namespace DotNext.Threading;
 /// Represents factory of thread pool work items.
 /// </summary>
 [CLSCompliant(false)]
-public static unsafe class ThreadPoolWorkItemFactory
+public static class ThreadPoolWorkItemFactory
 {
-    private sealed class ThreadPoolWorkItem<T>(delegate*<T, void> invoker, T arg) : IThreadPoolWorkItem
-    {
-        void IThreadPoolWorkItem.Execute() => invoker(arg);
-    }
-
-    private sealed class ThreadPoolWorkItem<T1, T2>(delegate*<T1, T2, void> invoker, T1 arg1, T2 arg2) : IThreadPoolWorkItem
-    {
-        void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2);
-    }
-
-    private sealed class ThreadPoolWorkItem<T1, T2, T3>(delegate*<T1, T2, T3, void> invoker, T1 arg1, T2 arg2, T3 arg3) : IThreadPoolWorkItem
-    {
-        void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2, arg3);
-    }
-
     /// <summary>
     /// Adds factory methods to <see cref="IThreadPoolWorkItem"/> type.
     /// </summary>
@@ -33,7 +18,7 @@ public static unsafe class ThreadPoolWorkItemFactory
         /// <param name="arg">The argument to be passed to the method implementing work item logic.</param>
         /// <typeparam name="T">The type of the work item argument.</typeparam>
         /// <returns>The work item.</returns>
-        public static IThreadPoolWorkItem Create<T>(delegate*<T, void> workItem, T arg)
+        public static unsafe IThreadPoolWorkItem Create<T>(delegate*<T, void> workItem, T arg)
             => workItem is not null ? new ThreadPoolWorkItem<T>(workItem, arg) : throw new ArgumentNullException(nameof(workItem));
 
         /// <summary>
@@ -45,7 +30,7 @@ public static unsafe class ThreadPoolWorkItemFactory
         /// <typeparam name="T1">The type of the work item first argument.</typeparam>
         /// <typeparam name="T2">The type of the work item second argument.</typeparam>
         /// <returns>The work item.</returns>
-        public static IThreadPoolWorkItem Create<T1, T2>(delegate*<T1, T2, void> workItem, T1 arg1, T2 arg2)
+        public static unsafe IThreadPoolWorkItem Create<T1, T2>(delegate*<T1, T2, void> workItem, T1 arg1, T2 arg2)
             => workItem is not null ? new ThreadPoolWorkItem<T1, T2>(workItem, arg1, arg2) : throw new ArgumentNullException(nameof(workItem));
 
         /// <summary>
@@ -59,9 +44,24 @@ public static unsafe class ThreadPoolWorkItemFactory
         /// <typeparam name="T2">The type of the work item second argument.</typeparam>
         /// <typeparam name="T3">The type of the work item third argument.</typeparam>
         /// <returns>The work item.</returns>
-        public static IThreadPoolWorkItem Create<T1, T2, T3>(delegate*<T1, T2, T3, void> workItem, T1 arg1, T2 arg2, T3 arg3)
+        public static unsafe IThreadPoolWorkItem Create<T1, T2, T3>(delegate*<T1, T2, T3, void> workItem, T1 arg1, T2 arg2, T3 arg3)
             => workItem is not null
                 ? new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3)
                 : throw new ArgumentNullException(nameof(workItem));
     }
+}
+
+file sealed unsafe class ThreadPoolWorkItem<T>(delegate*<T, void> invoker, T arg) : IThreadPoolWorkItem
+{
+    void IThreadPoolWorkItem.Execute() => invoker(arg);
+}
+
+file sealed unsafe class ThreadPoolWorkItem<T1, T2>(delegate*<T1, T2, void> invoker, T1 arg1, T2 arg2) : IThreadPoolWorkItem
+{
+    void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2);
+}
+
+file sealed unsafe class ThreadPoolWorkItem<T1, T2, T3>(delegate*<T1, T2, T3, void> invoker, T1 arg1, T2 arg2, T3 arg3) : IThreadPoolWorkItem
+{
+    void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2, arg3);
 }
