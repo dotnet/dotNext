@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using DotNext.IO;
 using Microsoft.Extensions.Logging;
@@ -21,44 +22,65 @@ using Buffers;
 public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenanceInterfaceHost
 {
     private readonly RootCommand root;
-    private readonly IAuthenticationHandler? authentication;
-    private readonly AuthorizationCallback? authorization;
-    private readonly ParserConfiguration configuration;
 
     /// <summary>
     /// Initializes a new host.
     /// </summary>
-    /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
-    /// <param name="commands">A set of commands to be available for execution.</param>
-    /// <param name="authentication">Optional authentication handler.</param>
-    /// <param name="authorization">A set of global authorization rules to be applied to all commands.</param>
-    /// <param name="configuration">Command-line parser configuration.</param>
+    /// <param name="endPoint">Unix Domain Socket address used as an interaction point.</param>
     /// <param name="loggerFactory">Optional logger factory.</param>
-    public CommandLineMaintenanceInterfaceHost(
-        UnixDomainSocketEndPoint endPoint,
-        IEnumerable<ApplicationMaintenanceCommand> commands,
-        IAuthenticationHandler? authentication = null,
-        AuthorizationCallback? authorization = null,
-        ParserConfiguration? configuration = null,
-        ILoggerFactory? loggerFactory = null)
+    public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
         root = new(RootCommand.ExecutableName + " Maintenance Interface")
         {
             Action = new NoOpAction()
         };
-        
+
+        ParserSettings = null;
+        CommandContext.RegisterDirectives(root);
+    }
+
+    /// <summary>
+    /// Registers maintenance commands.
+    /// </summary>
+    /// <param name="commands">A set of commands to register.</param>
+    public void AddCommands(params IEnumerable<ApplicationMaintenanceCommand> commands)
+    {
         foreach (var subCommand in commands)
             root.Add(subCommand);
+    }
 
-        foreach (var authOption in authentication?.GetGlobalOptions() ?? [])
-            root.Add(authOption);
-        
-        CommandContext.RegisterDirectives(root);
+    /// <summary>
+    /// Gets or sets authentication handler.
+    /// </summary>
+    public IAuthenticationHandler? Authentication
+    {
+        get;
+        init
+        {
+            field = value;
+            foreach (var authOption in value?.GetGlobalOptions() ?? [])
+                root.Add(authOption);
+        }
+    }
 
-        this.authentication = authentication;
-        this.authorization = authorization;
-        this.configuration = configuration ?? new();
+    /// <summary>
+    /// Gets or sets authorization handler.
+    /// </summary>
+    public AuthorizationCallback? Authorization
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Gets or sets parser settings.
+    /// </summary>
+    [AllowNull]
+    public ParserConfiguration ParserSettings
+    {
+        get;
+        init => field = value ?? new();
     }
 
     /// <inheritdoc />
@@ -72,7 +94,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         try
         {
             var exitCode = await context
-                .InvokeAsync(root, command.ToString(), configuration, authentication, authorization, token)
+                .InvokeAsync(root, command.ToString(), ParserSettings, Authentication, Authorization, token)
                 .ConfigureAwait(false);
             context.Exit(exitCode, output, error);
         }

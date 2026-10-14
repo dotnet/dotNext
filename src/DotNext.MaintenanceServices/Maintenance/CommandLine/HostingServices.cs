@@ -1,11 +1,13 @@
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
+using Collections.Generic;
 using AuthorizationCallback = Authorization.AuthorizationCallback;
 using IAuthenticationHandler = Authentication.IAuthenticationHandler;
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
@@ -149,11 +151,29 @@ public static class HostingServices
         => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(unixDomainSocketPath.CreateHost);
 
     private static CommandLineMaintenanceInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(
-            new(unixDomainSocketPath),
-            services.GetServices<ApplicationMaintenanceCommand>(),
-            authentication: services.GetService<IAuthenticationHandler>(),
-            authorization: Delegate.Combine(services.GetServices<AuthorizationCallback>().ToArray()) as AuthorizationCallback,
-            configuration: services.GetService<ParserConfiguration>(),
-            loggerFactory: services.GetService<ILoggerFactory>());
+    {
+        var host = new CommandLineMaintenanceInterfaceHost(new(unixDomainSocketPath), services.GetService<ILoggerFactory>())
+        {
+            Authentication = services.GetService<IAuthenticationHandler>(),
+            Authorization = services.GetAuthorizationCallbacks(),
+            ParserSettings = services.GetService<ParserConfiguration>(),
+        };
+
+        host.AddCommands(services.GetServices<ApplicationMaintenanceCommand>());
+        return host;
+    }
+
+    /// <summary>
+    /// Constructs authorization callback from multiple callbacks registered in the DI.
+    /// </summary>
+    /// <param name="services">A registry of services in the DI.</param>
+    /// <returns>Combined authorization callback; or <see langword="null"/>.</returns>
+    public static AuthorizationCallback? GetAuthorizationCallbacks(this IServiceProvider services)
+    {
+        var buffer = new InlineArray8<AuthorizationCallback>();
+        using var owner = services.GetServices<AuthorizationCallback>().Copy(buffer);
+        return owner.IsEmpty
+            ? null
+            : Delegate.Combine(owner.Span) as AuthorizationCallback;
+    }
 }
