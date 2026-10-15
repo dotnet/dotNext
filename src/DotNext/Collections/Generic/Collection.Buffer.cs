@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -76,9 +75,9 @@ public static partial class Collection
     {
         var writer = new BufferWriterSlim<T>(buffer, usePooledMemory ? MemoryAllocator<T>.Default : MemoryAllocator<T>.Array);
         writer.AddAll(enumerable);
-        return writer.TryDetachBuffer(out SpanOwner<T> owner)
-            ? owner
-            : throw new UnreachableException();
+        var detached = writer.TryDetachBuffer(out SpanOwner<T> owner);
+        Debug.Assert(detached);
+        return owner;
     }
 
     extension<T>(MemoryAllocator<T>? allocator)
