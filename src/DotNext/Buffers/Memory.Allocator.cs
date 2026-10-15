@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
@@ -99,9 +100,19 @@ public static partial class Memory
         }
 
         /// <summary>
-        /// Gets the default allocator that uses <see cref="ArrayPool{T}.Shared"/> pool.
+        /// Gets the allocator, which is <see cref="Memory.get_ArrayPool{T}"/> by default.
         /// </summary>
+        /// <remarks>
+        /// The default allocator can be changed to <see cref="get_Array{T}"/> by
+        /// turning off <c>DotNext.Buffers.MemoryAllocator.Default.UseArrayPool</c> switch.
+        /// </remarks>
         public static MemoryAllocator<T> Default
+            => Features.UseArrayPoolAsDefaultAllocator ? get_ArrayPool<T>() : get_Array<T>();
+
+        /// <summary>
+        /// Gets the allocator which uses <see cref="ArrayPool{T}.Shared"/> pool.
+        /// </summary>
+        public static MemoryAllocator<T> ArrayPool
         {
             get
             {
@@ -111,6 +122,12 @@ public static partial class Memory
                     => new(ArrayPool<T>.Shared, length, exactSize: false);
             }
         }
+
+        internal bool IsDefault => allocator.Equals(get_Default<T>());
+
+        internal bool IsArrayPool => allocator.Equals(get_ArrayPool<T>());
+
+        internal bool IsArray => allocator.Equals(get_Array<T>());
 
         internal static MemoryAllocator<T> Throwable
         {
@@ -156,4 +173,12 @@ public static partial class Memory
             }
         }
     }
+}
+
+file static class Features
+{
+    private const string DefaultAllocatorFeatureName = "DotNext.Buffers.MemoryAllocator.Default.UseArrayPool";
+
+    [FeatureSwitchDefinition(DefaultAllocatorFeatureName)]
+    public static bool UseArrayPoolAsDefaultAllocator { get; } = AppContext.IsFeatureSupported(DefaultAllocatorFeatureName);
 }

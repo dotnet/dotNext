@@ -73,7 +73,7 @@ public static partial class Collection
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
     public static SpanOwner<T> Copy<T>(this IEnumerable<T> enumerable, Span<T> buffer, bool usePooledMemory = true)
     {
-        var writer = new BufferWriterSlim<T>(buffer, usePooledMemory ? MemoryAllocator<T>.Default : MemoryAllocator<T>.Array);
+        var writer = new BufferWriterSlim<T>(buffer, usePooledMemory ? MemoryAllocator<T>.ArrayPool : MemoryAllocator<T>.Array);
         writer.AddAll(enumerable);
         var detached = writer.TryDetachBuffer(out SpanOwner<T> owner);
         Debug.Assert(detached);
@@ -82,6 +82,6 @@ public static partial class Collection
 
     extension<T>(MemoryAllocator<T>? allocator)
     {
-        private bool IsNullOrDefault => allocator is null || allocator.Equals(MemoryAllocator<T>.Default);
+        private bool IsNullOrDefault => allocator is null or { IsDefault: true };
     }
 }
