@@ -14,7 +14,7 @@ public static partial class Memory
     extension<T>(ArrayPool<T> pool)
     {
         private MemoryOwner<T> Allocate(int length)
-            => new(pool, length);
+            => new(pool, length, exactSize: false);
 
         /// <summary>
         /// Converts array pool to the memory allocator.
@@ -123,9 +123,29 @@ public static partial class Memory
             }
         }
 
+        /// <summary>
+        /// Gets the allocator that rents memory from <see cref="ArrayPool{T}.Shared">ArrayPool&lt;byte&gt;.Shared</see>
+        /// and reinterprets it as elements of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <remarks>
+        /// All element types share a single pool of byte arrays instead of keeping a separate pool per type.
+        /// This applies to types that contain no references and require alignment no larger than the pointer size,
+        /// such as <see cref="char"/>, <see cref="int"/>, <see cref="double"/>, or structs composed of them.
+        /// For other types, as well as for small or very large buffers, the allocator falls back
+        /// to <see cref="ArrayPool{T}.Shared"/>.
+        /// <para>
+        /// Memory rented from the byte pool is backed by <see cref="MemoryManager{T}"/> rather than an array:
+        /// each rental allocates a small wrapper object, and <see cref="System.Runtime.InteropServices.MemoryMarshal.TryGetArray{T}(ReadOnlyMemory{T}, out ArraySegment{T})"/>
+        /// returns <see langword="false"/> for such memory.
+        /// </para>
+        /// </remarks>
+        public static MemoryAllocator<T> ByteArrayPool => ReinterpretedMemoryManager<T>.Rent;
+
         internal bool IsDefault => allocator.Equals(get_Default<T>());
 
         internal bool IsArrayPool => allocator.Equals(get_ArrayPool<T>());
+
+        internal bool IsByteArrayPool => allocator.Equals(get_ByteArrayPool<T>());
 
         internal bool IsArray => allocator.Equals(get_Array<T>());
 

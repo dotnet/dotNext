@@ -94,6 +94,8 @@ public sealed class SpanTests : Test
         null,
         MemoryAllocator<char>.Array,
         MemoryAllocator<char>.Pinned,
+        MemoryAllocator<char>.ArrayPool,
+        MemoryAllocator<char>.ByteArrayPool,
         ArrayPool<char>.Shared.ToAllocator()
     ];
 
@@ -101,7 +103,7 @@ public sealed class SpanTests : Test
     [MemberData(nameof(TestAllocators))]
     public static void Concatenation(MemoryAllocator<char> allocator)
     {
-        MemoryOwner<char> owner = ReadOnlySpan<char>.Concat(string.Empty, string.Empty, allocator);
+        var owner = ReadOnlySpan<char>.Concat(string.Empty, string.Empty, allocator);
         True(owner.IsEmpty);
         True(owner.Memory.IsEmpty);
         owner.Dispose();

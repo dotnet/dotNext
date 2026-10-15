@@ -442,7 +442,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         {
             owner = new(segment.AsSpan());
         }
-        else if (allocator.IsArrayPool && MemoryMarshal.TryGetArray(memory, out segment))
+        else if (allocator is { IsArrayPool: true } or { IsByteArrayPool: true } && MemoryMarshal.TryGetArray(memory, out segment))
         {
             owner = new(in segment);
         }
