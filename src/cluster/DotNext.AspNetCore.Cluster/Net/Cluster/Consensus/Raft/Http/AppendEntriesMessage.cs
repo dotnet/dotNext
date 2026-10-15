@@ -323,7 +323,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
         {
-            using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
+            using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(512);
 
             for (var i = 0; i < entries.Count; i++)
             {
@@ -419,7 +419,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         {
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
             var encodingContext = new EncodingContext(Encoding.Latin1, reuseEncoder: true);
-            using var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars));
+            using var encodingBuffer = MemoryAllocator<byte>.Default.AllocateExactly(encodingContext.Encoding.GetMaxByteCount(maxChars));
             using var builder = new PoolingArrayBufferWriter<char> { Capacity = maxChars };
 
             // write

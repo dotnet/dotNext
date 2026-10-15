@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -207,7 +206,7 @@ partial class Span
             if (span.IsEmpty)
                 return default;
 
-            var result = allocator?.Invoke(span.Length) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, span.Length);
+            var result = allocator.DefaultIfNull.AllocateExactly(span.Length);
             span.CopyTo(result.Span);
             return result;
         }
