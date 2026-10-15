@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
@@ -66,6 +67,13 @@ public readonly partial struct Pointer<T> :
     /// to the size of <typeparamref name="T"/>.
     /// </summary>
     public bool IsAligned => Address % Unsafe.AlignOf<T>() is 0;
+
+    /// <summary>
+    /// Gets a value indicating that the pointer represents stack-allocated memory.
+    /// </summary>
+    [UnsupportedOSPlatform("browser")]
+    [UnsupportedOSPlatform("wasi")]
+    public unsafe bool IsStackAllocated => RuntimeHelpers.IsOnExecutionStack(value);
 
     /// <summary>
     /// Fills the elements of the array with a specified value.

@@ -31,6 +31,19 @@ public static class ExecutionStack
             => StackInfoCachePerThread.Value.IsInRange((nuint)Unsafe.AddressOf(in location));
 
         /// <summary>
+        /// Determines whether the specified memory location belongs to the stack memory.
+        /// </summary>
+        /// <param name="location">The memory location.</param>
+        /// <returns><see langword="true"/> if <paramref name="location"/> is on the stack; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The target platform doesn't have a reliable way to inspect an execution stack.</exception>
+        /// <seealso cref="get_IsStackDetectionSupported"/>
+        [UnsupportedOSPlatform("browser")]
+        [UnsupportedOSPlatform("wasi")]
+        [CLSCompliant(false)]
+        public static unsafe bool IsOnExecutionStack(void* location)
+            => StackInfoCachePerThread.Value.IsInRange((nuint)location);
+
+        /// <summary>
         /// Gets a value indicating that <see cref="ExecutionStack.IsOnExecutionStack{T}"/> method is supported on the target platform.
         /// </summary>
         [UnsupportedOSPlatformGuard("browser")]
