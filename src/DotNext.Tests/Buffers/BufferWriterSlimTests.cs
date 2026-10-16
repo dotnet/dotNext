@@ -547,6 +547,10 @@ public sealed class BufferWriterSlimTests : Test
         {
             exceptionThrown = true;
         }
+        finally
+        {
+            writer.Dispose();
+        }
         
         True(exceptionThrown);
     }
