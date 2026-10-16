@@ -143,8 +143,9 @@ public partial struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, IS
     /// </summary>
     /// <param name="array">The array to wrap.</param>
     public MemoryOwner(T[] array)
-        : this(array, array.Length)
     {
+        ownership = array is not [] ? new(owner: null, array) : default;
+        length = array.Length;
     }
 
     /// <summary>
