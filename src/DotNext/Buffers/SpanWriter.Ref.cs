@@ -12,7 +12,7 @@ partial struct SpanWriter<T>
     /// Represents a reference to <see cref="SpanWriter{T}"/>.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct Ref : IGrowableBuffer<T>
+    internal readonly ref struct Ref : IGrowableBuffer<T>, ITypedReference<SpanWriter<T>>
     {
         private readonly LocalReference<SpanWriter<T>> reference;
 
@@ -116,5 +116,8 @@ partial struct SpanWriter<T>
 
         /// <inheritdoc/>
         void IResettable.Reset() => reference.Value.Reset();
+
+        /// <inheritdoc/>
+        ref readonly SpanWriter<T> ITypedReference<SpanWriter<T>>.Value => ref reference.Value;
     }
 }
