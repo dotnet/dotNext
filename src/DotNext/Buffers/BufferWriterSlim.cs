@@ -186,7 +186,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Debug.Assert(newSize >= position);
         
         var currentBuffer = extraBuffer;
-        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer = allocator(newSize).TakeOwnership();
         extraBuffer.AssertState(newSize);
         currentBuffer.Span.CopyTo(buffer = extraBuffer.Span);
         currentBuffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
@@ -198,7 +198,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Debug.Assert(newSize >= position);
         
         var currentBuffer = buffer.Slice(0, position);
-        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer = allocator(newSize).TakeOwnership();
         extraBuffer.AssertState(newSize);
         currentBuffer.CopyTo(buffer = extraBuffer.Span);
 
@@ -590,7 +590,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         return result;
     }
 
-    /// <inheritdoc cref="AddAll"/>
+    /// <inheritdoc cref="AddAll(IEnumerable{T})"/>
     public void operator += (IEnumerable<T> collection) => AddAll(collection);
 
     private void WriteSlow(IEnumerable<T> collection)

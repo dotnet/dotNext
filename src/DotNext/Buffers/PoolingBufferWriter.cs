@@ -15,7 +15,7 @@ namespace DotNext.Buffers;
 public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null) : BufferWriter<T>, IMemoryOwner<T>
 {
     private readonly MemoryAllocator<T> allocator = allocator.DefaultIfNull;
-    private MemoryOwner<T> buffer;
+    private MemoryOwner<T>.Ownership buffer;
 
     /// <inheritdoc />
     public override int Capacity
@@ -25,7 +25,7 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
         init => buffer = value switch
         {
             < 0 => throw new ArgumentOutOfRangeException(nameof(value)),
-            > 0 => allocator.AllocateAtLeast(value),
+            > 0 => allocator.Invoke(value).TakeOwnership(),
             _ => default,
         };
     }
@@ -56,17 +56,18 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
 
         if (!reuseBuffer)
         {
-            buffer.Dispose();
+            buffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+            buffer = default;
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            buffer.Span.Clear();
+            buffer.Span.Slice(0, position).Clear();
         }
 
         position = 0;
     }
 
-    private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
+    private ref readonly MemoryOwner<T>.Ownership GetBuffer(int sizeHint)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
@@ -90,30 +91,31 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
         MemoryOwner<T> result;
         if (position > 0)
         {
-            result = buffer;
-            buffer = default;
-            result.Truncate(position);
+            result = new(buffer, position);
             position = 0;
         }
         else
         {
+            buffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
             result = default;
         }
 
+        buffer = default;
         return result;
     }
 
     /// <inheritdoc/>
     private protected override void Resize(int newSize)
     {
-        buffer.ResizeCore(newSize, allocator);
+        buffer.Reallocate(newSize, allocator);
         PoolingBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        buffer.Dispose();
+        buffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        buffer = default;
         base.Dispose(disposing);
     }
 }

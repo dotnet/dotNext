@@ -75,17 +75,22 @@ public static partial class Memory
     {
         if (!owner.TryResize(newLength))
         {
-            owner.ResizeCore(newLength, allocator);
+            Debug.Assert(newLength > owner.Length);
+        
+            var newBuffer = allocator.AllocateAtLeast(newLength);
+            owner.Span.CopyTo(newBuffer.Span);
+            owner.Dispose();
+            owner = newBuffer;
         }
     }
 
-    internal static void ResizeCore<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
+    internal static void Reallocate<T>(this ref MemoryOwner<T>.Ownership owner, int newLength, MemoryAllocator<T> allocator)
     {
         Debug.Assert(newLength > owner.Length);
-        
-        var newBuffer = allocator.AllocateAtLeast(newLength);
+
+        var newBuffer = allocator(newLength).TakeOwnership();
         owner.Span.CopyTo(newBuffer.Span);
-        owner.Dispose();
+        owner.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         owner = newBuffer;
     }
     

@@ -275,14 +275,19 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         if (position > 0)
         {
             result = new(pool, buffer, position);
-            buffer = [];
             position = 0;
+        }
+        else if (buffer.Length > 0)
+        {
+            ReturnBuffer();
+            result = default;
         }
         else
         {
             result = default;
         }
 
+        buffer = [];
         return result;
     }
 
