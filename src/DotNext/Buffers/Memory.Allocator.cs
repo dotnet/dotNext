@@ -98,6 +98,8 @@ public static partial class Memory
                     => new(GC.AllocateUninitializedArray<T>(length, pinned: false));
             }
         }
+        
+        internal bool IsArray => ReferenceEquals(allocator, get_Array<T>());
 
         /// <summary>
         /// Gets the allocator, which is <see cref="Memory.get_ArrayPool{T}"/> by default.
@@ -108,6 +110,8 @@ public static partial class Memory
         /// </remarks>
         public static MemoryAllocator<T> Default
             => Features.UseArrayPoolAsDefaultAllocator ? get_ArrayPool<T>() : get_Array<T>();
+        
+        internal bool IsDefault => ReferenceEquals(allocator, get_Default<T>());
 
         /// <summary>
         /// Gets the allocator which uses <see cref="ArrayPool{T}.Shared"/> pool.
@@ -122,6 +126,8 @@ public static partial class Memory
                     => new(ArrayPool<T>.Shared, length, exactSize: false);
             }
         }
+        
+        internal bool IsArrayPool => ReferenceEquals(allocator, get_ArrayPool<T>());
 
         /// <summary>
         /// Gets the allocator that rents memory from <see cref="ArrayPool{T}.Shared">ArrayPool&lt;byte&gt;.Shared</see>
@@ -141,13 +147,7 @@ public static partial class Memory
         /// </remarks>
         public static MemoryAllocator<T> ByteArrayPool => ReinterpretedMemoryManager<T>.Rent;
 
-        internal bool IsDefault => allocator.Equals(get_Default<T>());
-
-        internal bool IsArrayPool => allocator.Equals(get_ArrayPool<T>());
-
-        internal bool IsByteArrayPool => allocator.Equals(get_ByteArrayPool<T>());
-
-        internal bool IsArray => allocator.Equals(get_Array<T>());
+        internal bool IsByteArrayPool => ReferenceEquals(allocator, get_ByteArrayPool<T>());
 
         internal static MemoryAllocator<T> Throwable
         {
@@ -158,6 +158,8 @@ public static partial class Memory
                 static MemoryOwner<T> Throw(int size) => throw new BufferSizeLimitExceededException();
             }
         }
+        
+        internal bool IsThrowable => ReferenceEquals(allocator, get_Throwable<T>());
     }
 
     /// <summary>

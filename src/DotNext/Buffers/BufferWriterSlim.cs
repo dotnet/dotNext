@@ -87,7 +87,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </remarks>
     public bool IsBounded
     {
-        readonly get => ReferenceEquals(allocator, MemoryAllocator<T>.Throwable);
+        readonly get => allocator.IsThrowable;
         init
         {
             if (value)
