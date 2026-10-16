@@ -61,11 +61,13 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void WrapArray()
     {
-        var array = new byte[42];
-        using var owner = new MemoryOwner<byte>(array);
+        var array = new byte[50];
+        using var owner = new MemoryOwner<byte>(array, length: 42);
         Equal(42, owner.Memory.Length);
         owner[2] = 10;
         Equal(10, array[2]);
+
+        Throws<ArgumentOutOfRangeException>(() => new MemoryOwner<byte>(array, length: array.Length + 1));
     }
 
     public static TheoryData<MemoryAllocator<int>> ExactSizeAllocators =>
