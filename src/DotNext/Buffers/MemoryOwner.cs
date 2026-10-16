@@ -20,13 +20,8 @@ public partial struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, IS
     private int length;
 
     internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
-    {
-        Debug.Assert(length > 0);
-        Debug.Assert(array.Length >= length);
-
-        ownership = new(pool, array);
-        this.length = length;
-    }
+        : this(new Ownership(pool, array), length)
+        => Debug.Assert(array.Length >= length);
 
     internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
     {
