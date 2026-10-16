@@ -31,8 +31,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
         maxCount = options.PartitionCapacity;
         bufferSize = options.BufferSize;
         location = new(options.Location);
-        if (!location.Exists)
-            location.Create();
+        location.Create();
         var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
         var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration);
         Reader = reader;

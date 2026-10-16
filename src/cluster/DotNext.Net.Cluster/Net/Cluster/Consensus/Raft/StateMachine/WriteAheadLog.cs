@@ -54,7 +54,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
         var rootPath = new DirectoryInfo(configuration.Location);
-        rootPath.CreateIfNeeded();
+        rootPath.Create();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
         lockManager = new()
@@ -95,11 +95,11 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // page management
         {
-            var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
-            metadataLocation.CreateIfNeeded();
+            var metadataLocation = rootPath / MetadataPageManager.LocationPrefix;
+            metadataLocation.Create();
 
-            var dataLocation = rootPath.GetSubdirectory(PagedBufferWriter.LocationPrefix);
-            dataLocation.CreateIfNeeded();
+            var dataLocation = rootPath / PagedBufferWriter.LocationPrefix;
+            dataLocation.Create();
 
             PageManager m, d;
             switch (configuration.MemoryManagement)
@@ -739,12 +739,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
 file static class DirectoryInfoExtensions
 {
-    public static void CreateIfNeeded(this DirectoryInfo directory)
+    extension(DirectoryInfo)
     {
-        if (!directory.Exists)
-            directory.Create();
+        public static DirectoryInfo operator /(DirectoryInfo directory, string subdirectory)
+            => new(Path.Combine(directory.FullName, subdirectory));
     }
-
-    public static DirectoryInfo GetSubdirectory(this DirectoryInfo root, string prefix)
-        => new(Path.Combine(root.FullName, prefix));
 }
