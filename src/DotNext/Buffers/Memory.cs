@@ -71,9 +71,14 @@ public static partial class Memory
     /// <param name="newLength">A new length of the buffer.</param>
     /// <param name="allocator">The allocator to be called if the requested length is larger than the requested length.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="newLength"/> is less than zero.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Resize<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
     {
         if (!owner.TryResize(newLength))
+            ResizeCore(ref owner, newLength, allocator);
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void ResizeCore(ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
         {
             Debug.Assert(newLength > owner.Length);
         
