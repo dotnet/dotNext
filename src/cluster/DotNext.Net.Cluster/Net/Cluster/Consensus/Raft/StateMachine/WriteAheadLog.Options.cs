@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Hashing;
 using System.Runtime.InteropServices;
 
@@ -149,9 +150,10 @@ partial class WriteAheadLog
         /// <summary>
         /// Gets or sets the memory allocator.
         /// </summary>
-        public MemoryAllocator<byte>? Allocator
+        [AllowNull]
+        public MemoryAllocator<byte> Allocator
         {
-            get;
+            get => field ?? MemoryAllocator<byte>.Default;
             init;
         }
         

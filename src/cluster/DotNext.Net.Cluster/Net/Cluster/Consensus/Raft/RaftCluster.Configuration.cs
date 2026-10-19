@@ -88,7 +88,7 @@ public partial class RaftCluster
         [AllowNull]
         public MemoryAllocator<byte> MemoryAllocator
         {
-            get => field ??= ArrayPool<byte>.Shared.ToAllocator();
+            get => field ?? MemoryAllocator<byte>.Default;
             init;
         }
 

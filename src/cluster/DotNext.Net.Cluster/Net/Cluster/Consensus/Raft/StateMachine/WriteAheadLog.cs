@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Hashing;
@@ -62,7 +61,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             ConcurrencyLevel = configuration.ConcurrencyLevel,
             MeasurementTags = configuration.MeasurementTags,
         };
-        bufferAllocator = configuration.Allocator ?? ArrayPool<byte>.Shared.ToAllocator();
+        bufferAllocator = configuration.Allocator;
         this.stateMachine = stateMachine;
         stateLock = new()
         {
