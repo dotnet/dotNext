@@ -20,3 +20,4 @@ FullyQualifiedPathExpected=The path must be fully-qualified
 BufferTooSmall=The buffer is too small (or empty)
 EmptyCollection=The collection is empty
 BufferSizeLimitExceeded=The maximum buffer size limit is exceeded
+InvalidLockFilePath=The path to the lock file doesn't contain a directory name
