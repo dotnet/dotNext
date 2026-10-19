@@ -228,6 +228,17 @@ public sealed class ValueReferenceTests : Test
         NotNull(valueRef.ToString());
         Equal(42, box[0].Value);
     }
+
+    [Fact]
+    public static void ITypedReferenceInterop()
+    {
+        int[] array = [42];
+        ITypedReference<int> reference = new ValueReference<int>(array, 0);
+        Equal(42, reference.Value);
+
+        reference = new ReadOnlyValueReference<int>(array, 0);
+        Equal(42, reference.Value);
+    }
 }
 
 file record MyClass : IResettable
