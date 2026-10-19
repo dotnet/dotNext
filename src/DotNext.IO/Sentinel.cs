@@ -1,12 +1,13 @@
+using System.Runtime.CompilerServices;
+
 namespace DotNext;
 
-using Patterns;
-
-internal sealed class Sentinel : ISingleton<Sentinel>
+internal static class Sentinel
 {
-    public static Sentinel Instance { get; } = new();
+    public static object Instance => GetInstance();
 
-    private Sentinel()
-    {
-    }
+    [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = nameof(Instance))]
+    private static extern ref readonly object GetInstance(
+        [UnsafeAccessorType("DotNext.Sentinel, DotNext")]
+        object? obj = null);
 }
