@@ -288,11 +288,8 @@ public partial class DiskSpacePool : Disposable
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
-            {
-                owner.ReleaseSegment(absoluteOffset);
-                handle.MoveToDisposedState();
-            }
+            if (handle?.TryMoveToDisposedState() is { } owner)
+                owner.ReleaseSegment(handle.Offset);
         }
 
         /// <inheritdoc/>
@@ -301,7 +298,7 @@ public partial class DiskSpacePool : Disposable
 
         private static async ValueTask ReleaseSegmentAsync(SegmentHandle handle)
         {
-            if (handle.TryGetOwner() is { } owner)
+            if (handle.TryMoveToDisposedState() is { } owner)
             {
                 try
                 {
@@ -310,7 +307,6 @@ public partial class DiskSpacePool : Disposable
                 finally
                 {
                     owner.ReturnOffset(handle.Offset);
-                    handle.MoveToDisposedState();
                 }
             }
         }
