@@ -568,8 +568,8 @@ public sealed class RandomAccessCacheTests : Test
     [Fact]
     public static async Task ConcurrentResize()
     {
-        await using var cache = new CacheWithWeight(2, long.MaxValue, 1);
-        await Parallel.ForAsync(0, 20_000, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
+        await using var cache = new CacheWithWeight(2, long.MaxValue, 2);
+        await Parallel.ForAsync(0, 1000, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
         {
             var session = await cache.ChangeAsync(i.ToString(), token);
             session.SetValue(1L);

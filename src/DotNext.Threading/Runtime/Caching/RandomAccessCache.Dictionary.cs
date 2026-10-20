@@ -579,9 +579,14 @@ public partial class RandomAccessCache<TKey, TValue>
             ProcessQueue();
 
             // restart eviction process
-            RebuildEvictionState(buckets = new(oldVersion, newSize));
+            var newVersion = new BucketList(oldVersion, newSize);
+            RebuildEvictionState(newVersion);
             queueHead = queueTail = new FakeKeyValuePair();
             evictionTask = DoEvictionAsync(newSource);
+
+            // Publish the new version last. The buckets beyond the old length have new locks that are not held,
+            // so the writers can promote to the queue as soon as the new version is visible
+            buckets = newVersion;
         }
         finally
         {
