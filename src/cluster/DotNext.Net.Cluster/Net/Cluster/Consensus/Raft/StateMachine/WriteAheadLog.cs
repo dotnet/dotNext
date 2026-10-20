@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Hashing;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -144,23 +143,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // flusher
         {
-            var interval = configuration.FlushInterval;
-            if (interval == TimeSpan.Zero)
-            {
-                flushTrigger = new(initialState: false);
-                flushCompleted = new(initialState: false);
-
-                flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, flushCompleted), lifetimeToken);
-                flushOnCommit = configuration.FlushOnCommit;
-            }
-            else if (interval == InfiniteTimeSpan)
-            {
-                flusherTask = Task.CompletedTask;
-            }
-            else
-            {
-                flusherTask = FlushAsync(new TimeoutTrigger(interval, out flushCompleted), lifetimeToken);
-            }
+            flushTrigger = new(initialState: false);
+            flushCompleted = new(initialState: false);
+            flusherTask = FlushAsync<TrueConstant>(lifetimeToken);
         }
 
         // applier
@@ -233,7 +218,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             lockManager.ReleaseAppendLock();
         }
 
-        RequestFlushIfNeeded();
+        flushTrigger.Set();
         return currentIndex;
     }
     
@@ -254,7 +239,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 Unsafe.As<TEntry, BufferedLogEntry>(ref entry).Dispose();
         }
 
-        RequestFlushIfNeeded();
+        flushTrigger.Set();
         return currentIndex;
     }
 
@@ -330,8 +315,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
         ThrowOnInternalError();
-
-        bool requestFlush;
+        
         lockManager.SetCallerInformation("Append Single Entry at Custom Index");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
         try
@@ -346,7 +330,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 LastAppliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
                 var snapshotIndex = stateMachine.Snapshot?.Index ?? startIndex;
                 LastEntryIndex = long.Max(tailIndex, LastCommittedEntryIndex = snapshotIndex);
-                requestFlush = false;
             }
             else
             {
@@ -366,8 +349,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                         adjustFlushStartPosition = false;
                         break;
                 }
-
-                requestFlush = flushOnCommit;
+                
                 await AppendAsync(entry, out var startAddress, token).ConfigureAwait(false);
                 WriteMetadata(entry, startIndex, startAddress);
                 if (adjustFlushStartPosition)
@@ -379,10 +361,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             lockManager.ReleaseAppendLock();
         }
 
-        if (requestFlush)
+        if (!entry.IsSnapshot)
         {
-            Debug.Assert(flushTrigger is not null);
-            
             flushTrigger.Set();
         }
     }
@@ -423,7 +403,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             lockManager.ReleaseAppendLock();
         }
 
-        RequestFlushIfNeeded();
+        flushTrigger.Set();
     }
 
     private async ValueTask AppendCoreAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
@@ -510,7 +490,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         ValueTask<long> task;
 
-        if (!flushOnCommit && lockManager.TryAcquireCommitLock())
+        if (flusherState.Read<long, UnflushedIndexField>() > endIndex && lockManager.TryAcquireCommitLock())
         {
             var count = Commit(endIndex);
             lockManager.ReleaseCommitLock();
@@ -539,10 +519,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private async ValueTask<long> CommitSlowAsync<TNotify>(long endIndex, CancellationToken token)
         where TNotify : struct, IConstant<bool>
     {
-        if (flushOnCommit)
-        {
-            await EnsureFlushedAsync(new FlushedIndexChecker(endIndex), token).ConfigureAwait(false);
-        }
+        await EnsureFlushedAsync(endIndex, token).ConfigureAwait(false);
 
         lockManager.SetCallerInformation("Commit");
         await lockManager.AcquireCommitLockAsync(token).ConfigureAwait(false);
@@ -630,9 +607,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 cts.Cancel();
             }
         }
-        
-        flushTrigger?.Set();
-        applyTrigger.Set();
+
+        flushTrigger.Set(result: false);
+        applyTrigger.Set(result: false);
     }
 
     /// <inheritdoc/>
@@ -644,7 +621,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         await appenderTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
         // Ensure that commit index is saved to the checkpoint file
-        await FlushAsync(new ForegroundTrigger(), CancellationToken.None).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        await FlushAsync<FalseConstant>(CancellationToken.None).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
         if (cleanupTask.TryGetTarget(out var task))
             await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);

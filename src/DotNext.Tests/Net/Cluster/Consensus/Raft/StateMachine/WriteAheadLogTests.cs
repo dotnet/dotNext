@@ -2,7 +2,6 @@ using System.Buffers.Binary;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -277,11 +276,9 @@ public sealed class WriteAheadLogTests : Test
     }
 
     [Theory]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, false)]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory, true)]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory, false)]
-    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory, true)]
-    public static async Task Commit(WriteAheadLog.MemoryManagementStrategy strategy, bool flushOnCommit)
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
+    public static async Task Commit(WriteAheadLog.MemoryManagementStrategy strategy)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -292,9 +289,7 @@ public sealed class WriteAheadLogTests : Test
         var options = new WriteAheadLog.Options
         {
             Location = GetTempPath(),
-            FlushInterval = InfiniteTimeSpan,
             MemoryManagement = strategy,
-            FlushOnCommit = flushOnCommit,
         };
         
         await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOp()))
@@ -309,7 +304,6 @@ public sealed class WriteAheadLogTests : Test
             Equal(5L, wal.LastEntryIndex);
 
             await ThrowsAsync<InvalidOperationException>(wal.AppendAsync(entry1, 1L, TestToken).AsTask);
-            await wal.FlushAsync(TestToken);
         }
 
         //read again
@@ -470,44 +464,5 @@ public sealed class WriteAheadLogTests : Test
         
         config = await storage.LoadConfigurationAsync(TestToken);
         Contains(address, config.Members);
-    }
-    
-    [Fact]
-    public static async Task UseTimeBasedFlush()
-    {
-        var flushInterval = TimeSpan.FromMilliseconds(500);
-        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
-        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
-        var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
-        var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
-        var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-
-        var options = new WriteAheadLog.Options
-        {
-            Location = GetTempPath(),
-            FlushInterval = flushInterval,
-        };
-
-        await using (var wal = new WriteAheadLog(options, IStateMachine.CreateNoOp()))
-        {
-            Equal(1L, await wal.AppendAsync(entry1, TestToken));
-            await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L, token: TestToken);
-            Equal(4L, await wal.CommitAsync(4L, TestToken));
-
-            await wal.FlushAsync(TestToken);
-        }
-
-        // read again
-        await using (var wal = new WriteAheadLog(options, new ContextAwareStateMachine()))
-        {
-            Equal(4L, wal.LastCommittedEntryIndex);
-
-            using var reader = await wal.ReadAsync(1L, wal.LastEntryIndex, TestToken);
-            False(reader[0].IsSnapshot);
-            Equal(entry1.Content, await reader[0].ToStringAsync(Encoding.UTF8, token: TestToken));
-            Equal(entry2.Content, await reader[1].ToStringAsync(Encoding.UTF8,  token: TestToken));
-            Equal(entry3.Content, await reader[2].ToStringAsync(Encoding.UTF8,  token: TestToken));
-            Equal(entry4.Content, await reader[3].ToStringAsync(Encoding.UTF8,  token: TestToken));
-        }
     }
 }
