@@ -57,10 +57,10 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode)
+    private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode, bool willBePromoted)
         => Interlocked.IsAtomic<TValue>()
-            ? new KeyValuePairAtomicAccess(key, hashCode) { Value = value }
-            : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
+            ? new KeyValuePairAtomicAccess(key, hashCode, willBePromoted) { Value = value }
+            : new KeyValuePairNonAtomicAccess(key, hashCode, willBePromoted) { Value = value };
 
     private volatile BucketList buckets;
 
@@ -80,11 +80,11 @@ public partial class RandomAccessCache<TKey, TValue>
         // may still hold the pair from the previous version of the bucket list.
         private readonly StrongBox<int> lifetimeCounter;
 
-        protected KeyValuePair(TKey key, int hashCode)
+        protected KeyValuePair(TKey key, int hashCode, bool willBePromoted)
         {
             KeyHashCode = hashCode;
             Key = key;
-            lifetimeCounter = new(1);
+            lifetimeCounter = new(1 + Unsafe.BitCast<bool, byte>(willBePromoted));
         }
 
         protected KeyValuePair(KeyValuePair other)
@@ -112,8 +112,6 @@ public partial class RandomAccessCache<TKey, TValue>
             return currentValue > 0U;
         }
 
-        internal void AcquireCounter() => Interlocked.Increment(ref lifetimeCounter.Value);
-
         internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter.Value) > 0;
         
         [ExcludeFromCodeCoverage]
@@ -139,8 +137,8 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         internal required TValue Value;
 
-        public KeyValuePairAtomicAccess(TKey key, int hashCode)
-            : base(key, hashCode)
+        public KeyValuePairAtomicAccess(TKey key, int hashCode, bool willBePromoted)
+            : base(key, hashCode, willBePromoted)
         {
         }
 
@@ -161,8 +159,8 @@ public partial class RandomAccessCache<TKey, TValue>
         
         private ValueHolder holder;
         
-        public KeyValuePairNonAtomicAccess(TKey key, int hashCode)
-            : base(key, hashCode)
+        public KeyValuePairNonAtomicAccess(TKey key, int hashCode, bool willBePromoted)
+            : base(key, hashCode, willBePromoted)
         {
         }
 
@@ -232,7 +230,7 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly bool? IsLockHeld => Lock?.IsLockHeld;
 
-        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
+        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value, bool willBePromoted)
         {
             KeyValuePair? result;
             if (addedPair is not null)
@@ -241,7 +239,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                Add(addedPair = result = CreatePair(key, value, hashCode));
+                Add(addedPair = result = CreatePair(key, value, hashCode, willBePromoted));
             }
 
             return result;

@@ -517,7 +517,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             }
             else
             {
-                pair = CreatePair(key, value, hashCode);
+                pair = CreatePair(key, value, hashCode, willBePromoted: true);
                 bucket.Add(pair);
                 Promote(pair);
             }
@@ -743,7 +743,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             switch (lockOrValueHolder)
             {
-                case AsyncExclusiveLock when bucket.Value.TryAdd(key, hashCode, value) is { } newPair:
+                case AsyncExclusiveLock when bucket.Value.TryAdd(key, hashCode, value, willBePromoted: true) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:

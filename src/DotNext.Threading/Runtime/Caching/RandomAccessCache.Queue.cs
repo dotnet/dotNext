@@ -12,9 +12,6 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void Promote(KeyValuePair newPair)
     {
-        // the reference is released by the eviction thread, it prevents OnRemoved before OnAdded
-        newPair.AcquireCounter();
-
         KeyValuePair currentTail;
         do
         {
@@ -70,14 +67,14 @@ public partial class RandomAccessCache<TKey, TValue>
 
     // Never call GetValue on this class, it has no storage for TValue.
     // It is used as a stub for the first element in the notification queue to keep task completion source
-    private sealed class FakeKeyValuePair() : KeyValuePair(default!, 0)
+    private sealed class FakeKeyValuePair() : KeyValuePair(default!, 0, willBePromoted: false)
     {
         public override KeyValuePair Clone()
         {
             Debug.Fail("Should never be called");
             return this;
         }
-        
+
         public override string ToString() => "Fake KV Pair";
     }
 }
