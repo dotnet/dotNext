@@ -137,25 +137,6 @@ public interface IAuditTrail<TEntry> : IAuditTrail
         where TEntryImpl : TEntry;
 
     /// <summary>
-    /// Adds uncommitted log entries and commits previously added log entries as an atomic operation.
-    /// </summary>
-    /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
-    /// <param name="entries">Stateful object that is responsible for supplying log entries.</param>
-    /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
-    /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
-    /// <param name="commitIndex">The index of the last entry to commit, inclusively.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The actual number of committed entries.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
-    async ValueTask<long> AppendAndCommitAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token = default)
-        where TEntryImpl : TEntry
-    {
-        await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
-        return await CommitAsync(commitIndex, token).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Adds uncommitted log entry to the end of this log.
     /// </summary>
     /// <remarks>
