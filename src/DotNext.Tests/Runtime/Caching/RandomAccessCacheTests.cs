@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
@@ -515,6 +516,46 @@ public sealed class RandomAccessCacheTests : Test
         False(cache.Contains("b"));
         for (var i = 0; i < 8; i++)
             False(cache.Contains(i.ToString()));
+
+        static async Task AddAsync(CacheWithWeight cache, string key)
+        {
+            await using var session = await cache.ChangeAsync(key, TestToken);
+            False(session.TryGetValue(out _));
+            session.SetValue(1L);
+        }
+    }
+
+    [Fact]
+    public static async Task ReadDuringResize()
+    {
+        var evicted = new ConcurrentDictionary<string, int>();
+        await using var cache = new CacheWithWeight(2, 10L, 1)
+        {
+            Eviction = (key, _) => evicted.AddOrUpdate(key, 1, static (_, count) => count + 1),
+        };
+
+        await AddAsync(cache, "a");
+        True(cache.TryRead("a", out var session));
+        var capacity = cache.Capacity;
+
+        // TryRead marks "a" as visited. Visit every inserted item as well, so the SIEVE hand wraps around
+        // and reaches "a" again. Otherwise, the hand evicts new items only and never returns to "a"
+        for (var i = 0; cache.Contains("a"); i++)
+        {
+            True(i < 100);
+            var key = i.ToString();
+            await AddAsync(cache, key);
+            True(cache.TryRead(key, out var readSession));
+            readSession.Dispose();
+        }
+
+        True(cache.Capacity > capacity);
+
+        // the value must not be released while the session is alive
+        False(evicted.ContainsKey("a"));
+        Equal(1L, session.Value);
+        session.Dispose();
+        Equal(1, evicted["a"]);
 
         static async Task AddAsync(CacheWithWeight cache, string key)
         {

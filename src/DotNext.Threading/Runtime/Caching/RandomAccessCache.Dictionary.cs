@@ -58,18 +58,16 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode)
-    {
-        return Interlocked.IsAtomic<TValue>()
+        => Interlocked.IsAtomic<TValue>()
             ? new KeyValuePairAtomicAccess(key, hashCode) { Value = value }
             : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
-    }
 
     private volatile BucketList buckets;
 
-    internal abstract partial class KeyValuePair(TKey key, int hashCode)
+    internal abstract partial class KeyValuePair
     {
-        internal readonly int KeyHashCode = hashCode;
-        internal readonly TKey Key = key;
+        internal readonly int KeyHashCode;
+        internal readonly TKey Key;
         internal volatile KeyValuePair? NextInBucket; // volatile, used by the dictionary subsystem only
         
         // Reference counting is used to establish lifetime of the stored value (not KeyValuePair instance).
@@ -78,30 +76,45 @@ public partial class RandomAccessCache<TKey, TValue>
         // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
         // The promotion queue holds an extra reference until the eviction thread processes the pair.
-        private volatile int lifetimeCounter = 1;
+        // The counter is shared with the copies of the pair created by resize, because the readers
+        // may still hold the pair from the previous version of the bucket list.
+        private readonly StrongBox<int> lifetimeCounter;
 
-        internal void Import(KeyValuePair other)
+        protected KeyValuePair(TKey key, int hashCode)
         {
+            KeyHashCode = hashCode;
+            Key = key;
+            lifetimeCounter = new(1);
+        }
+
+        protected KeyValuePair(KeyValuePair other)
+        {
+            Key = other.Key;
+            KeyHashCode = other.KeyHashCode;
             cacheState = other.cacheState;
             addedEvent = other.addedEvent;
+            lifetimeCounter = other.lifetimeCounter;
         }
+
+        public abstract KeyValuePair Clone();
 
         internal bool TryAcquireCounter()
         {
-            int currentValue, tmp = lifetimeCounter;
+            ref var counter = ref lifetimeCounter.Value;
+            int currentValue, tmp = Volatile.Read(ref counter);
             do
             {
                 currentValue = tmp;
                 if (currentValue is 0)
                     break;
-            } while ((tmp = Interlocked.CompareExchange(ref lifetimeCounter, currentValue + 1, currentValue)) != currentValue);
+            } while ((tmp = Interlocked.CompareExchange(ref counter, currentValue + 1, currentValue)) != currentValue);
 
             return currentValue > 0U;
         }
-        
-        internal void AcquireCounter() => Interlocked.Increment(ref lifetimeCounter);
 
-        internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter) > 0;
+        internal void AcquireCounter() => Interlocked.Increment(ref lifetimeCounter.Value);
+
+        internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter.Value) > 0;
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -122,24 +135,45 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class KeyValuePairAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
+    private sealed class KeyValuePairAtomicAccess : KeyValuePair
     {
         internal required TValue Value;
+
+        public KeyValuePairAtomicAccess(TKey key, int hashCode)
+            : base(key, hashCode)
+        {
+        }
+
+        [SetsRequiredMembers]
+        private KeyValuePairAtomicAccess(KeyValuePairAtomicAccess other)
+            : base(other)
+            => Value = other.Value;
+
+        public override KeyValuePairAtomicAccess Clone() => new(this);
 
         public override string ToString() => ToString(Value);
     }
 
     // non-atomic access utilizes copy-on-write semantics
-    private sealed class KeyValuePairNonAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
+    private sealed class KeyValuePairNonAtomicAccess : KeyValuePair
     {
-        private sealed class ValueHolder(TValue value)
-        {
-            internal readonly TValue Value = value;
-        }
-
         private static readonly ValueHolder DefaultHolder = new(default!);
         
         private ValueHolder holder;
+        
+        public KeyValuePairNonAtomicAccess(TKey key, int hashCode)
+            : base(key, hashCode)
+        {
+        }
+
+        [SetsRequiredMembers]
+#pragma warning disable CS8618
+        private KeyValuePairNonAtomicAccess(KeyValuePairNonAtomicAccess other)
+            : base(other)
+            => holder = other.holder;
+#pragma warning restore CS8618
+
+        public override KeyValuePairNonAtomicAccess Clone() => new(this);
 
         internal required TValue Value
         {
@@ -153,6 +187,11 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void ClearValue() => holder = DefaultHolder;
 
         public override string ToString() => ToString(Value);
+        
+        private sealed class ValueHolder(TValue value)
+        {
+            internal readonly TValue Value = value;
+        }
     }
     
     internal interface IKeyValuePairVisitor
@@ -425,8 +464,11 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 foreach (var pair in bucket)
                 {
-                    var newPair = CreatePair(pair.Key, GetValue(pair), pair.KeyHashCode);
-                    newPair.Import(pair);
+                    // dead pairs are already released
+                    if (pair.IsDead)
+                        continue;
+
+                    var newPair = pair.Clone();
                     GetByHash(newPair.KeyHashCode).Value.Add(newPair);
                 }
             }
