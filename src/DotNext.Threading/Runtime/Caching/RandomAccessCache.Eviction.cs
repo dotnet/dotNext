@@ -221,8 +221,12 @@ public partial class RandomAccessCache<TKey, TValue>
             return counter < NotVisitedState;
         }
 
-        internal bool Visit()
-            => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState;
+        internal bool Visit() => cacheState switch
+        {
+            VisitedState => true,
+            NotVisitedState => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState,
+            _ => false,
+        };
 
         internal bool MarkAsEvicted()
             => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
