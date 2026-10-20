@@ -887,7 +887,8 @@ public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapaci
 
     private protected sealed override void OnRemoved(KeyValuePair demoted)
     {
-        base.OnRemoved(demoted);
+        // base implementation clears the value
         RemoveWeight(ref initialWeight, demoted.Key, GetValue(demoted));
+        base.OnRemoved(demoted);
     }
 }

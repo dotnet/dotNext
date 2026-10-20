@@ -12,6 +12,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void Promote(KeyValuePair newPair)
     {
+        // the reference is released by the eviction thread, it prevents OnRemoved before OnAdded
+        newPair.AcquireCounter();
+
         KeyValuePair currentTail;
         do
         {

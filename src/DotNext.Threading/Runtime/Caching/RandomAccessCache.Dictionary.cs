@@ -77,6 +77,7 @@ public partial class RandomAccessCache<TKey, TValue>
         // are two competing threads that may decrement the counter to zero: removal thread (see TryRemove)
         // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
+        // The promotion queue holds an extra reference until the eviction thread processes the pair.
         private volatile int lifetimeCounter = 1;
 
         internal void Import(KeyValuePair other)
@@ -97,6 +98,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
             return currentValue > 0U;
         }
+        
+        internal void AcquireCounter() => Interlocked.Increment(ref lifetimeCounter);
 
         internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter) > 0;
         
@@ -531,6 +534,9 @@ public partial class RandomAccessCache<TKey, TValue>
             
             // stop eviction process
             await evictionTask.ConfigureAwait(false);
+
+            // the canceled eviction loop may leave unprocessed promotions, drain them before the rebuild
+            ProcessQueue();
 
             // restart eviction process
             RebuildEvictionState(buckets = new(oldVersion, newSize));

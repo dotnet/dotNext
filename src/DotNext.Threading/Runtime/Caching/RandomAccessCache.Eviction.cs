@@ -39,12 +39,29 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void EvictOrInsert(KeyValuePair promoted)
     {
+        // The pair can be removed concurrently. The reference acquired by Promote keeps the value alive
+        // and guarantees that OnRemoved is called after OnAdded
         if (Evict(promoted))
         {
             promoted.Prepend(ref evictionHead, ref evictionTail);
             sieveHand ??= evictionTail;
             currentSize++;
             OnAdded(promoted);
+
+            if (!promoted.ReleaseCounter())
+                OnRemoved(promoted);
+        }
+        else
+        {
+            // the cache doesn't have enough resources (pair has too high weight), release the enqueued pair.
+            // The weight is not added, so use Clear instead of OnRemoved
+            if (promoted.MarkAsEvicted())
+                promoted.ReleaseCounter(); // the reference owned by the cache, cannot reach zero
+
+            if (!promoted.ReleaseCounter())
+                Clear(promoted);
+
+            promoted.Added();
         }
     }
 
@@ -53,14 +70,7 @@ public partial class RandomAccessCache<TKey, TValue>
         while (IsEvictionRequired(promoted))
         {
             if (sieveHand is null)
-            {
-                // if eviction still required, we need to release the enqueued key/value pair because the current cache
-                // doesn't have enough resources (pair has too high weight)
-                promoted.MarkAsDead();
-                Clear(promoted);
-                promoted.Added();
                 return false;
-            }
 
             if (!sieveHand.Evict(out var removed))
             {
@@ -133,16 +143,21 @@ public partial class RandomAccessCache<TKey, TValue>
         where TFactory : struct, ISupplier<TKey, TPredicate>
     {
         KeyValuePair? newHead = null, newTail = null;
+        var newSize = 0;
 
-        for (var current = evictionTail; current is { IsDead: false }; current = current.MoveBackward())
+        // dead pairs are skipped, because the new bucket list doesn't contain them
+        for (var current = evictionTail; current is not null; current = current.MoveBackward())
         {
-            buckets
-                .FindPair(factory.Invoke(current.Key), current.KeyHashCode)
-                ?.Prepend(ref newHead, ref newTail);
+            if (buckets.FindPair(factory.Invoke(current.Key), current.KeyHashCode) is { } pair)
+            {
+                pair.Prepend(ref newHead, ref newTail);
+                newSize++;
+            }
         }
 
         evictionHead = newHead;
         evictionTail = newTail;
+        currentSize = newSize;
         sieveHand = sieveHand is not null ? buckets.FindPair(factory.Invoke(sieveHand.Key), sieveHand.KeyHashCode) ?? newTail : null;
     }
 

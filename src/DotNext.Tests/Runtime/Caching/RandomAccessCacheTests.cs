@@ -491,6 +491,116 @@ public sealed class RandomAccessCacheTests : Test
         }
     }
 
+    [Fact]
+    public static async Task ResizeWithInvalidatedItems()
+    {
+        const long maxWeight = 10L;
+        await using var cache = new CacheWithWeight(2, maxWeight, 1);
+        await AddAsync(cache, "a");
+        await AddAsync(cache, "b");
+        True(await cache.InvalidateAsync("a", TestToken));
+
+        // no eviction, but resize happens
+        var capacity = cache.Capacity;
+        for (var i = 0; i < 8; i++)
+            await AddAsync(cache, i.ToString());
+
+        True(cache.Capacity > capacity);
+
+        // eviction must see all the items inserted before the resize
+        for (var i = 8; i < 50; i++)
+            await AddAsync(cache, i.ToString());
+
+        True(cache.Count() <= maxWeight);
+        False(cache.Contains("b"));
+        for (var i = 0; i < 8; i++)
+            False(cache.Contains(i.ToString()));
+
+        static async Task AddAsync(CacheWithWeight cache, string key)
+        {
+            await using var session = await cache.ChangeAsync(key, TestToken);
+            False(session.TryGetValue(out _));
+            session.SetValue(1L);
+        }
+    }
+
+    [Fact]
+    public static async Task ConcurrentResize()
+    {
+        await using var cache = new CacheWithWeight(2, long.MaxValue, 1);
+        await Parallel.ForAsync(0, 20_000, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
+        {
+            var session = await cache.ChangeAsync(i.ToString(), token);
+            session.SetValue(1L);
+
+            // must not hang if the promotion is enqueued before the resize
+            await session.DisposeAsync().AsTask().WaitAsync(DefaultTimeout, token);
+        });
+    }
+
+    [Fact]
+    public static async Task InvalidateBeforeInsertion()
+    {
+        await using var cache = new CacheWithStringWeight(64, long.MaxValue);
+        for (var i = 0; i < 10_000; i++)
+        {
+            var key = i.ToString();
+            using (var session = await cache.ChangeAsync(key, TestToken))
+            {
+                session.SetValue(key);
+            }
+
+            await cache.InvalidateAsync(key, TestToken);
+        }
+
+        // wait for the eviction queue to be processed
+        await using (var session = await cache.ChangeAsync("last", TestToken))
+        {
+            session.SetValue("last");
+        }
+
+        False(cache.NullObserved);
+        Equal("last".Length, cache.TotalWeight);
+    }
+
+    private sealed class CacheWithStringWeight(int cacheCapacity, long maxWeight) : RandomAccessCache<string, string, long>(cacheCapacity, 0L, int.MaxValue)
+    {
+        private long totalWeight;
+        private volatile bool nullObserved;
+
+        public long TotalWeight => Volatile.Read(ref totalWeight);
+
+        public bool NullObserved => nullObserved;
+
+        private long GetWeight(string value)
+        {
+            if (value is null)
+            {
+                nullObserved = true;
+                return 0L;
+            }
+
+            return value.Length;
+        }
+
+        protected override void AddWeight(ref long total, string key, string value)
+        {
+            var weight = GetWeight(value);
+            Interlocked.Add(ref total, weight);
+            Interlocked.Add(ref totalWeight, weight);
+        }
+
+        protected override bool IsEvictionRequired(ref readonly long total, string key, string value)
+            => GetWeight(value) + total > maxWeight;
+
+        protected override void RemoveWeight(ref long total, string key, string value)
+        {
+            var weight = GetWeight(value);
+            Interlocked.Add(ref total, -weight);
+            Interlocked.Add(ref totalWeight, -weight);
+        }
+    }
+
     private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
     {
         protected override void AddWeight(ref long total, string key, long value)
