@@ -195,7 +195,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Convert(Encoder encoder, ReadOnlySpan<char> input, Span<byte> output, int maxByteCount, int charsLeft, out int charsUsed, out int bytesUsed)
         {
-            charsUsed = Math.Min(output.Length / maxByteCount, charsLeft);
+            charsUsed = int.Min(output.Length / maxByteCount, charsLeft);
             encoder.Convert(input.Slice(0, charsUsed), output, charsUsed == charsLeft, out charsUsed, out bytesUsed, out _);
         }
     }

@@ -71,7 +71,7 @@ partial class Span
 
             for (int maxLength = Array.MaxLength / sizeof(T), count; !x.IsEmpty; x = x.Slice(count), mask = mask.Slice(count))
             {
-                count = Math.Min(maxLength, x.Length);
+                count = int.Min(maxLength, x.Length);
 
                 if (CheckMask(
                         ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)),
@@ -96,7 +96,7 @@ partial class Span
 
             for (int maxLength = Array.MaxLength / sizeof(T), count; !x.IsEmpty; x = x.Slice(count), mask = mask.Slice(count))
             {
-                count = Math.Min(maxLength, x.Length);
+                count = int.Min(maxLength, x.Length);
 
                 if (IsBitwiseAndNonZero(
                         ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)),

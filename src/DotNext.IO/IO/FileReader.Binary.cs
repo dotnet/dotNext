@@ -405,7 +405,7 @@ public partial class FileReader : IAsyncBinaryReader
     bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
     {
         count = length.IsInfinite
-            ? Math.Max(0L, RandomAccess.GetLength(handle) - fileOffset)
+            ? long.Max(0L, RandomAccess.GetLength(handle) - fileOffset)
             : (long)length;
 
         return true;

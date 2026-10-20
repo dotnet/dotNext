@@ -45,7 +45,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Gets the number of shared locks that can be acquired.
     /// </summary>
-    public long RemainingCount => Math.Max(state.RemainingLocks, 0L);
+    public long RemainingCount => long.Max(state.RemainingLocks, 0L);
 
     /// <summary>
     /// Gets the maximum number of locks that can be obtained simultaneously.

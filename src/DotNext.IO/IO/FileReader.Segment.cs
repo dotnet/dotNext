@@ -24,7 +24,7 @@ public partial class FileReader
         {
         }
 
-        internal int Truncate(int value) => IsInfinite ? value : (int)Math.Min(value, this.value);
+        internal int Truncate(int value) => IsInfinite ? value : int.CreateTruncating(long.Min(value, this.value));
 
         internal bool IsInfinite => value < 0L;
 

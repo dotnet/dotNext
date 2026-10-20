@@ -148,7 +148,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
             if (nullTermIndex < 0)
                 return newLineIndex;
 
-            return Math.Min(newLineIndex, nullTermIndex);
+            return int.Min(newLineIndex, nullTermIndex);
         }
     }
 

@@ -28,13 +28,13 @@ public class FileBufferingWriterBenchmark
         const int chunkSize = 1024;
 
         var startIndex = 0;
-        var length = Math.Min(chunkSize, content.Length);
+        var length = int.Min(chunkSize, content.Length);
 
         do
         {
             yield return content.AsMemory(startIndex, length);
             startIndex += chunkSize;
-            length = Math.Min(content.Length - startIndex, chunkSize);
+            length = int.Min(content.Length - startIndex, chunkSize);
         }
         while (startIndex < content.Length);
     }

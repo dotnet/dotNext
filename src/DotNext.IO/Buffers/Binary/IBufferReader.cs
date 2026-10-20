@@ -196,7 +196,7 @@ internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer)
 {
     private int writtenChars, length = length;
 
-    public readonly int RemainingBytes => Math.Min(length, buffer.Length);
+    public readonly int RemainingBytes => int.Min(length, buffer.Length);
 
     void IBufferReader.Apply(ReadOnlySpan<byte> source)
     {

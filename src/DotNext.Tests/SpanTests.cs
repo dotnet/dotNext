@@ -130,7 +130,7 @@ public sealed class SpanTests : Test
         ReadOnlySpan<int> src = source;
         Span<int> dst = destination;
         var writtenCount = src >>> dst;
-        Equal(Math.Min(src.Length, dst.Length), writtenCount);
+        Equal(int.Min(src.Length, dst.Length), writtenCount);
 
         for (var i = 0; i < writtenCount; i++)
             Equal(src[i], dst[i]);

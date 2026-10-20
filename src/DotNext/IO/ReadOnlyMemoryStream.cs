@@ -48,7 +48,7 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
     public override void SetLength(long value)
     {
         var newSeq = sequence.Slice(sequence.Start, value);
-        position = newSeq.GetPosition(Math.Min(Position, newSeq.Length));
+        position = newSeq.GetPosition(long.Min(Position, newSeq.Length));
         sequence = newSeq;
     }
 
