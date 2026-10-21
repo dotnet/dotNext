@@ -103,11 +103,15 @@ public static partial class Memory
     internal static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
         where TWriter : IBufferWriter<T>, allows ref struct
     {
-        var destination = GetSpan(writer);
-
-        // Fast path, try copying to the available memory directly
-        if (value.Length <= destination.Length)
+        Span<T> destination;
+        
+        if (value.IsEmpty)
         {
+            // no need to allocate anything
+        }
+        else if (value.Length <= (destination = GetSpan(writer)).Length)
+        {
+            // Fast path, try copying to the available memory directly
             value.CopyTo(destination);
             writer.Advance(value.Length);
         }
