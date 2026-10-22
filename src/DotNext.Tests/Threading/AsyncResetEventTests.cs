@@ -168,4 +168,28 @@ public sealed class AsyncResetEventTests : Test
 
         bool Wait() => are.Wait(DefaultTimeout);
     }
+
+    [Fact]
+    public static async Task RegressionIssue304()
+    {
+        using var are = new AsyncAutoResetEvent(false);
+        using var cts = new CancellationTokenSource();
+
+        // the canceled task is not consumed, so its node remains in the queue
+        var canceled = are.WaitAsync(cts.Token);
+        cts.Cancel();
+        True(canceled.IsCanceled);
+
+        True(are.Set());
+        True(are.IsSet);
+
+        // the queue is not empty, so the waiter cannot consume the signal
+        var waiter = are.WaitAsync().AsTask();
+        False(waiter.IsCompleted);
+
+        // removal of the canceled node passes the signal to the waiter
+        await ThrowsAnyAsync<OperationCanceledException>(canceled.AsTask);
+        await waiter.WaitAsync(DefaultTimeout, TestToken);
+        False(are.IsSet);
+    }
 }
