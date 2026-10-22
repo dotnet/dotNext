@@ -271,8 +271,6 @@ public partial class RandomAccessCache<TKey, TValue>
             if (Interlocked.CompareExchange(ref addedEvent, Task.CompletedTask, comparand: null) is AddedEventSource source)
                 source.TrySetResult();
         }
-
-        private sealed class AddedEventSource() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     private sealed class CancelableValueTaskCompletionSource : IValueTaskSource<bool>, IThreadPoolWorkItem
@@ -372,3 +370,5 @@ file static class ValueTaskSourceHelpers
         public bool IsStub => continuation?.Method == CompletedStub.Method;
     }
 }
+
+file sealed class AddedEventSource() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
