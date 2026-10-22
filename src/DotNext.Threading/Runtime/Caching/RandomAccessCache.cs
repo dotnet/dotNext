@@ -168,7 +168,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
     {
         var bucketsCopy = lockedBuckets;
-        ref var bucket = ref bucketsCopy.GetByIndex(index);
+        ref var bucket = ref bucketsCopy[index];
         if (bucket.TryGet<TSelector, AcquisitionVisitor>(selector, hashCode) is { } valueHolder)
             return new(this, valueHolder);
 
@@ -267,7 +267,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
     {
         var bucketsCopy = lockedBuckets;
-        ref var bucket = ref bucketsCopy.GetByIndex(index);
+        ref var bucket = ref bucketsCopy[index];
         ReadWriteSession session;
         if (ResizeDesired(in bucket))
         {
@@ -382,7 +382,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 lockedBuckets = null;
             }
 
-            return lockedBuckets.GetByIndex(index).TryRemove(selector, hashCode) is { } removedPair
+            return lockedBuckets[index].TryRemove(selector, hashCode) is { } removedPair
                 ? new ReadSession(this, removedPair)
                 : null;
         }
@@ -461,7 +461,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 lockedBuckets = null;
             }
 
-            removedPair = lockedBuckets.GetByIndex(index).TryRemove(selector, hashCode);
+            removedPair = lockedBuckets[index].TryRemove(selector, hashCode);
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
@@ -794,7 +794,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             switch (lockOrValueHolder)
             {
-                case BucketList lockedBuckets when lockedBuckets.GetByIndex(index).TryAdd(key, hashCode, value, willBePromoted: true) is { } newPair:
+                case BucketList lockedBuckets when lockedBuckets[index].TryAdd(key, hashCode, value, willBePromoted: true) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:
@@ -816,7 +816,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (lockOrValueHolder)
             {
                 case BucketList lockedBuckets:
-                    lockedBuckets.GetByIndex(index).MarkAsReadyToAdd();
+                    lockedBuckets[index].MarkAsReadyToAdd();
                     lockedBuckets.Release(cache.parkingLot, index);
                     break;
                 case KeyValuePair pair when !pair.ReleaseCounter():
@@ -841,7 +841,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (lockOrValueHolder)
             {
                 case BucketList lockedBuckets:
-                    task = lockedBuckets.GetByIndex(index).MarkAsReadyToAddAndGetTask();
+                    task = lockedBuckets[index].MarkAsReadyToAddAndGetTask();
                     lockedBuckets.Release(cache.parkingLot, index); // allow concurrent writers write to the same bucket without contention
 
                     // avoid deadlock if this method is called concurrently with Dispose() on the cache

@@ -460,7 +460,7 @@ public partial class RandomAccessCache<TKey, TValue>
         public int Count => buckets.Length;
 
         internal ref Bucket GetByHash(int hashCode)
-            => ref GetByIndex(IndexOf(hashCode));
+            => ref this[IndexOf(hashCode)];
 
         internal int IndexOf(int hashCode)
         {
@@ -470,11 +470,14 @@ public partial class RandomAccessCache<TKey, TValue>
             return (int)index;
         }
 
-        internal ref Bucket GetByIndex(int index)
+        internal ref Bucket this[int index]
         {
-            Debug.Assert(index < (uint)buckets.Length);
+            get
+            {
+                Debug.Assert(index < (uint)buckets.Length);
 
-            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+                return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+            }
         }
 
         internal void CleanUp(AsyncParkingLot parkingLot, int hashCode)
@@ -484,7 +487,7 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 try
                 {
-                    GetByIndex(index).CleanUp();
+                    this[index].CleanUp();
                 }
                 finally
                 {
@@ -501,11 +504,11 @@ public partial class RandomAccessCache<TKey, TValue>
         // the buckets of the different versions with the same index, because the old version can be still in use
         // by the waiters during the resize
         internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, CancellationToken token)
-            => parkingLot.ParkAsync(index, ref GetByIndex(index).LockState, this, token);
+            => parkingLot.ParkAsync(index, ref this[index].LockState, this, token);
 
         internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, TimeSpan timeout, CancellationToken token)
         {
-            var task = parkingLot.ParkAsync(index, ref GetByIndex(index).LockState, this, timeout, token);
+            var task = parkingLot.ParkAsync(index, ref this[index].LockState, this, timeout, token);
             if (!task.IsCompletedSuccessfully)
                 return AcquireSlowAsync(task);
 
@@ -518,11 +521,11 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal bool TryAcquire(int index)
-            => AsyncParkingLot.TryPark(ref GetByIndex(index).LockState);
+        private bool TryAcquire(int index)
+            => AsyncParkingLot.TryPark(ref this[index].LockState);
 
         internal void Release(AsyncParkingLot parkingLot, int index)
-            => parkingLot.Unpark(index, ref GetByIndex(index).LockState, this);
+            => parkingLot.Unpark(index, ref this[index].LockState, this);
 
         internal void ReleaseFirst(AsyncParkingLot parkingLot, int count)
         {
