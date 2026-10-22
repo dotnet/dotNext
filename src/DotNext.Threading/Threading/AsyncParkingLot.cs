@@ -90,7 +90,7 @@ public partial class AsyncParkingLot : Disposable
             return ValueTask.FromCanceled<bool>(token);
 
         // try to acquire the lock first, so zero timeout doesn't fail on the free lock
-        while (Interlocked.CompareExchange(ref state, State.Locked, State.Free) is not State.Free)
+        while (!TryPark(ref state))
         {
             if (!timeout.TryGetRemainingTime(out var remainingTime))
                 return ValueTask.FromResult(false);
@@ -134,7 +134,7 @@ public partial class AsyncParkingLot : Disposable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        while (Interlocked.CompareExchange(ref state, State.Locked, State.Free) is not State.Free)
+        while (!TryPark(ref state))
         {
             if (TryParkSlow(position, ref state, userData, out var disposed) is { } node)
                 return node.Invoke<ValueTask>(token);

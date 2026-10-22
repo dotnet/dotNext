@@ -205,17 +205,12 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal struct Bucket(AsyncExclusiveLock bucketLock)
+    internal struct Bucket
     {
-        internal readonly AsyncExclusiveLock Lock = bucketLock;
+        internal AsyncParkingLot.State LockState; // modified by AsyncParkingLot only
         private KeyValuePair? addedPair;
         private volatile KeyValuePair? first;
         private volatile int count;
-
-        public Bucket()
-            : this(new())
-        {
-        }
 
         internal readonly KeyValuePair? First => first;
         
@@ -228,7 +223,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly bool? IsLockHeld => Lock?.IsLockHeld;
+        private readonly bool IsLockHeld => LockState is not AsyncParkingLot.State.Free;
 
         internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value, bool willBePromoted)
         {
@@ -431,7 +426,7 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
-    private sealed class BucketList
+    internal sealed class BucketList
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private readonly Bucket[] buckets;
@@ -439,26 +434,15 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal BucketList(int length)
         {
-            (buckets = new Bucket[length]).Initialize<Bucket>();
+            buckets = new Bucket[length];
             fastMod = new((uint)length);
         }
 
         internal BucketList(BucketList prototype, int length)
+            : this(length)
         {
-            buckets = new Bucket[length];
-            fastMod = new((uint)length);
-
             // import pairs
-            Span<Bucket> prototypeBuckets = prototype.buckets;
-            int i;
-            for (i = 0; i < prototypeBuckets.Length; i++)
-            {
-                buckets[i] = new(prototypeBuckets[i].Lock);
-            }
-
-            buckets.AsSpan(i).Initialize();
-
-            foreach (ref var bucket in prototypeBuckets)
+            foreach (ref var bucket in prototype.buckets.AsSpan())
             {
                 foreach (var pair in bucket)
                 {
@@ -467,7 +451,7 @@ public partial class RandomAccessCache<TKey, TValue>
                         continue;
 
                     var newPair = pair.Clone();
-                    GetByHash(newPair.KeyHashCode).Value.Add(newPair);
+                    GetByHash(newPair.KeyHashCode).Add(newPair);
                 }
             }
         }
@@ -475,12 +459,15 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int Count => buckets.Length;
 
-        internal ArrayDataReference<Bucket> GetByHash(int hashCode)
+        internal ref Bucket GetByHash(int hashCode)
+            => ref GetByIndex(IndexOf(hashCode));
+
+        internal int IndexOf(int hashCode)
         {
             var index = fastMod.GetRemainder((uint)hashCode);
             Debug.Assert(index < (uint)buckets.Length);
 
-            return new(buckets, index);
+            return (int)index;
         }
 
         internal ref Bucket GetByIndex(int index)
@@ -490,17 +477,60 @@ public partial class RandomAccessCache<TKey, TValue>
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
+        internal void CleanUp(AsyncParkingLot parkingLot, int hashCode)
+        {
+            var index = IndexOf(hashCode);
+            if (TryAcquire(index))
+            {
+                try
+                {
+                    GetByIndex(index).CleanUp();
+                }
+                finally
+                {
+                    Release(parkingLot, index);
+                }
+            }
+        }
+
         internal KeyValuePair? FindPair<TPredicate>(TPredicate predicate, int keyHashCode)
             where TPredicate : struct, IEquatable<TKey>, allows ref struct
-            => GetByHash(keyHashCode).Value.TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
+            => GetByHash(keyHashCode).TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
 
-        internal void Release(int count)
+        // The bucket index is the position in the parking lot. The bucket list itself distinguishes
+        // the buckets of the different versions with the same index, because the old version can be still in use
+        // by the waiters during the resize
+        internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, CancellationToken token)
+            => parkingLot.ParkAsync(index, ref GetByIndex(index).LockState, this, token);
+
+        internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, TimeSpan timeout, CancellationToken token)
+        {
+            var task = parkingLot.ParkAsync(index, ref GetByIndex(index).LockState, this, timeout, token);
+            if (!task.IsCompletedSuccessfully)
+                return AcquireSlowAsync(task);
+
+            return task.Result ? ValueTask.CompletedTask : ValueTask.FromException(new TimeoutException());
+
+            static async ValueTask AcquireSlowAsync(ValueTask<bool> task)
+            {
+                if (!await task.ConfigureAwait(false))
+                    throw new TimeoutException();
+            }
+        }
+
+        internal bool TryAcquire(int index)
+            => AsyncParkingLot.TryPark(ref GetByIndex(index).LockState);
+
+        internal void Release(AsyncParkingLot parkingLot, int index)
+            => parkingLot.Unpark(index, ref GetByIndex(index).LockState, this);
+
+        internal void ReleaseFirst(AsyncParkingLot parkingLot, int count)
         {
             Debug.Assert((uint)count <= (uint)buckets.Length);
 
             for (var i = 0; i < count; i++)
             {
-                buckets[i].Lock.Release();
+                Release(parkingLot, i);
             }
         }
 
@@ -553,8 +583,7 @@ public partial class RandomAccessCache<TKey, TValue>
         var lockCount = 0;
         try
         {
-            var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-            await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
+            await oldVersion.AcquireAsync(parkingLot, lockCount, timeout.RemainingTime, token).ConfigureAwait(false);
             lockCount++;
 
             if (!ReferenceEquals(oldVersion, buckets))
@@ -563,10 +592,9 @@ public partial class RandomAccessCache<TKey, TValue>
             // acquire the rest of locks
             for (; lockCount < oldVersion.Count; lockCount++)
             {
-                bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-                await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
+                await oldVersion.AcquireAsync(parkingLot, lockCount, timeout.RemainingTime, token).ConfigureAwait(false);
             }
-            
+
             var newSource = new CancelableValueTaskCompletionSource();
             
             // if Exchange returns null then the cache is disposed
@@ -584,13 +612,14 @@ public partial class RandomAccessCache<TKey, TValue>
             queueHead = queueTail = new FakeKeyValuePair();
             evictionTask = DoEvictionAsync(newSource);
 
-            // Publish the new version last. The buckets beyond the old length have new locks that are not held,
-            // so the writers can promote to the queue as soon as the new version is visible
+            // Publish the new version last. The locks of the new version are not held,
+            // so the writers can promote to the queue as soon as the new version is visible.
+            // The waiters for the old version are resumed on release and retry with the new version
             buckets = newVersion;
         }
         finally
         {
-            oldVersion.Release(lockCount);
+            oldVersion.ReleaseFirst(parkingLot, lockCount);
         }
     }
 }

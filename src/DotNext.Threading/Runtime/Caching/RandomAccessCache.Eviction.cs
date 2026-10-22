@@ -84,7 +84,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 if (!removed && !removedPair.ReleaseCounter())
                 {
                     OnRemoved(removedPair);
-                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode).Value);
+                    buckets.CleanUp(parkingLot, removedPair.KeyHashCode);
                 }
             }
         }
@@ -107,23 +107,6 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         Eviction?.Invoke(demoted.Key, GetValue(demoted));
         ClearValue(demoted);
-    }
-
-    private void TryCleanUpBucket(ref Bucket bucket)
-    {
-        var bucketsCopy = buckets;
-        if (bucket.Lock.TryAcquire())
-        {
-            try
-            {
-                if (ReferenceEquals(bucketsCopy, buckets))
-                    bucket.CleanUp();
-            }
-            finally
-            {
-                bucket.Lock.Release();
-            }
-        }
     }
 
     private void RebuildEvictionState(BucketList buckets)
