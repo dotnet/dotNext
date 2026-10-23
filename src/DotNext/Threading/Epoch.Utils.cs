@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using IO.Hashing;
 using Runtime.ExceptionServices;
 
 partial class Epoch
@@ -79,90 +78,6 @@ partial class Epoch
             }
         }
     }
-    
-    /// <summary>
-    /// Represents an object which lifetime is controlled by <see cref="Epoch"/> internal Garbage Collector.
-    /// </summary>
-    public abstract class Discardable : IThreadPoolWorkItem
-    {
-        internal Discardable? Next;
-
-        /// <summary>
-        /// Automatically called by <see cref="Epoch"/> infrastructure to clean up resources associated with this object.
-        /// </summary>
-        protected abstract void Discard();
-
-        internal void Drain()
-        {
-            for (Discardable? current = this, next; current is not null; current = next)
-            {
-                next = current.Next;
-                current.Next = null; // help GC
-                current.Discard();
-            }
-        }
-
-        internal void Drain(ref ExceptionAggregator exceptions)
-        {
-            for (Discardable? current = this, next; current is not null; current = next)
-            {
-                next = current.Next;
-                current.Next = null; // help GC
-
-                try
-                {
-                    current.Discard();
-                }
-                catch (Exception e)
-                {
-                    exceptions += e;
-                }
-            }
-        }
-
-        internal void Drain(bool throwOnFirstException)
-        {
-            if (throwOnFirstException)
-            {
-                Drain();
-            }
-            else
-            {
-                var exceptions = new ExceptionAggregator();
-                Drain(ref exceptions);
-                exceptions.ThrowIfNeeded();
-            }
-        }
-
-        void IThreadPoolWorkItem.Execute()
-        {
-            var exceptions = new ExceptionAggregator();
-            Drain(ref exceptions);
-            exceptions.ThrowIfNeeded();
-        }
-    }
-    
-    private sealed class ActionNode(Action callback) : Discardable
-    {
-        protected override void Discard() => callback();
-    }
-
-    private sealed class ActionNode<T>(T arg, Action<T> callback) : Discardable
-    {
-        protected override void Discard() => callback(arg);
-    }
-
-    private sealed class WorkItem<TWorkItem>(TWorkItem item) : Discardable
-        where TWorkItem : struct, IThreadPoolWorkItem
-    {
-        private TWorkItem item = item;
-        protected override void Discard() => item.Execute();
-    }
-
-    private sealed class Cleanup(IDisposable disposable) : Discardable
-    {
-        protected override void Discard() => disposable.Dispose();
-    }
 
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
@@ -197,7 +112,7 @@ partial class Epoch
             {
                 if (bucketForCurrentThread is not { } index)
                 {
-                    bucketForCurrentThread = index = FNV1a32.Hash(Environment.CurrentManagedThreadId) & (int)(RecommendedSize - 1U);
+                    bucketForCurrentThread = index = Environment.CurrentManagedThreadId & (int)(RecommendedSize - 1U);
                 }
 
                 return ref this[index];
@@ -205,19 +120,9 @@ partial class Epoch
         }
 
         internal readonly void Defer(Discardable node)
-            => Defer(ref BucketForCurrentThread, node);
+            => node.Attach(ref BucketForCurrentThread);
 
-        private static void Defer(ref Discardable? bucket, Discardable node)
-        {
-            Discardable? current, tmp = bucket;
-            do
-            {
-                current = tmp;
-                node.Next = current;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref bucket, node, current), current));
-        }
-
-        internal readonly Discardable? DetachLocal() => Interlocked.Exchange(ref BucketForCurrentThread, null);
+        internal readonly Discardable? DetachLocal() => Discardable.Detach(ref BucketForCurrentThread);
 
         internal readonly DetachingEnumerable DetachGlobal() => new(callbacks);
 

@@ -66,21 +66,13 @@ public sealed partial class Epoch
     public readonly struct RecycleBin : IThreadPoolWorkItem
     {
         // null, or Discardable, or Discardable[]
-        private readonly object discardable;
+        private readonly object? discardable;
         private readonly int count;
 
         internal RecycleBin(Discardable? discardable)
         {
-            if (discardable is null)
-            {
-                this.discardable = Sentinel.Instance;
-                count = 0;
-            }
-            else
-            {
-                this.discardable = discardable;
-                count = 1;
-            }
+            this.discardable = discardable;
+            count = Unsafe.BitCast<bool, byte>(discardable is not null);
         }
 
         internal RecycleBin(DetachingEnumerable discardables)
@@ -97,7 +89,7 @@ public sealed partial class Epoch
             switch (index)
             {
                 case 0:
-                    discardable = Sentinel.Instance;
+                    discardable = null;
                     break;
                 case 1:
                     discardable = array[0];
@@ -114,7 +106,7 @@ public sealed partial class Epoch
         private ReadOnlySpan<Discardable> Span => count switch
         {
             0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable)),
+            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable!)),
             _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
         };
 
