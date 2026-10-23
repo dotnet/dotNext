@@ -177,14 +177,14 @@ public sealed class AsyncResetEventTests : Test
 
         // the canceled task is not consumed, so its node remains in the queue
         var canceled = are.WaitAsync(cts.Token);
-        cts.Cancel();
+        await cts.CancelAsync();
         True(canceled.IsCanceled);
 
         True(are.Set());
         True(are.IsSet);
 
         // the queue is not empty, so the waiter cannot consume the signal
-        var waiter = are.WaitAsync().AsTask();
+        var waiter = are.WaitAsync(TestToken).AsTask();
         False(waiter.IsCompleted);
 
         // removal of the canceled node passes the signal to the waiter
