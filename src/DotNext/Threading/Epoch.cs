@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
 using Runtime.ExceptionServices;
 
 /// <summary>
@@ -82,128 +80,33 @@ public sealed partial class Epoch
     /// the epoch scope.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct RecycleBin : IThreadPoolWorkItem
+    public readonly struct RecycleBin
     {
-        // null, or Discardable, or Discardable[]
-        private readonly object? discardable;
-        private readonly int count;
+        private readonly Discardable? root;
 
-        internal RecycleBin(Discardable? discardable)
-        {
-            this.discardable = discardable;
-            count = Unsafe.BitCast<bool, byte>(discardable is not null);
-        }
-
-        internal RecycleBin(DetachingEnumerable discardables)
-        {
-            var array = new Discardable[discardables.MaxCount];
-
-            var index = 0;
-            foreach (var node in discardables)
-            {
-                // Perf: skip list.Add to avoid capacity checks
-                array[index++] = node;
-            }
-
-            switch (index)
-            {
-                case 0:
-                    discardable = null;
-                    break;
-                case 1:
-                    discardable = array[0];
-                    count = 1;
-                    break;
-                default:
-                    count = index;
-                    discardable = array;
-                    break;
-            }
-        }
-
-        [UnscopedRef]
-        private ReadOnlySpan<Discardable> Span => count switch
-        {
-            0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable!)),
-            _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
-        };
+        internal RecycleBin(Discardable? root)
+            => this.root = root;
 
         /// <summary>
         /// Gets a value indicating that the action is empty.
         /// </summary>
-        public bool IsEmpty => count is 0;
+        public bool IsEmpty => root is null;
 
         /// <summary>
         /// Invokes all deferred actions.
         /// </summary>
         /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
         public void Clear(bool throwOnFirstException = false)
-        {
-            scoped var span = Span;
-            switch (span)
-            {
-                case []:
-                    break;
-                case [var callback]:
-                    callback.Drain(throwOnFirstException);
-                    break;
-                default:
-                    Drain(span, throwOnFirstException);
-                    break;
-            }
-        }
-
-        /// <inheritdoc cref="IThreadPoolWorkItem.Execute()"/>
-        void IThreadPoolWorkItem.Execute() => Clear(throwOnFirstException: false);
-
-        private static void Drain(ReadOnlySpan<Discardable> objects, bool throwOnFirstException)
-        {
-            var exceptions = new ExceptionAggregator();
-            if (throwOnFirstException)
-            {
-                try
-                {
-                    foreach (var node in objects)
-                    {
-                        node.Drain();
-                    }
-                }
-                catch (Exception e)
-                {
-                    exceptions += e;
-                }
-            }
-            else
-            {
-                foreach (var node in objects)
-                {
-                    node.Drain(ref exceptions);
-                }
-            }
-
-            exceptions.ThrowIfNeeded();
-        }
+            => root?.Drain(throwOnFirstException);
 
         /// <summary>
         /// Queues invocation of deferred actions to the thread pool.
         /// </summary>
         public void QueueCleanup()
         {
-            scoped var span = Span;
-
-            switch (span)
+            if (root is not null)
             {
-                case []:
-                    break;
-                case [var callback]:
-                    IThreadPoolWorkItem workItem = callback;
-                    goto queue_user_work_item;
-                default:
-                    workItem = this;
-                    queue_user_work_item:
-                    ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
-                    break;
+                ThreadPool.UnsafeQueueUserWorkItem(root, preferLocal: false);
             }
         }
 
@@ -213,26 +116,10 @@ public sealed partial class Epoch
         /// <returns>The task representing execution of deferred actions.</returns>
         public Task ClearAsync()
         {
-            scoped var span = Span;
-            Task task;
-
-            switch (span)
-            {
-                case []:
-                    task = Task.CompletedTask;
-                    break;
-                case [var callback]:
-                    IThreadPoolWorkItem workItem = callback;
-                    goto start_task;
-                default:
-                    workItem = this;
-                    start_task:
-                    task = Task.Factory.StartNew(Execute, workItem, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default);
-                    break;
-            }
-
-            return task;
+            return root is not null
+                ? Task.Factory.StartNew(Execute, root, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default)
+                : Task.CompletedTask;
 
             static void Execute(object? callback)
             {
@@ -337,7 +224,7 @@ public sealed partial class Epoch
         /// </param>
         /// <returns>A collection of reclaimed actions that can be executed at any point in time.</returns>
         public RecycleBin Reclaim(bool drainGlobalCache = false)
-            => state.Reclaim(handle, drainGlobalCache);
+            => new(state.Reclaim(handle, drainGlobalCache));
 
         /// <summary>
         /// Releases epoch scope.

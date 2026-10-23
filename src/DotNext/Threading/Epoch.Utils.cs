@@ -32,50 +32,36 @@ partial class Epoch
     private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
 
-    private RecycleBin Reclaim(uint currentEpoch, bool drainGlobalCache)
+    private Discardable? Reclaim(uint currentEpoch, bool drainGlobalCache)
     {
-        RecycleBin bin;
-        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } safeToReclaimEpoch)
-        {
-            bin = default;
-        }
-        else if (drainGlobalCache)
-        {
-            bin = new(safeToReclaimEpoch.Value.DetachGlobal());
-        }
-        else
-        {
-            bin = new(safeToReclaimEpoch.Value.DetachLocal());
-        }
-
-        return bin;
+        ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(currentEpoch);
+        return Unsafe.IsNullRef(in safeToReclaimEpoch)
+            ? null
+            : safeToReclaimEpoch.Detach(drainGlobalCache);
     }
 
-    private ReadOnlyLocalReference<Entry> TryBumpEpoch(uint currentEpoch)
+    private ref readonly Entry TryBumpEpoch(uint currentEpoch)
     {
         ref readonly var currentEpochState = ref entries[currentEpoch];
         var nextEpochIndex = currentEpochState.Next;
         ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
 
-        return previousEpochState.Counter is 0U
-               && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
-            ? new(in previousEpochState)
-            : default;
+        return ref previousEpochState.Counter is 0U
+                   && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
+            ? ref previousEpochState
+            : ref Unsafe.NullRef<Entry>();
     }
-    
+
     private bool TryReclaimCurrentEpoch(ref ExceptionAggregator exceptions)
     {
-        if (TryBumpEpoch(Volatile.Read(ref globalEpoch)) is not { IsEmpty: false } safeToReclaimEpoch)
-            return false;
+        ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(Volatile.Read(ref globalEpoch));
+        var result = !Unsafe.IsNullRef(in safeToReclaimEpoch);
+        if (result)
+            safeToReclaimEpoch.Detach(drainGlobalCache: true)?.Drain(ref exceptions);
 
-        foreach (var bucket in safeToReclaimEpoch.Value.DetachGlobal())
-        {
-            bucket.Drain(ref exceptions);
-        }
-
-        return true;
+        return result;
     }
-    
+
     private bool TryDrain(ref int progress, ref ExceptionAggregator exceptions)
     {
         while (progress < EpochCount && TryReclaimCurrentEpoch(ref exceptions))
@@ -127,9 +113,37 @@ partial class Epoch
         internal readonly void Defer(Discardable node)
             => node.Attach(ref BucketForCurrentThread);
 
-        internal readonly Discardable? DetachLocal() => Discardable.Detach(ref BucketForCurrentThread);
+        internal readonly Discardable? Detach(bool drainGlobalCache)
+            => drainGlobalCache ? DetachGlobal() : DetachLocal();
 
-        internal readonly DetachingEnumerable DetachGlobal() => new(callbacks);
+        private readonly Discardable? DetachLocal() => Discardable.Detach(ref BucketForCurrentThread);
+
+        private readonly Discardable? DetachGlobal()
+        {
+            var root = default(Discardable);
+            int index;
+            
+            // find the first non-null node
+            for (index = 0; index < callbacks.Length && root is null; index++)
+            {
+                root = Discardable.Detach(ref this[index]);
+            }
+            
+            // attach nodes from other buckets to the root
+            if (root is not null)
+            {
+                for (var last = root.GetLast(); index < callbacks.Length; index++)
+                {
+                    if (Discardable.Detach(ref this[index]) is { } discardable)
+                    {
+                        last.Attach(discardable);
+                        last = discardable.GetLast();
+                    }
+                }
+            }
+
+            return root;
+        }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
@@ -148,40 +162,6 @@ partial class Epoch
                 var hasDeferredActions = Array.Exists(callbacks, Predicate<Discardable>.IsNotNull);
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct DetachingEnumerable(Discardable?[] callbacks)
-    {
-        public DetachingEnumerator GetEnumerator() => new(callbacks);
-
-        public int MaxCount => callbacks.Length;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal ref struct DetachingEnumerator(Discardable?[] callbacks)
-    {
-        private Span<Discardable?>.Enumerator enumerator = callbacks.AsSpan().GetEnumerator();
-
-        public Discardable Current
-        {
-            readonly get => field ?? throw new InvalidOperationException();
-            private set;
-        }
-
-        public bool MoveNext()
-        {
-            while (enumerator.MoveNext())
-            {
-                if (Interlocked.Exchange(ref enumerator.Current, null) is not { } current)
-                    continue;
-                
-                Current = current;
-                return true;
-            }
-
-            return false;
         }
     }
 

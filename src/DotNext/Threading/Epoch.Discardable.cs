@@ -16,7 +16,7 @@ partial class Epoch
         /// </summary>
         protected abstract void Discard();
 
-        internal void Drain()
+        private void Drain()
         {
             for (Discardable? current = this, nextNode; current is not null; current = nextNode)
             {
@@ -76,8 +76,21 @@ partial class Epoch
             }
         }
 
+        internal void Attach(Discardable nextNode) => next = nextNode;
+
         internal static Discardable? Detach(ref Discardable? location)
             => location is not null ? Interlocked.Exchange(ref location, null) : null;
+
+        internal Discardable GetLast()
+        {
+            var result = this;
+            while (result.next is { } nextNode)
+            {
+                result = nextNode;
+            }
+
+            return result;
+        }
     }
     
     private sealed class ActionNode(Action callback) : Discardable
