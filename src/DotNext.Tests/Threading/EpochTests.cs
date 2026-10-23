@@ -269,21 +269,21 @@ public sealed class EpochTests : Test
             internal T Value => value;
         }
     }
-    
-    private readonly struct TaskCompletionSourceWrapper(TaskCompletionSource source) : IThreadPoolWorkItem
-    {
-        void IThreadPoolWorkItem.Execute() => source.SetResult();
-    }
-    
-    private sealed class DisposableObject : Disposable
-    {
-        public new bool IsDisposed => base.IsDisposed;
-    }
-    
-    private sealed class DiscardableObject : Epoch.Discardable
-    {
-        internal bool IsDisposed { get; private set; }
+}
 
-        protected override void Discard() => IsDisposed = true;
-    }
+file readonly struct TaskCompletionSourceWrapper(TaskCompletionSource source) : IThreadPoolWorkItem
+{
+    void IThreadPoolWorkItem.Execute() => source.SetResult();
+}
+    
+file sealed class DisposableObject : Disposable
+{
+    public new bool IsDisposed => base.IsDisposed;
+}
+    
+file sealed class DiscardableObject : Epoch.Discardable
+{
+    internal bool IsDisposed { get; private set; }
+
+    protected override void Discard() => IsDisposed = true;
 }
