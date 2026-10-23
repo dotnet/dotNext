@@ -14,6 +14,7 @@ using Runtime.ExceptionServices;
 /// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
 public sealed partial class Epoch
 {
+    private const int EpochCount = 3;
     private uint globalEpoch;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -40,19 +41,37 @@ public sealed partial class Epoch
     public Scope Enter() => new(this);
 
     /// <summary>
-    /// Invokes all deferred actions across all epochs.
+    /// Clears all the discarded resources safely.
     /// </summary>
     /// <remarks>
-    /// This method is not thread-safe and cannot be called concurrently with other threads entered a protected region
-    /// with <see cref="Enter()"/>. The caller must ensure that all threads finished their work prior to this method.
+    /// If another thread is in its own epoch, the method suspends.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
-    /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
-    public void UnsafeClear()
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    public async ValueTask ClearAsync(CancellationToken token = default)
     {
         var exceptions = new ExceptionAggregator();
-        UnsafeDrain(ref exceptions);
+        for (var progress = 0; !TryDrain(ref progress, ref exceptions); token.ThrowIfCancellationRequested())
+        {
+            await Task.Yield();
+        }
+
         exceptions.ThrowIfNeeded();
+    }
+
+    /// <summary>
+    /// Clears all the discarded resources safely.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if there is no competing thread entered the epoch, so all epochs are cleaned;
+    /// otherwise, <see langword="false"/> and the caller needs to retry.
+    /// </returns>
+    public bool TryClear()
+    {
+        var exceptions = new ExceptionAggregator();
+        var progress = 0;
+        var result = TryDrain(ref progress, ref exceptions);
+        exceptions.ThrowIfNeeded();
+        return result;
     }
 
     /// <summary>

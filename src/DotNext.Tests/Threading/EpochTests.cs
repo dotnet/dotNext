@@ -135,6 +135,20 @@ public sealed class EpochTests : Test
         scope.Dispose();
     }
 
+    [Fact]
+    public static async Task ClearAsync()
+    {
+        var epoch = new Epoch();
+        Task task;
+        using (epoch.Enter())
+        {
+            task = epoch.ClearAsync(TestToken).AsTask();
+            False(task.IsCompleted);
+        }
+
+        await task;
+    }
+
     [Theory]
     [InlineData(100, 1, 1, 2)]
     [InlineData(100, 3, 2, 2)]
@@ -157,7 +171,7 @@ public sealed class EpochTests : Test
             t.Join();
         }
 
-        epoch.UnsafeClear();
+        True(epoch.TryClear());
 
         static Thread[] GetThreads(ThreadStart action, int count)
         {

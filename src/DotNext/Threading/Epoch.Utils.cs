@@ -62,21 +62,26 @@ partial class Epoch
             ? new(in previousEpochState)
             : default;
     }
-
-    private void UnsafeDrain(ref ExceptionAggregator exceptions)
+    
+    private bool TryReclaimCurrentEpoch(ref ExceptionAggregator exceptions)
     {
-        foreach (ref readonly var state in entries)
-        {
-            if (state.Counter > 0U)
-            {
-                throw new InvalidOperationException();
-            }
+        if (TryBumpEpoch(Volatile.Read(ref globalEpoch)) is not { IsEmpty: false } safeToReclaimEpoch)
+            return false;
 
-            foreach (var bucket in state.DetachGlobal())
-            {
-                bucket.Drain(ref exceptions);
-            }
+        foreach (var bucket in safeToReclaimEpoch.Value.DetachGlobal())
+        {
+            bucket.Drain(ref exceptions);
         }
+
+        return true;
+    }
+    
+    private bool TryDrain(ref int progress, ref ExceptionAggregator exceptions)
+    {
+        while (progress < EpochCount && TryReclaimCurrentEpoch(ref exceptions))
+            progress++;
+
+        return progress is EpochCount;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -180,7 +185,7 @@ partial class Epoch
         }
     }
 
-    [InlineArray(3)]
+    [InlineArray(EpochCount)]
     private struct EpochEntryCollection
     {
         private Entry entry;
