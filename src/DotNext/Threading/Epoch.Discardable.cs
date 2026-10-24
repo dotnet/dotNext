@@ -16,7 +16,7 @@ partial class Epoch
         /// </summary>
         protected abstract void Discard();
 
-        private void Drain()
+        internal void Drain()
         {
             for (Discardable? current = this, nextNode; current is not null; current = nextNode)
             {
@@ -41,20 +41,6 @@ partial class Epoch
                 {
                     exceptions += e;
                 }
-            }
-        }
-
-        internal void Drain(bool throwOnFirstException)
-        {
-            if (throwOnFirstException)
-            {
-                Drain();
-            }
-            else
-            {
-                var exceptions = new ExceptionAggregator();
-                Drain(ref exceptions);
-                exceptions.ThrowIfNeeded();
             }
         }
 

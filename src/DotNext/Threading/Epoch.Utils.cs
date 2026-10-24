@@ -13,6 +13,14 @@ partial class Epoch
     private void Defer(uint epoch, Discardable node)
         => entries[epoch].Defer(node);
 
+    private void Defer(uint epoch, nuint handle)
+    {
+        Debug.Assert(NativeResourceManager is not null);
+        Debug.Assert(handle is not 0U);
+        
+        entries[epoch].Defer(NativeResourceManager, handle);
+    }
+
     private uint EnterEpoch()
     {
         while (true)
@@ -32,12 +40,16 @@ partial class Epoch
     private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
 
-    private Discardable? Reclaim(uint currentEpoch, bool drainGlobalCache)
+    private Discardable? Reclaim(uint currentEpoch, bool drainGlobalCache, out nuint unmanaged)
     {
         ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(currentEpoch);
-        return Unsafe.IsNullRef(in safeToReclaimEpoch)
-            ? null
-            : safeToReclaimEpoch.Detach(drainGlobalCache);
+        if (Unsafe.IsNullRef(in safeToReclaimEpoch))
+        {
+            unmanaged = 0U;
+            return null;
+        }
+
+        return safeToReclaimEpoch.Detach(NativeResourceManager, drainGlobalCache, out unmanaged);
     }
 
     private ref readonly Entry TryBumpEpoch(uint currentEpoch)
@@ -57,7 +69,16 @@ partial class Epoch
         ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(Volatile.Read(ref globalEpoch));
         var result = !Unsafe.IsNullRef(in safeToReclaimEpoch);
         if (result)
-            safeToReclaimEpoch.Detach(drainGlobalCache: true)?.Drain(ref exceptions);
+        {
+            var resourceManager = NativeResourceManager;
+            safeToReclaimEpoch.Detach(resourceManager, drainGlobalCache: true, out var unmanaged)?.Drain(ref exceptions);
+            if (unmanaged is not 0U)
+            {
+                Debug.Assert(resourceManager is not null);
+
+                INativeResourceManager.Clear(resourceManager, unmanaged, ref exceptions);
+            }
+        }
 
         return result;
     }
@@ -83,10 +104,10 @@ partial class Epoch
         internal readonly uint Previous = previous, Next = next;
         
         // size of the array must be a power of 2 to optimize modulo operation
-        private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
+        private readonly Resource[] callbacks = new Resource[RecommendedSize];
         internal uint Counter;
 
-        private readonly ref Discardable? this[int index]
+        private readonly ref Resource this[int index]
         {
             get
             {
@@ -97,7 +118,7 @@ partial class Epoch
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref Discardable? BucketForCurrentThread
+        private static int IndexForCurrentThread
         {
             get
             {
@@ -106,44 +127,85 @@ partial class Epoch
                     bucketForCurrentThread = index = Environment.CurrentManagedThreadId & (int)(RecommendedSize - 1U);
                 }
 
-                return ref this[index];
+                return index;
             }
         }
 
         internal readonly void Defer(Discardable node)
-            => node.Attach(ref BucketForCurrentThread);
+            => node.Attach(ref this[IndexForCurrentThread].Managed);
 
-        internal readonly Discardable? Detach(bool drainGlobalCache)
-            => drainGlobalCache ? DetachGlobal() : DetachLocal();
+        internal readonly void Defer(INativeResourceManager resourceManager, nuint handle)
+            => INativeResourceManager.Attach(resourceManager, handle, ref this[IndexForCurrentThread].Unmanaged);
 
-        private readonly Discardable? DetachLocal() => Discardable.Detach(ref BucketForCurrentThread);
+        internal readonly Discardable? Detach(INativeResourceManager? resourceManager,
+            bool drainGlobalCache,
+            out nuint unmanaged)
+            => drainGlobalCache
+                ? DetachGlobal(resourceManager, out unmanaged)
+                : DetachLocal(resourceManager, out unmanaged);
 
-        private readonly Discardable? DetachGlobal()
+        private readonly Discardable? DetachLocal(INativeResourceManager? resourceManager, out nuint unmanaged)
         {
-            var root = default(Discardable);
-            int index;
-            
-            // find the first non-null node
-            for (index = 0; index < callbacks.Length && root is null; index++)
+            ref var entry = ref this[IndexForCurrentThread];
+            unmanaged = resourceManager is not null ? entry.DetachUnmanaged() : 0U;
+            return entry.DetachManaged();
+        }
+
+        private readonly Discardable? DetachGlobal(INativeResourceManager? resourceManager, out nuint unmanaged)
+        {
+            unmanaged = resourceManager is null ? 0U : DetachGlobal(resourceManager);
+            return DetachGlobal();
+        }
+
+        private readonly nuint DetachGlobal(INativeResourceManager resourceManager)
+        {
+            nuint root = 0U, last = 0U;
+            for (var i = 0; i < callbacks.Length; i++)
             {
-                root = Discardable.Detach(ref this[index]);
-            }
-            
-            // attach nodes from other buckets to the root
-            if (root is not null)
-            {
-                for (var last = root.GetLast(); index < callbacks.Length; index++)
+                var detached = this[i].DetachUnmanaged();
+                if (detached is 0U)
+                    continue;
+
+                if (last is 0U)
                 {
-                    if (Discardable.Detach(ref this[index]) is { } discardable)
-                    {
-                        last.Attach(discardable);
-                        last = discardable.GetLast();
-                    }
+                    root = detached;
                 }
+                else
+                {
+                    resourceManager.GetNextHandle(last) = detached;
+                }
+
+                last = INativeResourceManager.GetLast(resourceManager, detached);
             }
 
             return root;
         }
+
+        private readonly Discardable? DetachGlobal()
+        {
+            Discardable? root = null, last = null;
+            
+            // find the first non-null node
+            for (var i = 0; i < callbacks.Length; i++)
+            {
+                if (this[i].DetachManaged() is not { } detached)
+                    continue;
+
+                if (last is null)
+                {
+                    root = detached;
+                }
+                else
+                {
+                    last.Attach(detached);
+                }
+
+                last = detached.GetLast();
+            }
+
+            return root;
+        }
+        
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
@@ -159,9 +221,26 @@ partial class Epoch
                     _ => uint.MaxValue,
                 };
 
-                var hasDeferredActions = Array.Exists(callbacks, Predicate<Discardable>.IsNotNull);
+                var hasDeferredActions = Array.Exists(callbacks, static r => !r.IsEmpty);
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private struct Resource
+        {
+            public Discardable? Managed;
+            public nuint Unmanaged;
+
+            [ExcludeFromCodeCoverage]
+            public readonly bool IsEmpty => Managed is null && Unmanaged is 0U;
+
+            public Discardable? DetachManaged() => Discardable.Detach(ref Managed);
+
+            public nuint DetachUnmanaged()
+                => Unmanaged is not 0U
+                    ? Interlocked.Exchange(ref Unmanaged, 0U)
+                    : 0U;
         }
     }
 
@@ -178,6 +257,58 @@ partial class Epoch
                 Debug.Assert(epoch <= 2U);
 
                 return ref Unsafe.Add(ref entry, epoch);
+            }
+        }
+    }
+    
+    partial interface INativeResourceManager
+    {
+        internal static void Clear(INativeResourceManager resourceManager, nuint rootHandle)
+        {
+            for (nuint current = rootHandle, next; current is not 0U; current = next)
+            {
+                next = resourceManager.GetNextHandle(current);
+                resourceManager.Release(current);
+            }
+        }
+
+        internal static void Clear(INativeResourceManager resourceManager, nuint rootHandle, ref ExceptionAggregator exceptions)
+        {
+            for (nuint current = rootHandle, next; current is not 0U; current = next)
+            {
+                next = resourceManager.GetNextHandle(current);
+                try
+                {
+                    resourceManager.Release(current);
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
+            }
+        }
+
+        internal static nuint GetLast(INativeResourceManager manager, nuint handle)
+        {
+            Debug.Assert(handle is not 0U);
+            
+            var result = handle;
+            for (nuint next; (next = manager.GetNextHandle(result)) is not 0U;)
+            {
+                result = next;
+            }
+
+            return result;
+        }
+
+        internal static void Attach(INativeResourceManager resourceManager, nuint handle, ref nuint root)
+        {
+            for (nuint current = root, tmp;; current = tmp)
+            {
+                resourceManager.GetNextHandle(handle) = current;
+                tmp = Interlocked.CompareExchange(ref root, handle, current);
+                if (current == tmp)
+                    break;
             }
         }
     }

@@ -283,6 +283,146 @@ public sealed class EpochTests : Test
             internal T Value => value;
         }
     }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static void UnmanagedReclamation(bool throwOnFirstException)
+    {
+        var manager = new ResourceManager(3);
+        var epoch = new Epoch { NativeResourceManager = manager };
+
+        using (var region = epoch.Enter())
+        {
+            region.Defer(manager.Allocate());
+            region.Defer(manager.Allocate());
+            region.Defer(manager.Allocate());
+            True(region.Reclaim().IsEmpty);
+        }
+
+        False(manager.AllReleasedOnce);
+
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            bin.Clear(throwOnFirstException);
+        }
+
+        True(manager.AllReleasedOnce);
+    }
+
+    [Fact]
+    public static void UnmanagedResourcesFromManyThreads()
+    {
+        const int threadCount = 8, perThread = 1000;
+        var manager = new ResourceManager(threadCount * perThread);
+        var epoch = new Epoch { NativeResourceManager = manager };
+
+        // each thread defers to its own bucket
+        var threads = new Thread[threadCount];
+        for (var i = 0; i < threads.Length; i++)
+        {
+            threads[i] = new(() =>
+            {
+                for (var j = 0; j < perThread; j++)
+                {
+                    using var region = epoch.Enter();
+                    region.Defer(manager.Allocate());
+                }
+            });
+        }
+
+        foreach (var t in threads)
+            t.Start();
+
+        foreach (var t in threads)
+            True(t.Join(DefaultTimeout));
+
+        True(epoch.TryClear());
+        True(manager.AllReleasedOnce);
+    }
+
+    [Fact]
+    public static async Task ManagedAndUnmanagedResourcesInDifferentBuckets()
+    {
+        var manager = new ResourceManager(1);
+        var epoch = new Epoch { NativeResourceManager = manager };
+        var executed = false;
+
+        var managedThread = new Thread(() =>
+        {
+            using var region = epoch.Enter();
+            region.Defer(() => executed = true);
+        });
+
+        var unmanagedThread = new Thread(() =>
+        {
+            using var region = epoch.Enter();
+            region.Defer(manager.Allocate());
+        });
+
+        managedThread.Start();
+        unmanagedThread.Start();
+        True(managedThread.Join(DefaultTimeout));
+        True(unmanagedThread.Join(DefaultTimeout));
+
+        await epoch.ClearAsync(TestToken);
+        True(executed);
+        True(manager.AllReleasedOnce);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static void FailedActionDoesNotPreventRelease(bool throwOnFirstException)
+    {
+        var manager = new ResourceManager(1);
+        var epoch = new Epoch { NativeResourceManager = manager };
+
+        using (var region = epoch.Enter())
+        {
+            region.Defer(static () => throw new ArithmeticException());
+            region.Defer(static () => throw new ArithmeticException());
+            region.Defer(manager.Allocate());
+            True(region.Reclaim().IsEmpty);
+        }
+
+        Epoch.RecycleBin bin;
+        using (var region = epoch.Enter())
+        {
+            bin = region.Reclaim(drainGlobalCache: true);
+        }
+
+        False(bin.IsEmpty);
+        if (throwOnFirstException)
+        {
+            Throws<ArithmeticException>(() => bin.Clear(throwOnFirstException: true));
+        }
+        else
+        {
+            // a single exception is rethrown as is, the multiple ones are aggregated
+            Equal(2, Throws<AggregateException>(() => bin.Clear()).InnerExceptions.Count);
+        }
+
+        True(manager.AllReleasedOnce);
+    }
+
+    [Fact]
+    public static void DeferUnmanagedResourceValidation()
+    {
+        var epoch = new Epoch();
+        using (var region = epoch.Enter())
+        {
+            Throws<InvalidOperationException>(() => region.Defer(1U));
+        }
+
+        epoch = new() { NativeResourceManager = new ResourceManager(1) };
+        using (var region = epoch.Enter())
+        {
+            Throws<ArgumentOutOfRangeException>(() => region.Defer(0U));
+        }
+    }
 }
 
 file readonly struct TaskCompletionSourceWrapper(TaskCompletionSource source) : IThreadPoolWorkItem
@@ -300,4 +440,20 @@ file sealed class DiscardableObject : Epoch.Discardable
     internal bool IsDisposed { get; private set; }
 
     protected override void Discard() => IsDisposed = true;
+}
+
+// the handle is an index of the resource, the link is stored in the managed array
+file sealed class ResourceManager(int capacity) : Epoch.INativeResourceManager
+{
+    private readonly nuint[] links = new nuint[capacity + 1];
+    private readonly int[] releases = new int[capacity + 1];
+    private int count;
+
+    public nuint Allocate() => (nuint)Interlocked.Increment(ref count);
+
+    public bool AllReleasedOnce => releases.AsSpan(1, count).ContainsAnyExcept(1) is false;
+
+    public ref nuint GetNextHandle(nuint handle) => ref links[(int)handle];
+
+    public void Release(nuint handle) => Interlocked.Increment(ref releases[(int)handle]);
 }
