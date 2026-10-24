@@ -113,6 +113,8 @@ internal sealed class TcpServer : Server, ITcpTransport
                 await timeoutSource.DisposeAsync().ConfigureAwait(false);
             }
 
+            // returned to the pool above: the finally below must not return it again
+            timeoutSource = default;
             protocol = new(ssl, MemoryAllocator, transmissionBlockSize);
         }
 

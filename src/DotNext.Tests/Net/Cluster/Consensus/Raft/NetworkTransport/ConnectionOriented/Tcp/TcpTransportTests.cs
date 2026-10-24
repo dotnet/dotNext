@@ -72,6 +72,50 @@ public sealed partial class TcpTransportTests : TransportTestSuite
     }
 
     [Fact]
+    public async Task ConnectionClosedAfterTlsHandshake()
+    {
+        // backlog 1: the timeout sources come from a pool that keeps one
+        var serverAddr = new IPEndPoint(IPAddress.Loopback, 3790);
+        await using var server = new TcpServer(serverAddr, 1, CreateLocalMember(), NullLoggerFactory.Instance)
+        {
+            ReceiveTimeout = TimeSpan.FromMilliseconds(300),
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            TransmissionBlockSize = 65535,
+            GracefulShutdownTimeout = 2000,
+            SslOptions = CreateServerSslOptions()
+        };
+        await server.StartAsync(TestToken);
+
+        // A completes the TLS handshake and sends nothing: the handshake's timeout source goes back to the pool
+        using var a = new System.Net.Sockets.Socket(serverAddr.AddressFamily, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+        await a.ConnectAsync(serverAddr, TestToken);
+        await using var tls = new SslStream(new System.Net.Sockets.NetworkStream(a, ownsSocket: false));
+        await tls.AuthenticateAsClientAsync(CreateClientSslOptions(), TestToken);
+
+        // B never starts its handshake: it takes the same source from the pool, times out, and the source is disposed
+        using var b = new System.Net.Sockets.Socket(serverAddr.AddressFamily, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+        await b.ConnectAsync(serverAddr, TestToken);
+        Equal(0, await b.ReceiveAsync(new byte[1], TestToken)); // closed by the server after the timeout
+
+        // A leaves before its first message: the connection must not return the handshake's source to the pool again
+        // (it threw ObjectDisposedException from async void HandleConnection, which ended the process)
+        a.Shutdown(System.Net.Sockets.SocketShutdown.Both);
+        a.Close();
+        await Task.Delay(500, TestToken);
+
+        // the server still answers
+        using var client = new TcpClient(CreateLocalMember(), serverAddr)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            RequestTimeout = DefaultTimeout,
+            ConnectTimeout = DefaultTimeout,
+            TransmissionBlockSize = 65535,
+            SslOptions = CreateClientSslOptions(),
+        };
+        True((await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, TestToken)).Value);
+    }
+
+    [Fact]
     public Task StressTest()
     {
         static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
