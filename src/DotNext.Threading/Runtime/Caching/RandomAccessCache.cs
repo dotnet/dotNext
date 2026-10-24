@@ -87,7 +87,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         buckets = new(dictionarySize);
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
-        queueHead = queueTail = new FakeKeyValuePair();
+        queueHead = queueTail = new QueueHead();
 
         evictionTask = DoEvictionAsync(completionSource = new());
     }
@@ -276,8 +276,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         else
         {
             // user code is called under the lock, so the lock is owned by the caller until the session is created
-            if (bucket.TryRemove(selector, hashCode) is { } removedPair && !removedPair.ReleaseCounter())
-                OnRemoved(removedPair);
+            if (bucket.TryRemove(selector, hashCode) is { } removedPair)
+            {
+                NotifyRemoved(removedPair);
+                if (!removedPair.ReleaseCounter())
+                    OnRemoved(removedPair);
+            }
 
             session = new(this, bucketsCopy, index, selector.Invoke(), hashCode);
         }
@@ -382,9 +386,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 lockedBuckets = null;
             }
 
-            return lockedBuckets[index].TryRemove(selector, hashCode) is { } removedPair
-                ? new ReadSession(this, removedPair)
-                : null;
+            if (lockedBuckets[index].TryRemove(selector, hashCode) is not { } removedPair)
+                return null;
+
+            NotifyRemoved(removedPair);
+            return new ReadSession(this, removedPair);
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
@@ -461,7 +467,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 lockedBuckets = null;
             }
 
-            removedPair = lockedBuckets[index].TryRemove(selector, hashCode);
+            if ((removedPair = lockedBuckets[index].TryRemove(selector, hashCode)) is not null)
+                NotifyRemoved(removedPair);
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
@@ -569,7 +576,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             {
                 pair = CreatePair(key, value, hashCode, willBePromoted: true);
                 bucket.Add(pair);
-                Promote(pair);
+                Enqueue(pair);
             }
         }
     }
@@ -582,7 +589,16 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public ValueTask InvalidateAsync(CancellationToken token = default)
-        => ProcessFullLockAsync<Action<KeyValuePair>>(static (b, a) => b.Invalidate(a), OnRemoved, token);
+        => ProcessFullLockAsync(static (buckets, cache) => cache.InvalidateAll(buckets), this, token);
+
+    // all the bucket locks are held
+    private void InvalidateAll(BucketList bucketsCopy)
+    {
+        bucketsCopy.Invalidate(OnRemoved);
+
+        // a single signal for all the pairs: the pairs inserted after the invalidation are enqueued after it
+        Enqueue(new InvalidationSignal { Target = null });
+    }
     
     private async ValueTask ProcessFullLockAsync<TArg>(Action<BucketList, TArg> action, TArg arg, CancellationToken token)
     {
@@ -795,7 +811,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (lockOrValueHolder)
             {
                 case BucketList lockedBuckets when lockedBuckets[index].TryAdd(key, hashCode, value, willBePromoted: true) is { } newPair:
-                    cache.Promote(newPair);
+                    cache.Enqueue(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:
                     RandomAccessCache<TKey, TValue>.SetValue(existingPair, value);

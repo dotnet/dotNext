@@ -27,13 +27,25 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void ProcessQueue()
     {
-        while (queueHead.NextInQueue is KeyValuePair newHead)
+        while (queueHead.NextInQueue is Command newHead)
         {
             queueHead.NextInQueue = Sentinel.Instance;
             queueHead = newHead;
                 
-            Debug.Assert(newHead is not FakeKeyValuePair);
-            EvictOrInsert(newHead);
+            Debug.Assert(newHead is not QueueHead);
+
+            switch (newHead)
+            {
+                case KeyValuePair pair:
+                    EvictOrInsert(pair);
+                    break;
+                case InvalidationSignal signal:
+                    Invalidate(signal);
+                    break;
+                default:
+                    Debug.Fail($"Unexpected command {newHead}");
+                    break;
+            }
         }
     }
 
@@ -63,6 +75,46 @@ public partial class RandomAccessCache<TKey, TValue>
 
             promoted.Added();
         }
+    }
+
+    private void Invalidate(InvalidationSignal signal)
+    {
+        if (signal.Target is { } removed)
+        {
+            Invalidate(removed);
+            signal.Target = null; // help GC, the signal remains the head of the queue
+        }
+        else
+        {
+            InvalidateAll();
+        }
+    }
+
+    private void Invalidate(KeyValuePair removed)
+    {
+        // the pair can be detached by the SIEVE hand already
+        if (removed.IsInEvictionList(evictionHead))
+        {
+            var previous = removed.DetachAndMoveBackward(ref evictionHead, ref evictionTail);
+            if (ReferenceEquals(removed, sieveHand))
+                sieveHand = previous ?? evictionTail;
+
+            currentSize--;
+        }
+    }
+
+    private void InvalidateAll()
+    {
+        // All the pairs in the list are dead, because the invalidation holds all the bucket locks.
+        // The pairs inserted after the invalidation are enqueued after the signal
+        for (KeyValuePair? current = evictionHead, next; current is not null; current = next)
+        {
+            next = current.MoveForward();
+            current.ClearSieveLinks();
+        }
+
+        evictionHead = evictionTail = sieveHand = null;
+        currentSize = 0;
     }
 
     private bool Evict(KeyValuePair promoted)
@@ -129,13 +181,17 @@ public partial class RandomAccessCache<TKey, TValue>
         var newSize = 0;
 
         // dead pairs are skipped, because the new bucket list doesn't contain them
-        for (var current = evictionTail; current is not null; current = current.MoveBackward())
+        for (KeyValuePair? current = evictionTail, previous; current is not null; current = previous)
         {
+            previous = current.MoveBackward();
             if (buckets.FindPair(factory.Invoke(current.Key), current.KeyHashCode) is { } pair)
             {
                 pair.Prepend(ref newHead, ref newTail);
                 newSize++;
             }
+
+            // the old pair is no longer in the eviction list
+            current.ClearSieveLinks();
         }
 
         evictionHead = newHead;
@@ -158,6 +214,15 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal KeyValuePair? MoveBackward()
             => sieveLinks.Previous;
+
+        internal KeyValuePair? MoveForward()
+            => sieveLinks.Next;
+
+        internal void ClearSieveLinks() => sieveLinks = default;
+
+        // can be called by the eviction thread only
+        internal bool IsInEvictionList(KeyValuePair? head)
+            => sieveLinks.Previous is not null || sieveLinks.Next is not null || ReferenceEquals(this, head);
 
         internal void Prepend([NotNull] ref KeyValuePair? head, [NotNull] ref KeyValuePair? tail)
         {
@@ -339,9 +404,9 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal ValueTask<bool> WaitAsync(KeyValuePair pair)
+        internal ValueTask<bool> WaitAsync(Command command)
         {
-            if (!pair.TryAttachNotificationHandler(this))
+            if (!command.TryAttachNotificationHandler(this))
                 Complete();
 
             return new(this, version);

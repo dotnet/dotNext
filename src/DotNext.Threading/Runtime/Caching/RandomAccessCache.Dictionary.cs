@@ -15,7 +15,6 @@ public partial class RandomAccessCache<TKey, TValue>
     private protected static ref readonly TValue GetValue(KeyValuePair pair)
     {
         Debug.Assert(pair is not null);
-        Debug.Assert(pair is not FakeKeyValuePair);
         Debug.Assert(Interlocked.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
         return ref Interlocked.IsAtomic<TValue>()
@@ -26,8 +25,6 @@ public partial class RandomAccessCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetValue(KeyValuePair pair, TValue value)
     {
-        Debug.Assert(pair is not FakeKeyValuePair);
-
         if (Interlocked.IsAtomic<TValue>())
         {
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
@@ -41,8 +38,6 @@ public partial class RandomAccessCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ClearValue(KeyValuePair pair)
     {
-        Debug.Assert(pair is not FakeKeyValuePair);
-
         if (!RuntimeHelpers.IsReferenceOrContainsReferences<TValue>())
         {
             // do nothing
@@ -64,7 +59,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private volatile BucketList buckets;
 
-    internal abstract partial class KeyValuePair
+    internal abstract partial class KeyValuePair : Command
     {
         internal readonly int KeyHashCode;
         internal readonly TKey Key;
@@ -612,7 +607,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // restart eviction process
             var newVersion = new BucketList(oldVersion, newSize);
             RebuildEvictionState(newVersion);
-            queueHead = queueTail = new FakeKeyValuePair();
+            queueHead = queueTail = new QueueHead();
             evictionTask = DoEvictionAsync(newSource);
 
             // Publish the new version last. The locks of the new version are not held,

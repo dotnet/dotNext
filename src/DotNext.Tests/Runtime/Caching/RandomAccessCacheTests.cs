@@ -728,6 +728,74 @@ public sealed class RandomAccessCacheTests : Test
             => Interlocked.Add(ref total, -value);
     }
 
+    private static async Task InsertAsync(RandomAccessCache<int, string> cache, int key)
+    {
+        await using var session = await cache.ChangeAsync(key, TestToken);
+        session.SetValue(key.ToString());
+    }
+
+    [Fact]
+    public static async Task InvalidationKeepsLiveRecords()
+    {
+        await using var cache = new RandomAccessCache<int, string>(100);
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        // invalidate the newer half
+        var half = capacity / 2;
+        for (var i = half; i < capacity; i++)
+            True(await cache.InvalidateAsync(i, TestToken));
+
+        // the invalidated records don't occupy the cache, so nothing has to be evicted
+        for (var i = capacity; i < 2 * capacity - half; i++)
+            await InsertAsync(cache, i);
+
+        All(Enumerable.Range(0, half), key => True(cache.Contains(key)));
+    }
+
+    [Fact]
+    public static async Task InvalidateSieveHand()
+    {
+        var evicted = new ConcurrentQueue<int>();
+        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = (key, _) => evicted.Enqueue(key) };
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        // the hand evicts the oldest record and stops at the next one
+        await InsertAsync(cache, capacity);
+        Equal([0], evicted);
+
+        // the record under the hand is removed, the hand moves to the next oldest record
+        True(await cache.InvalidateAsync(1, TestToken));
+        await InsertAsync(cache, capacity + 1);
+        await InsertAsync(cache, capacity + 2);
+
+        Equal([0, 1, 2], evicted);
+        All(Enumerable.Range(3, capacity), key => True(cache.Contains(key)));
+    }
+
+    [Fact]
+    public static async Task InvalidateAllThenRefill()
+    {
+        var evicted = 0;
+        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = (_, _) => Interlocked.Increment(ref evicted) };
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        await cache.InvalidateAsync(TestToken);
+        Equal(capacity, Volatile.Read(in evicted));
+
+        // the cache is empty, so the new records don't evict each other
+        for (var i = capacity; i < 2 * capacity; i++)
+            await InsertAsync(cache, i);
+
+        Equal(capacity, Volatile.Read(in evicted));
+        All(Enumerable.Range(capacity, capacity), key => True(cache.Contains(key)));
+    }
+
     private sealed class CacheWithStringWeight(int cacheCapacity, long maxWeight) : RandomAccessCache<string, string, long>(cacheCapacity, 0L, int.MaxValue)
     {
         private long totalWeight;

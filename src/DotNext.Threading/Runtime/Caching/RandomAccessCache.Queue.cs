@@ -8,11 +8,11 @@ using Patterns;
 public partial class RandomAccessCache<TKey, TValue>
 {
     // Queue has multiple producers and a single consumer. Consumer doesn't require special lock-free approach to dequeue.
-    private KeyValuePair queueTail, queueHead;
+    private Command queueTail, queueHead;
 
-    private void Promote(KeyValuePair newPair)
+    private void Enqueue(Command newPair)
     {
-        KeyValuePair currentTail;
+        Command currentTail;
         do
         {
             currentTail = queueTail;
@@ -21,16 +21,16 @@ public partial class RandomAccessCache<TKey, TValue>
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
         Interlocked.CompareExchange(ref queueTail, newPair, currentTail);
 
-        currentTail.Promoted();
+        currentTail.Dequeue();
     }
-
-    internal partial class KeyValuePair
+    
+    internal abstract class Command
     {
-        // null, or KeyValuePair, or Sentinel.Instance
+        // null, or Command, or Sentinel.Instance
         internal object? NextInQueue;
         private volatile IThreadPoolWorkItem? notification;
 
-        internal void Promoted()
+        internal void Dequeue()
         {
             if (Interlocked.Exchange(ref notification, SentinelNotification.Instance) is { } callback
                 && !ReferenceEquals(callback, SentinelNotification.Instance))
@@ -41,7 +41,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private bool IsPromoted => ReferenceEquals(notification, SentinelNotification.Instance);
+        protected bool HasNext => ReferenceEquals(notification, SentinelNotification.Instance);
 
         // true - attached, false - the object is already notified
         internal bool TryAttachNotificationHandler(IThreadPoolWorkItem continuation)
@@ -54,9 +54,9 @@ public partial class RandomAccessCache<TKey, TValue>
             get
             {
                 var count = 0;
-                for (var current = this; current is not null; current = current.NextInQueue as KeyValuePair)
+                for (var current = this; current is not null; current = current.NextInQueue as Command)
                 {
-                    if (current.IsPromoted)
+                    if (current.HasNext)
                         count++;
                 }
 
@@ -65,17 +65,20 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    // Never call GetValue on this class, it has no storage for TValue.
-    // It is used as a stub for the first element in the notification queue to keep task completion source
-    private sealed class FakeKeyValuePair() : KeyValuePair(default!, 0, willBePromoted: false)
+    // Notifies the eviction thread that the pair is removed from the cache, or all the pairs if Target is null.
+    // The signal passes through the promotion queue, so it is processed after the promotion of the removed pair.   
+    private sealed class InvalidationSignal : Command
     {
-        public override KeyValuePair Clone()
-        {
-            Debug.Fail("Should never be called");
-            return this;
-        }
+        internal required KeyValuePair? Target;
 
-        public override string ToString() => "Fake KV Pair";
+        public override string ToString() => Target is null ? "Invalidate all" : $"Invalidate {Target.Key}";
+    }
+
+    private void NotifyRemoved(KeyValuePair removed) => Enqueue(new InvalidationSignal { Target = removed });
+
+    private sealed class QueueHead : Command
+    {
+        public override string ToString() => "Queue Head";
     }
 }
 
