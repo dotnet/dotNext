@@ -5,8 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
+using Collections.Concurrent;
 using Numerics;
 using Threading;
+using Threading.Tasks;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
@@ -59,7 +61,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private volatile BucketList buckets;
 
-    internal abstract partial class KeyValuePair : Command
+    internal abstract partial class KeyValuePair : MpscQueue.Item
     {
         internal readonly int KeyHashCode;
         internal readonly TKey Key;
@@ -607,7 +609,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // restart eviction process
             var newVersion = new BucketList(oldVersion, newSize);
             RebuildEvictionState(newVersion);
-            queueHead = queueTail = new QueueHead();
+            queue = new();
             evictionTask = DoEvictionAsync(newSource);
 
             // Publish the new version last. The locks of the new version are not held,

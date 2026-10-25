@@ -87,7 +87,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         buckets = new(dictionarySize);
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
-        queueHead = queueTail = new QueueHead();
+        queue = new();
 
         evictionTask = DoEvictionAsync(completionSource = new());
     }
@@ -576,7 +576,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             {
                 pair = CreatePair(key, value, hashCode, willBePromoted: true);
                 bucket.Add(pair);
-                Enqueue(pair);
+                queue.Enqueue(pair);
             }
         }
     }
@@ -597,7 +597,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         bucketsCopy.Invalidate(OnRemoved);
 
         // a single signal for all the pairs: the pairs inserted after the invalidation are enqueued after it
-        Enqueue(new InvalidationSignal { Target = null });
+        queue.Enqueue(new InvalidationSignal { Target = null });
     }
     
     private async ValueTask ProcessFullLockAsync<TArg>(Action<BucketList, TArg> action, TArg arg, CancellationToken token)
@@ -811,7 +811,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (lockOrValueHolder)
             {
                 case BucketList lockedBuckets when lockedBuckets[index].TryAdd(key, hashCode, value, willBePromoted: true) is { } newPair:
-                    cache.Enqueue(newPair);
+                    cache.queue.Enqueue(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:
                     RandomAccessCache<TKey, TValue>.SetValue(existingPair, value);
