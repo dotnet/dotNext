@@ -75,13 +75,13 @@ public partial class RandomAccessCache<TKey, TValue>
         // The promotion queue holds an extra reference until the eviction thread processes the pair.
         // The counter is shared with the copies of the pair created by resize, because the readers
         // may still hold the pair from the previous version of the bucket list.
-        private readonly StrongBox<int> lifetimeCounter;
+        private readonly StrongBox<uint> lifetimeCounter;
 
         protected KeyValuePair(TKey key, int hashCode, bool willBePromoted)
         {
             KeyHashCode = hashCode;
             Key = key;
-            lifetimeCounter = new(1 + Unsafe.BitCast<bool, byte>(willBePromoted));
+            lifetimeCounter = new(1U + Unsafe.BitCast<bool, byte>(willBePromoted));
         }
 
         protected KeyValuePair(KeyValuePair other)
@@ -98,7 +98,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal bool TryAcquireCounter()
         {
             ref var counter = ref lifetimeCounter.Value;
-            int currentValue, tmp = Volatile.Read(ref counter);
+            uint currentValue, tmp = Volatile.Read(ref counter);
             do
             {
                 currentValue = tmp;

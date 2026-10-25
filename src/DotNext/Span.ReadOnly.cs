@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -5,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext;
 
 using Buffers;
+using Patterns;
 using Runtime.CompilerServices;
 
 partial class Span
@@ -296,6 +298,17 @@ partial class Span
         public ref readonly T Advance()
             => ref Unsafe.As<ReadOnlySpan<T>, Span<T>>(ref source).Advance();
     }
+    
+    /// <summary>
+    /// Extends <see cref="ReadOnlySpan{T}"/> type.
+    /// </summary>
+    extension(IEqualityComparer<ReadOnlySpan<byte>>)
+    {
+        /// <summary>
+        /// Gets the equality comparer for the span.
+        /// </summary>
+        public static IEqualityComparer<ReadOnlySpan<byte>> Default => ReadOnlySpanEqualityComparer.Instance;
+    }
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
         where TComparer : struct, ISupplier<T, T, bool>
@@ -439,4 +452,15 @@ file ref struct ReadOnlySpanList3<T> : IReadOnlySpanList<T>
         get => Unsafe.Add(ref span1, index);
         init => Unsafe.Add(ref span1, index) = value;
     }
+}
+
+file sealed class ReadOnlySpanEqualityComparer : IEqualityComparer<ReadOnlySpan<byte>>, ISingleton<ReadOnlySpanEqualityComparer>
+{
+    public static ReadOnlySpanEqualityComparer Instance { get; } = new();
+
+    bool IEqualityComparer<ReadOnlySpan<byte>>.Equals(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+        => x.SequenceEqual(y);
+
+    int IEqualityComparer<ReadOnlySpan<byte>>.GetHashCode(ReadOnlySpan<byte> span)
+        => (int)XxHash32.HashToUInt32(span, RandomExtensions.BitwiseHashSalt);
 }
