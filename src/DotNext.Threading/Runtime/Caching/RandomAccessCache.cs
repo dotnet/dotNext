@@ -652,6 +652,21 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         return new(evictionTask);
     }
 
+    private void Cancel()
+    {
+        if (Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
+        {
+            try
+            {
+                cts.Cancel(throwOnFirstException: false);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+        }
+    }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -660,17 +675,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             if (disposing)
             {
                 Interlocked.Exchange(ref completionSource, null)?.Cancel();
-                if (Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
-                {
-                    try
-                    {
-                        cts.Cancel(throwOnFirstException: false);
-                    }
-                    finally
-                    {
-                        cts.Dispose();
-                    }
-                }
+                Cancel();
 
                 // the waiters are already canceled by the lifetime token
                 parkingLot.Dispose();
