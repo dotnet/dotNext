@@ -117,7 +117,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public int Capacity => buckets.Count;
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession> ChangeAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
+    private async ValueTask<ReadWriteSession> ChangeAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, bool replace, CancellationToken token)
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
     {
         var cts = cancellationTokens.Combine(token, lifetimeToken);
@@ -143,7 +143,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 }
 
                 Debug.Assert(ReferenceEquals(bucketsCopy, lockedBuckets));
-                if (Change(selector, ref lockedBuckets, index, hashCode) is { IsEmpty: false } session)
+                var session = replace
+                    ? Replace(selector, ref lockedBuckets, index, hashCode)
+                    : Change(selector, ref lockedBuckets, index, hashCode);
+
+                if (!session.IsEmpty)
                     return session;
 
                 bucketsCopy.Release(parkingLot, index);
@@ -163,6 +167,10 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    private ValueTask<ReadWriteSession> ChangeAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
+        where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
+        => ChangeAsync(selector, hashCode, timeout, replace: false, token);
 
     private ReadWriteSession Change<TSelector>(TSelector selector, [DisallowNull] ref BucketList? lockedBuckets, int index, int hashCode)
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
@@ -215,53 +223,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public ReadWriteSession Change(TKey key, TimeSpan timeout, CancellationToken token = default)
         => ChangeAsync(key, new(timeout), token).Wait();
     
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession> ReplaceAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
+    private ValueTask<ReadWriteSession> ReplaceAsync<TSelector>(TSelector selector, int hashCode, Timeout timeout, CancellationToken token)
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
-    {
-        var cts = cancellationTokens.Combine(token, lifetimeToken);
-        var lockedBuckets = default(BucketList); // the version of the bucket list with the acquired bucket lock
-        var index = 0;
-        try
-        {
-            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, cts.Token).ConfigureAwait(false))
-            {
-                bucketsCopy = buckets;
-                for (BucketList newCopy;; bucketsCopy = newCopy)
-                {
-                    index = bucketsCopy.IndexOf(hashCode);
-                    await bucketsCopy.AcquireAsync(parkingLot, index, timeout.RemainingTime, cts.Token).ConfigureAwait(false);
-                    lockedBuckets = bucketsCopy;
-
-                    newCopy = buckets;
-                    if (ReferenceEquals(newCopy, lockedBuckets))
-                        break;
-
-                    lockedBuckets.Release(parkingLot, index);
-                    lockedBuckets = null;
-                }
-
-                Debug.Assert(ReferenceEquals(lockedBuckets, bucketsCopy));
-                if (Replace(selector, ref lockedBuckets, index, hashCode) is { IsEmpty: false } session)
-                    return session;
-
-                bucketsCopy.Release(parkingLot, index);
-            }
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            lockedBuckets?.Release(parkingLot, index);
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+        => ChangeAsync(selector, hashCode, timeout, replace: true, token);
 
     private ReadWriteSession Replace<TSelector>(TSelector selector, [DisallowNull] ref BucketList? lockedBuckets, int index, int hashCode)
         where TSelector : struct, IEquatable<TKey>, ISupplier<TKey>
