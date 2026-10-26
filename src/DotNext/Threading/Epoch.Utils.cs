@@ -93,7 +93,7 @@ partial class Epoch
 
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
-    internal struct Entry(uint previous, uint next)
+    private struct Entry(uint previous, uint next)
     {
         [ThreadStatic]
         private static int? bucketForCurrentThread;
