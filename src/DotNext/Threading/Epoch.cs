@@ -343,7 +343,7 @@ public sealed partial class Epoch
             ArgumentOutOfRangeException.ThrowIfZero(resourceHandle);
 
             if (state.NativeResourceManager is null)
-                throw new InvalidOperationException();
+                InvalidOperationException.Throw();
             
             state.Defer(handle, resourceHandle);
         }
