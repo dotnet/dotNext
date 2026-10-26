@@ -109,6 +109,9 @@
       <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_TextEncoding">ApplicationMaintenanceInterfaceHost.TextEncoding</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_SocketFileMode">ApplicationMaintenanceInterfaceHost.SocketFileMode</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
     </div>
     <div>
@@ -152,16 +155,16 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor*"></a>
-  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_System_CommandLine_ParserConfiguration_Microsoft_Extensions_Logging_ILoggerFactory_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,System.CommandLine.ParserConfiguration,Microsoft.Extensions.Logging.ILoggerFactory)">CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable&lt;ApplicationMaintenanceCommand&gt;, IAuthenticationHandler?, AuthorizationCallback?, ParserConfiguration?, ILoggerFactory?)</h4>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_Microsoft_Extensions_Logging_ILoggerFactory_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,Microsoft.Extensions.Logging.ILoggerFactory)">CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, ILoggerFactory?)</h4>
   <div class="markdown level1 summary"><p>Initializes a new host.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable&lt;ApplicationMaintenanceCommand&gt; commands, IAuthenticationHandler? authentication = null, AuthorizationCallback? authorization = null, ParserConfiguration? configuration = null, ILoggerFactory? loggerFactory = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, ILoggerFactory? loggerFactory = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -176,31 +179,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.sockets.unixdomainsocketendpoint">UnixDomainSocketEndPoint</a></td>
         <td><span class="parametername">endPoint</span></td>
-        <td><p>Unix Domain Socket address used as a interaction point.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a>&gt;</td>
-        <td><span class="parametername">commands</span></td>
-        <td><p>A set of commands to be available for execution.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html">IAuthenticationHandler</a></td>
-        <td><span class="parametername">authentication</span></td>
-        <td><p>Optional authentication handler.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback.html">AuthorizationCallback</a></td>
-        <td><span class="parametername">authorization</span></td>
-        <td><p>A set of global authorization rules to be applied to all commands.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.parserconfiguration">ParserConfiguration</a></td>
-        <td><span class="parametername">configuration</span></td>
-        <td><p>Command-line parser configuration.</p>
+        <td><p>Unix Domain Socket address used as an interaction point.</p>
 </td>
       </tr>
       <tr>
@@ -211,11 +190,128 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="properties">Properties
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authentication_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authentication" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication">Authentication</h4>
+  <div class="markdown level1 summary"><p>Gets or sets authentication handler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IAuthenticationHandler? Authentication { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html">IAuthenticationHandler</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authorization_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authorization" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization">Authorization</h4>
+  <div class="markdown level1 summary"><p>Gets or sets authorization handler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AuthorizationCallback? Authorization { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback.html">AuthorizationCallback</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ParserSettings_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ParserSettings" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings">ParserSettings</h4>
+  <div class="markdown level1 summary"><p>Gets or sets parser settings.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ParserConfiguration ParserSettings { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.parserconfiguration">ParserConfiguration</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_AddCommands_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_AddCommands_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands(System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand})">AddCommands(params IEnumerable&lt;ApplicationMaintenanceCommand&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers maintenance commands.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void AddCommands(params IEnumerable&lt;ApplicationMaintenanceCommand&gt; commands)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a>&gt;</td>
+        <td><span class="parametername">commands</span></td>
+        <td><p>A set of commands to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_DotNext_Maintenance_IMaintenanceSession_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync(DotNext.Maintenance.IMaintenanceSession,System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)">ExecuteCommandAsync(IMaintenanceSession, ReadOnlyMemory&lt;char&gt;, CancellationToken)</h4>
@@ -300,7 +396,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

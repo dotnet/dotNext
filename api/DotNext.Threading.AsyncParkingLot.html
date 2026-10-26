@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AsyncParkingLot | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AsyncParkingLot | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncParkingLot">
+
+
+
+  <h1 id="DotNext_Threading_AsyncParkingLot" data-uid="DotNext.Threading.AsyncParkingLot" class="text-break">Class AsyncParkingLot</h1>
+  <div class="markdown level0 summary"><p>Represents a set of wait queues shared by many lightweight asynchronous locks.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">AsyncParkingLot</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Threading_AsyncParkingLot_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class AsyncParkingLot : Disposable, IDisposable</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_AsyncParkingLot_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Each lock is represented by a field of type <a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">AsyncParkingLot.State</a> owned by the caller,
+so the lock itself doesn't require any allocation. The wait queue is allocated only for the contended locks.
+The lock is identified by its position and optional user data. The positions mapped to the same slot share
+the wait queue, but they don't block each other.</p>
+<p>
+The ownership is handed off to the first waiter on release, so the waiters are resumed in FIFO order.
+The lock is not reentrant and doesn't track the owner.
+</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot__ctor_" data-uid="DotNext.Threading.AsyncParkingLot.#ctor*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot__ctor_System_Int32_System_Nullable_System_Int64__" data-uid="DotNext.Threading.AsyncParkingLot.#ctor(System.Int32,System.Nullable{System.Int64})">AsyncParkingLot(int, long?)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new parking lot.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncParkingLot(int capacity, long? poolSizePerSlot = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The number of slots. It is rounded up to the nearest power of two.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?</td>
+        <td><span class="parametername">poolSizePerSlot</span></td>
+        <td><p>The maximum number of wait nodes retained by the pool of each slot;
+or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to retain all of them.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">capacity</code> is less than or equal to zero;
+or <code class="paramref">poolSizePerSlot</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_Capacity_" data-uid="DotNext.Threading.AsyncParkingLot.Capacity*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_Capacity" data-uid="DotNext.Threading.AsyncParkingLot.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets the number of slots.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Capacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.Metrics.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_MeasurementTags_" data-uid="DotNext.Threading.AsyncParkingLot.MeasurementTags*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_MeasurementTags" data-uid="DotNext.Threading.AsyncParkingLot.MeasurementTags">MeasurementTags</h4>
+  <div class="markdown level1 summary"><p>Sets a list of tags to be associated with each measurement.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public TagList MeasurementTags { init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.taglist">TagList</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_Dispose_" data-uid="DotNext.Threading.AsyncParkingLot.Dispose*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_Dispose_System_Boolean_" data-uid="DotNext.Threading.AsyncParkingLot.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_ParkAsync_" data-uid="DotNext.Threading.AsyncParkingLot.ParkAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.Threading.CancellationToken)">ParkAsync(int, ref State, object?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask ParkAsync(int position, ref AsyncParkingLot.State state, object? userData = null, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">position</span></td>
+        <td><p>The position of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncParkingLot.html">AsyncParkingLot</a>.<a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">State</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The state of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>The object that distinguishes the locks with the same position. It is compared by reference,
+so <a class="xref" href="DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Unpark_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_">Unpark(int, ref State, object?)</a> must be called with the same object.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing lock acquisition.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned task must be awaited. Otherwise, the wait node of the canceled caller
+is never removed from the wait queue.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">position</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_ParkAsync_" data-uid="DotNext.Threading.AsyncParkingLot.ParkAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.TimeSpan,System.Threading.CancellationToken)">ParkAsync(int, ref State, object?, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lock asynchronously, with a time-out.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; ParkAsync(int position, ref AsyncParkingLot.State state, object? userData, TimeSpan timeout, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">position</span></td>
+        <td><p>The position of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncParkingLot.html">AsyncParkingLot</a>.<a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">State</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The state of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>The object that distinguishes the locks with the same position. It is compared by reference,
+so <a class="xref" href="DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Unpark_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_">Unpark(int, ref State, object?)</a> must be called with the same object.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The interval to wait for the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the lock is acquired; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if timed out.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned task must be awaited. Otherwise, the wait node of the timed out or canceled caller
+is never removed from the wait queue.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">position</code> is negative; or <code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_TryPark_" data-uid="DotNext.Threading.AsyncParkingLot.TryPark*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_TryPark_DotNext_Threading_AsyncParkingLot_State__" data-uid="DotNext.Threading.AsyncParkingLot.TryPark(DotNext.Threading.AsyncParkingLot.State@)">TryPark(ref State)</h4>
+  <div class="markdown level1 summary"><p>Attempts to acquire the lock synchronously, without waiting.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool TryPark(ref AsyncParkingLot.State state)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncParkingLot.html">AsyncParkingLot</a>.<a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">State</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The state of the lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the lock is acquired; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the lock is already acquired.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncParkingLot_Unpark_" data-uid="DotNext.Threading.AsyncParkingLot.Unpark*"></a>
+  <h4 id="DotNext_Threading_AsyncParkingLot_Unpark_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_" data-uid="DotNext.Threading.AsyncParkingLot.Unpark(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object)">Unpark(int, ref State, object?)</h4>
+  <div class="markdown level1 summary"><p>Releases the lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Unpark(int position, ref AsyncParkingLot.State state, object? userData = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">position</span></td>
+        <td><p>The position of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncParkingLot.html">AsyncParkingLot</a>.<a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">State</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The state of the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>The object passed to <a class="xref" href="DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_Threading_CancellationToken_">ParkAsync(int, ref State, object?, CancellationToken)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncParkingLot_Unpark_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the lock has waiters, the ownership is handed off to the first of them.
+The method must be called by the lock owner only, it's not checked.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">position</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The lock is not acquired.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Threading/AsyncParkingLot.Metrics.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

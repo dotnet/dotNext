@@ -112,6 +112,9 @@ within pairs.</p>
       <h4><a class="xref" href="DotNext.Threading.AsyncMulticastSequence-1.html">AsyncMulticastSequence&lt;T&gt;</a></h4>
       <section><p>Represents asynchronous broadcast channel for single producer and multiple consumer scenario.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Threading.AsyncParkingLot.html">AsyncParkingLot</a></h4>
+      <section><p>Represents a set of wait queues shared by many lightweight asynchronous locks.</p>
+</section>
       <h4><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></h4>
       <section><p>Represents asynchronous version of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.readerwriterlockslim">ReaderWriterLockSlim</a>.</p>
 </section>
@@ -212,7 +215,8 @@ Structs
       <section><p>Represents a scope that controls the lifetime of the multiplexed cancellation token and allows to specify the timeout.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Epoch.RecycleBin.html">Epoch.RecycleBin</a></h4>
-      <section><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads.</p>
+      <section><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads,
+and the unmanaged resources to be released by <a class="xref" href="DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_NativeResourceManager">NativeResourceManager</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Epoch.Scope.html">Epoch.Scope</a></h4>
       <section><p>Represents a scope of the region of code protected by the epoch.</p>
@@ -235,6 +239,9 @@ Structs
     <h3 id="interfaces">
 Interfaces
 </h3>
+      <h4><a class="xref" href="DotNext.Threading.Epoch.INativeResourceManager.html">Epoch.INativeResourceManager</a></h4>
+      <section><p>Represents a manager of the unmanaged resources which release is deferred by <a class="xref" href="DotNext.Threading.Epoch.html">Epoch</a>.</p>
+</section>
       <h4><a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a></h4>
       <section><p>Represents asynchronous event.</p>
 </section>
@@ -243,6 +250,12 @@ Interfaces
 </section>
       <h4><a class="xref" href="DotNext.Threading.IMultiplexedCancellationTokenSource.html">IMultiplexedCancellationTokenSource</a></h4>
       <section><p>Represents multiplexed cancellation token source.</p>
+</section>
+    <h3 id="enums">
+Enums
+</h3>
+      <h4><a class="xref" href="DotNext.Threading.AsyncParkingLot.State.html">AsyncParkingLot.State</a></h4>
+      <section><p>Represents the state of the lock.</p>
 </section>
     <h3 id="delegates">
 Delegates

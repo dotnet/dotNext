@@ -112,7 +112,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsBytes_" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsBytes*"></a>
   <h4 id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsBytes__1___0__" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsBytes``1(``0@)">AsBytes&lt;T&gt;(ref T)</h4>
@@ -175,7 +175,54 @@ into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1"
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes_" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes_System_String_" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes(System.String)">AsReadOnlyBytes(string?)</h4>
+  <div class="markdown level1 summary"><p>Returns <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a> over <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a> for the specified string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;byte&gt; AsReadOnlyBytes(string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The string value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a> over <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a> representing <code class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes_" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes*"></a>
   <h4 id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes__1___0__" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes``1(``0@)">AsReadOnlyBytes&lt;T&gt;(ref readonly T)</h4>
@@ -238,7 +285,7 @@ into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonl
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_ToEnumerator_" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.ToEnumerator*"></a>
   <h4 id="DotNext_Runtime_InteropServices_MemoryMarshalExtensions_ToEnumerator__1_System_ReadOnlyMemory___0__" data-uid="DotNext.Runtime.InteropServices.MemoryMarshalExtensions.ToEnumerator``1(System.ReadOnlyMemory{``0})">ToEnumerator&lt;T&gt;(ReadOnlyMemory&lt;T&gt;)</h4>
@@ -312,7 +359,7 @@ into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonl
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Runtime/InteropServices/MemoryMarshalExtensions.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

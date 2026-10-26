@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RandomAccessCache&lt;TValue&gt; | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RandomAccessCache&lt;TValue&gt; | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1">
+
+
+
+  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_1" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1" class="text-break">Class RandomAccessCache&lt;TValue&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents concurrent cache optimized for random access, which keeps the entries in unmanaged memory.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">RandomAccessCache&lt;TValue&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="DotNext.Threading.Epoch.html">Epoch</a>.<a class="xref" href="DotNext.Threading.Epoch.INativeResourceManager.html">INativeResourceManager</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.Caching.html">Caching</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class RandomAccessCache&lt;TValue&gt; : Disposable, IDisposable, IAsyncDisposable, Epoch.INativeResourceManager where TValue : unmanaged</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of the values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The cache entries are not visible to GC, so the size of the cache doesn't affect GC pauses.
+The key is a sequence of bytes copied to the cache entry. The value of the entry cannot be modified
+after insertion. All the sessions must be disposed. The cache evicts older records on overflow
+using SIEVE algorithm.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1__ctor_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32)">RandomAccessCache(int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache(int capacity)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>Maximum cache size.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">capacity</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.Eviction.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1__ctor_System_Int32_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32,System.Int32)">RandomAccessCache(int, int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache(int capacity, int concurrencyLevel)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>Maximum cache size.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">concurrencyLevel</span></td>
+        <td><p>The expected number of concurrent writers. It determines the number of internal wait queues
+for the writers waiting for the same bucket, and doesn't limit the number of concurrent writers.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">capacity</code> is less than or equal to zero;
+or <code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Capacity_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Capacity*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Capacity" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets the capacity of this cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Capacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_EqualityComparer_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_EqualityComparer" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer">EqualityComparer</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the hash algorithm for the key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEqualityComparer&lt;ReadOnlySpan&lt;byte&gt;&gt; EqualityComparer { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">value</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Eviction_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Eviction*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Eviction" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Eviction">Eviction</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a callback that can be used to clean up the evicted value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlySpanAction&lt;byte, TValue&gt;? Eviction { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>, TValue&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_Eviction_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The callback is invoked once for every cache record when the record is no longer available:
+it is evicted or invalidated, and all the sessions associated with the record are closed.
+The callback is invoked for the remaining records when the cache is disposed as well.
+If the cache is not disposed explicitly, the finalizer releases the memory without calling the callback.
+The key is valid only during the call. The callback should not throw: the exception propagates
+to the caller that released the record, which can be the background eviction process.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.Metrics.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_MeasurementTags_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_MeasurementTags" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags">MeasurementTags</h4>
+  <div class="markdown level1 summary"><p>Sets a list of tags to be associated with each measurement.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public TagList MeasurementTags { init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.taglist">TagList</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_ChangeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_ChangeAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync``1(``0,System.Threading.CancellationToken)">ChangeAsync&lt;TKey&gt;(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Opens a session that can be used to insert the value associated with the key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;RandomAccessCache&lt;TValue&gt;.ReadWriteSession&lt;TKey&gt;&gt; ChangeAsync&lt;TKey&gt;(TKey key, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html">ReadWriteSession</a>&lt;TKey&gt;&gt;</td>
+        <td><p>The session that can be used to read or insert the cache record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_ChangeAsync__1___0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+the value can be evicted immediately after. The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Change_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Change*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Change__1___0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Change``1(``0,System.TimeSpan,System.Threading.CancellationToken)">Change&lt;TKey&gt;(TKey, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Opens a session synchronously that can be used to insert the value associated with the key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache&lt;TValue&gt;.ReadWriteSession&lt;TKey&gt; Change&lt;TKey&gt;(TKey key, TimeSpan timeout, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for the cache lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html">ReadWriteSession</a>&lt;TKey&gt;</td>
+        <td><p>The session that can be used to read or insert the cache record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_Change__1___0_System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+the value can be evicted immediately after. The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The internal lock cannot be acquired in timely manner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Contains_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Contains*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Contains_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Contains(System.ReadOnlySpan{System.Byte})">Contains(ReadOnlySpan&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the cache entry associated with the specified key exists in the cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Contains(ReadOnlySpan&lt;byte&gt; key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the cache entry associated with <code class="paramref">key</code> exists in the cache; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Dispose_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Dispose*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Dispose_System_Boolean_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsync" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsyncCore_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsyncCore" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore">DisposeAsyncCore()</h4>
+  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsyncCore_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.Entry.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync(System.Threading.CancellationToken)">InvalidateAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Invalidates the entire cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask InvalidateAsync(CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The state of the asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync``1(``0,System.Threading.CancellationToken)">InvalidateAsync&lt;TKey&gt;(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Invalidates the cache record associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; InvalidateAsync&lt;TKey&gt;(TKey key, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the cache record associated with <code class="paramref">key</code> is removed successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Invalidate_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Invalidate__1___0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate``1(``0,System.TimeSpan,System.Threading.CancellationToken)">Invalidate&lt;TKey&gt;(TKey, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Invalidates the cache record associated with the specified key synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Invalidate&lt;TKey&gt;(TKey key, TimeSpan timeout, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for the cache lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the cache record associated with <code class="paramref">key</code> is removed successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The internal lock cannot be acquired in timely manner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_ReplaceAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_ReplaceAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync``1(``0,System.Threading.CancellationToken)">ReplaceAsync&lt;TKey&gt;(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Replaces the cache record associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;RandomAccessCache&lt;TValue&gt;.ReadWriteSession&lt;TKey&gt;&gt; ReplaceAsync&lt;TKey&gt;(TKey key, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html">ReadWriteSession</a>&lt;TKey&gt;&gt;</td>
+        <td><p>The session that can be used to insert the cache record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_ReplaceAsync__1___0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The existing record is removed, and the returned session can be used to insert a new value.
+If the session is disposed without inserting a value, the cache has no record associated with the key.
+The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_Replace_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Replace*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_Replace__1___0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.Replace``1(``0,System.TimeSpan,System.Threading.CancellationToken)">Replace&lt;TKey&gt;(TKey, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Replaces the cache record associated with the specified key synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache&lt;TValue&gt;.ReadWriteSession&lt;TKey&gt; Replace&lt;TKey&gt;(TKey key, TimeSpan timeout, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for the cache lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html">ReadWriteSession</a>&lt;TKey&gt;</td>
+        <td><p>The session that can be used to insert the cache record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_Replace__1___0_System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The existing record is removed, and the returned session can be used to insert a new value.
+If the session is disposed without inserting a value, the cache has no record associated with the key.
+The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The internal lock cannot be acquired in timely manner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRead_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRead*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRead_System_ReadOnlySpan_System_Byte__DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRead(System.ReadOnlySpan{System.Byte},DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@)">TryRead(ReadOnlySpan&lt;byte&gt;, out ReadSession)</h4>
+  <div class="markdown level1 summary"><p>Tries to read the cached record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryRead(ReadOnlySpan&lt;byte&gt; key, out RandomAccessCache&lt;TValue&gt;.ReadSession session)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html">ReadSession</a></td>
+        <td><span class="parametername">session</span></td>
+        <td><p>A session that can be used to read the cached record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the record is available for reading and the session is active; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRead_System_ReadOnlySpan_System_Byte__DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The cache guarantees that the value cannot be evicted concurrently with the session. However,
+the value can be evicted immediately after. The caller must dispose session.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemoveAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemoveAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync``1(``0,System.Threading.CancellationToken)">TryRemoveAsync&lt;TKey&gt;(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to remove the cache record associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;RandomAccessCache&lt;TValue&gt;.ReadSession?&gt; TryRemoveAsync&lt;TKey&gt;(TKey key, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html">ReadSession</a>?&gt;</td>
+        <td><p>The session that can be used to read the removed cache record;
+or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if there is no record associated with <code class="paramref">key</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemoveAsync__1___0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The removed record remains available for reading until the returned session is disposed.
+The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemove_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemove__1___0_DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove``1(``0,DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)">TryRemove&lt;TKey&gt;(TKey, out ReadSession, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to remove the cache record associated with the specified key synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryRemove&lt;TKey&gt;(TKey key, out RandomAccessCache&lt;TValue&gt;.ReadSession session, TimeSpan timeout, CancellationToken token = default) where TKey : ISupplier&lt;ReadOnlySpan&lt;byte&gt;&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html">ReadSession</a></td>
+        <td><span class="parametername">session</span></td>
+        <td><p>The session that can be used to read the removed cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for the cache lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the record associated with <code class="paramref">key</code> exists; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_1_TryRemove__1___0_DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession__System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The removed record remains available for reading until the returned session is disposed.
+The caller must dispose the session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The internal lock cannot be acquired in timely manner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.Epoch.INativeResourceManager.html">Epoch.INativeResourceManager</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Unmanaged.Entry.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

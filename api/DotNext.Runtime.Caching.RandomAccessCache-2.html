@@ -184,7 +184,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32)">RandomAccessCache(int)</h4>
@@ -229,11 +229,66 @@
       </tr>
     </tbody>
   </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32,System.Int32)">RandomAccessCache(int, int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache(int cacheCapacity, int concurrencyLevel)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">cacheCapacity</span></td>
+        <td><p>Maximum cache size.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">concurrencyLevel</span></td>
+        <td><p>The expected number of concurrent writers. It determines the number of internal wait queues
+for the writers waiting for the same bucket, and doesn't limit the number of concurrent writers.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">cacheCapacity</code> is less than or equal to zero;
+or <code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Capacity_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Capacity*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Capacity" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Capacity">Capacity</h4>
@@ -261,7 +316,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction">Eviction</h4>
@@ -289,7 +344,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer">KeyComparer</h4>
@@ -319,7 +374,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Change_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Change*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan,System.Threading.CancellationToken)">Change(TKey, TimeSpan, CancellationToken)</h4>
@@ -408,7 +463,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync(`0,System.Threading.CancellationToken)">ChangeAsync(TKey, CancellationToken)</h4>
@@ -486,7 +541,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Contains_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Contains*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Contains__0_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Contains(`0)">Contains(TKey)</h4>
@@ -533,7 +588,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -566,7 +621,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync">DisposeAsync()</h4>
@@ -593,7 +648,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -627,7 +682,7 @@ the value can be evicted immediately after. The caller must dispose the session.
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_GetAlternateLookup_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.GetAlternateLookup*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_GetAlternateLookup__1" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.GetAlternateLookup``1">GetAlternateLookup&lt;TAlternate&gt;()</h4>
@@ -687,7 +742,7 @@ the value can be evicted immediately after. The caller must dispose the session.
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_GetEnumerator_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_GetEnumerator" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator">GetEnumerator()</h4>
@@ -719,7 +774,7 @@ the value can be evicted immediately after. The caller must dispose the session.
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ImportAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ImportAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ImportAsync_System_Collections_Generic_IEnumerable_System_Collections_Generic_KeyValuePair__0__1___System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ImportAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{`0,`1}},System.Threading.CancellationToken)">ImportAsync(IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, CancellationToken)</h4>
@@ -797,7 +852,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan,System.Threading.CancellationToken)">Invalidate(TKey, TimeSpan, CancellationToken)</h4>
@@ -882,7 +937,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(System.Threading.CancellationToken)">InvalidateAsync(CancellationToken)</h4>
@@ -950,7 +1005,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(`0,System.Threading.CancellationToken)">InvalidateAsync(TKey, CancellationToken)</h4>
@@ -1024,7 +1079,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Replace_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Replace*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Replace__0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Replace(`0,System.TimeSpan,System.Threading.CancellationToken)">Replace(TKey, TimeSpan, CancellationToken)</h4>
@@ -1109,7 +1164,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReplaceAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReplaceAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync(`0,System.Threading.CancellationToken)">ReplaceAsync(TKey, CancellationToken)</h4>
@@ -1183,7 +1238,7 @@ if this cache is growable. Moreover, the method blocks the whole cache.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)">TryRead(TKey, out ReadSession)</h4>
@@ -1240,7 +1295,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__1___0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead``1(``0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)">TryRead&lt;TAlternate&gt;(TAlternate, out ReadSession)</h4>
@@ -1328,7 +1383,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)">TryRemove(TKey, out ReadSession, TimeSpan, CancellationToken)</h4>
@@ -1419,7 +1474,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync(`0,System.Threading.CancellationToken)">TryRemoveAsync(TKey, CancellationToken)</h4>
@@ -1515,6 +1570,10 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache</a>&lt;TValue&gt;</div>
+  </div>
 
 </article>
           </div>
@@ -1524,7 +1583,7 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Alt.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

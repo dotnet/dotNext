@@ -890,6 +890,15 @@ references:
   fullName.vb: DotNext.Buffers.Binary.ByteBuffer.WriteLeb128(Of T)(DotNext.Buffers.SpanWriter(Of Byte), T)
   nameWithType: ByteBuffer.WriteLeb128<T>(ref SpanWriter<byte>, T)
   nameWithType.vb: ByteBuffer.WriteLeb128(Of T)(SpanWriter(Of Byte), T)
+- uid: DotNext.Buffers.Binary.ByteBuffer.WriteLeb128``1(System.Buffers.IBufferWriter{System.Byte},``0)
+  name: WriteLeb128<T>(IBufferWriter<byte>, T)
+  href: api/DotNext.Buffers.Binary.ByteBuffer.html#DotNext_Buffers_Binary_ByteBuffer_WriteLeb128__1_System_Buffers_IBufferWriter_System_Byte____0_
+  commentId: M:DotNext.Buffers.Binary.ByteBuffer.WriteLeb128``1(System.Buffers.IBufferWriter{System.Byte},``0)
+  name.vb: WriteLeb128(Of T)(IBufferWriter(Of Byte), T)
+  fullName: DotNext.Buffers.Binary.ByteBuffer.WriteLeb128<T>(System.Buffers.IBufferWriter<byte>, T)
+  fullName.vb: DotNext.Buffers.Binary.ByteBuffer.WriteLeb128(Of T)(System.Buffers.IBufferWriter(Of Byte), T)
+  nameWithType: ByteBuffer.WriteLeb128<T>(IBufferWriter<byte>, T)
+  nameWithType.vb: ByteBuffer.WriteLeb128(Of T)(IBufferWriter(Of Byte), T)
 - uid: DotNext.Buffers.Binary.ByteBuffer.WriteLittleEndian*
   name: WriteLittleEndian
   href: api/DotNext.Buffers.Binary.ByteBuffer.html#DotNext_Buffers_Binary_ByteBuffer_WriteLittleEndian_
@@ -2618,6 +2627,21 @@ references:
   commentId: Overload:DotNext.Buffers.Memory.get_Array
   fullName: DotNext.Buffers.Memory.get_Array
   nameWithType: Memory.get_Array
+- uid: DotNext.Buffers.Memory.get_ArrayPool*
+  name: get_ArrayPool
+  href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_ArrayPool_
+  commentId: Overload:DotNext.Buffers.Memory.get_ArrayPool
+  fullName: DotNext.Buffers.Memory.get_ArrayPool
+  nameWithType: Memory.get_ArrayPool
+- uid: DotNext.Buffers.Memory.get_ArrayPool``1
+  name: get_ArrayPool<T>()
+  href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_ArrayPool__1
+  commentId: M:DotNext.Buffers.Memory.get_ArrayPool``1
+  name.vb: get_ArrayPool(Of T)()
+  fullName: DotNext.Buffers.Memory.get_ArrayPool<T>()
+  fullName.vb: DotNext.Buffers.Memory.get_ArrayPool(Of T)()
+  nameWithType: Memory.get_ArrayPool<T>()
+  nameWithType.vb: Memory.get_ArrayPool(Of T)()
 - uid: DotNext.Buffers.Memory.get_Array``1
   name: get_Array<T>()
   href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_Array__1
@@ -2627,6 +2651,21 @@ references:
   fullName.vb: DotNext.Buffers.Memory.get_Array(Of T)()
   nameWithType: Memory.get_Array<T>()
   nameWithType.vb: Memory.get_Array(Of T)()
+- uid: DotNext.Buffers.Memory.get_ByteArrayPool*
+  name: get_ByteArrayPool
+  href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_ByteArrayPool_
+  commentId: Overload:DotNext.Buffers.Memory.get_ByteArrayPool
+  fullName: DotNext.Buffers.Memory.get_ByteArrayPool
+  nameWithType: Memory.get_ByteArrayPool
+- uid: DotNext.Buffers.Memory.get_ByteArrayPool``1
+  name: get_ByteArrayPool<T>()
+  href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_ByteArrayPool__1
+  commentId: M:DotNext.Buffers.Memory.get_ByteArrayPool``1
+  name.vb: get_ByteArrayPool(Of T)()
+  fullName: DotNext.Buffers.Memory.get_ByteArrayPool<T>()
+  fullName.vb: DotNext.Buffers.Memory.get_ByteArrayPool(Of T)()
+  nameWithType: Memory.get_ByteArrayPool<T>()
+  nameWithType.vb: Memory.get_ByteArrayPool(Of T)()
 - uid: DotNext.Buffers.Memory.get_Default*
   name: get_Default
   href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_Default_
@@ -6797,6 +6836,15 @@ references:
   fullName.vb: DotNext.Collections.Generic.Collection.Copy(Of T)(System.Collections.Generic.IEnumerable(Of T), Integer, DotNext.Buffers.MemoryAllocator(Of T))
   nameWithType: Collection.Copy<T>(IEnumerable<T>, int, MemoryAllocator<T>?)
   nameWithType.vb: Collection.Copy(Of T)(IEnumerable(Of T), Integer, MemoryAllocator(Of T))
+- uid: DotNext.Collections.Generic.Collection.Copy``1(System.Collections.Generic.IEnumerable{``0},System.Span{``0},System.Boolean)
+  name: Copy<T>(IEnumerable<T>, Span<T>, bool)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Span___0__System_Boolean_
+  commentId: M:DotNext.Collections.Generic.Collection.Copy``1(System.Collections.Generic.IEnumerable{``0},System.Span{``0},System.Boolean)
+  name.vb: Copy(Of T)(IEnumerable(Of T), Span(Of T), Boolean)
+  fullName: DotNext.Collections.Generic.Collection.Copy<T>(System.Collections.Generic.IEnumerable<T>, System.Span<T>, bool)
+  fullName.vb: DotNext.Collections.Generic.Collection.Copy(Of T)(System.Collections.Generic.IEnumerable(Of T), System.Span(Of T), Boolean)
+  nameWithType: Collection.Copy<T>(IEnumerable<T>, Span<T>, bool)
+  nameWithType.vb: Collection.Copy(Of T)(IEnumerable(Of T), Span(Of T), Boolean)
 - uid: DotNext.Collections.Generic.Collection.FirstOrNone*
   name: FirstOrNone
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone_
@@ -9074,6 +9122,21 @@ references:
   commentId: T:DotNext.Collections.Specialized.InvocationList
   fullName: DotNext.Collections.Specialized.InvocationList
   nameWithType: InvocationList
+- uid: DotNext.Collections.Specialized.InvocationList.Create*
+  name: Create
+  href: api/DotNext.Collections.Specialized.InvocationList.html#DotNext_Collections_Specialized_InvocationList_Create_
+  commentId: Overload:DotNext.Collections.Specialized.InvocationList.Create
+  fullName: DotNext.Collections.Specialized.InvocationList.Create
+  nameWithType: InvocationList.Create
+- uid: DotNext.Collections.Specialized.InvocationList.Create``1(System.ReadOnlySpan{``0})
+  name: Create<TDelegate>(params ReadOnlySpan<TDelegate>)
+  href: api/DotNext.Collections.Specialized.InvocationList.html#DotNext_Collections_Specialized_InvocationList_Create__1_System_ReadOnlySpan___0__
+  commentId: M:DotNext.Collections.Specialized.InvocationList.Create``1(System.ReadOnlySpan{``0})
+  name.vb: Create(Of TDelegate)(ReadOnlySpan(Of TDelegate))
+  fullName: DotNext.Collections.Specialized.InvocationList.Create<TDelegate>(params System.ReadOnlySpan<TDelegate>)
+  fullName.vb: DotNext.Collections.Specialized.InvocationList.Create(Of TDelegate)(System.ReadOnlySpan(Of TDelegate))
+  nameWithType: InvocationList.Create<TDelegate>(params ReadOnlySpan<TDelegate>)
+  nameWithType.vb: InvocationList.Create(Of TDelegate)(ReadOnlySpan(Of TDelegate))
 - uid: DotNext.Collections.Specialized.InvocationList.Invoke*
   name: Invoke
   href: api/DotNext.Collections.Specialized.InvocationList.html#DotNext_Collections_Specialized_InvocationList_Invoke_
@@ -10274,6 +10337,21 @@ references:
   fullName.vb: DotNext.DelegateHelpers.ChangeType(Of TDelegate)(System.Delegate)
   nameWithType: DelegateHelpers.ChangeType<TDelegate>(Delegate)
   nameWithType.vb: DelegateHelpers.ChangeType(Of TDelegate)(Delegate)
+- uid: DotNext.DelegateHelpers.Combine*
+  name: Combine
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Combine_
+  commentId: Overload:DotNext.DelegateHelpers.Combine
+  fullName: DotNext.DelegateHelpers.Combine
+  nameWithType: DelegateHelpers.Combine
+- uid: DotNext.DelegateHelpers.Combine``1(System.Collections.Generic.IEnumerable{``0})
+  name: Combine<TDelegate>(IEnumerable<TDelegate?>?)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Combine__1_System_Collections_Generic_IEnumerable___0__
+  commentId: M:DotNext.DelegateHelpers.Combine``1(System.Collections.Generic.IEnumerable{``0})
+  name.vb: Combine(Of TDelegate)(IEnumerable(Of TDelegate))
+  fullName: DotNext.DelegateHelpers.Combine<TDelegate>(System.Collections.Generic.IEnumerable<TDelegate?>?)
+  fullName.vb: DotNext.DelegateHelpers.Combine(Of TDelegate)(System.Collections.Generic.IEnumerable(Of TDelegate))
+  nameWithType: DelegateHelpers.Combine<TDelegate>(IEnumerable<TDelegate?>?)
+  nameWithType.vb: DelegateHelpers.Combine(Of TDelegate)(IEnumerable(Of TDelegate))
 - uid: DotNext.DelegateHelpers.Constant*
   name: Constant
   href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Constant_
@@ -13524,6 +13602,81 @@ references:
   commentId: N:DotNext.Hosting
   fullName: DotNext.Hosting
   nameWithType: DotNext.Hosting
+- uid: DotNext.Hosting.ApplicationLock
+  name: ApplicationLock
+  href: api/DotNext.Hosting.ApplicationLock.html
+  commentId: T:DotNext.Hosting.ApplicationLock
+  fullName: DotNext.Hosting.ApplicationLock
+  nameWithType: ApplicationLock
+- uid: DotNext.Hosting.ApplicationLock.#ctor(System.String)
+  name: ApplicationLock(string?)
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock__ctor_System_String_
+  commentId: M:DotNext.Hosting.ApplicationLock.#ctor(System.String)
+  name.vb: New(String)
+  fullName: DotNext.Hosting.ApplicationLock.ApplicationLock(string?)
+  fullName.vb: DotNext.Hosting.ApplicationLock.New(String)
+  nameWithType: ApplicationLock.ApplicationLock(string?)
+  nameWithType.vb: ApplicationLock.New(String)
+- uid: DotNext.Hosting.ApplicationLock.#ctor*
+  name: ApplicationLock
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock__ctor_
+  commentId: Overload:DotNext.Hosting.ApplicationLock.#ctor
+  name.vb: New
+  fullName: DotNext.Hosting.ApplicationLock.ApplicationLock
+  fullName.vb: DotNext.Hosting.ApplicationLock.New
+  nameWithType: ApplicationLock.ApplicationLock
+  nameWithType.vb: ApplicationLock.New
+- uid: DotNext.Hosting.ApplicationLock.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_Dispose_System_Boolean_
+  commentId: M:DotNext.Hosting.ApplicationLock.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Hosting.ApplicationLock.Dispose(bool)
+  fullName.vb: DotNext.Hosting.ApplicationLock.Dispose(Boolean)
+  nameWithType: ApplicationLock.Dispose(bool)
+  nameWithType.vb: ApplicationLock.Dispose(Boolean)
+- uid: DotNext.Hosting.ApplicationLock.Dispose*
+  name: Dispose
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_Dispose_
+  commentId: Overload:DotNext.Hosting.ApplicationLock.Dispose
+  fullName: DotNext.Hosting.ApplicationLock.Dispose
+  nameWithType: ApplicationLock.Dispose
+- uid: DotNext.Hosting.ApplicationLock.IsSupported
+  name: IsSupported
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_IsSupported
+  commentId: P:DotNext.Hosting.ApplicationLock.IsSupported
+  fullName: DotNext.Hosting.ApplicationLock.IsSupported
+  nameWithType: ApplicationLock.IsSupported
+- uid: DotNext.Hosting.ApplicationLock.IsSupported*
+  name: IsSupported
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_IsSupported_
+  commentId: Overload:DotNext.Hosting.ApplicationLock.IsSupported
+  fullName: DotNext.Hosting.ApplicationLock.IsSupported
+  nameWithType: ApplicationLock.IsSupported
+- uid: DotNext.Hosting.ApplicationLock.Release
+  name: Release()
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_Release
+  commentId: M:DotNext.Hosting.ApplicationLock.Release
+  fullName: DotNext.Hosting.ApplicationLock.Release()
+  nameWithType: ApplicationLock.Release()
+- uid: DotNext.Hosting.ApplicationLock.Release*
+  name: Release
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_Release_
+  commentId: Overload:DotNext.Hosting.ApplicationLock.Release
+  fullName: DotNext.Hosting.ApplicationLock.Release
+  nameWithType: ApplicationLock.Release
+- uid: DotNext.Hosting.ApplicationLock.TryAcquire
+  name: TryAcquire()
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_TryAcquire
+  commentId: M:DotNext.Hosting.ApplicationLock.TryAcquire
+  fullName: DotNext.Hosting.ApplicationLock.TryAcquire()
+  nameWithType: ApplicationLock.TryAcquire()
+- uid: DotNext.Hosting.ApplicationLock.TryAcquire*
+  name: TryAcquire
+  href: api/DotNext.Hosting.ApplicationLock.html#DotNext_Hosting_ApplicationLock_TryAcquire_
+  commentId: Overload:DotNext.Hosting.ApplicationLock.TryAcquire
+  fullName: DotNext.Hosting.ApplicationLock.TryAcquire
+  nameWithType: ApplicationLock.TryAcquire
 - uid: DotNext.Hosting.ConsoleLifetimeTokenSource
   name: ConsoleLifetimeTokenSource
   href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html
@@ -16252,23 +16405,6 @@ references:
   fullName.vb: DotNext.IO.Log.IAuditTrail(Of TEntry)
   nameWithType: IAuditTrail<TEntry>
   nameWithType.vb: IAuditTrail(Of TEntry)
-- uid: DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync*
-  name: AppendAndCommitAsync
-  href: api/DotNext.IO.Log.IAuditTrail-1.html#DotNext_IO_Log_IAuditTrail_1_AppendAndCommitAsync_
-  commentId: Overload:DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync
-  fullName: DotNext.IO.Log.IAuditTrail<TEntry>.AppendAndCommitAsync
-  fullName.vb: DotNext.IO.Log.IAuditTrail(Of TEntry).AppendAndCommitAsync
-  nameWithType: IAuditTrail<TEntry>.AppendAndCommitAsync
-  nameWithType.vb: IAuditTrail(Of TEntry).AppendAndCommitAsync
-- uid: DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync``1(DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Int64,System.Threading.CancellationToken)
-  name: AppendAndCommitAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl>, long, bool, long, CancellationToken)
-  href: api/DotNext.IO.Log.IAuditTrail-1.html#DotNext_IO_Log_IAuditTrail_1_AppendAndCommitAsync__1_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Boolean_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync``1(DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Int64,System.Threading.CancellationToken)
-  name.vb: AppendAndCommitAsync(Of TEntryImpl)(ILogEntryProducer(Of TEntryImpl), Long, Boolean, Long, CancellationToken)
-  fullName: DotNext.IO.Log.IAuditTrail<TEntry>.AppendAndCommitAsync<TEntryImpl>(DotNext.IO.Log.ILogEntryProducer<TEntryImpl>, long, bool, long, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.Log.IAuditTrail(Of TEntry).AppendAndCommitAsync(Of TEntryImpl)(DotNext.IO.Log.ILogEntryProducer(Of TEntryImpl), Long, Boolean, Long, System.Threading.CancellationToken)
-  nameWithType: IAuditTrail<TEntry>.AppendAndCommitAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl>, long, bool, long, CancellationToken)
-  nameWithType.vb: IAuditTrail(Of TEntry).AppendAndCommitAsync(Of TEntryImpl)(ILogEntryProducer(Of TEntryImpl), Long, Boolean, Long, CancellationToken)
 - uid: DotNext.IO.Log.IAuditTrail`1.AppendAsync*
   name: AppendAsync
   href: api/DotNext.IO.Log.IAuditTrail-1.html#DotNext_IO_Log_IAuditTrail_1_AppendAsync_
@@ -25065,6 +25201,18 @@ references:
   commentId: Overload:DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.Logger
   fullName: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.Logger
   nameWithType: ApplicationMaintenanceInterfaceHost.Logger
+- uid: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode
+  name: SocketFileMode
+  href: api/DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_SocketFileMode
+  commentId: P:DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode
+  fullName: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode
+  nameWithType: ApplicationMaintenanceInterfaceHost.SocketFileMode
+- uid: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode*
+  name: SocketFileMode
+  href: api/DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_SocketFileMode_
+  commentId: Overload:DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode
+  fullName: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.SocketFileMode
+  nameWithType: ApplicationMaintenanceInterfaceHost.SocketFileMode
 - uid: DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.StartAsync(System.Threading.CancellationToken)
   name: StartAsync(CancellationToken)
   href: api/DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_StartAsync_System_Threading_CancellationToken_
@@ -25539,15 +25687,15 @@ references:
   commentId: T:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost
   fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost
   nameWithType: CommandLineMaintenanceInterfaceHost
-- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,System.CommandLine.ParserConfiguration,Microsoft.Extensions.Logging.ILoggerFactory)
-  name: CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ParserConfiguration?, ILoggerFactory?)
-  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_System_CommandLine_ParserConfiguration_Microsoft_Extensions_Logging_ILoggerFactory_
-  commentId: M:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,System.CommandLine.ParserConfiguration,Microsoft.Extensions.Logging.ILoggerFactory)
-  name.vb: New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ParserConfiguration, ILoggerFactory)
-  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable<DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand>, DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler?, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback?, System.CommandLine.ParserConfiguration?, Microsoft.Extensions.Logging.ILoggerFactory?)
-  fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.New(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable(Of DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand), DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback, System.CommandLine.ParserConfiguration, Microsoft.Extensions.Logging.ILoggerFactory)
-  nameWithType: CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ParserConfiguration?, ILoggerFactory?)
-  nameWithType.vb: CommandLineMaintenanceInterfaceHost.New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ParserConfiguration, ILoggerFactory)
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,Microsoft.Extensions.Logging.ILoggerFactory)
+  name: CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, ILoggerFactory?)
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_Microsoft_Extensions_Logging_ILoggerFactory_
+  commentId: M:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,Microsoft.Extensions.Logging.ILoggerFactory)
+  name.vb: New(UnixDomainSocketEndPoint, ILoggerFactory)
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(System.Net.Sockets.UnixDomainSocketEndPoint, Microsoft.Extensions.Logging.ILoggerFactory?)
+  fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.New(System.Net.Sockets.UnixDomainSocketEndPoint, Microsoft.Extensions.Logging.ILoggerFactory)
+  nameWithType: CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, ILoggerFactory?)
+  nameWithType.vb: CommandLineMaintenanceInterfaceHost.New(UnixDomainSocketEndPoint, ILoggerFactory)
 - uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor*
   name: CommandLineMaintenanceInterfaceHost
   href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_
@@ -25557,6 +25705,45 @@ references:
   fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.New
   nameWithType: CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost
   nameWithType.vb: CommandLineMaintenanceInterfaceHost.New
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands(System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand})
+  name: AddCommands(params IEnumerable<ApplicationMaintenanceCommand>)
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_AddCommands_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__
+  commentId: M:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands(System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand})
+  name.vb: AddCommands(IEnumerable(Of ApplicationMaintenanceCommand))
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands(params System.Collections.Generic.IEnumerable<DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand>)
+  fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands(System.Collections.Generic.IEnumerable(Of DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand))
+  nameWithType: CommandLineMaintenanceInterfaceHost.AddCommands(params IEnumerable<ApplicationMaintenanceCommand>)
+  nameWithType.vb: CommandLineMaintenanceInterfaceHost.AddCommands(IEnumerable(Of ApplicationMaintenanceCommand))
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands*
+  name: AddCommands
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_AddCommands_
+  commentId: Overload:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.AddCommands
+  nameWithType: CommandLineMaintenanceInterfaceHost.AddCommands
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication
+  name: Authentication
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authentication
+  commentId: P:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication
+  nameWithType: CommandLineMaintenanceInterfaceHost.Authentication
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication*
+  name: Authentication
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authentication_
+  commentId: Overload:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authentication
+  nameWithType: CommandLineMaintenanceInterfaceHost.Authentication
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization
+  name: Authorization
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authorization
+  commentId: P:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization
+  nameWithType: CommandLineMaintenanceInterfaceHost.Authorization
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization*
+  name: Authorization
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_Authorization_
+  commentId: Overload:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.Authorization
+  nameWithType: CommandLineMaintenanceInterfaceHost.Authorization
 - uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync(DotNext.Maintenance.IMaintenanceSession,System.ReadOnlyMemory{System.Char},System.Threading.CancellationToken)
   name: ExecuteCommandAsync(IMaintenanceSession, ReadOnlyMemory<char>, CancellationToken)
   href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_DotNext_Maintenance_IMaintenanceSession_System_ReadOnlyMemory_System_Char__System_Threading_CancellationToken_
@@ -25572,6 +25759,18 @@ references:
   commentId: Overload:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync
   fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync
   nameWithType: CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings
+  name: ParserSettings
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ParserSettings
+  commentId: P:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings
+  nameWithType: CommandLineMaintenanceInterfaceHost.ParserSettings
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings*
+  name: ParserSettings
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ParserSettings_
+  commentId: Overload:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ParserSettings
+  nameWithType: CommandLineMaintenanceInterfaceHost.ParserSettings
 - uid: DotNext.Maintenance.CommandLine.HostingServices
   name: HostingServices
   href: api/DotNext.Maintenance.CommandLine.HostingServices.html
@@ -39827,6 +40026,36 @@ references:
   fullName.vb: DotNext.Reflection.EnumType.GetCustomAttributes(Of TEnum, TAttribute)(TEnum)
   nameWithType: EnumType.GetCustomAttributes<TEnum, TAttribute>(TEnum)
   nameWithType.vb: EnumType.GetCustomAttributes(Of TEnum, TAttribute)(TEnum)
+- uid: DotNext.Reflection.InlineArrayType
+  name: InlineArrayType
+  href: api/DotNext.Reflection.InlineArrayType.html
+  commentId: T:DotNext.Reflection.InlineArrayType
+  fullName: DotNext.Reflection.InlineArrayType
+  nameWithType: InlineArrayType
+- uid: DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize(System.Type)
+  name: get_InlineArrayTypeAndSize(Type)
+  href: api/DotNext.Reflection.InlineArrayType.html#DotNext_Reflection_InlineArrayType_get_InlineArrayTypeAndSize_System_Type_
+  commentId: M:DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize(System.Type)
+  fullName: DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize(System.Type)
+  nameWithType: InlineArrayType.get_InlineArrayTypeAndSize(Type)
+- uid: DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize*
+  name: get_InlineArrayTypeAndSize
+  href: api/DotNext.Reflection.InlineArrayType.html#DotNext_Reflection_InlineArrayType_get_InlineArrayTypeAndSize_
+  commentId: Overload:DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize
+  fullName: DotNext.Reflection.InlineArrayType.get_InlineArrayTypeAndSize
+  nameWithType: InlineArrayType.get_InlineArrayTypeAndSize
+- uid: DotNext.Reflection.InlineArrayType.get_IsInlineArray(System.Type)
+  name: get_IsInlineArray(Type)
+  href: api/DotNext.Reflection.InlineArrayType.html#DotNext_Reflection_InlineArrayType_get_IsInlineArray_System_Type_
+  commentId: M:DotNext.Reflection.InlineArrayType.get_IsInlineArray(System.Type)
+  fullName: DotNext.Reflection.InlineArrayType.get_IsInlineArray(System.Type)
+  nameWithType: InlineArrayType.get_IsInlineArray(Type)
+- uid: DotNext.Reflection.InlineArrayType.get_IsInlineArray*
+  name: get_IsInlineArray
+  href: api/DotNext.Reflection.InlineArrayType.html#DotNext_Reflection_InlineArrayType_get_IsInlineArray_
+  commentId: Overload:DotNext.Reflection.InlineArrayType.get_IsInlineArray
+  fullName: DotNext.Reflection.InlineArrayType.get_IsInlineArray
+  nameWithType: InlineArrayType.get_IsInlineArray
 - uid: DotNext.Reflection.MethodExtensions
   name: MethodExtensions
   href: api/DotNext.Reflection.MethodExtensions.html
@@ -41908,6 +42137,597 @@ references:
   commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync
   fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync
   nameWithType: DiskSpacePool.Segment.WriteAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache
+  name: RandomAccessCache
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache
+  fullName: DotNext.Runtime.Caching.RandomAccessCache
+  nameWithType: RandomAccessCache
+- uid: DotNext.Runtime.Caching.RandomAccessCache.AsKey(System.ReadOnlyMemory{System.Byte}@)
+  name: AsKey(in ReadOnlyMemory<byte>)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.html#DotNext_Runtime_Caching_RandomAccessCache_AsKey_System_ReadOnlyMemory_System_Byte___
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.AsKey(System.ReadOnlyMemory{System.Byte}@)
+  name.vb: AsKey(ReadOnlyMemory(Of Byte))
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.AsKey(in System.ReadOnlyMemory<byte>)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.AsKey(System.ReadOnlyMemory(Of Byte))
+  nameWithType: RandomAccessCache.AsKey(in ReadOnlyMemory<byte>)
+  nameWithType.vb: RandomAccessCache.AsKey(ReadOnlyMemory(Of Byte))
+- uid: DotNext.Runtime.Caching.RandomAccessCache.AsKey(System.String)
+  name: AsKey(string?)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.html#DotNext_Runtime_Caching_RandomAccessCache_AsKey_System_String_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.AsKey(System.String)
+  name.vb: AsKey(String)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.AsKey(string?)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.AsKey(String)
+  nameWithType: RandomAccessCache.AsKey(string?)
+  nameWithType.vb: RandomAccessCache.AsKey(String)
+- uid: DotNext.Runtime.Caching.RandomAccessCache.AsKey*
+  name: AsKey
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.html#DotNext_Runtime_Caching_RandomAccessCache_AsKey_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache.AsKey
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.AsKey
+  nameWithType: RandomAccessCache.AsKey
+- uid: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey
+  name: RandomAccessCache.ReadOnlyMemoryKey
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey
+  nameWithType: RandomAccessCache.ReadOnlyMemoryKey
+- uid: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.#ctor(System.ReadOnlyMemory{System.Byte}@)
+  name: ReadOnlyMemoryKey(in ReadOnlyMemory<byte>)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html#DotNext_Runtime_Caching_RandomAccessCache_ReadOnlyMemoryKey__ctor_System_ReadOnlyMemory_System_Byte___
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.#ctor(System.ReadOnlyMemory{System.Byte}@)
+  name.vb: New(ReadOnlyMemory(Of Byte))
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.ReadOnlyMemoryKey(in System.ReadOnlyMemory<byte>)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.New(System.ReadOnlyMemory(Of Byte))
+  nameWithType: RandomAccessCache.ReadOnlyMemoryKey.ReadOnlyMemoryKey(in ReadOnlyMemory<byte>)
+  nameWithType.vb: RandomAccessCache.ReadOnlyMemoryKey.New(ReadOnlyMemory(Of Byte))
+- uid: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.#ctor*
+  name: ReadOnlyMemoryKey
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html#DotNext_Runtime_Caching_RandomAccessCache_ReadOnlyMemoryKey__ctor_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.#ctor
+  name.vb: New
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.ReadOnlyMemoryKey
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.New
+  nameWithType: RandomAccessCache.ReadOnlyMemoryKey.ReadOnlyMemoryKey
+  nameWithType.vb: RandomAccessCache.ReadOnlyMemoryKey.New
+- uid: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.op_Implicit(DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey)~System.ReadOnlySpan{System.Byte}
+  name: implicit operator ReadOnlySpan<byte>(ReadOnlyMemoryKey)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html#DotNext_Runtime_Caching_RandomAccessCache_ReadOnlyMemoryKey_op_Implicit_DotNext_Runtime_Caching_RandomAccessCache_ReadOnlyMemoryKey__System_ReadOnlySpan_System_Byte_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.op_Implicit(DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey)~System.ReadOnlySpan{System.Byte}
+  name.vb: CType(ReadOnlyMemoryKey)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.implicit operator System.ReadOnlySpan<byte>(DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.CType(DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey)
+  nameWithType: RandomAccessCache.ReadOnlyMemoryKey.implicit operator ReadOnlySpan<byte>(RandomAccessCache.ReadOnlyMemoryKey)
+  nameWithType.vb: RandomAccessCache.ReadOnlyMemoryKey.CType(RandomAccessCache.ReadOnlyMemoryKey)
+- uid: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.op_Implicit*
+  name: implicit operator
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html#DotNext_Runtime_Caching_RandomAccessCache_ReadOnlyMemoryKey_op_Implicit_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.op_Implicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.implicit operator
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.CType
+  nameWithType: RandomAccessCache.ReadOnlyMemoryKey.implicit operator
+  nameWithType.vb: RandomAccessCache.ReadOnlyMemoryKey.CType
+- uid: DotNext.Runtime.Caching.RandomAccessCache.StringKey
+  name: RandomAccessCache.StringKey
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.StringKey.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache.StringKey
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.StringKey
+  nameWithType: RandomAccessCache.StringKey
+- uid: DotNext.Runtime.Caching.RandomAccessCache.StringKey.#ctor(System.String)
+  name: StringKey(string?)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.StringKey.html#DotNext_Runtime_Caching_RandomAccessCache_StringKey__ctor_System_String_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.StringKey.#ctor(System.String)
+  name.vb: New(String)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.StringKey.StringKey(string?)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.StringKey.New(String)
+  nameWithType: RandomAccessCache.StringKey.StringKey(string?)
+  nameWithType.vb: RandomAccessCache.StringKey.New(String)
+- uid: DotNext.Runtime.Caching.RandomAccessCache.StringKey.#ctor*
+  name: StringKey
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.StringKey.html#DotNext_Runtime_Caching_RandomAccessCache_StringKey__ctor_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache.StringKey.#ctor
+  name.vb: New
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.StringKey.StringKey
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.StringKey.New
+  nameWithType: RandomAccessCache.StringKey.StringKey
+  nameWithType.vb: RandomAccessCache.StringKey.New
+- uid: DotNext.Runtime.Caching.RandomAccessCache.StringKey.op_Implicit(DotNext.Runtime.Caching.RandomAccessCache.StringKey)~System.ReadOnlySpan{System.Byte}
+  name: implicit operator ReadOnlySpan<byte>(StringKey)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.StringKey.html#DotNext_Runtime_Caching_RandomAccessCache_StringKey_op_Implicit_DotNext_Runtime_Caching_RandomAccessCache_StringKey__System_ReadOnlySpan_System_Byte_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache.StringKey.op_Implicit(DotNext.Runtime.Caching.RandomAccessCache.StringKey)~System.ReadOnlySpan{System.Byte}
+  name.vb: CType(StringKey)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.StringKey.implicit operator System.ReadOnlySpan<byte>(DotNext.Runtime.Caching.RandomAccessCache.StringKey)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.StringKey.CType(DotNext.Runtime.Caching.RandomAccessCache.StringKey)
+  nameWithType: RandomAccessCache.StringKey.implicit operator ReadOnlySpan<byte>(RandomAccessCache.StringKey)
+  nameWithType.vb: RandomAccessCache.StringKey.CType(RandomAccessCache.StringKey)
+- uid: DotNext.Runtime.Caching.RandomAccessCache.StringKey.op_Implicit*
+  name: implicit operator
+  href: api/DotNext.Runtime.Caching.RandomAccessCache.StringKey.html#DotNext_Runtime_Caching_RandomAccessCache_StringKey_op_Implicit_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache.StringKey.op_Implicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.Caching.RandomAccessCache.StringKey.implicit operator
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache.StringKey.CType
+  nameWithType: RandomAccessCache.StringKey.implicit operator
+  nameWithType.vb: RandomAccessCache.StringKey.CType
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1
+  name: RandomAccessCache<TValue>
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`1
+  name.vb: RandomAccessCache(Of TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue)
+  nameWithType: RandomAccessCache<TValue>
+  nameWithType.vb: RandomAccessCache(Of TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32)
+  name: RandomAccessCache(int)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1__ctor_System_Int32_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32)
+  name.vb: New(Integer)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.RandomAccessCache(int)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).New(Integer)
+  nameWithType: RandomAccessCache<TValue>.RandomAccessCache(int)
+  nameWithType.vb: RandomAccessCache(Of TValue).New(Integer)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32,System.Int32)
+  name: RandomAccessCache(int, int)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1__ctor_System_Int32_System_Int32_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.#ctor(System.Int32,System.Int32)
+  name.vb: New(Integer, Integer)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.RandomAccessCache(int, int)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).New(Integer, Integer)
+  nameWithType: RandomAccessCache<TValue>.RandomAccessCache(int, int)
+  nameWithType.vb: RandomAccessCache(Of TValue).New(Integer, Integer)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.#ctor*
+  name: RandomAccessCache
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1__ctor_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.#ctor
+  name.vb: New
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.RandomAccessCache
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).New
+  nameWithType: RandomAccessCache<TValue>.RandomAccessCache
+  nameWithType.vb: RandomAccessCache(Of TValue).New
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Capacity
+  name: Capacity
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Capacity
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.Capacity
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Capacity
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Capacity
+  nameWithType: RandomAccessCache<TValue>.Capacity
+  nameWithType.vb: RandomAccessCache(Of TValue).Capacity
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Capacity_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Capacity
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Capacity
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Capacity
+  nameWithType: RandomAccessCache<TValue>.Capacity
+  nameWithType.vb: RandomAccessCache(Of TValue).Capacity
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Change*
+  name: Change
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Change_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Change
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Change
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Change
+  nameWithType: RandomAccessCache<TValue>.Change
+  nameWithType.vb: RandomAccessCache(Of TValue).Change
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync*
+  name: ChangeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ChangeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ChangeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ChangeAsync
+  nameWithType: RandomAccessCache<TValue>.ChangeAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).ChangeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync``1(``0,System.Threading.CancellationToken)
+  name: ChangeAsync<TKey>(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ChangeAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ChangeAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: ChangeAsync(Of TKey)(TKey, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ChangeAsync<TKey>(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ChangeAsync(Of TKey)(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.ChangeAsync<TKey>(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).ChangeAsync(Of TKey)(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Change``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Change<TKey>(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Change__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.Change``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: Change(Of TKey)(TKey, TimeSpan, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Change<TKey>(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Change(Of TKey)(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.Change<TKey>(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).Change(Of TKey)(TKey, TimeSpan, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Contains(System.ReadOnlySpan{System.Byte})
+  name: Contains(ReadOnlySpan<byte>)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Contains_System_ReadOnlySpan_System_Byte__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.Contains(System.ReadOnlySpan{System.Byte})
+  name.vb: Contains(ReadOnlySpan(Of Byte))
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Contains(System.ReadOnlySpan<byte>)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Contains(System.ReadOnlySpan(Of Byte))
+  nameWithType: RandomAccessCache<TValue>.Contains(ReadOnlySpan<byte>)
+  nameWithType.vb: RandomAccessCache(Of TValue).Contains(ReadOnlySpan(Of Byte))
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Contains*
+  name: Contains
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Contains_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Contains
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Contains
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Contains
+  nameWithType: RandomAccessCache<TValue>.Contains
+  nameWithType.vb: RandomAccessCache(Of TValue).Contains
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Dispose(bool)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Dispose(Boolean)
+  nameWithType: RandomAccessCache<TValue>.Dispose(bool)
+  nameWithType.vb: RandomAccessCache(Of TValue).Dispose(Boolean)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Dispose
+  nameWithType: RandomAccessCache<TValue>.Dispose
+  nameWithType.vb: RandomAccessCache(Of TValue).Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsync
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.DisposeAsync()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).DisposeAsync()
+  nameWithType: RandomAccessCache<TValue>.DisposeAsync()
+  nameWithType.vb: RandomAccessCache(Of TValue).DisposeAsync()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.DisposeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).DisposeAsync
+  nameWithType: RandomAccessCache<TValue>.DisposeAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).DisposeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore
+  name: DisposeAsyncCore()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsyncCore
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.DisposeAsyncCore()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).DisposeAsyncCore()
+  nameWithType: RandomAccessCache<TValue>.DisposeAsyncCore()
+  nameWithType.vb: RandomAccessCache(Of TValue).DisposeAsyncCore()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore*
+  name: DisposeAsyncCore
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_DisposeAsyncCore_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.DisposeAsyncCore
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.DisposeAsyncCore
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).DisposeAsyncCore
+  nameWithType: RandomAccessCache<TValue>.DisposeAsyncCore
+  nameWithType.vb: RandomAccessCache(Of TValue).DisposeAsyncCore
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer
+  name: EqualityComparer
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_EqualityComparer
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.EqualityComparer
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).EqualityComparer
+  nameWithType: RandomAccessCache<TValue>.EqualityComparer
+  nameWithType.vb: RandomAccessCache(Of TValue).EqualityComparer
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer*
+  name: EqualityComparer
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_EqualityComparer_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.EqualityComparer
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.EqualityComparer
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).EqualityComparer
+  nameWithType: RandomAccessCache<TValue>.EqualityComparer
+  nameWithType.vb: RandomAccessCache(Of TValue).EqualityComparer
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Eviction
+  name: Eviction
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Eviction
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.Eviction
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Eviction
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Eviction
+  nameWithType: RandomAccessCache<TValue>.Eviction
+  nameWithType.vb: RandomAccessCache(Of TValue).Eviction
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Eviction*
+  name: Eviction
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Eviction_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Eviction
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Eviction
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Eviction
+  nameWithType: RandomAccessCache<TValue>.Eviction
+  nameWithType.vb: RandomAccessCache(Of TValue).Eviction
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate*
+  name: Invalidate
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Invalidate_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Invalidate
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Invalidate
+  nameWithType: RandomAccessCache<TValue>.Invalidate
+  nameWithType.vb: RandomAccessCache(Of TValue).Invalidate
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync(System.Threading.CancellationToken)
+  name: InvalidateAsync(CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.InvalidateAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).InvalidateAsync(System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.InvalidateAsync(CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).InvalidateAsync(CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync*
+  name: InvalidateAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.InvalidateAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).InvalidateAsync
+  nameWithType: RandomAccessCache<TValue>.InvalidateAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).InvalidateAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync``1(``0,System.Threading.CancellationToken)
+  name: InvalidateAsync<TKey>(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_InvalidateAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.InvalidateAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: InvalidateAsync(Of TKey)(TKey, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.InvalidateAsync<TKey>(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).InvalidateAsync(Of TKey)(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.InvalidateAsync<TKey>(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).InvalidateAsync(Of TKey)(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Invalidate<TKey>(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Invalidate__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.Invalidate``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: Invalidate(Of TKey)(TKey, TimeSpan, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Invalidate<TKey>(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Invalidate(Of TKey)(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.Invalidate<TKey>(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).Invalidate(Of TKey)(TKey, TimeSpan, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags
+  name: MeasurementTags
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_MeasurementTags
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.MeasurementTags
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).MeasurementTags
+  nameWithType: RandomAccessCache<TValue>.MeasurementTags
+  nameWithType.vb: RandomAccessCache(Of TValue).MeasurementTags
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags*
+  name: MeasurementTags
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_MeasurementTags_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.MeasurementTags
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.MeasurementTags
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).MeasurementTags
+  nameWithType: RandomAccessCache<TValue>.MeasurementTags
+  nameWithType.vb: RandomAccessCache(Of TValue).MeasurementTags
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession
+  name: RandomAccessCache<TValue>.ReadSession
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession
+  name.vb: RandomAccessCache(Of TValue).ReadSession
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession
+  nameWithType: RandomAccessCache<TValue>.ReadSession
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Dispose
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Dispose()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Dispose()
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Dispose()
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Dispose()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Dispose
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Dispose
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Key
+  name: Key
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Key
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Key
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Key
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Key
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Key
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Key
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Key*
+  name: Key
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Key_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Key
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Key
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Key
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Key
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Key
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Value
+  name: Value
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Value
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Value
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Value
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Value
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Value
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Value
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Value*
+  name: Value
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_Value_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.Value
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.Value
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.Value
+  nameWithType: RandomAccessCache<TValue>.ReadSession.Value
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.Value
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.ValueRef
+  name: ValueRef
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_ValueRef
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.ValueRef
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.ValueRef
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.ValueRef
+  nameWithType: RandomAccessCache<TValue>.ReadSession.ValueRef
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.ValueRef
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.ValueRef*
+  name: ValueRef
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadSession_ValueRef_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadSession.ValueRef
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession.ValueRef
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession.ValueRef
+  nameWithType: RandomAccessCache<TValue>.ReadSession.ValueRef
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadSession.ValueRef
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1
+  name: RandomAccessCache<TValue>.ReadWriteSession<TKey>
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1
+  name.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey)
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_Dispose
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.Dispose()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).Dispose()
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.Dispose()
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).Dispose()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).Dispose
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.Dispose
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_DisposeAsync
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.DisposeAsync()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).DisposeAsync()
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.DisposeAsync()
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).DisposeAsync()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_DisposeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.DisposeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).DisposeAsync
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.DisposeAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).DisposeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.SetValue(`0@)
+  name: SetValue(in TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_SetValue__0__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.SetValue(`0@)
+  name.vb: SetValue(TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.SetValue(in TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).SetValue(TValue)
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.SetValue(in TValue)
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).SetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.SetValue*
+  name: SetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_SetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.SetValue
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.SetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).SetValue
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.SetValue
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).SetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.TryGetValue(`0@)
+  name: TryGetValue(out TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_TryGetValue__0__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.TryGetValue(`0@)
+  name.vb: TryGetValue(TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.TryGetValue(out TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).TryGetValue(TValue)
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.TryGetValue(out TValue)
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).TryGetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.TryGetValue*
+  name: TryGetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReadWriteSession_1_TryGetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReadWriteSession`1.TryGetValue
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadWriteSession<TKey>.TryGetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).TryGetValue
+  nameWithType: RandomAccessCache<TValue>.ReadWriteSession<TKey>.TryGetValue
+  nameWithType.vb: RandomAccessCache(Of TValue).ReadWriteSession(Of TKey).TryGetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Replace*
+  name: Replace
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Replace_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.Replace
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Replace
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Replace
+  nameWithType: RandomAccessCache<TValue>.Replace
+  nameWithType.vb: RandomAccessCache(Of TValue).Replace
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync*
+  name: ReplaceAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReplaceAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReplaceAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReplaceAsync
+  nameWithType: RandomAccessCache<TValue>.ReplaceAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).ReplaceAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync``1(``0,System.Threading.CancellationToken)
+  name: ReplaceAsync<TKey>(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_ReplaceAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.ReplaceAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: ReplaceAsync(Of TKey)(TKey, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReplaceAsync<TKey>(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReplaceAsync(Of TKey)(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.ReplaceAsync<TKey>(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).ReplaceAsync(Of TKey)(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.Replace``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Replace<TKey>(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_Replace__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.Replace``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: Replace(Of TKey)(TKey, TimeSpan, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.Replace<TKey>(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).Replace(Of TKey)(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.Replace<TKey>(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).Replace(Of TKey)(TKey, TimeSpan, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRead(System.ReadOnlySpan{System.Byte},DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@)
+  name: TryRead(ReadOnlySpan<byte>, out ReadSession)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRead_System_ReadOnlySpan_System_Byte__DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.TryRead(System.ReadOnlySpan{System.Byte},DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@)
+  name.vb: TryRead(ReadOnlySpan(Of Byte), ReadSession)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRead(System.ReadOnlySpan<byte>, out DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRead(System.ReadOnlySpan(Of Byte), DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession)
+  nameWithType: RandomAccessCache<TValue>.TryRead(ReadOnlySpan<byte>, out RandomAccessCache<TValue>.ReadSession)
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRead(ReadOnlySpan(Of Byte), RandomAccessCache(Of TValue).ReadSession)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRead*
+  name: TryRead
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRead_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.TryRead
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRead
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRead
+  nameWithType: RandomAccessCache<TValue>.TryRead
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRead
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove*
+  name: TryRemove
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRemove_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRemove
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRemove
+  nameWithType: RandomAccessCache<TValue>.TryRemove
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRemove
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync*
+  name: TryRemoveAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRemoveAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRemoveAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRemoveAsync
+  nameWithType: RandomAccessCache<TValue>.TryRemoveAsync
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRemoveAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync``1(``0,System.Threading.CancellationToken)
+  name: TryRemoveAsync<TKey>(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRemoveAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.TryRemoveAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: TryRemoveAsync(Of TKey)(TKey, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRemoveAsync<TKey>(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRemoveAsync(Of TKey)(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.TryRemoveAsync<TKey>(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRemoveAsync(Of TKey)(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove``1(``0,DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)
+  name: TryRemove<TKey>(TKey, out ReadSession, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-1.html#DotNext_Runtime_Caching_RandomAccessCache_1_TryRemove__1___0_DotNext_Runtime_Caching_RandomAccessCache__0__ReadSession__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`1.TryRemove``1(``0,DotNext.Runtime.Caching.RandomAccessCache{`0}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: TryRemove(Of TKey)(TKey, ReadSession, TimeSpan, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TValue>.TryRemove<TKey>(TKey, out DotNext.Runtime.Caching.RandomAccessCache<TValue>.ReadSession, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TValue).TryRemove(Of TKey)(TKey, DotNext.Runtime.Caching.RandomAccessCache(Of TValue).ReadSession, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TValue>.TryRemove<TKey>(TKey, out RandomAccessCache<TValue>.ReadSession, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TValue).TryRemove(Of TKey)(TKey, RandomAccessCache(Of TValue).ReadSession, TimeSpan, CancellationToken)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2
   name: RandomAccessCache<TKey, TValue>
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html
@@ -41926,6 +42746,15 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).New(Integer)
   nameWithType: RandomAccessCache<TKey, TValue>.RandomAccessCache(int)
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).New(Integer)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32,System.Int32)
+  name: RandomAccessCache(int, int)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_System_Int32_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32,System.Int32)
+  name.vb: New(Integer, Integer)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.RandomAccessCache(int, int)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).New(Integer, Integer)
+  nameWithType: RandomAccessCache<TKey, TValue>.RandomAccessCache(int, int)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).New(Integer, Integer)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*
   name: RandomAccessCache
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2__ctor_
@@ -42532,6 +43361,15 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue, TWeight).New(Integer, TWeight, Integer)
   nameWithType: RandomAccessCache<TKey, TValue, TWeight>.RandomAccessCache(int, TWeight, int)
   nameWithType.vb: RandomAccessCache(Of TKey, TValue, TWeight).New(Integer, TWeight, Integer)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`3.#ctor(System.Int32,`2,System.Int32,System.Int32)
+  name: RandomAccessCache(int, TWeight, int, int)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-3.html#DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32_System_Int32_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`3.#ctor(System.Int32,`2,System.Int32,System.Int32)
+  name.vb: New(Integer, TWeight, Integer, Integer)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue, TWeight>.RandomAccessCache(int, TWeight, int, int)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue, TWeight).New(Integer, TWeight, Integer, Integer)
+  nameWithType: RandomAccessCache<TKey, TValue, TWeight>.RandomAccessCache(int, TWeight, int, int)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue, TWeight).New(Integer, TWeight, Integer, Integer)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`3.#ctor*
   name: RandomAccessCache
   href: api/DotNext.Runtime.Caching.RandomAccessCache-3.html#DotNext_Runtime_Caching_RandomAccessCache_3__ctor_
@@ -43146,6 +43984,15 @@ references:
   commentId: T:DotNext.Runtime.CompilerServices.ExecutionStack
   fullName: DotNext.Runtime.CompilerServices.ExecutionStack
   nameWithType: ExecutionStack
+- uid: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack(System.Void*)
+  name: IsOnExecutionStack(void*)
+  href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_IsOnExecutionStack_System_Void__
+  commentId: M:DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack(System.Void*)
+  name.vb: IsOnExecutionStack(Void*)
+  fullName: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack(void*)
+  fullName.vb: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack(Void*)
+  nameWithType: ExecutionStack.IsOnExecutionStack(void*)
+  nameWithType.vb: ExecutionStack.IsOnExecutionStack(Void*)
 - uid: DotNext.Runtime.CompilerServices.ExecutionStack.IsOnExecutionStack*
   name: IsOnExecutionStack
   href: api/DotNext.Runtime.CompilerServices.ExecutionStack.html#DotNext_Runtime_CompilerServices_ExecutionStack_IsOnExecutionStack_
@@ -44711,6 +45558,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsBytes(Of T)(T)
   nameWithType: MemoryMarshalExtensions.AsBytes<T>(ref T)
   nameWithType.vb: MemoryMarshalExtensions.AsBytes(Of T)(T)
+- uid: DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes(System.String)
+  name: AsReadOnlyBytes(string?)
+  href: api/DotNext.Runtime.InteropServices.MemoryMarshalExtensions.html#DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes_System_String_
+  commentId: M:DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes(System.String)
+  name.vb: AsReadOnlyBytes(String)
+  fullName: DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes(string?)
+  fullName.vb: DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes(String)
+  nameWithType: MemoryMarshalExtensions.AsReadOnlyBytes(string?)
+  nameWithType.vb: MemoryMarshalExtensions.AsReadOnlyBytes(String)
 - uid: DotNext.Runtime.InteropServices.MemoryMarshalExtensions.AsReadOnlyBytes*
   name: AsReadOnlyBytes
   href: api/DotNext.Runtime.InteropServices.MemoryMarshalExtensions.html#DotNext_Runtime_InteropServices_MemoryMarshalExtensions_AsReadOnlyBytes_
@@ -45512,6 +46368,22 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).IsNull
   nameWithType: Pointer<T>.IsNull
   nameWithType.vb: Pointer(Of T).IsNull
+- uid: DotNext.Runtime.InteropServices.Pointer`1.IsStackAllocated
+  name: IsStackAllocated
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_IsStackAllocated
+  commentId: P:DotNext.Runtime.InteropServices.Pointer`1.IsStackAllocated
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.IsStackAllocated
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).IsStackAllocated
+  nameWithType: Pointer<T>.IsStackAllocated
+  nameWithType.vb: Pointer(Of T).IsStackAllocated
+- uid: DotNext.Runtime.InteropServices.Pointer`1.IsStackAllocated*
+  name: IsStackAllocated
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_IsStackAllocated_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.IsStackAllocated
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.IsStackAllocated
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).IsStackAllocated
+  nameWithType: Pointer<T>.IsStackAllocated
+  nameWithType.vb: Pointer(Of T).IsStackAllocated
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Item(System.UIntPtr)
   name: this[nuint]
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Item_System_UIntPtr_
@@ -47985,6 +48857,18 @@ references:
   fullName.vb: DotNext.Span.TrimLength(Of T)(System.Span(Of T), Integer, System.Span(Of T))
   nameWithType: Span.TrimLength<T>(Span<T>, int, out Span<T>)
   nameWithType.vb: Span.TrimLength(Of T)(Span(Of T), Integer, Span(Of T))
+- uid: DotNext.Span.get_Default
+  name: get_Default()
+  href: api/DotNext.Span.html#DotNext_Span_get_Default
+  commentId: M:DotNext.Span.get_Default
+  fullName: DotNext.Span.get_Default()
+  nameWithType: Span.get_Default()
+- uid: DotNext.Span.get_Default*
+  name: get_Default
+  href: api/DotNext.Span.html#DotNext_Span_get_Default_
+  commentId: Overload:DotNext.Span.get_Default
+  fullName: DotNext.Span.get_Default
+  nameWithType: Span.get_Default
 - uid: DotNext.Span.get_IsZeroed*
   name: get_IsZeroed
   href: api/DotNext.Span.html#DotNext_Span_get_IsZeroed_
@@ -52019,6 +52903,147 @@ references:
   fullName.vb: DotNext.Threading.AsyncMulticastSequence(Of T).WriteAsync
   nameWithType: AsyncMulticastSequence<T>.WriteAsync
   nameWithType.vb: AsyncMulticastSequence(Of T).WriteAsync
+- uid: DotNext.Threading.AsyncParkingLot
+  name: AsyncParkingLot
+  href: api/DotNext.Threading.AsyncParkingLot.html
+  commentId: T:DotNext.Threading.AsyncParkingLot
+  fullName: DotNext.Threading.AsyncParkingLot
+  nameWithType: AsyncParkingLot
+- uid: DotNext.Threading.AsyncParkingLot.#ctor(System.Int32,System.Nullable{System.Int64})
+  name: AsyncParkingLot(int, long?)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot__ctor_System_Int32_System_Nullable_System_Int64__
+  commentId: M:DotNext.Threading.AsyncParkingLot.#ctor(System.Int32,System.Nullable{System.Int64})
+  name.vb: New(Integer, Long?)
+  fullName: DotNext.Threading.AsyncParkingLot.AsyncParkingLot(int, long?)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.New(Integer, Long?)
+  nameWithType: AsyncParkingLot.AsyncParkingLot(int, long?)
+  nameWithType.vb: AsyncParkingLot.New(Integer, Long?)
+- uid: DotNext.Threading.AsyncParkingLot.#ctor*
+  name: AsyncParkingLot
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot__ctor_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.#ctor
+  name.vb: New
+  fullName: DotNext.Threading.AsyncParkingLot.AsyncParkingLot
+  fullName.vb: DotNext.Threading.AsyncParkingLot.New
+  nameWithType: AsyncParkingLot.AsyncParkingLot
+  nameWithType.vb: AsyncParkingLot.New
+- uid: DotNext.Threading.AsyncParkingLot.Capacity
+  name: Capacity
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Capacity
+  commentId: P:DotNext.Threading.AsyncParkingLot.Capacity
+  fullName: DotNext.Threading.AsyncParkingLot.Capacity
+  nameWithType: AsyncParkingLot.Capacity
+- uid: DotNext.Threading.AsyncParkingLot.Capacity*
+  name: Capacity
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Capacity_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.Capacity
+  fullName: DotNext.Threading.AsyncParkingLot.Capacity
+  nameWithType: AsyncParkingLot.Capacity
+- uid: DotNext.Threading.AsyncParkingLot.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncParkingLot.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Threading.AsyncParkingLot.Dispose(bool)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.Dispose(Boolean)
+  nameWithType: AsyncParkingLot.Dispose(bool)
+  nameWithType.vb: AsyncParkingLot.Dispose(Boolean)
+- uid: DotNext.Threading.AsyncParkingLot.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Dispose_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.Dispose
+  fullName: DotNext.Threading.AsyncParkingLot.Dispose
+  nameWithType: AsyncParkingLot.Dispose
+- uid: DotNext.Threading.AsyncParkingLot.MeasurementTags
+  name: MeasurementTags
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_MeasurementTags
+  commentId: P:DotNext.Threading.AsyncParkingLot.MeasurementTags
+  fullName: DotNext.Threading.AsyncParkingLot.MeasurementTags
+  nameWithType: AsyncParkingLot.MeasurementTags
+- uid: DotNext.Threading.AsyncParkingLot.MeasurementTags*
+  name: MeasurementTags
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_MeasurementTags_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.MeasurementTags
+  fullName: DotNext.Threading.AsyncParkingLot.MeasurementTags
+  nameWithType: AsyncParkingLot.MeasurementTags
+- uid: DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.Threading.CancellationToken)
+  name: ParkAsync(int, ref State, object?, CancellationToken)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.Threading.CancellationToken)
+  name.vb: ParkAsync(Integer, State, Object, CancellationToken)
+  fullName: DotNext.Threading.AsyncParkingLot.ParkAsync(int, ref DotNext.Threading.AsyncParkingLot.State, object?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.ParkAsync(Integer, DotNext.Threading.AsyncParkingLot.State, Object, System.Threading.CancellationToken)
+  nameWithType: AsyncParkingLot.ParkAsync(int, ref AsyncParkingLot.State, object?, CancellationToken)
+  nameWithType.vb: AsyncParkingLot.ParkAsync(Integer, AsyncParkingLot.State, Object, CancellationToken)
+- uid: DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name: ParkAsync(int, ref State, object?, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_ParkAsync_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncParkingLot.ParkAsync(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: ParkAsync(Integer, State, Object, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncParkingLot.ParkAsync(int, ref DotNext.Threading.AsyncParkingLot.State, object?, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.ParkAsync(Integer, DotNext.Threading.AsyncParkingLot.State, Object, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncParkingLot.ParkAsync(int, ref AsyncParkingLot.State, object?, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncParkingLot.ParkAsync(Integer, AsyncParkingLot.State, Object, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncParkingLot.ParkAsync*
+  name: ParkAsync
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_ParkAsync_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.ParkAsync
+  fullName: DotNext.Threading.AsyncParkingLot.ParkAsync
+  nameWithType: AsyncParkingLot.ParkAsync
+- uid: DotNext.Threading.AsyncParkingLot.State
+  name: AsyncParkingLot.State
+  href: api/DotNext.Threading.AsyncParkingLot.State.html
+  commentId: T:DotNext.Threading.AsyncParkingLot.State
+  fullName: DotNext.Threading.AsyncParkingLot.State
+  nameWithType: AsyncParkingLot.State
+- uid: DotNext.Threading.AsyncParkingLot.State.Free
+  name: Free
+  href: api/DotNext.Threading.AsyncParkingLot.State.html#DotNext_Threading_AsyncParkingLot_State_Free
+  commentId: F:DotNext.Threading.AsyncParkingLot.State.Free
+  fullName: DotNext.Threading.AsyncParkingLot.State.Free
+  nameWithType: AsyncParkingLot.State.Free
+- uid: DotNext.Threading.AsyncParkingLot.State.Locked
+  name: Locked
+  href: api/DotNext.Threading.AsyncParkingLot.State.html#DotNext_Threading_AsyncParkingLot_State_Locked
+  commentId: F:DotNext.Threading.AsyncParkingLot.State.Locked
+  fullName: DotNext.Threading.AsyncParkingLot.State.Locked
+  nameWithType: AsyncParkingLot.State.Locked
+- uid: DotNext.Threading.AsyncParkingLot.State.LockedWithWaiters
+  name: LockedWithWaiters
+  href: api/DotNext.Threading.AsyncParkingLot.State.html#DotNext_Threading_AsyncParkingLot_State_LockedWithWaiters
+  commentId: F:DotNext.Threading.AsyncParkingLot.State.LockedWithWaiters
+  fullName: DotNext.Threading.AsyncParkingLot.State.LockedWithWaiters
+  nameWithType: AsyncParkingLot.State.LockedWithWaiters
+- uid: DotNext.Threading.AsyncParkingLot.TryPark(DotNext.Threading.AsyncParkingLot.State@)
+  name: TryPark(ref State)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_TryPark_DotNext_Threading_AsyncParkingLot_State__
+  commentId: M:DotNext.Threading.AsyncParkingLot.TryPark(DotNext.Threading.AsyncParkingLot.State@)
+  name.vb: TryPark(State)
+  fullName: DotNext.Threading.AsyncParkingLot.TryPark(ref DotNext.Threading.AsyncParkingLot.State)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.TryPark(DotNext.Threading.AsyncParkingLot.State)
+  nameWithType: AsyncParkingLot.TryPark(ref AsyncParkingLot.State)
+  nameWithType.vb: AsyncParkingLot.TryPark(AsyncParkingLot.State)
+- uid: DotNext.Threading.AsyncParkingLot.TryPark*
+  name: TryPark
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_TryPark_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.TryPark
+  fullName: DotNext.Threading.AsyncParkingLot.TryPark
+  nameWithType: AsyncParkingLot.TryPark
+- uid: DotNext.Threading.AsyncParkingLot.Unpark(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object)
+  name: Unpark(int, ref State, object?)
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Unpark_System_Int32_DotNext_Threading_AsyncParkingLot_State__System_Object_
+  commentId: M:DotNext.Threading.AsyncParkingLot.Unpark(System.Int32,DotNext.Threading.AsyncParkingLot.State@,System.Object)
+  name.vb: Unpark(Integer, State, Object)
+  fullName: DotNext.Threading.AsyncParkingLot.Unpark(int, ref DotNext.Threading.AsyncParkingLot.State, object?)
+  fullName.vb: DotNext.Threading.AsyncParkingLot.Unpark(Integer, DotNext.Threading.AsyncParkingLot.State, Object)
+  nameWithType: AsyncParkingLot.Unpark(int, ref AsyncParkingLot.State, object?)
+  nameWithType.vb: AsyncParkingLot.Unpark(Integer, AsyncParkingLot.State, Object)
+- uid: DotNext.Threading.AsyncParkingLot.Unpark*
+  name: Unpark
+  href: api/DotNext.Threading.AsyncParkingLot.html#DotNext_Threading_AsyncParkingLot_Unpark_
+  commentId: Overload:DotNext.Threading.AsyncParkingLot.Unpark
+  fullName: DotNext.Threading.AsyncParkingLot.Unpark
+  nameWithType: AsyncParkingLot.Unpark
 - uid: DotNext.Threading.AsyncReaderWriterLock
   name: AsyncReaderWriterLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html
@@ -53075,6 +54100,15 @@ references:
   commentId: Overload:DotNext.Threading.Atomic.Read
   fullName: DotNext.Threading.Atomic.Read
   nameWithType: Atomic.Read
+- uid: DotNext.Threading.Atomic.Read``1(``0**)
+  name: Read<T>(T**)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read__1___0___
+  commentId: M:DotNext.Threading.Atomic.Read``1(``0**)
+  name.vb: Read(Of T)(T**)
+  fullName: DotNext.Threading.Atomic.Read<T>(T**)
+  fullName.vb: DotNext.Threading.Atomic.Read(Of T)(T**)
+  nameWithType: Atomic.Read<T>(T**)
+  nameWithType.vb: Atomic.Read(Of T)(T**)
 - uid: DotNext.Threading.Atomic.TrueToFalse(System.Boolean@)
   name: TrueToFalse(ref bool)
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_TrueToFalse_System_Boolean__
@@ -53162,6 +54196,15 @@ references:
   commentId: Overload:DotNext.Threading.Atomic.Write
   fullName: DotNext.Threading.Atomic.Write
   nameWithType: Atomic.Write
+- uid: DotNext.Threading.Atomic.Write``1(``0**,``0*)
+  name: Write<T>(T**, T*)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write__1___0_____0__
+  commentId: M:DotNext.Threading.Atomic.Write``1(``0**,``0*)
+  name.vb: Write(Of T)(T**, T*)
+  fullName: DotNext.Threading.Atomic.Write<T>(T**, T*)
+  fullName.vb: DotNext.Threading.Atomic.Write(Of T)(T**, T*)
+  nameWithType: Atomic.Write<T>(T**, T*)
+  nameWithType.vb: Atomic.Write(Of T)(T**, T*)
 - uid: DotNext.Threading.Atomic.get_IsUndefined*
   name: get_IsUndefined
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_get_IsUndefined_
@@ -54280,6 +55323,18 @@ references:
   fullName.vb: DotNext.Threading.Epoch.New
   nameWithType: Epoch.Epoch
   nameWithType.vb: Epoch.New
+- uid: DotNext.Threading.Epoch.ClearAsync(System.Threading.CancellationToken)
+  name: ClearAsync(CancellationToken)
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_ClearAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Epoch.ClearAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Epoch.ClearAsync(System.Threading.CancellationToken)
+  nameWithType: Epoch.ClearAsync(CancellationToken)
+- uid: DotNext.Threading.Epoch.ClearAsync*
+  name: ClearAsync
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_ClearAsync_
+  commentId: Overload:DotNext.Threading.Epoch.ClearAsync
+  fullName: DotNext.Threading.Epoch.ClearAsync
+  nameWithType: Epoch.ClearAsync
 - uid: DotNext.Threading.Epoch.Discardable
   name: Epoch.Discardable
   href: api/DotNext.Threading.Epoch.Discardable.html
@@ -54328,6 +55383,54 @@ references:
   commentId: Overload:DotNext.Threading.Epoch.Enter
   fullName: DotNext.Threading.Epoch.Enter
   nameWithType: Epoch.Enter
+- uid: DotNext.Threading.Epoch.INativeResourceManager
+  name: Epoch.INativeResourceManager
+  href: api/DotNext.Threading.Epoch.INativeResourceManager.html
+  commentId: T:DotNext.Threading.Epoch.INativeResourceManager
+  fullName: DotNext.Threading.Epoch.INativeResourceManager
+  nameWithType: Epoch.INativeResourceManager
+- uid: DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle(System.UIntPtr)
+  name: GetNextHandle(nuint)
+  href: api/DotNext.Threading.Epoch.INativeResourceManager.html#DotNext_Threading_Epoch_INativeResourceManager_GetNextHandle_System_UIntPtr_
+  commentId: M:DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle(System.UIntPtr)
+  name.vb: GetNextHandle(UIntPtr)
+  fullName: DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle(nuint)
+  fullName.vb: DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle(System.UIntPtr)
+  nameWithType: Epoch.INativeResourceManager.GetNextHandle(nuint)
+  nameWithType.vb: Epoch.INativeResourceManager.GetNextHandle(UIntPtr)
+- uid: DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle*
+  name: GetNextHandle
+  href: api/DotNext.Threading.Epoch.INativeResourceManager.html#DotNext_Threading_Epoch_INativeResourceManager_GetNextHandle_
+  commentId: Overload:DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle
+  fullName: DotNext.Threading.Epoch.INativeResourceManager.GetNextHandle
+  nameWithType: Epoch.INativeResourceManager.GetNextHandle
+- uid: DotNext.Threading.Epoch.INativeResourceManager.Release(System.UIntPtr)
+  name: Release(nuint)
+  href: api/DotNext.Threading.Epoch.INativeResourceManager.html#DotNext_Threading_Epoch_INativeResourceManager_Release_System_UIntPtr_
+  commentId: M:DotNext.Threading.Epoch.INativeResourceManager.Release(System.UIntPtr)
+  name.vb: Release(UIntPtr)
+  fullName: DotNext.Threading.Epoch.INativeResourceManager.Release(nuint)
+  fullName.vb: DotNext.Threading.Epoch.INativeResourceManager.Release(System.UIntPtr)
+  nameWithType: Epoch.INativeResourceManager.Release(nuint)
+  nameWithType.vb: Epoch.INativeResourceManager.Release(UIntPtr)
+- uid: DotNext.Threading.Epoch.INativeResourceManager.Release*
+  name: Release
+  href: api/DotNext.Threading.Epoch.INativeResourceManager.html#DotNext_Threading_Epoch_INativeResourceManager_Release_
+  commentId: Overload:DotNext.Threading.Epoch.INativeResourceManager.Release
+  fullName: DotNext.Threading.Epoch.INativeResourceManager.Release
+  nameWithType: Epoch.INativeResourceManager.Release
+- uid: DotNext.Threading.Epoch.NativeResourceManager
+  name: NativeResourceManager
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_NativeResourceManager
+  commentId: P:DotNext.Threading.Epoch.NativeResourceManager
+  fullName: DotNext.Threading.Epoch.NativeResourceManager
+  nameWithType: Epoch.NativeResourceManager
+- uid: DotNext.Threading.Epoch.NativeResourceManager*
+  name: NativeResourceManager
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_NativeResourceManager_
+  commentId: Overload:DotNext.Threading.Epoch.NativeResourceManager
+  fullName: DotNext.Threading.Epoch.NativeResourceManager
+  nameWithType: Epoch.NativeResourceManager
 - uid: DotNext.Threading.Epoch.RecycleBin
   name: Epoch.RecycleBin
   href: api/DotNext.Threading.Epoch.RecycleBin.html
@@ -54397,6 +55500,15 @@ references:
   commentId: M:DotNext.Threading.Epoch.Scope.Defer(System.Action)
   fullName: DotNext.Threading.Epoch.Scope.Defer(System.Action)
   nameWithType: Epoch.Scope.Defer(Action)
+- uid: DotNext.Threading.Epoch.Scope.Defer(System.UIntPtr)
+  name: Defer(nuint)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_UIntPtr_
+  commentId: M:DotNext.Threading.Epoch.Scope.Defer(System.UIntPtr)
+  name.vb: Defer(UIntPtr)
+  fullName: DotNext.Threading.Epoch.Scope.Defer(nuint)
+  fullName.vb: DotNext.Threading.Epoch.Scope.Defer(System.UIntPtr)
+  nameWithType: Epoch.Scope.Defer(nuint)
+  nameWithType.vb: Epoch.Scope.Defer(UIntPtr)
 - uid: DotNext.Threading.Epoch.Scope.Defer*
   name: Defer
   href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_
@@ -54472,18 +55584,18 @@ references:
   commentId: Overload:DotNext.Threading.Epoch.Scope.RegisterForDispose
   fullName: DotNext.Threading.Epoch.Scope.RegisterForDispose
   nameWithType: Epoch.Scope.RegisterForDispose
-- uid: DotNext.Threading.Epoch.UnsafeClear
-  name: UnsafeClear()
-  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeClear
-  commentId: M:DotNext.Threading.Epoch.UnsafeClear
-  fullName: DotNext.Threading.Epoch.UnsafeClear()
-  nameWithType: Epoch.UnsafeClear()
-- uid: DotNext.Threading.Epoch.UnsafeClear*
-  name: UnsafeClear
-  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeClear_
-  commentId: Overload:DotNext.Threading.Epoch.UnsafeClear
-  fullName: DotNext.Threading.Epoch.UnsafeClear
-  nameWithType: Epoch.UnsafeClear
+- uid: DotNext.Threading.Epoch.TryClear
+  name: TryClear()
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_TryClear
+  commentId: M:DotNext.Threading.Epoch.TryClear
+  fullName: DotNext.Threading.Epoch.TryClear()
+  nameWithType: Epoch.TryClear()
+- uid: DotNext.Threading.Epoch.TryClear*
+  name: TryClear
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_TryClear_
+  commentId: Overload:DotNext.Threading.Epoch.TryClear
+  fullName: DotNext.Threading.Epoch.TryClear
+  nameWithType: Epoch.TryClear
 - uid: DotNext.Threading.ExchangeTerminatedException
   name: ExchangeTerminatedException
   href: api/DotNext.Threading.ExchangeTerminatedException.html

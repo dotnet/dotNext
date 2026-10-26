@@ -70,13 +70,10 @@
 
 
   <h1 id="DotNext_Threading_Epoch_RecycleBin" data-uid="DotNext.Threading.Epoch.RecycleBin" class="text-break">Struct Epoch.RecycleBin</h1>
-  <div class="markdown level0 summary"><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads.</p>
+  <div class="markdown level0 summary"><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads,
+and the unmanaged resources to be released by <a class="xref" href="DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_NativeResourceManager">NativeResourceManager</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.ithreadpoolworkitem">IThreadPoolWorkItem</a></div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -102,17 +99,18 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_Epoch_RecycleBin_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Epoch.RecycleBin : IThreadPoolWorkItem</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Epoch.RecycleBin</code></pre>
   </div>
   <h5 id="DotNext_Threading_Epoch_RecycleBin_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The action can be called at any point in time. The call does not necessarily have to be protected by
-the epoch scope.</p>
+the epoch scope. The bin must be cleared only once: clearing the copies of the same bin invokes the actions
+and releases the unmanaged resources more than once.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Threading/Epoch.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Threading/Epoch.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Epoch_RecycleBin_IsEmpty_" data-uid="DotNext.Threading.Epoch.RecycleBin.IsEmpty*"></a>
   <h4 id="DotNext_Threading_Epoch_RecycleBin_IsEmpty" data-uid="DotNext.Threading.Epoch.RecycleBin.IsEmpty">IsEmpty</h4>
@@ -142,7 +140,7 @@ the epoch scope.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Threading/Epoch.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Threading/Epoch.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Epoch_RecycleBin_Clear_" data-uid="DotNext.Threading.Epoch.RecycleBin.Clear*"></a>
   <h4 id="DotNext_Threading_Epoch_RecycleBin_Clear_System_Boolean_" data-uid="DotNext.Threading.Epoch.RecycleBin.Clear(System.Boolean)">Clear(bool)</h4>
@@ -173,7 +171,7 @@ the epoch scope.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Threading/Epoch.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Threading/Epoch.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Epoch_RecycleBin_ClearAsync_" data-uid="DotNext.Threading.Epoch.RecycleBin.ClearAsync*"></a>
   <h4 id="DotNext_Threading_Epoch_RecycleBin_ClearAsync" data-uid="DotNext.Threading.Epoch.RecycleBin.ClearAsync">ClearAsync()</h4>
@@ -202,7 +200,7 @@ the epoch scope.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Threading/Epoch.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Threading/Epoch.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Epoch_RecycleBin_QueueCleanup_" data-uid="DotNext.Threading.Epoch.RecycleBin.QueueCleanup*"></a>
   <h4 id="DotNext_Threading_Epoch_RecycleBin_QueueCleanup" data-uid="DotNext.Threading.Epoch.RecycleBin.QueueCleanup">QueueCleanup()</h4>
@@ -212,10 +210,6 @@ the epoch scope.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void QueueCleanup()</code></pre>
-  </div>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.ithreadpoolworkitem">IThreadPoolWorkItem</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -236,7 +230,7 @@ the epoch scope.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext/Threading/Epoch.Debug.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext/Threading/Epoch.Debug.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

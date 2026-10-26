@@ -126,115 +126,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
-  </span>
-  <a id="DotNext_IO_Log_IAuditTrail_1_AppendAndCommitAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_1_AppendAndCommitAsync__1_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Boolean_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAndCommitAsync``1(DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Int64,System.Threading.CancellationToken)">AppendAndCommitAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, long, bool, long, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Adds uncommitted log entries and commits previously added log entries as an atomic operation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAndCommitAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token = default) where TEntryImpl : TEntry</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.Log.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntryImpl&gt;</td>
-        <td><span class="parametername">entries</span></td>
-        <td><p>Stateful object that is responsible for supplying log entries.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">startIndex</span></td>
-        <td><p>The index from which all previous log entries should be dropped and replaced with new entries.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">skipCommitted</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to skip committed entries from <code class="paramref">entries</code> instead of throwing exception.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">commitIndex</span></td>
-        <td><p>The index of the last entry to commit, inclusively.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
-        <td><p>The actual number of committed entries.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TEntryImpl</span></td>
-        <td><p>The actual type of the log entry returned by the supplier.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code class="paramref">startIndex</code> is less than the index of the last committed entry and <code class="paramref">skipCommitted</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>; or the collection of entries contains the snapshot entry.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_AppendAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync``1(DotNext.IO.Log.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Threading.CancellationToken)">AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, long, bool, CancellationToken)</h4>
@@ -336,7 +228,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_AppendAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_AppendAsync__1___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync``1(``0,System.Int64,System.Threading.CancellationToken)">AppendAsync&lt;TEntryImpl&gt;(TEntryImpl, long, CancellationToken)</h4>
@@ -438,7 +330,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_AppendAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_AppendAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.AppendAsync``1(``0,System.Threading.CancellationToken)">AppendAsync&lt;TEntryImpl&gt;(TEntryImpl, CancellationToken)</h4>
@@ -531,7 +423,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.IO/IO/Log/IAuditTrail.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_ReadAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.ReadAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer__0___0__System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.ReadAsync``1(DotNext.IO.Log.ILogEntryConsumer{`0,``0},System.Int64,System.Int64,System.Threading.CancellationToken)">ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;TEntry, TResult&gt;, long, long, CancellationToken)</h4>
@@ -664,7 +556,7 @@ with the audit trail segment with entries.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/0ef3b98dcd5cfdd08274099c45756b21b863d834/src/DotNext.IO/IO/Log/IAuditTrail.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/cd3bd07353c9e3164addbc348938f6e3f04fa1b6/src/DotNext.IO/IO/Log/IAuditTrail.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

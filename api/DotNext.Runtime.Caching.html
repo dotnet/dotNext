@@ -77,6 +77,12 @@ Classes
       <h4><a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.html">DiskSpacePool</a></h4>
       <section><p>Represents a pool of segments of the limited size on the disk.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache.html">RandomAccessCache</a></h4>
+      <section><p>Provides various helpers to work with <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache&lt;TValue&gt;</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache&lt;TValue&gt;</a></h4>
+      <section><p>Represents concurrent cache optimized for random access, which keeps the entries in unmanaged memory.</p>
+</section>
       <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey, TValue&gt;</a></h4>
       <section><p>Represents concurrent cache optimized for random access.</p>
 </section>
@@ -92,6 +98,18 @@ Structs
 </section>
       <h4><a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.Segment.html">DiskSpacePool.Segment</a></h4>
       <section><p>Provides the random access to the data within the segment.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache.ReadOnlyMemoryKey.html">RandomAccessCache.ReadOnlyMemoryKey</a></h4>
+      <section><p>Represents <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory&lt;T&gt;</a> of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a> as a key for <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache&lt;TValue&gt;</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache.StringKey.html">RandomAccessCache.StringKey</a></h4>
+      <section><p>Represents <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a> as a key for <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache&lt;TValue&gt;</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadSession.html">RandomAccessCache&lt;TValue&gt;.ReadSession</a></h4>
+      <section><p>Represents a session that can be used to read the cache record value.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-1.ReadWriteSession-1.html">RandomAccessCache&lt;TValue&gt;.ReadWriteSession&lt;TKey&gt;</a></h4>
+      <section><p>Represents a session that can be used to read or insert the cache record value.</p>
 </section>
       <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.AlternateLookup-1.html">RandomAccessCache&lt;TKey, TValue&gt;.AlternateLookup&lt;TAlternate&gt;</a></h4>
       <section><p>Provides a type that can be used to perform operations on a cache using alternate key representation.</p>
