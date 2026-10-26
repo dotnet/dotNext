@@ -40,7 +40,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     /// <param name="capacity">Maximum cache size.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than or equal to zero.</exception>
     public RandomAccessCache(int capacity)
-        : this(capacity, Environment.ProcessorCount)
+        : this(capacity, RandomAccessCache.DefaultConcurrencyLevel)
     {
     }
 
@@ -66,7 +66,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         buckets = Bucket.Allocate((uint)Capacity);
         OnBucketsAllocated();
         parkingLot = new(concurrencyLevel);
-        cancellationTokens = new() { MaximumRetained = 100 };
+        cancellationTokens = new() { MaximumRetained = concurrencyLevel };
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
         epoch = new() { NativeResourceManager = this };

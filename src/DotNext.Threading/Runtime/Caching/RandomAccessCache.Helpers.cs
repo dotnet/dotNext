@@ -9,6 +9,8 @@ using InteropServices;
 /// </summary>
 public static class RandomAccessCache
 {
+    internal static int DefaultConcurrencyLevel => Environment.ProcessorCount * 2 + 1;
+    
     /// <summary>
     /// Returns <see cref="ReadOnlyMemory{T}"/> as a key.
     /// </summary>

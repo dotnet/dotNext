@@ -39,7 +39,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <param name="cacheCapacity">Maximum cache size.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="cacheCapacity"/> is less than or equal to zero.</exception>
     public RandomAccessCache(int cacheCapacity)
-        : this(cacheCapacity, DefaultConcurrencyLevel)
+        : this(cacheCapacity, RandomAccessCache.DefaultConcurrencyLevel)
     {
     }
 
@@ -78,7 +78,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         }
 
         dictionarySize = int.GetPrime(dictionarySize);
-        cancellationTokens = new() { MaximumRetained = 100 };
+        cancellationTokens = new() { MaximumRetained = concurrencyLevel };
         growable = collisionThreshold is not int.MaxValue;
         maxCacheCapacity = growable
             ? collisionThreshold
@@ -92,8 +92,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         evictionTask = DoEvictionAsync(completionSource = new());
     }
-
-    private protected static int DefaultConcurrencyLevel => Environment.ProcessorCount * 2;
 
     private bool ResizeDesired(in Bucket bucket)
         => growable && bucket.CollisionCount >= maxCacheCapacity;
@@ -897,7 +895,7 @@ public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapaci
     /// If <see cref="int.MaxValue"/> is specified, then the cache doesn't grow.
     /// </param>
     public RandomAccessCache(int initialCapacity, TWeight initialWeight, int collisionThreshold)
-        : this(initialCapacity, initialWeight, collisionThreshold, DefaultConcurrencyLevel)
+        : this(initialCapacity, initialWeight, collisionThreshold, RandomAccessCache.DefaultConcurrencyLevel)
     {
     }
 
