@@ -9,7 +9,8 @@ internal struct ReplicationState(int count)
     private readonly int majority = (count >>> 1) + 1;
     private int replicated, committed, unavailable;
 
-    private readonly bool IsUnavailable => unavailable >= majority;
+    // true if the majority can no longer be reached; unavailable >= majority is not enough for even count
+    private readonly bool IsUnavailable => count - unavailable < majority;
 
     private readonly bool IsCommitted => committed >= majority;
 

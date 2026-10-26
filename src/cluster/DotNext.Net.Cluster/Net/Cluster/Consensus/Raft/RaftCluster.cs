@@ -490,24 +490,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IStandbyModeSupport.Standby"/>
     public bool Standby => Volatile.Read(in state) is StandbyState<TMember>;
 
-    private async Task CancelPendingRequestsAsync()
-    {
-        var tasks = members.Values.Select(static m => m.CancelPendingRequestsAsync().AsTask()).ToArray();
-
-        try
-        {
-            await Task.WhenAll(tasks).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            Logger.FailedToCancelPendingRequests(e);
-        }
-        finally
-        {
-            Array.Clear(tasks); // help GC
-        }
-    }
-
     private ValueTask UpdateStateAsync(RaftState<TMember> newState)
     {
         Debug.Assert(transitionLock.IsLockHeld);
@@ -532,7 +514,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         async Task StopAsync()
         {
             transitionCancellation.Cancel(false);
-            await CancelPendingRequestsAsync().ConfigureAwait(false);
             var lockTaken = false;
             try
             {
