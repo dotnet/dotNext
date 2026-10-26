@@ -34,6 +34,19 @@ public static class MemoryMarshalExtensions
         public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(ref readonly T value)
             where T : unmanaged, allows ref struct
             => AsBytes(ref Unsafe.AsRef(in value));
+
+        /// <summary>
+        /// Returns <see cref="ReadOnlySpan{T}"/> over <see cref="byte"/> for the specified string.
+        /// </summary>
+        /// <param name="value">The string value.</param>
+        /// <returns><see cref="ReadOnlySpan{T}"/> over <see cref="byte"/> representing <paramref name="value"/>.</returns>
+        public static ReadOnlySpan<byte> AsReadOnlyBytes(string? value)
+        {
+            ReadOnlySpan<char> chars = value;
+            var sizeInBytes = checked(chars.Length * sizeof(char));
+            ref readonly var ch = ref Unsafe.As<char, byte>(ref MemoryMarshal.GetReference(chars));
+            return MemoryMarshal.CreateReadOnlySpan(in ch, sizeInBytes);
+        }
         
         /// <summary>
         /// Gets enumerator over all elements in the memory.
