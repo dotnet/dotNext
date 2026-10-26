@@ -18,6 +18,7 @@ using Threading.Tasks;
 /// </remarks>
 /// <typeparam name="TKey">The type of the keys.</typeparam>
 /// <typeparam name="TValue">The type of the values.</typeparam>
+/// <seealso cref="RandomAccessCache{TValue}"/>
 public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposable, IEnumerable<KeyValuePair<TKey, TValue>>
     where TKey : notnull
     where TValue : notnull
