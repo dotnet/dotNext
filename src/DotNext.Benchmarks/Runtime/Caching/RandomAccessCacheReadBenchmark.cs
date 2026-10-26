@@ -80,7 +80,7 @@ public class RandomAccessCacheReadBenchmark
     public int GetValueFromUnmanagedCache()
     {
         int result;
-        if (cache.TryRead(Key, out var session))
+        if (unmanagedCache.TryRead(RandomAccessCache.AsKey(Key), out var session))
         {
             result = session.Value;
             session.Dispose();
