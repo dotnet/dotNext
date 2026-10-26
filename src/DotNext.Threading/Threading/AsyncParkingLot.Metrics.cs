@@ -14,7 +14,7 @@ partial class AsyncParkingLot
         SuspendedCallersMeter = meter.CreateUpDownCounter<int>("suspended-callers-count", description: "Number of Suspended Callers");
     }
 
-    private TagList measurementTags;
+    private readonly TagList measurementTags;
     
     /// <summary>
     /// Sets a list of tags to be associated with each measurement.
