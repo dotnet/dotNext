@@ -152,7 +152,7 @@ public partial class FileBufferingWriter
         {
             for (var remainingLength = RandomAccess.GetLength(handle); remainingLength > 0;)
             {
-                var segmentLength = (int)Math.Min(this.segmentLength, remainingLength);
+                var segmentLength = int.CreateTruncating(long.Min(this.segmentLength, remainingLength));
                 LazySegment.AddSegment(this, segmentLength, ref first, ref last);
                 remainingLength -= segmentLength;
             }

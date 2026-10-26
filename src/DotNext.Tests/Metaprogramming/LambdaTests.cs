@@ -430,7 +430,7 @@ public sealed class LambdaTests : Test
     [Fact]
     public static void ExpressionInlining()
     {
-        var lambda = Lambda<Func<long, long, long>>(static fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1])).Compile();
+        var lambda = Lambda<Func<long, long, long>>(static fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => long.Max(a, b), fun[0], fun[1])).Compile();
         Equal(10, lambda(5, 10));
     }
 

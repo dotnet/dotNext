@@ -31,7 +31,7 @@ public sealed class SparseBufferWriterTests : Test
         var data = RandomBytes(2048);
         for (int remaining = totalSize, take; remaining > 0; remaining -= take)
         {
-            take = Math.Min(remaining, data.Length);
+            take = int.Min(remaining, data.Length);
             output.Write(data, 0, take);
             remaining -= take;
         }

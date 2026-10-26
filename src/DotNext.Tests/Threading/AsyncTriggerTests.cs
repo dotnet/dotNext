@@ -120,4 +120,34 @@ public sealed class AsyncTriggerTests : Test
         trigger.Signal();
         True(await task);
     }
+
+    [Fact]
+    public static async Task SpinWaitWithNonEmptyQueue()
+    {
+        using var trigger = new AsyncTrigger();
+        using var cts = new CancellationTokenSource();
+
+        // live waiter
+        var waiter = trigger.WaitAsync(TestToken).AsTask();
+
+        // canceled waiter, its node remains in the queue until the task is consumed
+        var canceled = trigger.WaitAsync(cts.Token);
+        await cts.CancelAsync();
+
+        // the condition is satisfied, so the caller must not be suspended
+        True(await trigger.SpinWaitAsync(new FlipCondition(), DefaultTimeout, TestToken));
+        await trigger.SpinWaitAsync(new FlipCondition(), TestToken);
+
+        await ThrowsAnyAsync<OperationCanceledException>(canceled.AsTask);
+        True(trigger.Signal());
+        await waiter;
+    }
+}
+
+// returns false on the first check only, as if the condition became true right after it
+file sealed class FlipCondition : ISupplier<bool>
+{
+    private int count;
+
+    bool ISupplier<bool>.Invoke() => count++ > 0;
 }

@@ -5,8 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
+using Collections.Concurrent;
 using Numerics;
 using Threading;
+using Threading.Tasks;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
@@ -15,7 +17,6 @@ public partial class RandomAccessCache<TKey, TValue>
     private protected static ref readonly TValue GetValue(KeyValuePair pair)
     {
         Debug.Assert(pair is not null);
-        Debug.Assert(pair is not FakeKeyValuePair);
         Debug.Assert(Interlocked.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
         return ref Interlocked.IsAtomic<TValue>()
@@ -26,8 +27,6 @@ public partial class RandomAccessCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetValue(KeyValuePair pair, TValue value)
     {
-        Debug.Assert(pair is not FakeKeyValuePair);
-
         if (Interlocked.IsAtomic<TValue>())
         {
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
@@ -41,8 +40,6 @@ public partial class RandomAccessCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ClearValue(KeyValuePair pair)
     {
-        Debug.Assert(pair is not FakeKeyValuePair);
-
         if (!RuntimeHelpers.IsReferenceOrContainsReferences<TValue>())
         {
             // do nothing
@@ -57,19 +54,17 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode)
-    {
-        return Interlocked.IsAtomic<TValue>()
-            ? new KeyValuePairAtomicAccess(key, hashCode) { Value = value }
-            : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
-    }
+    private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode, bool willBePromoted)
+        => Interlocked.IsAtomic<TValue>()
+            ? new KeyValuePairAtomicAccess(key, hashCode, willBePromoted) { Value = value }
+            : new KeyValuePairNonAtomicAccess(key, hashCode, willBePromoted) { Value = value };
 
     private volatile BucketList buckets;
 
-    internal abstract partial class KeyValuePair(TKey key, int hashCode)
+    internal abstract partial class KeyValuePair : MpscQueue.Item
     {
-        internal readonly int KeyHashCode = hashCode;
-        internal readonly TKey Key = key;
+        internal readonly int KeyHashCode;
+        internal readonly TKey Key;
         internal volatile KeyValuePair? NextInBucket; // volatile, used by the dictionary subsystem only
         
         // Reference counting is used to establish lifetime of the stored value (not KeyValuePair instance).
@@ -77,28 +72,44 @@ public partial class RandomAccessCache<TKey, TValue>
         // are two competing threads that may decrement the counter to zero: removal thread (see TryRemove)
         // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
-        private volatile int lifetimeCounter = 1;
+        // The promotion queue holds an extra reference until the eviction thread processes the pair.
+        // The counter is shared with the copies of the pair created by resize, because the readers
+        // may still hold the pair from the previous version of the bucket list.
+        private readonly StrongBox<uint> lifetimeCounter;
 
-        internal void Import(KeyValuePair other)
+        protected KeyValuePair(TKey key, int hashCode, bool willBePromoted)
         {
+            KeyHashCode = hashCode;
+            Key = key;
+            lifetimeCounter = new(1U + Unsafe.BitCast<bool, byte>(willBePromoted));
+        }
+
+        protected KeyValuePair(KeyValuePair other)
+        {
+            Key = other.Key;
+            KeyHashCode = other.KeyHashCode;
             cacheState = other.cacheState;
             addedEvent = other.addedEvent;
+            lifetimeCounter = other.lifetimeCounter;
         }
+
+        public abstract KeyValuePair Clone();
 
         internal bool TryAcquireCounter()
         {
-            int currentValue, tmp = lifetimeCounter;
+            ref var counter = ref lifetimeCounter.Value;
+            uint currentValue, tmp = Volatile.Read(ref counter);
             do
             {
                 currentValue = tmp;
                 if (currentValue is 0)
                     break;
-            } while ((tmp = Interlocked.CompareExchange(ref lifetimeCounter, currentValue + 1, currentValue)) != currentValue);
+            } while ((tmp = Interlocked.CompareExchange(ref counter, currentValue + 1, currentValue)) != currentValue);
 
             return currentValue > 0U;
         }
 
-        internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter) > 0;
+        internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter.Value) > 0;
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -119,24 +130,45 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class KeyValuePairAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
+    private sealed class KeyValuePairAtomicAccess : KeyValuePair
     {
         internal required TValue Value;
+
+        public KeyValuePairAtomicAccess(TKey key, int hashCode, bool willBePromoted)
+            : base(key, hashCode, willBePromoted)
+        {
+        }
+
+        [SetsRequiredMembers]
+        private KeyValuePairAtomicAccess(KeyValuePairAtomicAccess other)
+            : base(other)
+            => Value = other.Value;
+
+        public override KeyValuePairAtomicAccess Clone() => new(this);
 
         public override string ToString() => ToString(Value);
     }
 
     // non-atomic access utilizes copy-on-write semantics
-    private sealed class KeyValuePairNonAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
+    private sealed class KeyValuePairNonAtomicAccess : KeyValuePair
     {
-        private sealed class ValueHolder(TValue value)
-        {
-            internal readonly TValue Value = value;
-        }
-
         private static readonly ValueHolder DefaultHolder = new(default!);
         
         private ValueHolder holder;
+        
+        public KeyValuePairNonAtomicAccess(TKey key, int hashCode, bool willBePromoted)
+            : base(key, hashCode, willBePromoted)
+        {
+        }
+
+        [SetsRequiredMembers]
+#pragma warning disable CS8618
+        private KeyValuePairNonAtomicAccess(KeyValuePairNonAtomicAccess other)
+            : base(other)
+            => holder = other.holder;
+#pragma warning restore CS8618
+
+        public override KeyValuePairNonAtomicAccess Clone() => new(this);
 
         internal required TValue Value
         {
@@ -150,6 +182,11 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void ClearValue() => holder = DefaultHolder;
 
         public override string ToString() => ToString(Value);
+        
+        private sealed class ValueHolder(TValue value)
+        {
+            internal readonly TValue Value = value;
+        }
     }
     
     internal interface IKeyValuePairVisitor
@@ -165,17 +202,12 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal struct Bucket(AsyncExclusiveLock bucketLock)
+    internal struct Bucket
     {
-        internal readonly AsyncExclusiveLock Lock = bucketLock;
+        internal AsyncParkingLot.State LockState; // modified by AsyncParkingLot only
         private KeyValuePair? addedPair;
         private volatile KeyValuePair? first;
         private volatile int count;
-
-        public Bucket()
-            : this(new())
-        {
-        }
 
         internal readonly KeyValuePair? First => first;
         
@@ -188,9 +220,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly bool? IsLockHeld => Lock?.IsLockHeld;
+        private readonly bool IsLockHeld => LockState is not AsyncParkingLot.State.Free;
 
-        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
+        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value, bool willBePromoted)
         {
             KeyValuePair? result;
             if (addedPair is not null)
@@ -199,7 +231,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                Add(addedPair = result = CreatePair(key, value, hashCode));
+                Add(addedPair = result = CreatePair(key, value, hashCode, willBePromoted));
             }
 
             return result;
@@ -391,7 +423,7 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
-    private sealed class BucketList
+    internal sealed class BucketList
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private readonly Bucket[] buckets;
@@ -399,32 +431,24 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal BucketList(int length)
         {
-            (buckets = new Bucket[length]).Initialize<Bucket>();
+            buckets = new Bucket[length];
             fastMod = new((uint)length);
         }
 
         internal BucketList(BucketList prototype, int length)
+            : this(length)
         {
-            buckets = new Bucket[length];
-            fastMod = new((uint)length);
-
             // import pairs
-            Span<Bucket> prototypeBuckets = prototype.buckets;
-            int i;
-            for (i = 0; i < prototypeBuckets.Length; i++)
-            {
-                buckets[i] = new(prototypeBuckets[i].Lock);
-            }
-
-            buckets.AsSpan(i).Initialize();
-
-            foreach (ref var bucket in prototypeBuckets)
+            foreach (ref var bucket in prototype.buckets.AsSpan())
             {
                 foreach (var pair in bucket)
                 {
-                    var newPair = CreatePair(pair.Key, GetValue(pair), pair.KeyHashCode);
-                    newPair.Import(pair);
-                    GetByHash(newPair.KeyHashCode).Value.Add(newPair);
+                    // dead pairs are already released
+                    if (pair.IsDead)
+                        continue;
+
+                    var newPair = pair.Clone();
+                    GetByHash(newPair.KeyHashCode).Add(newPair);
                 }
             }
         }
@@ -432,32 +456,81 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int Count => buckets.Length;
 
-        internal ArrayDataReference<Bucket> GetByHash(int hashCode)
+        internal ref Bucket GetByHash(int hashCode)
+            => ref this[IndexOf(hashCode)];
+
+        internal int IndexOf(int hashCode)
         {
             var index = fastMod.GetRemainder((uint)hashCode);
             Debug.Assert(index < (uint)buckets.Length);
 
-            return new(buckets, index);
+            return (int)index;
         }
 
-        internal ref Bucket GetByIndex(int index)
+        internal ref Bucket this[int index]
         {
-            Debug.Assert(index < (uint)buckets.Length);
+            get
+            {
+                Debug.Assert(index < (uint)buckets.Length);
 
-            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+                return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+            }
+        }
+
+        internal void CleanUp(AsyncParkingLot parkingLot, int hashCode)
+        {
+            var index = IndexOf(hashCode);
+            if (TryAcquire(index))
+            {
+                try
+                {
+                    this[index].CleanUp();
+                }
+                finally
+                {
+                    Release(parkingLot, index);
+                }
+            }
         }
 
         internal KeyValuePair? FindPair<TPredicate>(TPredicate predicate, int keyHashCode)
             where TPredicate : struct, IEquatable<TKey>, allows ref struct
-            => GetByHash(keyHashCode).Value.TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
+            => GetByHash(keyHashCode).TryGet<TPredicate, NotDeadFilter>(predicate, keyHashCode);
 
-        internal void Release(int count)
+        // The bucket index is the position in the parking lot. The bucket list itself distinguishes
+        // the buckets of the different versions with the same index, because the old version can be still in use
+        // by the waiters during the resize
+        internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, CancellationToken token)
+            => parkingLot.ParkAsync(index, ref this[index].LockState, this, token);
+
+        internal ValueTask AcquireAsync(AsyncParkingLot parkingLot, int index, TimeSpan timeout, CancellationToken token)
+        {
+            var task = parkingLot.ParkAsync(index, ref this[index].LockState, this, timeout, token);
+            if (!task.IsCompletedSuccessfully)
+                return AcquireSlowAsync(task);
+
+            return task.Result ? ValueTask.CompletedTask : ValueTask.FromException(new TimeoutException());
+
+            static async ValueTask AcquireSlowAsync(ValueTask<bool> task)
+            {
+                if (!await task.ConfigureAwait(false))
+                    throw new TimeoutException();
+            }
+        }
+
+        private bool TryAcquire(int index)
+            => AsyncParkingLot.TryPark(ref this[index].LockState);
+
+        internal void Release(AsyncParkingLot parkingLot, int index)
+            => parkingLot.Unpark(index, ref this[index].LockState, this);
+
+        internal void ReleaseFirst(AsyncParkingLot parkingLot, int count)
         {
             Debug.Assert((uint)count <= (uint)buckets.Length);
 
             for (var i = 0; i < count; i++)
             {
-                buckets[i].Lock.Release();
+                Release(parkingLot, i);
             }
         }
 
@@ -510,8 +583,7 @@ public partial class RandomAccessCache<TKey, TValue>
         var lockCount = 0;
         try
         {
-            var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-            await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
+            await oldVersion.AcquireAsync(parkingLot, lockCount, timeout.RemainingTime, token).ConfigureAwait(false);
             lockCount++;
 
             if (!ReferenceEquals(oldVersion, buckets))
@@ -520,10 +592,9 @@ public partial class RandomAccessCache<TKey, TValue>
             // acquire the rest of locks
             for (; lockCount < oldVersion.Count; lockCount++)
             {
-                bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-                await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
+                await oldVersion.AcquireAsync(parkingLot, lockCount, timeout.RemainingTime, token).ConfigureAwait(false);
             }
-            
+
             var newSource = new CancelableValueTaskCompletionSource();
             
             // if Exchange returns null then the cache is disposed
@@ -532,14 +603,23 @@ public partial class RandomAccessCache<TKey, TValue>
             // stop eviction process
             await evictionTask.ConfigureAwait(false);
 
+            // the canceled eviction loop may leave unprocessed promotions, drain them before the rebuild
+            ProcessQueue();
+
             // restart eviction process
-            RebuildEvictionState(buckets = new(oldVersion, newSize));
-            queueHead = queueTail = new FakeKeyValuePair();
+            var newVersion = new BucketList(oldVersion, newSize);
+            RebuildEvictionState(newVersion);
+            queue = new();
             evictionTask = DoEvictionAsync(newSource);
+
+            // Publish the new version last. The locks of the new version are not held,
+            // so the writers can promote to the queue as soon as the new version is visible.
+            // The waiters for the old version are resumed on release and retry with the new version
+            buckets = newVersion;
         }
         finally
         {
-            oldVersion.Release(lockCount);
+            oldVersion.ReleaseFirst(parkingLot, lockCount);
         }
     }
 }

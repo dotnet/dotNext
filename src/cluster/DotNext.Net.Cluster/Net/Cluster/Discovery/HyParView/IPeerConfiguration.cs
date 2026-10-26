@@ -30,12 +30,12 @@ public interface IPeerConfiguration
     /// <summary>
     /// Gets the number of peers from active view to be included into Shuffle message.
     /// </summary>
-    int ShuffleActiveViewCount => Math.Max(ActiveViewCapacity / 2, 2);
+    int ShuffleActiveViewCount => int.Max(ActiveViewCapacity / 2, 2);
 
     /// <summary>
     /// Gets the number of peers from passive view to be included into Shuffle message.
     /// </summary>
-    int ShufflePassiveViewCount => Math.Max(PassiveViewCapacity / 2, 2);
+    int ShufflePassiveViewCount => int.Max(PassiveViewCapacity / 2, 2);
 
     /// <summary>
     /// Gets the maximum number of hops a Shuffle message is propagated.

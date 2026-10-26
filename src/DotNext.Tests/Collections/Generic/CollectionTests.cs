@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 
 namespace DotNext.Collections.Generic;
 
@@ -231,50 +232,50 @@ public sealed class CollectionTests : Test
         Collection(consumer, static i => Equal(52, i), static i => Equal(42, i));
     }
 
-    [Fact]
-    public static void CopyArray()
+    public static TheoryData<IEnumerable<int>> CopySources =>
+    [
+        new[] { 10, 20, 30 },
+        new List<int> { 10, 20, 30 },
+        new LinkedList<int>([10, 20, 30]),
+        new TheoryDataRow<IEnumerable<int>>(GetElements()),
+        ImmutableList.Create(10, 20, 30),
+    ];
+    
+    private static IEnumerable<int> GetElements()
     {
-        using var copy = new[] { 10, 20, 30 }.Copy();
-        Equal(3, copy.Length);
-        Equal(10, copy[0]);
-        Equal(20, copy[1]);
-        Equal(30, copy[2]);
+        yield return 10;
+        yield return 20;
+        yield return 30;
     }
 
-    [Fact]
-    public static void CopyList()
+    [Theory]
+    [MemberData(nameof(CopySources))]
+    public static void CopyToMemory(IEnumerable<int> enumerable)
     {
-        using var copy = new List<int> { 10, 20, 30 }.Copy();
-        Equal(3, copy.Length);
-        Equal(10, copy[0]);
-        Equal(20, copy[1]);
-        Equal(30, copy[2]);
-    }
+        using var copy = enumerable.Copy();
 
-    [Fact]
-    public static void CopyLinkedList()
-    {
-        using var copy = new LinkedList<int>([10, 20, 30]).Copy();
-        Equal(3, copy.Length);
-        Equal(10, copy[0]);
-        Equal(20, copy[1]);
-        Equal(30, copy[2]);
-    }
-
-    [Fact]
-    public static void CopyEnumerable()
-    {
-        using var copy = GetElements().Copy();
-        Equal(3, copy.Length);
-        Equal(10, copy[0]);
-        Equal(20, copy[1]);
-        Equal(30, copy[2]);
-
-        static IEnumerable<int> GetElements()
+        var i = 0;
+        foreach (var item in enumerable)
         {
-            yield return 10;
-            yield return 20;
-            yield return 30;
+            Equal(item, copy.Span[i++]);
+        }
+    }
+
+    public static TheoryData<IEnumerable<int>, int, bool> CopyToSpanSources => new(from row in CopySources
+        from bufferSize in ReadOnlyCollection.CreateCollection(2, 20)
+        from poolingFlag in ReadOnlyCollection.CreateCollection(true, false)
+        select (row.Data, bufferSize, poolingFlag));
+
+    [Theory]
+    [MemberData(nameof(CopyToSpanSources))]
+    public static void CopyToSpan(IEnumerable<int> enumerable, int bufferSize, bool usePooling)
+    {
+        using var copy = enumerable.Copy(stackalloc int[bufferSize], usePooling);
+        
+        var i = 0;
+        foreach (var item in enumerable)
+        {
+            Equal(item, copy.Span[i++]);
         }
     }
 

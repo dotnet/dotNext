@@ -282,6 +282,8 @@ partial class QueuedSynchronizer
 
         public bool Remove(LinkedValueTaskCompletionSource<bool> node)
         {
+            Debug.Assert(SyncRoot.IsHeldByCurrentThread);
+            
             SuspendedCallersMeter.Add(-1, measurementTags);
             length--;
 
@@ -291,6 +293,8 @@ partial class QueuedSynchronizer
 
         public void Add(LinkedValueTaskCompletionSource<bool> node)
         {
+            Debug.Assert(SyncRoot.IsHeldByCurrentThread);
+            
             SuspendedCallersMeter.Add(1, measurementTags);
             waitQueue.Add(node);
             length++;
@@ -306,6 +310,8 @@ partial class QueuedSynchronizer
 
         private readonly IReadOnlyList<object?> GetSuspendedCallersCore()
         {
+            Debug.Assert(SyncRoot.IsHeldByCurrentThread);
+            
             object?[] result;
             var current = waitQueue.First as WaitNode;
             if (current is null)

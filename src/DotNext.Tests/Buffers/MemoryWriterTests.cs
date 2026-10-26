@@ -251,8 +251,7 @@ public sealed class MemoryWriterTests : Test
 
         list.Add(42);
         Equal(1, writer.WrittenCount);
-        Single(list);
-        Equal(42, list[0]);
+        Equal(42, Single(list));
         True(list.Contains(42));
         False(list.Contains(0));
         Equal(0, list.IndexOf(42));
@@ -273,8 +272,7 @@ public sealed class MemoryWriterTests : Test
 
         list.RemoveAt(0);
         Equal(1, writer.WrittenCount);
-        Single(list);
-        Equal(10, list[0]);
+        Equal(10, Single(list));
         True(list.Contains(10));
         False(list.Contains(42));
 
@@ -284,8 +282,7 @@ public sealed class MemoryWriterTests : Test
 
         list.Insert(0, 56);
         Equal(1, writer.WrittenCount);
-        Single(list);
-        Equal(56, list[0]);
+        Equal(56, Single(list));
 
         //check insertion with overflow
         for (var i = writer.Capacity; i > 0; i--)

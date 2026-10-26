@@ -163,7 +163,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         MappedSegment? first = null, last = null;
         for (var remainingLength = totalLength; remainingLength > 0;)
         {
-            var segmentLength = (int)Math.Min(this.segmentLength, remainingLength);
+            var segmentLength = int.CreateTruncating(long.Min(this.segmentLength, remainingLength));
             MappedSegment.AddSegment(this, segmentLength, ref first, ref last);
             remainingLength -= segmentLength;
         }

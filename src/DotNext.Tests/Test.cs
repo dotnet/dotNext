@@ -28,13 +28,13 @@ public abstract class Test : Assert
     private static IEnumerable<ReadOnlyMemory<T>> Split<T>(ReadOnlyMemory<T> memory, int chunkSize)
     {
         var startIndex = 0;
-        var length = Math.Min(chunkSize, memory.Length);
+        var length = int.Min(chunkSize, memory.Length);
 
         do
         {
             yield return memory.Slice(startIndex, length);
             startIndex += chunkSize;
-            length = Math.Min(memory.Length - startIndex, chunkSize);
+            length = int.Min(memory.Length - startIndex, chunkSize);
         }
         while (startIndex < memory.Length);
     }

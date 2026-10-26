@@ -492,4 +492,14 @@ public sealed class SpanReaderTests : Test
     
     [Fact]
     public static void EncodeDecodeInt64() => EncodeDecodeLeb128([0L, long.MaxValue, long.MinValue, 0x80L, -1L]);
+
+    [Fact]
+    public static void InsufficientMemory()
+    {
+        Throws<InsufficientMemoryException>(static () =>
+        {
+            var writer = new SpanWriter<byte>(stackalloc byte[4]);
+            writer.WriteLittleEndian(Int128.MaxValue);
+        });
+    }
 }

@@ -91,5 +91,35 @@ public static partial class DelegateHelpers
         /// <returns>The inferred delegate.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TDelegate Infer<TDelegate>(TDelegate d) where TDelegate : Delegate => d;
+
+        /// <summary>
+        /// Concatenates the invocation lists of a sequence of delegates.
+        /// </summary>
+        /// <param name="delegates">The sequence of delegates to combine.</param>
+        /// <typeparam name="TDelegate"></typeparam>
+        /// <returns>
+        /// A new delegate with an invocation list that concatenates the invocation lists of the delegates in the sequence;
+        /// or <see langword="null"/> if <paramref name="delegates"/> is <see langword="null"/>,
+        /// if <paramref name="delegates"/> contains zero elements,
+        /// or if every entry in <paramref name="delegates"/> is <see langword="null"/>.
+        /// </returns>
+        public static TDelegate? Combine<TDelegate>(IEnumerable<TDelegate?>? delegates)
+            where TDelegate : MulticastDelegate
+        {
+            using var enumerator = delegates?.GetEnumerator();
+            return enumerator is not null && enumerator.MoveNext()
+                ? enumerator.Combine(enumerator.Current) as TDelegate
+                : null;
+        }
+    }
+
+    private static Delegate? Combine(this IEnumerator<Delegate?> enumerator, Delegate? current)
+    {
+        while (enumerator.MoveNext())
+        {
+            current = Delegate.Combine(current, enumerator.Current);
+        }
+
+        return current;
     }
 }

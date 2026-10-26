@@ -54,7 +54,7 @@ public class PeerConfiguration : IPeerConfiguration
     /// </summary>
     public int ShuffleActiveViewCount
     {
-        get => shuffleActiveViewCount ?? Math.Max(activeViewCapacity / 2, 2);
+        get => shuffleActiveViewCount ?? int.Max(activeViewCapacity / 2, 2);
         set => shuffleActiveViewCount = value >= 1 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
@@ -63,7 +63,7 @@ public class PeerConfiguration : IPeerConfiguration
     /// </summary>
     public int ShufflePassiveViewCount
     {
-        get => shufflePassiveViewCount ?? Math.Max(passiveViewCapacity / 2, 2);
+        get => shufflePassiveViewCount ?? int.Max(passiveViewCapacity / 2, 2);
         set => shufflePassiveViewCount = value >= 1 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 

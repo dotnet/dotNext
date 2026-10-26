@@ -12,10 +12,10 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private int QueueSize => queueHead?.QueueLength ?? 0;
+    private int QueueSize => queue.Size;
 
     internal partial class KeyValuePair
     {
-        protected string ToString(TValue value) => $"Key = {Key} Value = {value}, Promoted = {IsPromoted}, IsAlive = {!IsDead}";
+        protected string ToString(TValue value) => $"Key = {Key} Value = {value}, Promoted = {HasNext}, IsAlive = {!IsDead}";
     }
 }

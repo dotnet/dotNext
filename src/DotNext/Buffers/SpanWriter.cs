@@ -10,7 +10,7 @@ namespace DotNext.Buffers;
 /// </summary>
 /// <typeparam name="T">The type of elements in the span.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public ref struct SpanWriter<T>
+public ref partial struct SpanWriter<T>
 {
     private readonly ref T reference;
     private readonly int length;

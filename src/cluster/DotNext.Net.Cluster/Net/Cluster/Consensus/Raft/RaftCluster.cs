@@ -490,24 +490,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IStandbyModeSupport.Standby"/>
     public bool Standby => Volatile.Read(in state) is StandbyState<TMember>;
 
-    private async Task CancelPendingRequestsAsync()
-    {
-        var tasks = members.Values.Select(static m => m.CancelPendingRequestsAsync().AsTask()).ToArray();
-
-        try
-        {
-            await Task.WhenAll(tasks).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            Logger.FailedToCancelPendingRequests(e);
-        }
-        finally
-        {
-            Array.Clear(tasks); // help GC
-        }
-    }
-
     private ValueTask UpdateStateAsync(RaftState<TMember> newState)
     {
         Debug.Assert(transitionLock.IsLockHeld);
@@ -532,7 +514,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         async Task StopAsync()
         {
             transitionCancellation.Cancel(false);
-            await CancelPendingRequestsAsync().ConfigureAwait(false);
             var lockTaken = false;
             try
             {
@@ -727,10 +708,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                          * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
                          * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                          */
-                        await AuditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, tokenSource.Token).ConfigureAwait(false);
+                        await AuditTrail.AppendAsync(entries, prevLogIndex + 1L, skipCommitted: true, tokenSource.Token).ConfigureAwait(false);
+                        await AuditTrail.CommitAsync(commitIndex, tokenSource.Token).ConfigureAwait(false);
                         result = result with
                         {
-                            Value = result.Value with
+                            Value = new()
                             {
                                 Result = IsReplicatedWithExpectedTerm(entries) ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated,
                                 LastIndex = lastIndex,

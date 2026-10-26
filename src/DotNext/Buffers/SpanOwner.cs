@@ -143,6 +143,12 @@ public ref struct SpanOwner<T> : IDisposable
         memory = segment;
     }
 
+    internal SpanOwner(MemoryManager<T> owner, int start, int length)
+    {
+        this.owner = owner;
+        memory = owner.GetSpan().Slice(start, length);
+    }
+
     private static bool UseNativeAllocation
         => Features.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 

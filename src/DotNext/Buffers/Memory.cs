@@ -71,21 +71,31 @@ public static partial class Memory
     /// <param name="newLength">A new length of the buffer.</param>
     /// <param name="allocator">The allocator to be called if the requested length is larger than the requested length.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="newLength"/> is less than zero.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Resize<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
     {
         if (!owner.TryResize(newLength))
+            ResizeCore(ref owner, newLength, allocator);
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void ResizeCore(ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
         {
-            owner.ResizeCore(newLength, allocator);
+            Debug.Assert(newLength > owner.Length);
+        
+            var newBuffer = allocator.AllocateAtLeast(newLength);
+            owner.Span.CopyTo(newBuffer.Span);
+            owner.Dispose();
+            owner = newBuffer;
         }
     }
 
-    internal static void ResizeCore<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
+    internal static void Reallocate<T>(this ref MemoryOwner<T>.Ownership owner, int newLength, MemoryAllocator<T> allocator)
     {
         Debug.Assert(newLength > owner.Length);
-        
-        var newBuffer = allocator.AllocateAtLeast(newLength);
+
+        var newBuffer = allocator(newLength).TakeOwnership();
         owner.Span.CopyTo(newBuffer.Span);
-        owner.Dispose();
+        owner.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         owner = newBuffer;
     }
     
@@ -93,11 +103,15 @@ public static partial class Memory
     internal static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
         where TWriter : IBufferWriter<T>, allows ref struct
     {
-        var destination = GetSpan(writer);
-
-        // Fast path, try copying to the available memory directly
-        if (value.Length <= destination.Length)
+        Span<T> destination;
+        
+        if (value.IsEmpty)
         {
+            // no need to allocate anything
+        }
+        else if (value.Length <= (destination = GetSpan(writer)).Length)
+        {
+            // Fast path, try copying to the available memory directly
             value.CopyTo(destination);
             writer.Advance(value.Length);
         }

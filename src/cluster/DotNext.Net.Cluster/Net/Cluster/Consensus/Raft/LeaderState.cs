@@ -271,12 +271,33 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
         }
     }
 
+    private async Task CancelPendingRequestsAsync()
+    {
+        var tasks = Members.Select(static m => m.CancelPendingRequestsAsync().AsTask()).ToArray();
+
+        try
+        {
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.FailedToCancelPendingRequests(e);
+        }
+        finally
+        {
+            Array.Clear(tasks); // help GC
+        }
+    }
+
     protected override async ValueTask DisposeAsyncCore()
     {
         try
         {
             Cancel();
             replicationEvent.CancelSuspendedCallers(Token);
+
+            // the token is canceled first, so in-flight replications are reported as canceled rather than unavailable
+            await CancelPendingRequestsAsync().ConfigureAwait(false);
             await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
             
             // heartbeat task is the only background task that can modify the dictionary concurrently

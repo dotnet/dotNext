@@ -61,7 +61,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         EmptyLogEntry IReadOnlyList<EmptyLogEntry>.this[int index]
             => this[index];
 
-        int IReadOnlyCollection<EmptyLogEntry>.Count => (int)(offset >= 0 ? count : Math.Max(1L, count + offset + 1L));
+        int IReadOnlyCollection<EmptyLogEntry>.Count
+            => int.CreateTruncating(offset >= 0 ? count : long.Max(1L, count + offset + 1L));
 
         public IEnumerator<EmptyLogEntry> GetEnumerator()
         {
@@ -123,7 +124,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
         if (skipCommitted)
         {
-            skip = Math.Max(0, LastCommittedEntryIndex - startIndex.GetValueOrDefault() + 1L);
+            skip = long.Max(0L, LastCommittedEntryIndex - startIndex.GetValueOrDefault() + 1L);
             startIndex += skip;
         }
         else if (startIndex.GetValueOrDefault() <= LastCommittedEntryIndex)
@@ -245,7 +246,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             syncRoot.Release();
         }
 
-        return Math.Max(count, 0L);
+        return long.Max(count, 0L);
     }
 
     /// <summary>

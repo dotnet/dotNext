@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -623,4 +624,18 @@ public sealed partial class DelegateHelpersTests : Test
         Action<int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42);
         Action<int, int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42, 42);
     }
+
+    [Fact]
+    public static void CombineDelegates()
+    {
+        var box = new StrongBox();
+        ImmutableList<Action> actions = [box.Increment, box.Increment, box.Increment];
+        Delegate.Combine(actions)?.Invoke();
+        Equal(3, box.Value);
+    }
+}
+
+file sealed class StrongBox : StrongBox<int>
+{
+    public void Increment() => Value += 1;
 }

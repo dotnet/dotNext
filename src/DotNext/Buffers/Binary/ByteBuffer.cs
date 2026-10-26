@@ -208,7 +208,7 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     public static void Write<T>(this ref SpanWriter<byte> writer, T value)
         where T : IBinaryFormattable<T>
-        => value.Format(writer.Slide(T.Size));
+        => Write<T, SpanWriter<byte>.Ref>(new(ref writer), value);
 
     /// <summary>
     /// Tries to write the value as a sequence of bytes to the buffer.
@@ -240,13 +240,7 @@ public static class ByteBuffer
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int WriteLittleEndian<T>(this ref SpanWriter<byte> writer, T value)
         where T : IBinaryInteger<T>
-    {
-        if (!value.TryWriteLittleEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
-
-        writer.Advance(bytesWritten);
-        return bytesWritten;
-    }
+        => WriteLittleEndian<T, SpanWriter<byte>.Ref>(new(ref writer), value);
 
     /// <summary>
     /// Writes integer in big-endian format.
@@ -258,13 +252,7 @@ public static class ByteBuffer
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int WriteBigEndian<T>(this ref SpanWriter<byte> writer, T value)
         where T : IBinaryInteger<T>
-    {
-        if (!value.TryWriteBigEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
-
-        writer.Advance(bytesWritten);
-        return bytesWritten;
-    }
+        => WriteBigEndian<T, SpanWriter<byte>.Ref>(new(ref writer), value);
 
     /// <summary>
     /// Writes <see cref="BigInteger"/> value to the buffer.
@@ -323,7 +311,35 @@ public static class ByteBuffer
 
         return result;
     }
-    
+
+    private static int WriteLeb128<T, TWriter>(TWriter writer, T value)
+        where TWriter : IBufferWriter<byte>, allows ref struct
+        where T : struct, IBinaryInteger<T>
+    {
+        var span = writer.GetSpan();
+        int count = 0, subcount = 0;
+        foreach (var b in new Leb128<T> { Value = value })
+        {
+            if (span.IsEmpty)
+            {
+                writer.Advance(subcount);
+                subcount = 0;
+                span = writer.GetSpan();
+            }
+            
+            span.Advance() = b;
+            count += 1;
+            subcount += 1;
+        }
+
+        if (subcount is not 0)
+        {
+            writer.Advance(subcount);
+        }
+
+        return count;
+    }
+
     /// <summary>
     /// Writes 32-bit integer in a compressed format.
     /// </summary>
@@ -332,17 +348,8 @@ public static class ByteBuffer
     /// <returns>A number of bytes written to the buffer.</returns>
     public static int WriteLeb128<T>(this ref SpanWriter<byte> writer, T value)
         where T : struct, IBinaryInteger<T>
-    {
-        var count = 0;
-        foreach (var b in new Leb128<T> { Value = value })
-        {
-            writer.Add() = b;
-            count += 1;
-        }
+        => WriteLeb128<T, SpanWriter<byte>.Ref>(new(ref writer), value);
 
-        return count;
-    }
-    
     /// <summary>
     /// Writes 32-bit integer in a compressed format.
     /// </summary>
@@ -351,16 +358,17 @@ public static class ByteBuffer
     /// <returns>A number of bytes written to the buffer.</returns>
     public static int WriteLeb128<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : struct, IBinaryInteger<T>
-    {
-        var count = 0;
-        foreach (var b in new Leb128<T> { Value = value })
-        {
-            writer.Add() = b;
-            count += 1;
-        }
+        => WriteLeb128<T, BufferWriterSlim<byte>.Ref>(new(ref writer), value);
 
-        return count;
-    }
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int WriteLeb128<T>(this IBufferWriter<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>
+        => WriteLeb128<T, IBufferWriter<byte>>(writer, value);
 
     /// <summary>
     /// Decodes an integer encoded as 7-bit octets.

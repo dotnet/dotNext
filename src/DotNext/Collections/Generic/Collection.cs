@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
@@ -58,6 +59,30 @@ public static partial class Collection
                     items.ForEach(collection.Add);
                     break;
             }
+        }
+
+        internal bool TryCopyTo(Memory<T> destination, out int count)
+        {
+            var collectionCount = collection.Count;
+            bool copied;
+            if (collectionCount <= 0)
+            {
+                copied = true;
+            }
+            else if (MemoryMarshal.TryGetArray<T>(destination, out var segment)
+                && segment.Array is { } array
+                && segment.Count >= collectionCount)
+            {
+                collection.CopyTo(array, segment.Offset);
+                copied = true;
+            }
+            else
+            {
+                copied = false;
+            }
+
+            count = collectionCount;
+            return copied;
         }
     }
 

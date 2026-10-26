@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using static System.Globalization.CultureInfo;
 
@@ -344,5 +345,29 @@ public sealed class BufferWriterTests : Test
 
         Throws<BufferSizeLimitExceededException>(() => limited.GetSpan(sizeHint: 0));
         Throws<BufferSizeLimitExceededException>(() => limited.GetSpan(sizeHint: 1));
+    }
+    
+    [Fact]
+    public static void EncodeDecodeInt32() => EncodeDecode([0, int.MaxValue, int.MinValue, 0x80, -1]);
+    
+    [Fact]
+    public static void EncodeDecodeInt64() => EncodeDecode([0L, long.MaxValue, long.MinValue, 0x80L, -1L]);
+
+    [Fact]
+    public static void EncodeDecodeUInt32() => EncodeDecode([uint.MinValue, uint.MaxValue, 0x80U]);
+    
+    private static void EncodeDecode<T>(ReadOnlySpan<T> values)
+        where T : struct, IBinaryInteger<T>
+    {
+        var writer = new PoolingBufferWriter<byte>();
+
+        foreach (var expected in values)
+        {
+            writer.Clear(reuseBuffer: true);
+
+            True(writer.WriteLeb128(expected) > 0);
+            var reader = new SpanReader<byte>(writer.WrittenMemory.Span);
+            Equal(expected, reader.ReadLeb128<T>());
+        }
     }
 }

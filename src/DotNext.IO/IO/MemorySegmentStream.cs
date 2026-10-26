@@ -105,7 +105,7 @@ public sealed class MemorySegmentStream(Memory<byte> data) : ModernStream
         if (newLength > data.Length)
             throw new IOException(ExceptionMessages.StreamOverflow);
 
-        position = Math.Min(position, length = newLength);
+        position = int.Min(position, length = newLength);
     }
 
     /// <inheritdoc/>

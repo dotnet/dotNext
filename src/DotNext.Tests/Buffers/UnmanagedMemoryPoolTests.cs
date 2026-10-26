@@ -307,6 +307,16 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
+    public static void DiscardStackMemory()
+    {
+        Throws<ArgumentException>(static () =>
+        {
+            Span<byte> bytes = stackalloc byte[8];
+            NativeMemory.Discard(bytes);
+        });
+    }
+
+    [Fact]
     public static void UnmanagedMemoryMarshalling()
     {
         using var memory = IUnmanagedMemory<long>.Allocate(2);

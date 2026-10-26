@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
 using Runtime.ExceptionServices;
 
 /// <summary>
@@ -14,6 +12,8 @@ using Runtime.ExceptionServices;
 /// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
 public sealed partial class Epoch
 {
+    private const int EpochCount = 3;
+
     private uint globalEpoch;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -28,6 +28,21 @@ public sealed partial class Epoch
         entries[1] = new(0, 2);
         entries[2] = new(1, 0);
     }
+    
+    /// <summary>
+    /// Gets or sets the manager of the unmanaged resources protected by this epoch.
+    /// </summary>
+    /// <remarks>
+    /// The manager is required to defer the release of the unmanaged resources. <see cref="Epoch"/>
+    /// uses it to link the deferred resources together, and to release them when they are no longer
+    /// available to any consumer.
+    /// </remarks>
+    [CLSCompliant(false)]
+    public INativeResourceManager? NativeResourceManager
+    {
+        get;
+        init;
+    }
 
     /// <summary>
     /// Enters the current epoch without the execution of the deferred actions.
@@ -40,88 +55,68 @@ public sealed partial class Epoch
     public Scope Enter() => new(this);
 
     /// <summary>
-    /// Invokes all deferred actions across all epochs.
+    /// Clears all the discarded resources safely.
     /// </summary>
     /// <remarks>
-    /// This method is not thread-safe and cannot be called concurrently with other threads entered a protected region
-    /// with <see cref="Enter()"/>. The caller must ensure that all threads finished their work prior to this method.
+    /// If another thread is in its own epoch, the method suspends.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
-    /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
-    public void UnsafeClear()
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    public async ValueTask ClearAsync(CancellationToken token = default)
     {
         var exceptions = new ExceptionAggregator();
-        UnsafeDrain(ref exceptions);
+        for (var progress = 0; !TryDrain(ref progress, ref exceptions); token.ThrowIfCancellationRequested())
+        {
+            await Task.Yield();
+        }
+
         exceptions.ThrowIfNeeded();
     }
 
     /// <summary>
-    /// Encapsulates actions deferred previously by <see cref="Scope.Defer(System.Action)"/> method and its overloads.
+    /// Clears all the discarded resources safely.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if there is no competing thread entered the epoch, so all epochs are cleaned;
+    /// otherwise, <see langword="false"/> and the caller needs to retry.
+    /// </returns>
+    public bool TryClear()
+    {
+        var exceptions = new ExceptionAggregator();
+        var progress = 0;
+        var result = TryDrain(ref progress, ref exceptions);
+        exceptions.ThrowIfNeeded();
+        return result;
+    }
+
+    /// <summary>
+    /// Encapsulates actions deferred previously by <see cref="Scope.Defer(System.Action)"/> method and its overloads,
+    /// and the unmanaged resources to be released by <see cref="NativeResourceManager"/>.
     /// </summary>
     /// <remarks>
     /// The action can be called at any point in time. The call does not necessarily have to be protected by
-    /// the epoch scope.
+    /// the epoch scope. The bin must be cleared only once: clearing the copies of the same bin invokes the actions
+    /// and releases the unmanaged resources more than once.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct RecycleBin : IThreadPoolWorkItem
+    public readonly struct RecycleBin
     {
-        // null, or Discardable, or Discardable[]
-        private readonly object discardable;
-        private readonly int count;
+        private readonly Discardable? root;
+        private readonly INativeResourceManager? resourceManager;
+        private readonly nuint rootHandle;
 
-        internal RecycleBin(Discardable? discardable)
+        internal RecycleBin(Discardable? root, nuint rootHandle, INativeResourceManager? resourceManager)
         {
-            if (discardable is null)
-            {
-                this.discardable = Sentinel.Instance;
-                count = 0;
-            }
-            else
-            {
-                this.discardable = discardable;
-                count = 1;
-            }
+            Debug.Assert(resourceManager is not null || rootHandle is 0U);
+            
+            this.root = root;
+            this.resourceManager = resourceManager;
+            this.rootHandle = rootHandle;
         }
-
-        internal RecycleBin(DetachingEnumerable discardables)
-        {
-            var array = new Discardable[discardables.MaxCount];
-
-            var index = 0;
-            foreach (var node in discardables)
-            {
-                // Perf: skip list.Add to avoid capacity checks
-                array[index++] = node;
-            }
-
-            switch (index)
-            {
-                case 0:
-                    discardable = Sentinel.Instance;
-                    break;
-                case 1:
-                    discardable = array[0];
-                    count = 1;
-                    break;
-                default:
-                    count = index;
-                    discardable = array;
-                    break;
-            }
-        }
-
-        [UnscopedRef]
-        private ReadOnlySpan<Discardable> Span => count switch
-        {
-            0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable)),
-            _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
-        };
 
         /// <summary>
         /// Gets a value indicating that the action is empty.
         /// </summary>
-        public bool IsEmpty => count is 0;
+        public bool IsEmpty => root is null && rootHandle is 0U;
 
         /// <summary>
         /// Invokes all deferred actions.
@@ -129,49 +124,40 @@ public sealed partial class Epoch
         /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
         public void Clear(bool throwOnFirstException = false)
         {
-            scoped var span = Span;
-            switch (span)
-            {
-                case []:
-                    break;
-                case [var callback]:
-                    callback.Drain(throwOnFirstException);
-                    break;
-                default:
-                    Drain(span, throwOnFirstException);
-                    break;
-            }
-        }
-
-        /// <inheritdoc cref="IThreadPoolWorkItem.Execute()"/>
-        void IThreadPoolWorkItem.Execute() => Clear(throwOnFirstException: false);
-
-        private static void Drain(ReadOnlySpan<Discardable> objects, bool throwOnFirstException)
-        {
-            var exceptions = new ExceptionAggregator();
             if (throwOnFirstException)
             {
-                try
-                {
-                    foreach (var node in objects)
-                    {
-                        node.Drain();
-                    }
-                }
-                catch (Exception e)
-                {
-                    exceptions += e;
-                }
+                ClearCore();
             }
             else
             {
-                foreach (var node in objects)
-                {
-                    node.Drain(ref exceptions);
-                }
+                var exceptions = new ExceptionAggregator();
+                ClearCore(ref exceptions);
+                exceptions.ThrowIfNeeded();
+            }
+        }
+
+        private void ClearCore(ref ExceptionAggregator exceptions)
+        {
+            root?.Drain(ref exceptions);
+            if (rootHandle is not 0U)
+            {
+                Debug.Assert(resourceManager is not null);
+
+                INativeResourceManager.Clear(resourceManager, rootHandle, ref exceptions);
+            }
+        }
+
+        private void ClearCore()
+        {
+            // a failed managed action must not prevent the release of unmanaged resources
+            if (rootHandle is not 0U)
+            {
+                Debug.Assert(resourceManager is not null);
+
+                INativeResourceManager.Clear(resourceManager, rootHandle);
             }
 
-            exceptions.ThrowIfNeeded();
+            root?.Drain();
         }
 
         /// <summary>
@@ -179,21 +165,49 @@ public sealed partial class Epoch
         /// </summary>
         public void QueueCleanup()
         {
-            scoped var span = Span;
-
-            switch (span)
+            switch (root is not null, rootHandle is not 0U)
             {
-                case []:
+                case (false, false):
                     break;
-                case [var callback]:
-                    IThreadPoolWorkItem workItem = callback;
-                    goto queue_user_work_item;
-                default:
-                    workItem = this;
-                    queue_user_work_item:
-                    ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+                case (true, false):
+                    Debug.Assert(root is not null);
+                    ThreadPool.UnsafeQueueUserWorkItem(root, preferLocal: false);
+                    break;
+                case (false, true):
+                    Debug.Assert(resourceManager is not null);
+                    unsafe
+                    {
+                        ThreadPool.UnsafeQueueUserWorkItem(
+                            Action<nuint>.FromPointer(&ClearNativeOnly, resourceManager),
+                            rootHandle,
+                            preferLocal: false);
+                    }
+
+                    break;
+                case (true, true):
+                    Debug.Assert(root is not null);
+                    Debug.Assert(resourceManager is not null);
+                    ThreadPool.UnsafeQueueUserWorkItem(
+                        static args => ClearAll(args.root, args.resourceManager, args.rootHandle),
+                        (root, resourceManager, rootHandle),
+                        preferLocal: false);
                     break;
             }
+        }
+        
+        private static void ClearNativeOnly(INativeResourceManager manager, nuint handle)
+        {
+            var exceptions = new ExceptionAggregator();
+            INativeResourceManager.Clear(manager, handle, ref exceptions);
+            exceptions.ThrowIfNeeded();
+        }
+
+        private static void ClearAll(Discardable root, INativeResourceManager manager, nuint rootHandle)
+        {
+            var exceptions = new ExceptionAggregator();
+            root.Drain(ref exceptions);
+            INativeResourceManager.Clear(manager, rootHandle, ref exceptions);
+            exceptions.ThrowIfNeeded();
         }
 
         /// <summary>
@@ -202,32 +216,53 @@ public sealed partial class Epoch
         /// <returns>The task representing execution of deferred actions.</returns>
         public Task ClearAsync()
         {
-            scoped var span = Span;
-            Task task;
-
-            switch (span)
+            Action<object?> action;
+            object? state;
+            switch (root is not null, rootHandle is not 0U)
             {
-                case []:
-                    task = Task.CompletedTask;
+                case (false, false):
+                    return Task.CompletedTask;
+                case (true, false):
+                    action = ClearManagedOnly;
+                    state = root;
                     break;
-                case [var callback]:
-                    IThreadPoolWorkItem workItem = callback;
-                    goto start_task;
-                default:
-                    workItem = this;
-                    start_task:
-                    task = Task.Factory.StartNew(Execute, workItem, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default);
+                case (false, true):
+                    Debug.Assert(resourceManager is not null);
+                    state = new Tuple<INativeResourceManager, nuint>(resourceManager, rootHandle);
+                    action = ClearNativeOnly;
+                    break;
+                case (true, true):
+                    Debug.Assert(root is not null);
+                    Debug.Assert(resourceManager is not null);
+                    state = new Tuple<Discardable, INativeResourceManager, nuint>(root, resourceManager, rootHandle);
+                    action = ClearAll;
                     break;
             }
 
-            return task;
+            return Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
+                TaskScheduler.Default);
 
-            static void Execute(object? callback)
+            static void ClearManagedOnly(object? state)
             {
-                Debug.Assert(callback is IThreadPoolWorkItem);
+                Debug.Assert(state is Discardable);
 
-                Unsafe.As<IThreadPoolWorkItem>(callback).Execute();
+                Unsafe.As<IThreadPoolWorkItem>(state).Execute();
+            }
+
+            static void ClearNativeOnly(object? state)
+            {
+                Debug.Assert(state is Tuple<INativeResourceManager, nuint>);
+
+                var args = Unsafe.As<Tuple<INativeResourceManager, nuint>>(state);
+                RecycleBin.ClearNativeOnly(args.Item1, args.Item2);
+            }
+
+            static void ClearAll(object? state)
+            {
+                Debug.Assert(state is Tuple<Discardable, INativeResourceManager, nuint>);
+                
+                var args = Unsafe.As<Tuple<Discardable, INativeResourceManager, nuint>>(state);
+                RecycleBin.ClearAll(args.Item1, args.Item2, args.Item3);
             }
         }
     }
@@ -292,6 +327,28 @@ public sealed partial class Epoch
             => state.Defer(handle, new WorkItem<TWorkItem>(workItem));
 
         /// <summary>
+        /// Registers the unmanaged resource to be released at some point in future when it is no longer
+        /// available to any consumer.
+        /// </summary>
+        /// <remarks>
+        /// The resource is released by <see cref="NativeResourceManager"/>. The location returned by
+        /// <see cref="INativeResourceManager.GetNextHandle(nuint)"/> for the resource is owned by the epoch until the release.
+        /// </remarks>
+        /// <param name="resourceHandle">The handle of the unmanaged resource.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="resourceHandle"/> is zero.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="NativeResourceManager"/> is not set.</exception>
+        [CLSCompliant(false)]
+        public void Defer(nuint resourceHandle)
+        {
+            ArgumentOutOfRangeException.ThrowIfZero(resourceHandle);
+
+            if (state.NativeResourceManager is null)
+                throw new InvalidOperationException();
+            
+            state.Defer(handle, resourceHandle);
+        }
+
+        /// <summary>
         /// Registers an object to be disposed at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
@@ -326,7 +383,7 @@ public sealed partial class Epoch
         /// </param>
         /// <returns>A collection of reclaimed actions that can be executed at any point in time.</returns>
         public RecycleBin Reclaim(bool drainGlobalCache = false)
-            => state.Reclaim(handle, drainGlobalCache);
+            => new(state.Reclaim(handle, drainGlobalCache, out var unmanaged), unmanaged, state.NativeResourceManager);
 
         /// <summary>
         /// Releases epoch scope.
@@ -338,5 +395,39 @@ public sealed partial class Epoch
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebugView => state is not null ? state.GetDebugView(handle) : "Empty";
+    }
+    
+    /// <summary>
+    /// Represents a manager of the unmanaged resources which release is deferred by <see cref="Epoch"/>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Epoch"/> links the deferred resources together without allocations. The link is stored
+    /// in the resource itself, at the location provided by <see cref="GetNextHandle(nuint)"/>.
+    /// </remarks>
+    /// <seealso cref="NativeResourceManager"/>
+    [CLSCompliant(false)]
+    public partial interface INativeResourceManager
+    {
+        /// <summary>
+        /// Gets a reference to the location inside the resource reserved for the link to the next deferred resource.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Epoch"/> owns the location from the moment the resource is deferred until it is released.
+        /// During this period, the location must not be read or modified by any other code, including the consumers
+        /// that still access the resource. The location must be the same for every call with the same handle.
+        /// </remarks>
+        /// <param name="handle">The handle of the resource.</param>
+        /// <returns>A reference to the location of the link.</returns>
+        ref nuint GetNextHandle(nuint handle);
+
+        /// <summary>
+        /// Releases the resource.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Epoch"/> calls this method when the resource is no longer available to any consumer.
+        /// The method can be called on any thread, and outside the epoch scope.
+        /// </remarks>
+        /// <param name="handle">The handle of the resource.</param>
+        void Release(nuint handle);
     }
 }

@@ -8,6 +8,7 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
+using static Collections.Generic.Collection;
 
 /// <summary>
 /// Represents stack-allocated buffer writer.
@@ -86,7 +87,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </remarks>
     public bool IsBounded
     {
-        readonly get => ReferenceEquals(allocator, MemoryAllocator<T>.Throwable);
+        readonly get => allocator.IsThrowable;
         init
         {
             if (value)
@@ -185,7 +186,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Debug.Assert(newSize >= position);
         
         var currentBuffer = extraBuffer;
-        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer = allocator(newSize).TakeOwnership();
         extraBuffer.AssertState(newSize);
         currentBuffer.Span.CopyTo(buffer = extraBuffer.Span);
         currentBuffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
@@ -197,7 +198,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Debug.Assert(newSize >= position);
         
         var currentBuffer = buffer.Slice(0, position);
-        extraBuffer = allocator.AllocateAtLeast(newSize).TakeOwnership();
+        extraBuffer = allocator(newSize).TakeOwnership();
         extraBuffer.AssertState(newSize);
         currentBuffer.CopyTo(buffer = extraBuffer.Span);
 
@@ -423,6 +424,41 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         return true;
     }
 
+    internal bool TryDetachBuffer(out SpanOwner<T> owner)
+    {
+        var memory = extraBuffer.Memory;
+        if (position is 0)
+        {
+            owner = default;
+            
+            // release the rented memory anyway, even if the writer is empty
+            extraBuffer.Clear(clearBuffer: false);
+        }
+        else if (memory.IsEmpty)
+        {
+            owner = new(buffer, position);
+        }
+        else if (allocator.IsArray && MemoryMarshal.TryGetArray<T>(memory, out var segment))
+        {
+            owner = new(segment.AsSpan());
+        }
+        else if (allocator is { IsArrayPool: true } or { IsByteArrayPool: true } && MemoryMarshal.TryGetArray(memory, out segment))
+        {
+            owner = new(in segment);
+        }
+        else if (MemoryMarshal.TryGetMemoryManager<T, MemoryManager<T>>(memory, out var manager, out var start, out var length))
+        {
+            owner = new(manager, start, length);
+        }
+        else
+        {
+            owner = default;
+            return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Detaches or copies the underlying buffer with written content from this writer.
     /// </summary>
@@ -434,6 +470,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         if (position is 0)
         {
             result = default;
+            
+            // release the rented memory anyway, even if the writer is empty
+            extraBuffer.Clear(clearBuffer: false);
         }
         else
         {
@@ -441,11 +480,11 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 MigrateToExtraBuffer();
 
             result = new(in extraBuffer, position);
-            buffer = default;
-            extraBuffer = default;
             position = 0;
         }
 
+        buffer = default;
+        extraBuffer = default;
         return result;
     }
 
@@ -505,11 +544,14 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 input = array;
                 break;
             case string str:
-                input = Unsafe.BitCast<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(str.AsMemory()).Span;
+                input = Unsafe.BitCast<ReadOnlySpan<char>, ReadOnlySpan<T>>(str);
                 break;
             case ArraySegment<T> segment:
                 input = segment;
                 break;
+            case ICollection<T> sizedCollection:
+                AddAll(sizedCollection);
+                return;
             default:
                 WriteSlow(collection);
                 return;
@@ -518,7 +560,37 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Write(input);
     }
 
-    /// <inheritdoc cref="AddAll"/>
+    private void AddAll(ICollection<T> collection)
+    {
+        var collectionCount = collection.Count;
+        if (collectionCount <= 0)
+            return;
+
+        GrowIfNeeded(collectionCount);
+
+        if (TryGetWrittenMemory(out var memory) && collection.TryCopyTo(memory, out collectionCount))
+        {
+            position += collectionCount;
+        }
+        else
+        {
+            WriteSlow(collection);
+        }
+    }
+
+    private readonly bool TryGetWrittenMemory(out Memory<T> memory)
+    {
+        memory = extraBuffer.Memory;
+        var result = memory.Length >= position;
+        if (result)
+        {
+            memory = memory.Slice(position);
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc cref="AddAll(IEnumerable{T})"/>
     public void operator += (IEnumerable<T> collection) => AddAll(collection);
 
     private void WriteSlow(IEnumerable<T> collection)

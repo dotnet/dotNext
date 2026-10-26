@@ -89,6 +89,7 @@ public abstract partial class QueuedSynchronizer : Disposable
 
         using var queue = CaptureWaitQueue();
         queue.SignalAll(reason);
+        pool.Reset();
     }
 
     private void Dispose(bool disposing, Exception? reason)
