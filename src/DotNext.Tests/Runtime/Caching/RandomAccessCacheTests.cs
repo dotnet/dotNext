@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
@@ -491,7 +492,350 @@ public sealed class RandomAccessCacheTests : Test
         }
     }
 
-    private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
+    [Fact]
+    public static async Task ResizeWithInvalidatedItems()
+    {
+        const long maxWeight = 10L;
+        await using var cache = new CacheWithWeight(2, maxWeight, 1);
+        await AddAsync(cache, "a");
+        await AddAsync(cache, "b");
+        True(await cache.InvalidateAsync("a", TestToken));
+
+        // no eviction, but resize happens
+        var capacity = cache.Capacity;
+        for (var i = 0; i < 8; i++)
+            await AddAsync(cache, i.ToString());
+
+        True(cache.Capacity > capacity);
+
+        // eviction must see all the items inserted before the resize
+        for (var i = 8; i < 50; i++)
+            await AddAsync(cache, i.ToString());
+
+        True(cache.Count() <= maxWeight);
+        False(cache.Contains("b"));
+        for (var i = 0; i < 8; i++)
+            False(cache.Contains(i.ToString()));
+
+        static async Task AddAsync(CacheWithWeight cache, string key)
+        {
+            await using var session = await cache.ChangeAsync(key, TestToken);
+            False(session.TryGetValue(out _));
+            session.SetValue(1L);
+        }
+    }
+
+    [Fact]
+    public static async Task ReadDuringResize()
+    {
+        var evicted = new ConcurrentDictionary<string, int>();
+        await using var cache = new CacheWithWeight(2, 10L, 1)
+        {
+            Eviction = (key, _) => evicted.AddOrUpdate(key, 1, static (_, count) => count + 1),
+        };
+
+        await AddAsync(cache, "a");
+        True(cache.TryRead("a", out var session));
+        var capacity = cache.Capacity;
+
+        // TryRead marks "a" as visited. Visit every inserted item as well, so the SIEVE hand wraps around
+        // and reaches "a" again. Otherwise, the hand evicts new items only and never returns to "a"
+        for (var i = 0; cache.Contains("a"); i++)
+        {
+            True(i < 100);
+            var key = i.ToString();
+            await AddAsync(cache, key);
+            True(cache.TryRead(key, out var readSession));
+            readSession.Dispose();
+        }
+
+        True(cache.Capacity > capacity);
+
+        // the value must not be released while the session is alive
+        False(evicted.ContainsKey("a"));
+        Equal(1L, session.Value);
+        session.Dispose();
+        Equal(1, evicted["a"]);
+
+        static async Task AddAsync(CacheWithWeight cache, string key)
+        {
+            await using var session = await cache.ChangeAsync(key, TestToken);
+            False(session.TryGetValue(out _));
+            session.SetValue(1L);
+        }
+    }
+
+    [Fact]
+    public static async Task ConcurrentResize()
+    {
+        await using var cache = new CacheWithWeight(2, long.MaxValue, 2);
+        await Parallel.ForAsync(0, 1000, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
+        {
+            var session = await cache.ChangeAsync(i.ToString(), token);
+            session.SetValue(1L);
+
+            // must not hang if the promotion is enqueued before the resize
+            await session.DisposeAsync().AsTask().WaitAsync(DefaultTimeout, token);
+        });
+    }
+
+    [Fact]
+    public static async Task InvalidateBeforeInsertion()
+    {
+        await using var cache = new CacheWithStringWeight(64, long.MaxValue);
+        for (var i = 0; i < 10_000; i++)
+        {
+            var key = i.ToString();
+            using (var session = await cache.ChangeAsync(key, TestToken))
+            {
+                session.SetValue(key);
+            }
+
+            await cache.InvalidateAsync(key, TestToken);
+        }
+
+        // wait for the eviction queue to be processed
+        await using (var session = await cache.ChangeAsync("last", TestToken))
+        {
+            session.SetValue("last");
+        }
+
+        False(cache.NullObserved);
+        Equal("last".Length, cache.TotalWeight);
+    }
+
+    [Fact]
+    public static void InvalidConcurrencyLevel()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => new RandomAccessCache<long, string>(10, concurrencyLevel: 0));
+        Throws<ArgumentOutOfRangeException>(static () => new CacheWithWeight(10, long.MaxValue, 2, concurrencyLevel: -1));
+    }
+
+    [Fact]
+    public static async Task ConcurrentWritersSharingWaitQueue()
+    {
+        const int keys = 8;
+        const int iterations = 4000;
+
+        // the single wait queue is shared by the writers of all buckets
+        await using var cache = new RandomAccessCache<int, StrongBox<int>>(64, concurrencyLevel: 1);
+        var insertions = new int[keys];
+
+        await Parallel.ForAsync(0, iterations, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
+        {
+            var key = i % keys;
+            await using var session = await cache.ChangeAsync(key, token);
+            if (session.TryGetValue(out var counter))
+            {
+                Interlocked.Increment(ref counter.Value);
+            }
+            else
+            {
+                // the bucket lock is held, so the key cannot be inserted concurrently
+                Interlocked.Increment(ref insertions[key]);
+                await Task.Yield();
+                session.SetValue(new(1));
+            }
+        }).WaitAsync(DefaultTimeout, TestToken);
+
+        All(insertions, static count => Equal(1, count));
+
+        var total = 0;
+        for (var key = 0; key < keys; key++)
+        {
+            True(cache.TryRead(key, out var session));
+            using (session)
+            {
+                total += session.Value.Value;
+            }
+        }
+
+        Equal(iterations, total);
+    }
+
+    [Fact]
+    public static async Task ConcurrentResizeSharingWaitQueue()
+    {
+        const int keys = 1000;
+        await using var cache = new CacheWithWeight(2, long.MaxValue, 2, concurrencyLevel: 1);
+        await Parallel.ForAsync(0, keys, new ParallelOptions { CancellationToken = TestToken }, async (i, token) =>
+        {
+            await using var session = await cache.ChangeAsync(i.ToString(), token);
+            False(session.TryGetValue(out _));
+            session.SetValue(1L);
+        }).WaitAsync(DefaultTimeout, TestToken);
+
+        True(cache.Capacity > 2);
+        for (var i = 0; i < keys; i++)
+            True(cache.Contains(i.ToString()));
+    }
+
+    [Fact]
+    public static async Task ThrowingEvictionDoesNotLeakLock()
+    {
+        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = static (_, _) => throw new ArithmeticException() };
+        await using (var session = await cache.ChangeAsync(1, TestToken))
+        {
+            session.SetValue("a");
+        }
+
+        // the replaced entry is removed under the bucket lock, the callback throws
+        await ThrowsAsync<ArithmeticException>(cache.ReplaceAsync(1, TestToken).AsTask);
+
+        using (cache.Change(1, DefaultTimeout, TestToken))
+        {
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task TimeoutDuringResize(bool replace)
+    {
+        await using var cache = new IntCacheWithWeight(2, collisionThreshold: 1);
+
+        // the key is the hash code, so the key equal to the capacity is in the same bucket as 0
+        var collidingKey = cache.Capacity;
+        await using (var session = await cache.ChangeAsync(0, TestToken))
+        {
+            session.SetValue(1L);
+        }
+
+        // the lock of another bucket prevents the resize
+        await using (await cache.ChangeAsync(1, TestToken))
+        {
+            // the first bucket requires the resize
+            Throws<TimeoutException>(() => (replace
+                ? cache.Replace(collidingKey, TimeSpan.FromMilliseconds(50), TestToken)
+                : cache.Change(collidingKey, TimeSpan.FromMilliseconds(50), TestToken)).Dispose());
+        }
+
+        using (cache.Change(collidingKey, DefaultTimeout, TestToken))
+        {
+        }
+    }
+
+    private sealed class IntCacheWithWeight(int cacheCapacity, int collisionThreshold)
+        : RandomAccessCache<int, long, long>(cacheCapacity, 0L, collisionThreshold)
+    {
+        protected override void AddWeight(ref long total, int key, long value)
+            => Interlocked.Add(ref total, value);
+
+        protected override bool IsEvictionRequired(ref readonly long total, int key, long value)
+            => false;
+
+        protected override void RemoveWeight(ref long total, int key, long value)
+            => Interlocked.Add(ref total, -value);
+    }
+
+    private static async Task InsertAsync(RandomAccessCache<int, string> cache, int key)
+    {
+        await using var session = await cache.ChangeAsync(key, TestToken);
+        session.SetValue(key.ToString());
+    }
+
+    [Fact]
+    public static async Task InvalidationKeepsLiveRecords()
+    {
+        await using var cache = new RandomAccessCache<int, string>(100);
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        // invalidate the newer half
+        var half = capacity / 2;
+        for (var i = half; i < capacity; i++)
+            True(await cache.InvalidateAsync(i, TestToken));
+
+        // the invalidated records don't occupy the cache, so nothing has to be evicted
+        for (var i = capacity; i < 2 * capacity - half; i++)
+            await InsertAsync(cache, i);
+
+        All(Enumerable.Range(0, half), key => True(cache.Contains(key)));
+    }
+
+    [Fact]
+    public static async Task InvalidateSieveHand()
+    {
+        var evicted = new ConcurrentQueue<int>();
+        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = (key, _) => evicted.Enqueue(key) };
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        // the hand evicts the oldest record and stops at the next one
+        await InsertAsync(cache, capacity);
+        Equal([0], evicted);
+
+        // the record under the hand is removed, the hand moves to the next oldest record
+        True(await cache.InvalidateAsync(1, TestToken));
+        await InsertAsync(cache, capacity + 1);
+        await InsertAsync(cache, capacity + 2);
+
+        Equal([0, 1, 2], evicted);
+        All(Enumerable.Range(3, capacity), key => True(cache.Contains(key)));
+    }
+
+    [Fact]
+    public static async Task InvalidateAllThenRefill()
+    {
+        var evicted = 0;
+        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = (_, _) => Interlocked.Increment(ref evicted) };
+        var capacity = cache.Capacity;
+        for (var i = 0; i < capacity; i++)
+            await InsertAsync(cache, i);
+
+        await cache.InvalidateAsync(TestToken);
+        Equal(capacity, Volatile.Read(in evicted));
+
+        // the cache is empty, so the new records don't evict each other
+        for (var i = capacity; i < 2 * capacity; i++)
+            await InsertAsync(cache, i);
+
+        Equal(capacity, Volatile.Read(in evicted));
+        All(Enumerable.Range(capacity, capacity), key => True(cache.Contains(key)));
+    }
+
+    private sealed class CacheWithStringWeight(int cacheCapacity, long maxWeight) : RandomAccessCache<string, string, long>(cacheCapacity, 0L, int.MaxValue)
+    {
+        private long totalWeight;
+        private volatile bool nullObserved;
+
+        public long TotalWeight => Volatile.Read(ref totalWeight);
+
+        public bool NullObserved => nullObserved;
+
+        private long GetWeight(string value)
+        {
+            if (value is null)
+            {
+                nullObserved = true;
+                return 0L;
+            }
+
+            return value.Length;
+        }
+
+        protected override void AddWeight(ref long total, string key, string value)
+        {
+            var weight = GetWeight(value);
+            Interlocked.Add(ref total, weight);
+            Interlocked.Add(ref totalWeight, weight);
+        }
+
+        protected override bool IsEvictionRequired(ref readonly long total, string key, string value)
+            => GetWeight(value) + total > maxWeight;
+
+        protected override void RemoveWeight(ref long total, string key, string value)
+        {
+            var weight = GetWeight(value);
+            Interlocked.Add(ref total, -weight);
+            Interlocked.Add(ref totalWeight, -weight);
+        }
+    }
+
+    private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold, int concurrencyLevel = 4)
+        : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold, concurrencyLevel)
     {
         protected override void AddWeight(ref long total, string key, long value)
             => Interlocked.Add(ref total, value);

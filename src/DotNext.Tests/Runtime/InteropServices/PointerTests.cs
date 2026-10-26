@@ -331,4 +331,14 @@ public sealed class PointerTests : Test
         ptr.CopyTo(destination);
         Equal(ptr.AsSpan(3), destination);
     }
+
+    [Fact]
+    public static unsafe void StackAllocationCheck()
+    {
+        Pointer<int> ptr = stackalloc int[1];
+        True(ptr.IsStackAllocated);
+
+        ptr = default;
+        False(ptr.IsStackAllocated);
+    }
 }

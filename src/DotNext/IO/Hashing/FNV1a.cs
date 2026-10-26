@@ -238,7 +238,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         {
             for (int maxSize = int.MaxValue / sizeof(T), size; !data.IsEmpty; data = data.Slice(size))
             {
-                size = Math.Min(maxSize, data.Length);
+                size = int.Min(maxSize, data.Length);
                 Append(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(data)), (uint)size * (uint)sizeof(T));
             }
         }

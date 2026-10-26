@@ -4,22 +4,32 @@ namespace DotNext.Threading;
 
 internal sealed class AsyncAutoResetEventSlim(bool initialState = false) : IValueTaskSource<bool>
 {
+    private const int PhaseMask = 0b11;
     private const int SignaledState = 0;
     private const int NotSignaledState = 1;
     private const int CallbackAttachedState = 2;
 
-    private volatile int state = initialState ? NotSignaledState : SignaledState;
+    // The result passed to Set is stored outside the phase bits, so Increment in WaitAsync never touches it
+    private const int ResultFlag = 0b100;
+
+    private volatile int state = initialState ? SignaledState | ResultFlag : NotSignaledState;
     private ManualResetValueTaskSourceCore<bool> source = new() { RunContinuationsAsynchronously = true };
 
-    public void Set()
+    // If Set is called multiple times without waiting, the last result wins
+    public void Set(bool result = true)
     {
-        if (Interlocked.Exchange(ref state, SignaledState) is CallbackAttachedState)
-            source.SetResult(true);
+        var newState = result ? SignaledState | ResultFlag : SignaledState;
+        if ((Interlocked.Exchange(ref state, newState) & PhaseMask) is CallbackAttachedState)
+            source.SetResult(result);
     }
 
-    public ValueTask<bool> WaitAsync() => Interlocked.Increment(ref state) is NotSignaledState
-        ? ValueTask.FromResult(true)
-        : new(this, source.Version);
+    public ValueTask<bool> WaitAsync()
+    {
+        var current = Interlocked.Increment(ref state);
+        return (current & PhaseMask) is NotSignaledState
+            ? ValueTask.FromResult((current & ResultFlag) is not 0)
+            : new(this, source.Version);
+    }
 
     bool IValueTaskSource<bool>.GetResult(short token)
     {

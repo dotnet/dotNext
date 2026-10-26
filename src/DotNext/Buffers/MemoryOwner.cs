@@ -20,13 +20,8 @@ public partial struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, IS
     private int length;
 
     internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
-    {
-        Debug.Assert(length > 0);
-        Debug.Assert(array.Length >= length);
-
-        ownership = new(pool, array);
-        this.length = length;
-    }
+        : this(new Ownership(pool, array), length)
+        => Debug.Assert(array.Length >= length);
 
     internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
     {
@@ -148,8 +143,9 @@ public partial struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, IS
     /// </summary>
     /// <param name="array">The array to wrap.</param>
     public MemoryOwner(T[] array)
-        : this(array, array.Length)
     {
+        ownership = array is not [] ? new(owner: null, array) : default;
+        length = array.Length;
     }
 
     /// <summary>

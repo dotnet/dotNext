@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks.Sources;
 
 namespace DotNext.Runtime.Caching;
 
 using CompilerServices;
+using Threading.Tasks;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
@@ -19,7 +19,7 @@ public partial class RandomAccessCache<TKey, TValue>
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoEvictionAsync(CancelableValueTaskCompletionSource source)
     {
-        while (await source.WaitAsync(queueHead).ConfigureAwait(false))
+        while (await queue.WaitAsync(source).ConfigureAwait(false))
         {
             ProcessQueue();
         }
@@ -27,25 +27,89 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private void ProcessQueue()
     {
-        while (queueHead.NextInQueue is KeyValuePair newHead)
+        while (queue.TryDequeue() is { } item)
         {
-            queueHead.NextInQueue = Sentinel.Instance;
-            queueHead = newHead;
-                
-            Debug.Assert(newHead is not FakeKeyValuePair);
-            EvictOrInsert(newHead);
+            switch (item)
+            {
+                case KeyValuePair pair:
+                    EvictOrInsert(pair);
+                    break;
+                case InvalidationSignal signal:
+                    Invalidate(signal);
+                    break;
+                default:
+                    Debug.Fail($"Unexpected command {item}");
+                    break;
+            }
         }
     }
 
     private void EvictOrInsert(KeyValuePair promoted)
     {
+        // The pair can be removed concurrently. The reference acquired by Promote keeps the value alive
+        // and guarantees that OnRemoved is called after OnAdded
         if (Evict(promoted))
         {
             promoted.Prepend(ref evictionHead, ref evictionTail);
             sieveHand ??= evictionTail;
             currentSize++;
             OnAdded(promoted);
+
+            if (!promoted.ReleaseCounter())
+                OnRemoved(promoted);
         }
+        else
+        {
+            // the cache doesn't have enough resources (pair has too high weight), release the enqueued pair.
+            // The weight is not added, so use Clear instead of OnRemoved
+            if (promoted.MarkAsEvicted())
+                promoted.ReleaseCounter(); // the reference owned by the cache, cannot reach zero
+
+            if (!promoted.ReleaseCounter())
+                Clear(promoted);
+
+            promoted.Added();
+        }
+    }
+
+    private void Invalidate(InvalidationSignal signal)
+    {
+        if (signal.Target is { } removed)
+        {
+            Invalidate(removed);
+            signal.Target = null; // help GC, the signal remains the head of the queue
+        }
+        else
+        {
+            InvalidateAll();
+        }
+    }
+
+    private void Invalidate(KeyValuePair removed)
+    {
+        // the pair can be detached by the SIEVE hand already
+        if (removed.IsInEvictionList(evictionHead))
+        {
+            var previous = removed.DetachAndMoveBackward(ref evictionHead, ref evictionTail);
+            if (ReferenceEquals(removed, sieveHand))
+                sieveHand = previous ?? evictionTail;
+
+            currentSize--;
+        }
+    }
+
+    private void InvalidateAll()
+    {
+        // All the pairs in the list are dead, because the invalidation holds all the bucket locks.
+        // The pairs inserted after the invalidation are enqueued after the signal
+        for (KeyValuePair? current = evictionHead, next; current is not null; current = next)
+        {
+            next = current.MoveForward();
+            current.ClearSieveLinks();
+        }
+
+        evictionHead = evictionTail = sieveHand = null;
+        currentSize = 0;
     }
 
     private bool Evict(KeyValuePair promoted)
@@ -53,14 +117,7 @@ public partial class RandomAccessCache<TKey, TValue>
         while (IsEvictionRequired(promoted))
         {
             if (sieveHand is null)
-            {
-                // if eviction still required, we need to release the enqueued key/value pair because the current cache
-                // doesn't have enough resources (pair has too high weight)
-                promoted.MarkAsDead();
-                Clear(promoted);
-                promoted.Added();
                 return false;
-            }
 
             if (!sieveHand.Evict(out var removed))
             {
@@ -74,7 +131,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 if (!removed && !removedPair.ReleaseCounter())
                 {
                     OnRemoved(removedPair);
-                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode).Value);
+                    buckets.CleanUp(parkingLot, removedPair.KeyHashCode);
                 }
             }
         }
@@ -99,23 +156,6 @@ public partial class RandomAccessCache<TKey, TValue>
         ClearValue(demoted);
     }
 
-    private void TryCleanUpBucket(ref Bucket bucket)
-    {
-        var bucketsCopy = buckets;
-        if (bucket.Lock.TryAcquire())
-        {
-            try
-            {
-                if (ReferenceEquals(bucketsCopy, buckets))
-                    bucket.CleanUp();
-            }
-            finally
-            {
-                bucket.Lock.Release();
-            }
-        }
-    }
-
     private void RebuildEvictionState(BucketList buckets)
     {
         if (keyComparer is { } keyComparerCopy)
@@ -133,16 +173,25 @@ public partial class RandomAccessCache<TKey, TValue>
         where TFactory : struct, ISupplier<TKey, TPredicate>
     {
         KeyValuePair? newHead = null, newTail = null;
+        var newSize = 0;
 
-        for (var current = evictionTail; current is { IsDead: false }; current = current.MoveBackward())
+        // dead pairs are skipped, because the new bucket list doesn't contain them
+        for (KeyValuePair? current = evictionTail, previous; current is not null; current = previous)
         {
-            buckets
-                .FindPair(factory.Invoke(current.Key), current.KeyHashCode)
-                ?.Prepend(ref newHead, ref newTail);
+            previous = current.MoveBackward();
+            if (buckets.FindPair(factory.Invoke(current.Key), current.KeyHashCode) is { } pair)
+            {
+                pair.Prepend(ref newHead, ref newTail);
+                newSize++;
+            }
+
+            // the old pair is no longer in the eviction list
+            current.ClearSieveLinks();
         }
 
         evictionHead = newHead;
         evictionTail = newTail;
+        currentSize = newSize;
         sieveHand = sieveHand is not null ? buckets.FindPair(factory.Invoke(sieveHand.Key), sieveHand.KeyHashCode) ?? newTail : null;
     }
 
@@ -160,6 +209,15 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal KeyValuePair? MoveBackward()
             => sieveLinks.Previous;
+
+        internal KeyValuePair? MoveForward()
+            => sieveLinks.Next;
+
+        internal void ClearSieveLinks() => sieveLinks = default;
+
+        // can be called by the eviction thread only
+        internal bool IsInEvictionList(KeyValuePair? head)
+            => sieveLinks.Previous is not null || sieveLinks.Next is not null || ReferenceEquals(this, head);
 
         internal void Prepend([NotNull] ref KeyValuePair? head, [NotNull] ref KeyValuePair? tail)
         {
@@ -206,8 +264,12 @@ public partial class RandomAccessCache<TKey, TValue>
             return counter < NotVisitedState;
         }
 
-        internal bool Visit()
-            => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState;
+        internal bool Visit() => cacheState switch
+        {
+            VisitedState => true,
+            NotVisitedState => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState,
+            _ => false,
+        };
 
         internal bool MarkAsEvicted()
             => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
@@ -269,104 +331,7 @@ public partial class RandomAccessCache<TKey, TValue>
             if (Interlocked.CompareExchange(ref addedEvent, Task.CompletedTask, comparand: null) is AddedEventSource source)
                 source.TrySetResult();
         }
-
-        private sealed class AddedEventSource() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-    }
-
-    private sealed class CancelableValueTaskCompletionSource : IValueTaskSource<bool>, IThreadPoolWorkItem
-    {
-        private object? continuationState;
-        
-        // possible transitions:
-        // null or non-stub => stub (canceled, completed)
-        // null => non-stub
-        // stub (completed) => stub (canceled)
-        // non-stub or stub (completed) => null
-        private volatile Action<object?>? continuation;
-        private short version = short.MinValue;
-
-        private void Complete()
-        {
-            // null or non-stub => stub (completed)
-            Action<object?>? current, tmp = continuation;
-            do
-            {
-                current = tmp;
-                if (current.IsStub)
-                    return;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, ValueTaskSourceHelpers.CompletedStub, current), current));
-
-            current?.Invoke(continuationState);
-        }
-
-        private bool TryReset()
-        {
-            // null, non-stub, stub (completed) => stub (canceled)
-            Action<object?>? current, tmp = continuation;
-            do
-            {
-                current = tmp;
-                if (ReferenceEquals(current, ValueTaskSourceHelpers.CanceledStub))
-                    return false;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, null, current), current));
-
-            return true;
-        }
-
-        void IThreadPoolWorkItem.Execute() => Complete();
-
-        bool IValueTaskSource<bool>.GetResult(short token)
-        {
-            Debug.Assert(token == version);
-
-            continuationState = null;
-            version++;
-            return TryReset();
-        }
-
-        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { IsStub: false }
-            ? ValueTaskSourceStatus.Succeeded
-            : ValueTaskSourceStatus.Pending;
-
-        void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        {
-            continuationState = state;
-            
-            // null => non-stub
-            if (Interlocked.CompareExchange(ref this.continuation, continuation, null) is not null)
-            {
-                continuation.Invoke(state);
-            }
-        }
-
-        internal ValueTask<bool> WaitAsync(KeyValuePair pair)
-        {
-            if (!pair.TryAttachNotificationHandler(this))
-                Complete();
-
-            return new(this, version);
-        }
-
-        internal void Cancel()
-        {
-            if (Interlocked.Exchange(ref continuation, ValueTaskSourceHelpers.CanceledStub) is { IsStub: false } c)
-            {
-                c(continuationState);
-                continuationState = null;
-            }
-        }
     }
 }
 
-file static class ValueTaskSourceHelpers
-{
-    internal static readonly Action<object?> CompletedStub = Stub;
-    internal static readonly Action<object?> CanceledStub = Stub;
-
-    private static void Stub(object? state) => Debug.Fail("Should never be called");
-
-    extension(Action<object?>? continuation)
-    {
-        public bool IsStub => continuation?.Method == CompletedStub.Method;
-    }
-}
+file sealed class AddedEventSource() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

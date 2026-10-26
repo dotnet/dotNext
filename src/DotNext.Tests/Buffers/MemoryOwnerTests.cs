@@ -1,4 +1,6 @@
 using System.Buffers;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers;
@@ -8,7 +10,7 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void RentFromArrayPool()
     {
-        using var owner = ArrayPool<byte>.Shared.ToAllocator().Invoke(10);
+        using var owner = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 10);
         Equal(10, owner.Memory.Length);
         Equal(owner.Length, owner.Memory.Length);
     }
@@ -59,14 +61,16 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void WrapArray()
     {
-        var array = new byte[42];
-        using var owner = new MemoryOwner<byte>(array);
+        var array = new byte[50];
+        using var owner = new MemoryOwner<byte>(array, length: 42);
         Equal(42, owner.Memory.Length);
         owner[2] = 10;
         Equal(10, array[2]);
+
+        Throws<ArgumentOutOfRangeException>(() => new MemoryOwner<byte>(array, length: array.Length + 1));
     }
 
-    public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() =>
+    public static TheoryData<MemoryAllocator<int>> ExactSizeAllocators =>
     [
         MemoryAllocator<int>.Array,
         MemoryAllocator<int>.Pinned,
@@ -75,7 +79,7 @@ public sealed class MemoryOwnerTests : Test
     ];
 
     [Theory]
-    [MemberData(nameof(GetArrayAllocators))]
+    [MemberData(nameof(ExactSizeAllocators))]
     public static void ArrayAllocation(MemoryAllocator<int> allocator)
     {
         using var owner = allocator(4);
@@ -88,12 +92,14 @@ public sealed class MemoryOwnerTests : Test
         Same(MemoryAllocator<byte>.Array, MemoryAllocator<byte>.Array);
         Same(MemoryAllocator<byte>.Pinned, MemoryAllocator<byte>.Pinned);
         Same(MemoryAllocator<byte>.Default, MemoryAllocator<byte>.Default);
+        Same(MemoryAllocator<byte>.ArrayPool, MemoryAllocator<byte>.ArrayPool);
+        Same(MemoryAllocator<byte>.ByteArrayPool, MemoryAllocator<byte>.ByteArrayPool);
     }
 
     [Fact]
     public static void RawReference()
     {
-        var owner = new MemoryOwner<byte>(Array.Empty<byte>());
+        var owner = new MemoryOwner<byte>([]);
         True(Unsafe.IsNullRef(ref owner.DataRef));
 
         owner = default;
@@ -146,5 +152,42 @@ public sealed class MemoryOwnerTests : Test
         const int size = 512;
         using var buffer = new MemoryOwner<byte>(static () => MemoryPool<byte>.Shared.Rent(size));
         True(buffer.Length >= size);
+    }
+
+    public static TheoryData<MemoryAllocator<char>, int> AllocatorsAndSizes
+        => new(from allocator in ReadOnlyCollection.CreateCollection(
+                MemoryAllocator<char>.Default,
+                MemoryAllocator<char>.ArrayPool,
+                MemoryAllocator<char>.ByteArrayPool,
+                MemoryAllocator<char>.Array,
+                MemoryAllocator<char>.Pinned,
+                MemoryAllocator<char>.Unmanaged,
+                MemoryAllocator<char>.UnmanagedZeroMem)
+            from bufferSize in ReadOnlyCollection.CreateCollection(1, 2, 3, 4, 10, 16, 32, 64, 1024)
+            select (allocator, bufferSize));
+
+    [Theory]
+    [MemberData(nameof(AllocatorsAndSizes))]
+    public static unsafe void AllocateRelease(MemoryAllocator<char> allocator, int bufferSize)
+    {
+        using var owner = allocator.Invoke(bufferSize);
+        True(owner.Length >= bufferSize);
+
+        var span = owner.Memory.Span;
+        using (var handle = owner.Memory.Pin())
+        {
+            Unsafe.AsRef<char>(handle.Pointer) = 'b';
+            Equal('b', span[0]);
+        }
+        
+        span[0] = 'a';
+        Equal('a', span[0]);
+    }
+
+    [Fact]
+    public static void UseByteArrayPoolForGuid()
+    {
+        using var owner = MemoryAllocator<Guid>.ByteArrayPool.Invoke(64);
+        True(MemoryMarshal.TryGetMemoryManager<Guid, MemoryManager<Guid>>(owner.Memory, out _));
     }
 }

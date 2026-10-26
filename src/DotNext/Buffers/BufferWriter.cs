@@ -10,6 +10,7 @@ namespace DotNext.Buffers;
 using Runtime;
 using Runtime.CompilerServices;
 using Runtime.InteropServices;
+using static Collections.Generic.Collection;
 
 /// <summary>
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
@@ -153,21 +154,32 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public virtual void AddAll(ICollection<T> items)
     {
-        if (items.Count is 0)
+        var count = items.Count;
+        if (count <= 0)
             return;
 
-        var span = GetSpan(items.Count);
-        var count = items switch
+        var memory = GetMemory(count);
+        count = items switch
         {
-            List<T> list => CollectionsMarshal.AsSpan(list) >>> span,
-            T[] array => array.AsSpan() >>> span,
-            ArraySegment<T> segment => segment.AsSpan() >>> span,
-            _ => CopyFromCollection(items, span)
+            List<T> list => CollectionsMarshal.AsSpan(list) >>> memory.Span,
+            T[] array => array.AsSpan() >>> memory.Span,
+            string str => Unsafe.BitCast<ReadOnlySpan<char>, ReadOnlySpan<T>>(str) >>> memory.Span,
+            ArraySegment<T> segment => segment.AsSpan() >>> memory.Span,
+            _ => CopyFromCollection(items, memory)
         };
 
         position += count;
 
-        static int CopyFromCollection(ICollection<T> input, Span<T> output)
+        static int CopyFromCollection(ICollection<T> input, Memory<T> output)
+        {
+            Debug.Assert(output.Length >= input.Count);
+
+            return input.TryCopyTo(output, out var count)
+                ? count
+                : CopyFromCollectionSlow(input, output.Span);
+        }
+
+        static int CopyFromCollectionSlow(ICollection<T> input, Span<T> output)
         {
             Debug.Assert(output.Length >= input.Count);
 

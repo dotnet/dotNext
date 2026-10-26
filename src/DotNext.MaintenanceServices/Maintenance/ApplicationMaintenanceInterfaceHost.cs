@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Hosting;
@@ -30,13 +31,11 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedService
 {
     private const int MinBufferSize = 32;
+    internal const UnixFileMode DefaultSocketFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.GroupRead | UnixFileMode.GroupWrite;
     private static readonly ReadOnlyMemory<char> NewLineMemory = Environment.NewLine.AsMemory();
     private static readonly ReadOnlyMemory<char> NullTerminationCharMemory = new[] { '\0' };
 
     private readonly UnixDomainSocketEndPoint endPoint;
-    private readonly int backlog = 5;
-    private readonly int bufferSize = 512;
-    private readonly Encoding encoding = Encoding.UTF8;
     private readonly Socket listener;
     private readonly CancellationTokenSource stoppingTokenSource;
     private readonly CancellationToken stoppingToken;
@@ -68,45 +67,58 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
     /// </summary>
     public int Backlog
     {
-        get => backlog;
-        init => backlog = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = 5;
 
     /// <summary>
     /// Gets or sets the internal buffer size.
     /// </summary>
     public int BufferSize
     {
-        get => bufferSize;
-        init => bufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        init => field = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = Environment.SystemPageSize;
 
     /// <summary>
     /// Gets or sets allocator for the buffer of bytes.
     /// </summary>
     public MemoryAllocator<byte> ByteBufferAllocator
     {
-        get => field.DefaultIfNull;
-        init;
-    }
+        get;
+        init => field = value.DefaultIfNull;
+    } = MemoryAllocator<byte>.Default;
 
     /// <summary>
     /// Gets or sets allocator for the buffer of characters.
     /// </summary>
     public MemoryAllocator<char> CharBufferAllocator
     {
-        get => field.DefaultIfNull;
-        init;
-    }
+        get;
+        init => field = value.DefaultIfNull;
+    } = MemoryAllocator<char>.Default;
 
     /// <summary>
     /// Gets or sets encoding of the command text and responses.
     /// </summary>
     public Encoding TextEncoding
     {
-        get => encoding;
-        init => encoding = value ?? throw new ArgumentNullException(nameof(value));
-    }
+        get;
+        init => field = value ?? throw new ArgumentNullException(nameof(value));
+    } = Encoding.UTF8;
+
+    /// <summary>
+    /// Gets or sets access permissions of the socket file.
+    /// </summary>
+    /// <remarks>
+    /// By default, only the processes running as the owner of the socket file or as a member of its group
+    /// (and privileged processes such as root) can connect to the socket. Use <see cref="UnixFileMode.UserRead"/> | <see cref="UnixFileMode.UserWrite"/>
+    /// to restrict access to the processes running with the same effective user ID only.
+    /// The permissions are applied before the host starts accepting connections.
+    /// The property is ignored on Windows and for abstract socket addresses.
+    /// </remarks>
+    [UnsupportedOSPlatform("windows")]
+    public UnixFileMode SocketFileMode { get; init; } = DefaultSocketFileMode;
 
     // detects new line chars sequence or null char
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -136,7 +148,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
             if (nullTermIndex < 0)
                 return newLineIndex;
 
-            return Math.Min(newLineIndex, nullTermIndex);
+            return int.Min(newLineIndex, nullTermIndex);
         }
     }
 
@@ -168,21 +180,21 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         {
             outputBuffer = new PoolingBufferWriter<byte>(ByteBufferAllocator)
             {
-                Capacity = bufferSize,
+                Capacity = BufferSize,
             };
             inputBuffer = new PoolingBufferWriter<char>(CharBufferAllocator)
             {
-                Capacity = bufferSize,
+                Capacity = BufferSize,
             };
 
-            session = new(clientSocket, encoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
-            for (var decoder = encoding.GetDecoder(); ; decoder.Reset())
+            session = new(clientSocket, TextEncoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
+            for (var decoder = TextEncoding.GetDecoder(); ; decoder.Reset())
             {
                 int commandLength;
 
-                using (var buffer = ByteBufferAllocator.AllocateAtLeast(bufferSize))
+                using (var buffer = ByteBufferAllocator.AllocateAtLeast(BufferSize))
                 {
-                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, stoppingToken).ConfigureAwait(false);
+                    commandLength = await ReadRequestAsync(clientSocket, TextEncoding, decoder, buffer.Memory, inputBuffer, stoppingToken).ConfigureAwait(false);
                 }
 
                 // skip empty input
@@ -232,7 +244,14 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         try
         {
             listener.Bind(endPoint);
-            listener.Listen(backlog);
+
+            // connect() is refused until listen(), so there is no window with the default permissions
+            if (!OperatingSystem.IsWindows() && endPoint.ToString() is [not '@', ..] path)
+            {
+                File.SetUnixFileMode(path, SocketFileMode);
+            }
+
+            listener.Listen(Backlog);
         }
         catch (Exception e)
         {

@@ -1,85 +1,19 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Runtime.Caching;
 
-using Patterns;
+using Collections.Concurrent;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
-    // Queue has multiple producers and a single consumer. Consumer doesn't require special lock-free approach to dequeue.
-    private KeyValuePair queueTail, queueHead;
+    private MpscQueue queue;
 
-    private void Promote(KeyValuePair newPair)
+    // Notifies the eviction thread that the pair is removed from the cache, or all the pairs if Target is null.
+    // The signal passes through the promotion queue, so it is processed after the promotion of the removed pair.   
+    private sealed class InvalidationSignal : MpscQueue.Item
     {
-        KeyValuePair currentTail;
-        do
-        {
-            currentTail = queueTail;
-        } while (Interlocked.CompareExchange(ref currentTail.NextInQueue, newPair, null) is not null);
+        internal required KeyValuePair? Target;
 
-        // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
-        Interlocked.CompareExchange(ref queueTail, newPair, currentTail);
-
-        currentTail.Promoted();
+        public override string ToString() => Target is null ? "Invalidate all" : $"Invalidate {Target.Key}";
     }
 
-    internal partial class KeyValuePair
-    {
-        // null, or KeyValuePair, or Sentinel.Instance
-        internal object? NextInQueue;
-        private volatile IThreadPoolWorkItem? notification;
-
-        internal void Promoted()
-        {
-            if (Interlocked.Exchange(ref notification, SentinelNotification.Instance) is { } callback
-                && !ReferenceEquals(callback, SentinelNotification.Instance))
-            {
-                ThreadPool.UnsafeQueueUserWorkItem(callback, preferLocal: false);
-            }
-        }
-
-        [ExcludeFromCodeCoverage]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private bool IsPromoted => ReferenceEquals(notification, SentinelNotification.Instance);
-
-        // true - attached, false - the object is already notified
-        internal bool TryAttachNotificationHandler(IThreadPoolWorkItem continuation)
-            => Interlocked.CompareExchange(ref notification, continuation, null) is null;
-        
-        [ExcludeFromCodeCoverage]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int QueueLength
-        {
-            get
-            {
-                var count = 0;
-                for (var current = this; current is not null; current = current.NextInQueue as KeyValuePair)
-                {
-                    if (current.IsPromoted)
-                        count++;
-                }
-
-                return count;
-            }
-        }
-    }
-
-    // Never call GetValue on this class, it has no storage for TValue.
-    // It is used as a stub for the first element in the notification queue to keep task completion source
-    private sealed class FakeKeyValuePair() : KeyValuePair(default!, 0)
-    {
-        public override string ToString() => "Fake KV Pair";
-    }
-}
-
-file sealed class SentinelNotification : IThreadPoolWorkItem, ISingleton<SentinelNotification>
-{
-    public static SentinelNotification Instance { get; } = new();
-    
-    private SentinelNotification()
-    {
-    }
-
-    void IThreadPoolWorkItem.Execute() => Debug.Fail("Should never be called");
+    private void NotifyRemoved(KeyValuePair removed) => queue.Enqueue(new InvalidationSignal { Target = removed });
 }

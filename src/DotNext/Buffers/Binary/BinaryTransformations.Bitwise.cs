@@ -125,7 +125,7 @@ public static partial class BinaryTransformations
     {
         for (int maxLength = Array.MaxLength / sizeof(T), count; !values.IsEmpty; values = values.Slice(count))
         {
-            count = Math.Min(maxLength, values.Length);
+            count = int.Min(maxLength, values.Length);
 
             Transform<TTransformation>(
                 ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values)),
@@ -174,7 +174,7 @@ public static partial class BinaryTransformations
     {
         for (int maxLength = Array.MaxLength / sizeof(T), count; !x.IsEmpty; x = x.Slice(count), y = y.Slice(count))
         {
-            count = Math.Min(maxLength, x.Length);
+            count = int.Min(maxLength, x.Length);
 
             Transform<TTransformation>(
                 ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)),

@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
@@ -8,7 +9,7 @@ namespace DotNext.Buffers;
 internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowableBuffer<T>
 {
     private readonly MemoryAllocator<T> allocator = allocator.DefaultIfNull;
-    private MemoryOwner<T> buffer;
+    private MemoryOwner<T>.Ownership buffer;
     private int position;
 
     readonly long IGrowableBuffer<T>.WrittenCount => position;
@@ -16,7 +17,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     public int Capacity
     {
         readonly get => buffer.Length;
-        init => buffer = allocator.AllocateAtLeast(value);
+        init => buffer = allocator.Invoke(value).TakeOwnership();
     }
 
     public void Write(ReadOnlySpan<T> input)
@@ -33,8 +34,10 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
 
     public void Reset()
     {
-        buffer.Dispose();
-        buffer = default;
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            buffer.Span.Slice(0, position).Clear();
+        
+        position = 0;
     }
 
     readonly bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
@@ -59,10 +62,10 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     public Span<T> GetSpan(int sizeHint) => GetBuffer(sizeHint).Span.Slice(position);
     
     [UnscopedRef]
-    private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
+    private ref readonly MemoryOwner<T>.Ownership GetBuffer(int sizeHint)
     {
         if (IGrowableBuffer<T>.GetBufferSize(sizeHint, buffer.Length, position, out sizeHint))
-            buffer.ResizeCore(sizeHint, allocator);
+            buffer.Reallocate(sizeHint, allocator);
         
         return ref buffer;
     }
@@ -74,19 +77,23 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
         if (position is 0)
         {
             result = default;
+            buffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
         else
         {
-            result = buffer;
-            result.Truncate(position);
+            result = new(buffer, position);
             position = 0;
-            buffer = default;
         }
 
+        buffer = default;
         return result;
     }
 
-    public void Dispose() => buffer.Dispose();
+    public void Dispose()
+    {
+        buffer.Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        buffer = default;
+    }
 
     public readonly override string ToString() => WrittenMemory.ToString();
 

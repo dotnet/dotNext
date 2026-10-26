@@ -21,13 +21,13 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ApplyAsync(CancellationToken token)
     {
-        for (long newIndex, lastAppliedIndexCopy; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync().ConfigureAwait(false))
+        while (!token.IsCancellationRequested && backgroundTaskFailure is null)
         {
-            newIndex = LastCommittedEntryIndex;
+            var newIndex = LastCommittedEntryIndex;
 
             // Ensure that the appender is not running with the snapshot installation process concurrently
             await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
-            lastAppliedIndexCopy = LastAppliedIndex;
+            var lastAppliedIndexCopy = LastAppliedIndex;
             try
             {
                 await ApplyAsync(lastAppliedIndexCopy + 1L, newIndex, token).ConfigureAwait(false);
@@ -44,6 +44,9 @@ partial class WriteAheadLog
             }
 
             LastAppliedIndex = long.Max(lastAppliedIndexCopy, newIndex);
+
+            if (!await applyTrigger.WaitAsync().ConfigureAwait(false))
+                break;
         }
     }
 

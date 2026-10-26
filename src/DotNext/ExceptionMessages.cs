@@ -59,4 +59,6 @@ internal static class ExceptionMessages
     internal static string EmptyCollection => GetResourceString();
 
     internal static string BufferSizeLimitExceeded => GetResourceString();
+
+    internal static string InvalidLockFilePath => GetResourceString();
 }

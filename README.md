@@ -59,40 +59,48 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 10-13-2026
+Release Date: 10-26-2026
 
-A set of skills for AI agents has been released: skills explain how to use .NEXT libraries in a new project or migration scenarios.
+<a href="https://www.nuget.org/packages/dotnext/6.11.0">DotNext 6.11.0</a>
+* Added `ApplicationLock` class that allows only one running instance of the application, based on the exclusively opened lock file
+* `Epoch` now supports deferred release of unmanaged resources through `INativeResourceManager` interface and `RecycleBin.Defer(nuint)` method, without extra allocations
+* Replaced `Epoch.UnsafeClear` method with thread-safe `TryClear` and `ClearAsync` methods
+* `Epoch.RecycleBin` no longer allocates memory for the deferred actions
+* Added `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations
+* Added `MemoryMarshal.AsReadOnlyBytes` static extension method to represent a string as a span over bytes
+* Added `IEqualityComparer<ReadOnlySpan<byte>>.Default` static extension property
+* Fixed memory leaks in `BufferWriterSlim<T>.DetachOrCopyBuffer` and `BufferWriter<T>.DetachBuffer` methods
 
-<a href="https://www.nuget.org/packages/dotnext/6.10.0">DotNext 6.10.0</a>
-* Added conversion from [TypedReference](https://learn.microsoft.com/en-us/dotnet/api/system.typedreference) to `Variant` data type
-* Interpolation string handlers do not box enum values anymore
-* `Optional<T>` and other monadic types don't box the underlying value on `ToString` call
-* Fixed [303](https://github.com/dotnet/dotNext/issues/303)
-* Added static extension method for on-stack string interpolation without converting the result to **string**. Instead, it can be consumed as [ReadOnlySpan&lt;char&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1)
-* Added [CompositeFormat](https://learn.microsoft.com/en-us/dotnet/api/system.text.compositeformat) interning: `IsInterned` or `Of` static extensions can return parsed template
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.10.0">DotNext.Metaprogramming 6.10.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.11.0">DotNext.Metaprogramming 6.11.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.10.0">DotNext.Unsafe 6.10.0</a>
-* Added `ExecutionStack` with extension properties and methods for execution stack inspection
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.11.0">DotNext.Unsafe 6.11.0</a>
+* Introduced `Pointer<T>.IsStackAllocated` property
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.10.0">DotNext.Threading 6.10.0</a>
-* `PersistentChannel` now uses system page size as default buffer size
-* Improved performance of `CancellationTokenMultiplexer` class
+<a href="https://www.nuget.org/packages/dotnext.threading/6.11.0">DotNext.Threading 6.11.0</a>
+* Added `RandomAccessCache<TValue>`, the unmanaged version of SIEVE-based cache with keys represented by bytes. Its entries are allocated in the native memory and reclaimed with `Epoch`
+* Added `AsyncParkingLot` synchronization primitive that represents a set of wait queues shared by many lightweight asynchronous locks
+* `RandomAccessCache<TKey, TValue>` uses `AsyncParkingLot` instead of per-bucket locks to reduce memory footprint. The concurrency level can be specified in the constructor
+* Fixed eviction state corruption in `RandomAccessCache<TKey, TValue>`
+* Fixed lost promotion and race condition between the reader and the resize process in `RandomAccessCache<TKey, TValue>`
+* Improved CPU cache locality of `RandomAccessCache<TKey, TValue>`
+* Fixed [304](https://github.com/dotnet/dotNext/issues/304)
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.10.0">DotNext.IO 6.10.0</a>
-* `FileBufferingWriter` and `PoolingBufferedStream` now use system page size as default buffer size
-* Introduced `ModernTextReader` and `ModernTextWriter` classes with all necessary overloads to implement text readers/writer
+<a href="https://www.nuget.org/packages/dotnext.io/6.11.0">DotNext.IO 6.11.0</a>
+* Fixed potential race condition in `DiskSpacePool` that could lead to returning the same segment twice
+* Removed `AppendAndCommitAsync` default method from `IAuditTrail<TEntry>` interface
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.10.0">DotNext.Net.Cluster 6.10.0</a>
-* Improved performance of `MessagingClient` and `MessageHandler` message dispatching
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.0">DotNext.Net.Cluster 6.11.0</a>
+* Fixed [305](https://github.com/dotnet/dotNext/issues/305)
+* Fixed [307](https://github.com/dotnet/dotNext/pull/307)
+* `WriteAheadLog` now produces checkpoint on every commit to ensure consistency. `FlushInterval` and `FlushOnCommit` configuration properties are deprecated and have no effect
+* `WriteAheadLog.Options.Allocator` property returns default allocator if not specified explicitly
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.10.0">DotNext.AspNetCore.Cluster 6.10.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.0">DotNext.AspNetCore.Cluster 6.11.0</a>
+* Fixed [305](https://github.com/dotnet/dotNext/issues/305)
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.10.0">DotNext.MaintenanceServices 1.10.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.0">DotNext.MaintenanceServices 1.11.0</a>
+* `CommandLineMaintenanceInterfaceHost` now supports custom Unix file mode for Unix Domain Socket pseudofile
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

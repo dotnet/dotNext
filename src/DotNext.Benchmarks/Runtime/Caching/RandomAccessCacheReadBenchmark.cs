@@ -19,6 +19,7 @@ public class RandomAccessCacheReadBenchmark
     private Dictionary<string, int> dictionary;
     private ConcurrentDictionary<string, int> concurrentDictionary;
     private RandomAccessCache<string, int> cache;
+    private RandomAccessCache<int> unmanagedCache;
 
     [GlobalSetup(Target = nameof(GetValueFromDictionary))]
     public void SetupDictionary()
@@ -43,6 +44,14 @@ public class RandomAccessCacheReadBenchmark
         session.SetValue(Value);
     }
 
+    [GlobalSetup(Target = nameof(GetValueFromUnmanagedCache))]
+    public async Task SetupUnmanagedCache()
+    {
+        unmanagedCache = new(Capacity);
+        using var session = await unmanagedCache.ChangeAsync(RandomAccessCache.AsKey(Key));
+        session.SetValue(Value);
+    }
+
     [Benchmark(Baseline = true)]
     public int GetValueFromDictionary()
         => dictionary.GetValueOrDefault(Key, 0);
@@ -57,7 +66,7 @@ public class RandomAccessCacheReadBenchmark
         if (cache.TryRead(Key, out var session))
         {
             result = session.Value;
-            Dispose(ref session);
+            session.Dispose();
         }
         else
         {
@@ -65,8 +74,22 @@ public class RandomAccessCacheReadBenchmark
         }
 
         return result;
+    }
 
-        static void Dispose<T>(ref T obj)
-            where T : struct, IDisposable => obj.Dispose();
+    [Benchmark]
+    public int GetValueFromUnmanagedCache()
+    {
+        int result;
+        if (unmanagedCache.TryRead(RandomAccessCache.AsKey(Key), out var session))
+        {
+            result = session.Value;
+            session.Dispose();
+        }
+        else
+        {
+            result = 0;
+        }
+
+        return result;
     }
 }

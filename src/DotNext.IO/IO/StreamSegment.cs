@@ -95,7 +95,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     {
         ValidateBufferArguments(buffer, offset, count);
 
-        return stream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
+        return stream.Read(buffer, offset, int.CreateTruncating(long.Min(count, RemainingBytes)));
     }
 
     /// <inheritdoc/>
@@ -105,7 +105,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <inheritdoc/>
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
     {
-        count = (int)Math.Min(count, RemainingBytes);
+        count = int.CreateTruncating(long.Min(count, RemainingBytes));
         return stream.BeginRead(buffer, offset, count, callback, state);
     }
 
@@ -114,7 +114,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     /// <inheritdoc/>
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => stream.ReadAsync(buffer, offset, (int)Math.Min(count, RemainingBytes), token);
+        => stream.ReadAsync(buffer, offset, int.CreateTruncating(long.Min(count, RemainingBytes)), token);
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)

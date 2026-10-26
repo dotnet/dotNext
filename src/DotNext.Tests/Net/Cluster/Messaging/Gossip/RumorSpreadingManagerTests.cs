@@ -14,20 +14,21 @@ public sealed class RumorSpreadingManagerTests : Test
     [Fact]
     public static void MessageOrder()
     {
-        var manager = new RumorSpreadingManager();
+        var sender = new RumorSpreadingManager();
+        var receiver = new RumorSpreadingManager();
         var endPoint = new IPEndPoint(IPAddress.Loopback, 80);
-        var id = new RumorTimestamp();
+        var id = sender.Tick();
 
-        True(manager.TryEnableControl(endPoint));
-        True(manager.CheckOrder(endPoint, id));
-        False(manager.CheckOrder(endPoint, id));
-        False(manager.CheckOrder(endPoint, id));
+        True(receiver.TryEnableControl(endPoint));
+        True(receiver.CheckOrder(endPoint, id));
+        False(receiver.CheckOrder(endPoint, id));
+        False(receiver.CheckOrder(endPoint, id));
 
-        id = manager.Tick();
-        True(manager.CheckOrder(endPoint, id));
+        id = sender.Tick();
+        True(receiver.CheckOrder(endPoint, id));
 
-        id = manager.Tick();
-        True(manager.TryDisableControl(endPoint));
-        False(manager.CheckOrder(endPoint, id));
+        id = sender.Tick();
+        True(receiver.TryDisableControl(endPoint));
+        False(receiver.CheckOrder(endPoint, id));
     }
 }

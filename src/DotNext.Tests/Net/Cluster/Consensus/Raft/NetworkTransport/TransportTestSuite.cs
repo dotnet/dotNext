@@ -168,6 +168,8 @@ public abstract class TransportTestSuite : RaftTest
         int ILocalMember.Version => 0;
     }
 
+    private protected static ILocalMember CreateLocalMember() => new LocalMember();
+
     private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);
     private protected delegate RaftClusterMember ClientFactory(EndPoint address, ILocalMember localMember, TimeSpan timeout);
 

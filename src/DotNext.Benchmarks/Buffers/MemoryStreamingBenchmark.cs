@@ -24,7 +24,7 @@ public class MemoryStreamingBenchmark
     {
         for (int remaining = TotalCount, taken; remaining > 0; remaining -= taken)
         {
-            taken = Math.Min(remaining, chunk.Length);
+            taken = int.Min(remaining, chunk.Length);
             output.Write(chunk, 0, taken);
         }
     }

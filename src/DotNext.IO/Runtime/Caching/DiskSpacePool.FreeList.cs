@@ -11,27 +11,26 @@ public partial class DiskSpacePool
     
     private SegmentHandle RentOffset()
     {
-        SegmentHandle? tmp;
-        for (var headCopy = freeList;; headCopy = tmp)
+        for (var headCopy = freeList; headCopy is not null;)
         {
-            if (headCopy is null)
+            if (!headCopy.TryGetNext(out var next))
             {
-                tmp = new(this);
-                break;
+                // headCopy was popped by another thread, reload the head
+                headCopy = freeList;
+                continue;
             }
 
-            tmp = headCopy.TryGetNext(out var next)
-                ? Interlocked.CompareExchange(ref freeList, next, headCopy)
-                : freeList;
-
+            var tmp = Interlocked.CompareExchange(ref freeList, next, headCopy);
             if (ReferenceEquals(tmp, headCopy))
             {
-                tmp.MoveToCompletedState(this);
-                break;
+                headCopy.MoveToCompletedState(this);
+                return headCopy;
             }
+
+            headCopy = tmp;
         }
 
-        return tmp;
+        return new(this);
     }
 
     private void ReturnOffset(long offset)
@@ -63,8 +62,8 @@ public partial class DiskSpacePool
         internal bool TryGetNext(out SegmentHandle? next)
         {
             var ownerOrNextCopy = ownerOrNext;
-            bool result;
-            next = (result = ownerOrNextCopy is null or SegmentHandle)
+            var result = ownerOrNextCopy is null or SegmentHandle;
+            next = result
                 ? Unsafe.As<SegmentHandle?>(ownerOrNextCopy)
                 : null;
 
@@ -77,7 +76,9 @@ public partial class DiskSpacePool
 
         internal DiskSpacePool? TryGetOwner() => ReferenceEquals(ownerOrNext, Sentinel.Instance) ? null : Unsafe.As<DiskSpacePool?>(ownerOrNext);
 
-        internal void MoveToDisposedState() => ownerOrNext = Sentinel.Instance;
+        // Only one caller can observe the owner, so the segment cannot be returned twice
+        internal DiskSpacePool? TryMoveToDisposedState()
+            => Interlocked.Exchange(ref ownerOrNext, Sentinel.Instance) as DiskSpacePool;
         
         internal long Offset => offset;
 

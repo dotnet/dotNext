@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using DotNext.Benchmarks.WAL;
 using DotNext.Diagnostics;
 using DotNext.Hosting;
 using DotNext.Net.Cluster.Consensus.Raft;
@@ -25,7 +24,7 @@ static async Task DotNextWalPerformanceTest(CancellationToken token)
         Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
         ChunkSize = 512 * 1024, // page size is 512 KB
         MemoryManagement = WriteAheadLog.MemoryManagementStrategy.PrivateMemory,
-        FlushOnCommit = false,
+        NoBuffering = true,
     };
 
     var wal = new WriteAheadLog(options, new NoOpStateMachine());
@@ -37,12 +36,11 @@ static async Task DotNextWalPerformanceTest(CancellationToken token)
         var ts = new Timestamp();
         for (var i = 0; i < count; i++)
         {
-            var index = await wal.AppendAsync(buffer, token: token).ConfigureAwait(false);
-            await wal.CommitAsync(index, token).ConfigureAwait(false);
+            await wal.AppendAsync(buffer, token: token).ConfigureAwait(false);
         }
 
-        Console.WriteLine($"Finished. Elapsed time: {ts.Elapsed}");
         await wal.FlushAsync(token).ConfigureAwait(false);
+        Console.WriteLine($"Finished. Elapsed time: {ts.Elapsed}");
     }
     finally
     {

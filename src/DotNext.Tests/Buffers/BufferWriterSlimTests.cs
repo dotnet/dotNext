@@ -476,61 +476,33 @@ public sealed class BufferWriterSlimTests : Test
         }
     }
 
-    [Fact]
-    public static void AddList()
+    public static TheoryData<IEnumerable<char>, int> AddTestData => new()
     {
-        var writer = new BufferWriterSlim<int>();
-        try
-        {
-            writer.AddAll(new List<int> { 1, 2 });
-            Equal([1, 2], writer.WrittenSpan);
-        }
-        finally
-        {
-            writer.Dispose();
-        }
-    }
-    
-    [Fact]
-    public static void AddArray()
-    {
-        var writer = new BufferWriterSlim<int>();
-        try
-        {
-            writer.AddAll([1, 2]);
-            Equal([1, 2], writer.WrittenSpan);
-        }
-        finally
-        {
-            writer.Dispose();
-        }
-    }
-    
-    [Fact]
-    public static void AddString()
-    {
-        var writer = new BufferWriterSlim<char>();
-        try
-        {
-            const string expected = "ab";
-            writer.AddAll(expected);
+        { new List<char>(['a', 'b']), 0 },
+        { new List<char>(['a', 'b']), 2 },
+        { new[] { 'a', 'b' }, 0 },
+        { new[] { 'a', 'b' }, 2 },
+        { "ab", 0 },
+        { "ab", 2 },
+        { ImmutableList.Create('a', 'b'), 0 },
+        { ImmutableList.Create('a', 'b'), 2 },
+        { ImmutableList<char>.Empty, 0 },
+    };
 
-            Equal(expected, writer.WrittenSpan);
-        }
-        finally
-        {
-            writer.Dispose();
-        }
-    }
-    
-    [Fact]
-    public static void AddCountableCollection()
+    [Theory]
+    [MemberData(nameof(AddTestData))]
+    public static void AddCollectionToWriter(IEnumerable<char> collection, int initialBufferSize)
     {
-        var writer = new BufferWriterSlim<int>();
+        var writer = new BufferWriterSlim<char>(stackalloc char[initialBufferSize], MemoryAllocator<char>.Array);
         try
         {
-            writer.AddAll(ImmutableList.Create(1, 2));
-            Equal([1, 2], writer.WrittenSpan);
+            writer.AddAll(collection);
+
+            var i = 0;
+            foreach (var item in collection)
+            {
+                Equal(item, writer.WrittenSpan[i++]);
+            }
         }
         finally
         {
@@ -575,7 +547,22 @@ public sealed class BufferWriterSlimTests : Test
         {
             exceptionThrown = true;
         }
+        finally
+        {
+            writer.Dispose();
+        }
         
         True(exceptionThrown);
+    }
+
+    [Fact]
+    public static void DetachOrCopyEmptyBuffer()
+    {
+        var writer = new BufferWriterSlim<byte>(initialCapacity: 64);
+        False(writer.Capacity is 0);
+        
+        using var owner = writer.DetachOrCopyBuffer();
+        True(writer.Capacity is 0);
+        True(owner.IsEmpty);
     }
 }

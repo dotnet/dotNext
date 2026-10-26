@@ -18,6 +18,11 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncAutoResetEvent(bool initialState)
         => signaled = initialState;
 
+    // A timed out or canceled node at the head of the queue prevents the new waiter from consuming the signal,
+    // so the signal must be passed to the waiters when the node is removed
+    private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
+        => queue.SignalAll(new StateManager(ref signaled));
+
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
@@ -47,7 +52,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         bool result;
 
-        if (signaled)
+        if (Volatile.Read(in signaled))
         {
             result = false;
         }

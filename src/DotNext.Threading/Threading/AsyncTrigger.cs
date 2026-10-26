@@ -293,6 +293,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         void ILockManager.AcquireLock()
         {
         }
+
+        // nothing is consumed on acquisition, so the waiters in the queue must not suspend the caller
+        // whose condition is satisfied
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 
     [SuppressMessage("Performance", "CA1812", Justification = "False positive.")]

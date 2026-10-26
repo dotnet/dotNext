@@ -110,4 +110,43 @@ public class ReplicationBarrierTests : Test
         var result = await task.WaitAsync(TestToken);
         True(result.HasConsensus);
     }
+
+    [Fact]
+    public static async Task NoConsensusFor2()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 2, 0L).AsTask();
+        True(barrier.SetResult(MemberResult.Replicated(2L)));
+        True(barrier.SetResult(MemberResult.Unavailable));
+
+        var result = await task.WaitAsync(TestToken);
+        False(result.HasConsensus);
+    }
+
+    [Fact]
+    public static async Task EarlyNoConsensusFor2()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 2, 0L).AsTask();
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.IsCompleted);
+
+        var result = await task.WaitAsync(TestToken);
+        False(result.HasConsensus);
+    }
+
+    [Fact]
+    public static async Task NoConsensusFor4()
+    {
+        var barrier = new ReplicationBarrier();
+        var task = barrier.WaitAsync(memberCount: 4, 0L).AsTask();
+        True(barrier.SetResult(MemberResult.Replicated(2L)));
+        True(barrier.SetResult(MemberResult.Unavailable));
+        True(barrier.SetResult(MemberResult.Touched));
+        False(barrier.IsCompleted);
+        True(barrier.SetResult(MemberResult.Unavailable));
+
+        var result = await task.WaitAsync(TestToken);
+        False(result.HasConsensus);
+    }
 }

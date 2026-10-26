@@ -207,10 +207,7 @@ public static class CharBuffer
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
     public static void Write(this ref SpanWriter<char> writer, StringBuilder input)
-    {
-        foreach (var chunk in input.GetChunks())
-            writer.Write(chunk.Span);
-    }
+        => Write<SpanWriter<char>.Ref>(new(ref writer), input);
 
     /// <summary>
     /// Converts the value to a set of characters and writes them to the buffer.

@@ -6,13 +6,20 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using IO.Hashing;
 using Runtime.ExceptionServices;
 
 partial class Epoch
 {
     private void Defer(uint epoch, Discardable node)
         => entries[epoch].Defer(node);
+
+    private void Defer(uint epoch, nuint handle)
+    {
+        Debug.Assert(NativeResourceManager is not null);
+        Debug.Assert(handle is not 0U);
+        
+        entries[epoch].Defer(NativeResourceManager, handle);
+    }
 
     private uint EnterEpoch()
     {
@@ -33,135 +40,55 @@ partial class Epoch
     private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
 
-    private RecycleBin Reclaim(uint currentEpoch, bool drainGlobalCache)
+    private Discardable? Reclaim(uint currentEpoch, bool drainGlobalCache, out nuint unmanaged)
     {
-        RecycleBin bin;
-        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } safeToReclaimEpoch)
+        ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(currentEpoch);
+        if (Unsafe.IsNullRef(in safeToReclaimEpoch))
         {
-            bin = default;
-        }
-        else if (drainGlobalCache)
-        {
-            bin = new(safeToReclaimEpoch.Value.DetachGlobal());
-        }
-        else
-        {
-            bin = new(safeToReclaimEpoch.Value.DetachLocal());
+            unmanaged = 0U;
+            return null;
         }
 
-        return bin;
+        return safeToReclaimEpoch.Detach(NativeResourceManager, drainGlobalCache, out unmanaged);
     }
 
-    private ReadOnlyLocalReference<Entry> TryBumpEpoch(uint currentEpoch)
+    private ref readonly Entry TryBumpEpoch(uint currentEpoch)
     {
         ref readonly var currentEpochState = ref entries[currentEpoch];
         var nextEpochIndex = currentEpochState.Next;
         ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
 
-        return previousEpochState.Counter is 0U
-               && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
-            ? new(in previousEpochState)
-            : default;
+        return ref previousEpochState.Counter is 0U
+                   && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
+            ? ref previousEpochState
+            : ref Unsafe.NullRef<Entry>();
     }
 
-    private void UnsafeDrain(ref ExceptionAggregator exceptions)
+    private bool TryReclaimCurrentEpoch(ref ExceptionAggregator exceptions)
     {
-        foreach (ref readonly var state in entries)
+        ref readonly var safeToReclaimEpoch = ref TryBumpEpoch(Volatile.Read(ref globalEpoch));
+        var result = !Unsafe.IsNullRef(in safeToReclaimEpoch);
+        if (result)
         {
-            if (state.Counter > 0U)
+            var resourceManager = NativeResourceManager;
+            safeToReclaimEpoch.Detach(resourceManager, drainGlobalCache: true, out var unmanaged)?.Drain(ref exceptions);
+            if (unmanaged is not 0U)
             {
-                throw new InvalidOperationException();
-            }
+                Debug.Assert(resourceManager is not null);
 
-            foreach (var bucket in state.DetachGlobal())
-            {
-                bucket.Drain(ref exceptions);
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Represents an object which lifetime is controlled by <see cref="Epoch"/> internal Garbage Collector.
-    /// </summary>
-    public abstract class Discardable : IThreadPoolWorkItem
-    {
-        internal Discardable? Next;
-
-        /// <summary>
-        /// Automatically called by <see cref="Epoch"/> infrastructure to clean up resources associated with this object.
-        /// </summary>
-        protected abstract void Discard();
-
-        internal void Drain()
-        {
-            for (Discardable? current = this, next; current is not null; current = next)
-            {
-                next = current.Next;
-                current.Next = null; // help GC
-                current.Discard();
+                INativeResourceManager.Clear(resourceManager, unmanaged, ref exceptions);
             }
         }
 
-        internal void Drain(ref ExceptionAggregator exceptions)
-        {
-            for (Discardable? current = this, next; current is not null; current = next)
-            {
-                next = current.Next;
-                current.Next = null; // help GC
-
-                try
-                {
-                    current.Discard();
-                }
-                catch (Exception e)
-                {
-                    exceptions += e;
-                }
-            }
-        }
-
-        internal void Drain(bool throwOnFirstException)
-        {
-            if (throwOnFirstException)
-            {
-                Drain();
-            }
-            else
-            {
-                var exceptions = new ExceptionAggregator();
-                Drain(ref exceptions);
-                exceptions.ThrowIfNeeded();
-            }
-        }
-
-        void IThreadPoolWorkItem.Execute()
-        {
-            var exceptions = new ExceptionAggregator();
-            Drain(ref exceptions);
-            exceptions.ThrowIfNeeded();
-        }
-    }
-    
-    private sealed class ActionNode(Action callback) : Discardable
-    {
-        protected override void Discard() => callback();
+        return result;
     }
 
-    private sealed class ActionNode<T>(T arg, Action<T> callback) : Discardable
+    private bool TryDrain(ref int progress, ref ExceptionAggregator exceptions)
     {
-        protected override void Discard() => callback(arg);
-    }
+        while (progress < EpochCount && TryReclaimCurrentEpoch(ref exceptions))
+            progress++;
 
-    private sealed class WorkItem<TWorkItem>(TWorkItem item) : Discardable
-        where TWorkItem : struct, IThreadPoolWorkItem
-    {
-        private TWorkItem item = item;
-        protected override void Discard() => item.Execute();
-    }
-
-    private sealed class Cleanup(IDisposable disposable) : Discardable
-    {
-        protected override void Discard() => disposable.Dispose();
+        return progress is EpochCount;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -177,10 +104,10 @@ partial class Epoch
         internal readonly uint Previous = previous, Next = next;
         
         // size of the array must be a power of 2 to optimize modulo operation
-        private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
+        private readonly Resource[] callbacks = new Resource[RecommendedSize];
         internal uint Counter;
 
-        private readonly ref Discardable? this[int index]
+        private readonly ref Resource this[int index]
         {
             get
             {
@@ -191,35 +118,94 @@ partial class Epoch
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref Discardable? BucketForCurrentThread
+        private static int IndexForCurrentThread
         {
             get
             {
                 if (bucketForCurrentThread is not { } index)
                 {
-                    bucketForCurrentThread = index = FNV1a32.Hash(Environment.CurrentManagedThreadId) & (int)(RecommendedSize - 1U);
+                    bucketForCurrentThread = index = Environment.CurrentManagedThreadId & (int)(RecommendedSize - 1U);
                 }
 
-                return ref this[index];
+                return index;
             }
         }
 
         internal readonly void Defer(Discardable node)
-            => Defer(ref BucketForCurrentThread, node);
+            => node.Attach(ref this[IndexForCurrentThread].Managed);
 
-        private static void Defer(ref Discardable? bucket, Discardable node)
+        internal readonly void Defer(INativeResourceManager resourceManager, nuint handle)
+            => INativeResourceManager.Attach(resourceManager, handle, ref this[IndexForCurrentThread].Unmanaged);
+
+        internal readonly Discardable? Detach(INativeResourceManager? resourceManager,
+            bool drainGlobalCache,
+            out nuint unmanaged)
+            => drainGlobalCache
+                ? DetachGlobal(resourceManager, out unmanaged)
+                : DetachLocal(resourceManager, out unmanaged);
+
+        private readonly Discardable? DetachLocal(INativeResourceManager? resourceManager, out nuint unmanaged)
         {
-            Discardable? current, tmp = bucket;
-            do
-            {
-                current = tmp;
-                node.Next = current;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref bucket, node, current), current));
+            ref var entry = ref this[IndexForCurrentThread];
+            unmanaged = resourceManager is not null ? entry.DetachUnmanaged() : 0U;
+            return entry.DetachManaged();
         }
 
-        internal readonly Discardable? DetachLocal() => Interlocked.Exchange(ref BucketForCurrentThread, null);
+        private readonly Discardable? DetachGlobal(INativeResourceManager? resourceManager, out nuint unmanaged)
+        {
+            unmanaged = resourceManager is null ? 0U : DetachGlobal(resourceManager);
+            return DetachGlobal();
+        }
 
-        internal readonly DetachingEnumerable DetachGlobal() => new(callbacks);
+        private readonly nuint DetachGlobal(INativeResourceManager resourceManager)
+        {
+            nuint root = 0U, last = 0U;
+            for (var i = 0; i < callbacks.Length; i++)
+            {
+                var detached = this[i].DetachUnmanaged();
+                if (detached is 0U)
+                    continue;
+
+                if (last is 0U)
+                {
+                    root = detached;
+                }
+                else
+                {
+                    resourceManager.GetNextHandle(last) = detached;
+                }
+
+                last = INativeResourceManager.GetLast(resourceManager, detached);
+            }
+
+            return root;
+        }
+
+        private readonly Discardable? DetachGlobal()
+        {
+            Discardable? root = null, last = null;
+            
+            // find the first non-null node
+            for (var i = 0; i < callbacks.Length; i++)
+            {
+                if (this[i].DetachManaged() is not { } detached)
+                    continue;
+
+                if (last is null)
+                {
+                    root = detached;
+                }
+                else
+                {
+                    last.Attach(detached);
+                }
+
+                last = detached.GetLast();
+            }
+
+            return root;
+        }
+        
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
@@ -235,47 +221,30 @@ partial class Epoch
                     _ => uint.MaxValue,
                 };
 
-                var hasDeferredActions = Array.Exists(callbacks, Predicate<Discardable>.IsNotNull);
+                var hasDeferredActions = Array.Exists(callbacks, static r => !r.IsEmpty);
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
         }
-    }
 
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct DetachingEnumerable(Discardable?[] callbacks)
-    {
-        public DetachingEnumerator GetEnumerator() => new(callbacks);
-
-        public int MaxCount => callbacks.Length;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal ref struct DetachingEnumerator(Discardable?[] callbacks)
-    {
-        private Span<Discardable?>.Enumerator enumerator = callbacks.AsSpan().GetEnumerator();
-
-        public Discardable Current
+        [StructLayout(LayoutKind.Auto)]
+        private struct Resource
         {
-            readonly get => field ?? throw new InvalidOperationException();
-            private set;
-        }
+            public Discardable? Managed;
+            public nuint Unmanaged;
 
-        public bool MoveNext()
-        {
-            while (enumerator.MoveNext())
-            {
-                if (Interlocked.Exchange(ref enumerator.Current, null) is not { } current)
-                    continue;
-                
-                Current = current;
-                return true;
-            }
+            [ExcludeFromCodeCoverage]
+            public readonly bool IsEmpty => Managed is null && Unmanaged is 0U;
 
-            return false;
+            public Discardable? DetachManaged() => Discardable.Detach(ref Managed);
+
+            public nuint DetachUnmanaged()
+                => Unmanaged is not 0U
+                    ? Interlocked.Exchange(ref Unmanaged, 0U)
+                    : 0U;
         }
     }
 
-    [InlineArray(3)]
+    [InlineArray(EpochCount)]
     private struct EpochEntryCollection
     {
         private Entry entry;
@@ -288,6 +257,58 @@ partial class Epoch
                 Debug.Assert(epoch <= 2U);
 
                 return ref Unsafe.Add(ref entry, epoch);
+            }
+        }
+    }
+    
+    partial interface INativeResourceManager
+    {
+        internal static void Clear(INativeResourceManager resourceManager, nuint rootHandle)
+        {
+            for (nuint current = rootHandle, next; current is not 0U; current = next)
+            {
+                next = resourceManager.GetNextHandle(current);
+                resourceManager.Release(current);
+            }
+        }
+
+        internal static void Clear(INativeResourceManager resourceManager, nuint rootHandle, ref ExceptionAggregator exceptions)
+        {
+            for (nuint current = rootHandle, next; current is not 0U; current = next)
+            {
+                next = resourceManager.GetNextHandle(current);
+                try
+                {
+                    resourceManager.Release(current);
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
+            }
+        }
+
+        internal static nuint GetLast(INativeResourceManager manager, nuint handle)
+        {
+            Debug.Assert(handle is not 0U);
+            
+            var result = handle;
+            for (nuint next; (next = manager.GetNextHandle(result)) is not 0U;)
+            {
+                result = next;
+            }
+
+            return result;
+        }
+
+        internal static void Attach(INativeResourceManager resourceManager, nuint handle, ref nuint root)
+        {
+            for (nuint current = root, tmp;; current = tmp)
+            {
+                resourceManager.GetNextHandle(handle) = current;
+                tmp = Interlocked.CompareExchange(ref root, handle, current);
+                if (current == tmp)
+                    break;
             }
         }
     }

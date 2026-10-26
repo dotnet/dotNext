@@ -116,7 +116,7 @@ internal partial class ProtocolStream
 
     private int ReadFrame(Span<byte> output)
     {
-        var count = Math.Min(frameSize, bufferEnd - bufferStart);
+        var count = int.Min(frameSize, bufferEnd - bufferStart);
         if (count > 0)
         {
             count = buffer.Span.Slice(bufferStart, count) >>> output;
@@ -129,7 +129,7 @@ internal partial class ProtocolStream
 
     private void SkipFrame()
     {
-        var count = Math.Min(frameSize, bufferEnd - bufferStart);
+        var count = int.Min(frameSize, bufferEnd - bufferStart);
         bufferStart += count;
         frameSize -= count;
     }

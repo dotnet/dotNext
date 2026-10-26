@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -17,6 +18,7 @@ using Generic;
 /// </remarks>
 /// <typeparam name="TDelegate">The type of delegates in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[CollectionBuilder(typeof(InvocationList), nameof(InvocationList.Create))]
 public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
     where TDelegate : MulticastDelegate
 {
@@ -33,7 +35,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
         {
             this.list = list;
             index = -1;
-            Current = default!;
+            Current = null!;
         }
 
         /// <summary>
@@ -82,6 +84,13 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     /// </summary>
     /// <param name="d">The delegate to add.</param>
     public InvocationList(TDelegate d) => list = d;
+
+    internal InvocationList(ReadOnlySpan<TDelegate> delegates) => list = delegates switch
+    {
+        [] => null,
+        [var single] => single,
+        _ => delegates.ToArray()
+    };
 
     private InvocationList(ReadOnlySpan<TDelegate> array, TDelegate d)
     {
@@ -242,4 +251,14 @@ public static class InvocationList
         foreach (var action in actions.Span)
             action(arg1, arg2);
     }
+
+    /// <summary>
+    /// Creates a new invocation list from a set of delegates.
+    /// </summary>
+    /// <param name="delegates">A set of delegates.</param>
+    /// <typeparam name="TDelegate">The type of delegate.</typeparam>
+    /// <returns>Invocation list.</returns>
+    public static InvocationList<TDelegate> Create<TDelegate>(params ReadOnlySpan<TDelegate> delegates)
+        where TDelegate : MulticastDelegate
+        => new(delegates);
 }

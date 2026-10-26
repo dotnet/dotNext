@@ -56,7 +56,7 @@ partial class WriteAheadLog
         {
             const int minimumDictionaryCapacity = 11;
             pages = GetPages(location);
-            return Math.Min(pages.Length, minimumDictionaryCapacity);
+            return int.Min(pages.Length, minimumDictionaryCapacity);
         }
 
         public abstract int DeletePages(uint toPage);
