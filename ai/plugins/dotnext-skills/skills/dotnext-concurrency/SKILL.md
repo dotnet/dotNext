@@ -3,11 +3,12 @@ name: dotnext-concurrency
 description: Concurrent data structures and allocation-free async building blocks from the
   DotNext.Threading NuGet package - AsyncLazy, TaskCompletionPipe, reusable
   ValueTaskCompletionSource, CancellationTokenMultiplexer, AsyncCounter (throttling),
-  AsyncStateTracker, distributed leases, BoundedObjectPool and the SIEVE-based RandomAccessCache.
-  Use when replacing Lazy<T> or Lazy<Task<T>> with async initialization; when reducing
-  allocations of TaskCompletionSource, linked CancellationTokenSource or Task.WhenEach in hot
-  paths; when implementing rate limiting, change notification streams, an object pool, an
-  LRU/concurrent cache, or a distributed lease.
+  AsyncStateTracker, distributed leases, BoundedObjectPool and the SIEVE-based RandomAccessCache
+  (managed and unmanaged-memory variants). Use when replacing Lazy<T> or Lazy<Task<T>> with async
+  initialization; when reducing allocations of TaskCompletionSource, linked CancellationTokenSource
+  or Task.WhenEach in hot paths; when implementing rate limiting, change notification streams, an
+  object pool, an LRU/concurrent cache (including a large cache that puts pressure on GC), or a
+  distributed lease.
 license: MIT
 metadata:
   dotnext-version: "6.x"
@@ -49,9 +50,21 @@ metadata:
   - SIEVE is not scan resistant: enumerating the cache doesn't update the recency of entries
   - It doesn't behave like dictionary. Instead, it exposes read or write session, which guarantee liveness of the cache entry during read or modification in case of concurrent eviction.
   - Use [this example](https://github.com/dotnet/dotNext/blob/master/src/examples/RandomAccessCacheBenchmark/Program.cs) to see how to consume its API.
+- Consider `DotNext.Runtime.Caching.RandomAccessCache<TValue>` (where `TValue : unmanaged`) instead of `RandomAccessCache<TKey, TValue>` for large caches. It keeps the keys, the values and the SIEVE structures in unmanaged memory, so the cache size doesn't add GC mark work and GC pauses.
+  - Prefer it when the cache holds a very large number of entries (hundreds of thousands to millions) and GC pauses or GC CPU time matter, the value is an unmanaged struct, and the key can be represented as bytes.
+  - Prefer `RandomAccessCache<TKey, TValue>` when the value is or contains a reference type, the value must be updated in place, the cache must be enumerated, entries need weights or the cache must grow (`RandomAccessCache<TKey, TValue, TWeight>`), the key needs a custom `IEqualityComparer<TKey>`, or the cache is small enough that GC cost doesn't matter.
+  - The key is a sequence of bytes copied to the entry. Wrap it with `RandomAccessCache.AsKey(ReadOnlyMemory<byte>)` or `RandomAccessCache.AsKey(string)` for `ChangeAsync`, `ReplaceAsync`, `TryRemoveAsync` and `InvalidateAsync`. These wrappers convert implicitly to `ReadOnlySpan<byte>` for `TryRead` and `Contains`, so use the same wrapper for reading and writing: `AsKey(string)` uses the UTF-16 bytes of the string, not UTF-8.
+  - The value cannot be modified after insertion. Use `ReplaceAsync` to put a new value under the same key.
+  - Capacity is fixed: there is no resize and no weights.
+  - Use the `Eviction` callback to clean up after the removed value. It is called once per record, after all the sessions of the record are closed. The key passed to the callback is valid only during the call.
+  - `MeasurementTags` sets the tags for its metrics (number of entries and allocated unmanaged memory).
+  - Use [this benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Runtime/Caching/RandomAccessCacheReadBenchmark.cs) to see how to insert and read a record.
 - Consider `ReferenceCounted<T>` and `ReferenceCountedOwner<T>` classes (`DotNext.Threading`) to replace handwritten reference counting mechanism
 - Consider `DotNext.Threading.Atomic<T>` container type for synchronized access to the custom struct instead classic monitor lock. This type has no contention between concurrent readers, so multiple threads can read the value in parallel. But all writers are serialized.
   - It is a spin-based seqlock: readers retry while a write is in progress, and contended writers spin instead of blocking on a monitor. Use it for small structs and short updates, not for long critical sections.
 
 # Pitfalls
+- Every session of the unmanaged `RandomAccessCache<TValue>` (returned by `TryRead`, `ChangeAsync`, `ReplaceAsync`, `TryRemoveAsync` and their synchronous overloads) must be disposed. An undisposed session leaks the unmanaged memory of its entry, and an undisposed write session holds the bucket lock and blocks the disposal of the cache. Don't use `ReadSession.Value`, `ValueRef` or `Key` after disposing the session.
+- Dispose the unmanaged `RandomAccessCache<TValue>` explicitly. The finalizer of an abandoned cache releases the memory, but it doesn't call the `Eviction` callback.
+- The key wrapped by `RandomAccessCache.AsKey` must not change until the session is disposed, because the key is read twice: to find the bucket and to copy it to the entry.
 - `Atomic<T>` is a mutable struct. Store it in a non-**readonly** field and access it by reference. A copy is an independent value with no synchronization with the original.
