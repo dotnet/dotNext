@@ -26,13 +26,13 @@ unsafe partial class RandomAccessCache<TValue>
 
         // The owners of the entry: the bucket chain, the queue commands, the SIEVE list and the sessions.
         // The entry is retired when the counter reaches zero, and reclaimed when the readers leave the epoch
-        private volatile uint lifetimeCounter;
+        private ReferenceCounter lifetimeCounter;
         private SieveState sieveState;
         private volatile byte processed; // 1 when the eviction thread processed the entry
 
         private Entry(int keyHashCode, int keyLength, in TValue value)
         {
-            lifetimeCounter = 2U;
+            lifetimeCounter = new(initialValue: 2U);
             KeyHashCode = keyHashCode;
             KeyLength = keyLength;
             Value = value;
@@ -50,36 +50,16 @@ unsafe partial class RandomAccessCache<TValue>
 
         // false if the entry gets a second chance; otherwise, removed is true if the entry was evicted before
         public bool TryEvict(out bool removed) => sieveState.TryEvict(out removed);
-
-        public bool TryAcquire()
-        {
-            for (uint current = lifetimeCounter, tmp; current > 0; current = tmp)
-            {
-                tmp = Interlocked.CompareExchange(ref lifetimeCounter, current + 1, current);
-                if (tmp == current)
-                    return true;
-            }
-
-            return false;
-        }
         
         // true if the entry was alive
         public bool MarkAsEvicted() => sieveState.MarkAsEvicted();
         
+        public bool TryAddRef() => lifetimeCounter.TryAdd();
+        
         // the caller must own a reference
-        public void AddReference()
-        {
-            Debug.Assert(lifetimeCounter > 0U);
+        public void AddRef() => lifetimeCounter.Add();
 
-            Interlocked.Increment(ref lifetimeCounter);
-        }
-
-        public bool ReleaseReference()
-        {
-            Debug.Assert(lifetimeCounter > 0U);
-
-            return Interlocked.Decrement(ref lifetimeCounter) is 0U;
-        }
+        public bool ReleaseRef() => lifetimeCounter.Release();
 
         public readonly long Size
             => sizeof(Entry) + (long)KeyLength;
@@ -134,7 +114,7 @@ unsafe partial class RandomAccessCache<TValue>
 
     private void Release(Entry* entry)
     {
-        if (entry->ReleaseReference())
+        if (entry->ReleaseRef())
             Retire(entry);
     }
 }

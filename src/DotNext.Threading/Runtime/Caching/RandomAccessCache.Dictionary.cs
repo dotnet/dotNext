@@ -7,6 +7,7 @@ namespace DotNext.Runtime.Caching;
 
 using Collections.Concurrent;
 using Numerics;
+using Runtime;
 using Threading;
 using Threading.Tasks;
 
@@ -75,13 +76,14 @@ public partial class RandomAccessCache<TKey, TValue>
         // The promotion queue holds an extra reference until the eviction thread processes the pair.
         // The counter is shared with the copies of the pair created by resize, because the readers
         // may still hold the pair from the previous version of the bucket list.
-        private readonly StrongBox<uint> lifetimeCounter;
+        private readonly BoxedValue<ReferenceCounter> lifetimeCounter;
 
         protected KeyValuePair(TKey key, int hashCode, bool willBePromoted)
         {
             KeyHashCode = hashCode;
             Key = key;
-            lifetimeCounter = new(1U + Unsafe.BitCast<bool, byte>(willBePromoted));
+            lifetimeCounter = BoxedValue<ReferenceCounter>.Box(
+                new(1U + Unsafe.BitCast<bool, byte>(willBePromoted)));
         }
 
         protected KeyValuePair(KeyValuePair other)
@@ -95,21 +97,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
         public abstract KeyValuePair Clone();
 
-        internal bool TryAcquireCounter()
-        {
-            ref var counter = ref lifetimeCounter.Value;
-            uint currentValue, tmp = Volatile.Read(ref counter);
-            do
-            {
-                currentValue = tmp;
-                if (currentValue is 0)
-                    break;
-            } while ((tmp = Interlocked.CompareExchange(ref counter, currentValue + 1, currentValue)) != currentValue);
+        internal bool TryAddRef() => lifetimeCounter.Value.TryAdd();
 
-            return currentValue > 0U;
-        }
-
-        internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter.Value) > 0;
+        internal bool ReleaseRef() => lifetimeCounter.Value.Release();
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -549,7 +539,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 for (var current = buckets[i].First; current is not null; current = current.NextInBucket)
                 {
                     // SIEVE is not scan-resistant, do not modify eviction state for every read
-                    if (current.TryAcquireCounter())
+                    if (current.TryAddRef())
                     {
                         try
                         {
@@ -557,7 +547,7 @@ public partial class RandomAccessCache<TKey, TValue>
                         }
                         finally
                         {
-                            if (!current.ReleaseCounter())
+                            if (!current.ReleaseRef())
                                 cleanup(current);
                         }
                     }

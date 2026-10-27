@@ -38,7 +38,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // The signal passes through the promotion queue, so it is processed after the promotion of the removed entry
     private unsafe void NotifyRemoved(Entry* removed)
     {
-        removed->AddReference(); // the reference owned by the signal
+        removed->AddRef(); // the reference owned by the signal
         NotifyRemovedCore(removed);
     }
 

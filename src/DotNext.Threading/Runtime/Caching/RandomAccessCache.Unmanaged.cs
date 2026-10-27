@@ -126,7 +126,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
                      current is not null;
                      current = Volatile.Read(&current->NextInBucket))
                 {
-                    if (current->Matches(key, hashCode, EqualityComparer) && current->Visit() && current->TryAcquire())
+                    if (current->Matches(key, hashCode, EqualityComparer) && current->Visit() && current->TryAddRef())
                     {
                         session = new(this, current);
                         return true;
@@ -300,7 +300,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var entry = FindAndCleanUp(this[index], key.Invoke(), hashCode);
-        return entry is not null && entry->Visit() && entry->TryAcquire()
+        return entry is not null && entry->Visit() && entry->TryAddRef()
             ? new(this, entry)
             : default;
     }
@@ -387,7 +387,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
 
         // the reference must be taken before the bucket chain releases its own reference
         if (addReference)
-            entry->AddReference();
+            entry->AddRef();
 
         // the eviction thread removes the entry from the SIEVE list, so it doesn't occupy the cache until the hand reaches it
         NotifyRemoved(entry);
@@ -576,7 +576,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
 
         // the entry must be alive until the waiter observes the promotion
         if (added is not null)
-            added->AddReference();
+            added->AddRef();
 
         ReleaseBucket(index);
         return added is null ? ValueTask.CompletedTask : WaitForPromotionAsync((nint)added);

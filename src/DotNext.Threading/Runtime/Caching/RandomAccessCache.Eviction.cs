@@ -55,7 +55,7 @@ public partial class RandomAccessCache<TKey, TValue>
             currentSize++;
             OnAdded(promoted);
 
-            if (!promoted.ReleaseCounter())
+            if (!promoted.ReleaseRef())
                 OnRemoved(promoted);
         }
         else
@@ -63,9 +63,9 @@ public partial class RandomAccessCache<TKey, TValue>
             // the cache doesn't have enough resources (pair has too high weight), release the enqueued pair.
             // The weight is not added, so use Clear instead of OnRemoved
             if (promoted.MarkAsEvicted())
-                promoted.ReleaseCounter(); // the reference owned by the cache, cannot reach zero
+                promoted.ReleaseRef(); // the reference owned by the cache, cannot reach zero
 
-            if (!promoted.ReleaseCounter())
+            if (!promoted.ReleaseRef())
                 Clear(promoted);
 
             promoted.Added();
@@ -128,7 +128,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 var removedPair = sieveHand;
                 sieveHand = sieveHand.DetachAndMoveBackward(ref evictionHead, ref evictionTail) ?? evictionTail;
                 currentSize--;
-                if (!removed && !removedPair.ReleaseCounter())
+                if (!removed && !removedPair.ReleaseRef())
                 {
                     OnRemoved(removedPair);
                     buckets.CleanUp(parkingLot, removedPair.KeyHashCode);
@@ -260,7 +260,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal bool MarkAsEvicted() => sieveState.MarkAsEvicted();
 
         internal bool MarkAsDead()
-            => MarkAsEvicted() && !ReleaseCounter();
+            => MarkAsEvicted() && !ReleaseRef();
 
         internal bool IsDead => sieveState.IsDead;
         
