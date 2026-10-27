@@ -98,6 +98,50 @@ unsafe partial class RandomAccessCache<TValue>
         internal AsyncParkingLot.State LockState; // modified by AsyncParkingLot only
         internal Entry* First;
         internal Entry* Added; // the entry inserted by the session holding the lock
+
+        public void Add(Entry* entry)
+        {
+            entry->NextInBucket = First;
+            Volatile.Write(ref First, entry); // publish the initialized entry to the lock-free readers
+            Added = entry;
+        }
+
+        public Entry* Clear()
+        {
+            var entry = First;
+            Volatile.Write(ref First, null);
+            return entry;
+        }
+
+        public readonly Entry* TryGet<TVisitor>(ReadOnlySpan<byte> key, int hashCode, IEqualityComparer<ReadOnlySpan<byte>> comparer)
+            where TVisitor : IKeyValuePairVisitor, allows ref struct
+        {
+            for (var current = Volatile.Read(in First);
+                 current is not null;
+                 current = Volatile.Read(&current->NextInBucket))
+            {
+                if (current->Matches(key, hashCode, comparer) && TVisitor.Visit(current))
+                    return current;
+            }
+
+            return null;
+        }
+
+        public readonly void MarkAllAsEvicted()
+        {
+            for (var entry = First; entry is not null; entry = entry->NextInBucket)
+            {
+                entry->MarkAsEvicted();
+            }
+        }
+
+        public readonly void ExportEntries(HashSet<nuint> entries)
+        {
+            for (var entry = First; entry is not null; entry = entry->NextInBucket)
+            {
+                entries.Add((nuint)entry);
+            }
+        }
     }
 
     private void Free(Entry* entry)
@@ -110,5 +154,22 @@ unsafe partial class RandomAccessCache<TValue>
     {
         if (entry->ReleaseRef())
             Retire(entry);
+    }
+    
+    private interface IKeyValuePairVisitor
+    {
+        public static abstract bool Visit(Entry* entry);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct NotDeadFilter : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(Entry* entry) => !entry->IsDead;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct AcquisitionVisitor : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(Entry* entry) => entry->Visit() && entry->TryAddRef();
     }
 }

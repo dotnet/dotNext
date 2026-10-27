@@ -118,25 +118,20 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         var hashCode = EqualityComparer.GetHashCode(key);
 
         // the epoch protects the traversed entries from reclamation
+        Entry* entry;
         using (epoch.Enter())
         {
-            if (!IsDisposingOrDisposed)
-            {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First);
-                     current is not null;
-                     current = Volatile.Read(&current->NextInBucket))
-                {
-                    if (current->Matches(key, hashCode, EqualityComparer) && current->Visit() && current->TryAddRef())
-                    {
-                        session = new(this, current);
-                        return true;
-                    }
-                }
-            }
+            entry = IsDisposingOrDisposed
+                ? null
+                : this[IndexOf(hashCode)]->TryGet<AcquisitionVisitor>(key, hashCode, EqualityComparer);
         }
 
-        session = default;
-        return false;
+        var result = entry is not null;
+        session = result
+            ? new(this, entry)
+            : default;
+
+        return result;
     }
 
     /// <summary>
@@ -148,21 +143,15 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     {
         var hashCode = EqualityComparer.GetHashCode(key);
 
+        Entry* entry;
         using (epoch.Enter())
         {
-            if (!IsDisposingOrDisposed)
-            {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First);
-                     current is not null;
-                     current = Volatile.Read(&current->NextInBucket))
-                {
-                    if (current->Matches(key, hashCode, EqualityComparer) && !current->IsDead)
-                        return true;
-                }
-            }
+            entry = IsDisposingOrDisposed
+                ? null
+                : this[IndexOf(hashCode)]->TryGet<NotDeadFilter>(key, hashCode, EqualityComparer);
         }
 
-        return false;
+        return entry is not null;
     }
 
     /// <summary>
@@ -532,10 +521,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         for (var i = 0; i < Capacity; i++)
         {
             var bucket = this[i];
-            for (var entry = bucket->First; entry is not null; entry = entry->NextInBucket)
-            {
-                entry->MarkAsEvicted();
-            }
+            bucket->MarkAllAsEvicted();
 
             CleanUp(bucket);
         }
@@ -556,9 +542,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         // the bucket chain and the promotion queue own the entry
         var entry = Entry.Allocate(key, hashCode, in value);
         OnAllocated(entry);
-        entry->NextInBucket = bucket->First;
-        Volatile.Write(&bucket->First, entry); // publish the initialized entry to the lock-free readers
-        bucket->Added = entry;
+        bucket->Add(entry);
         Enqueue(entry);
     }
 
@@ -692,7 +676,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     private unsafe void CleanUp(Bucket* bucket)
     {
         Debug.Assert(bucket->LockState is not AsyncParkingLot.State.Free);
-        
+
         var location = &bucket->First;
         for (Entry* current; (current = *location) is not null;)
         {

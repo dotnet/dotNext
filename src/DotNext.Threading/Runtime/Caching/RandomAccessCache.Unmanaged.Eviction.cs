@@ -309,16 +309,12 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
 
         for (var i = 0; i < Capacity; i++)
         {
-            var bucket = this[i];
-            var entry = bucket->First;
-            Volatile.Write(&bucket->First, null);
-
             // the readers can still traverse the chain, so the links remain intact
-            for (Entry* next; entry is not null; entry = next)
+            for (Entry* current = this[i]->Clear(), next; current is not null; current = next)
             {
-                next = entry->NextInBucket;
-                entry->MarkAsEvicted();
-                Release(entry);
+                next = current->NextInBucket;
+                current->MarkAsEvicted();
+                Release(current);
             }
         }
     }
@@ -328,32 +324,29 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // sessions and promotion waiters never release their references. Thus, every reachable entry is released once
     private unsafe void ReleaseAbandonedMemory()
     {
-        var entries = new HashSet<nint>();
+        var entries = new HashSet<nuint>();
 
         while (queue.TryDequeue() is { } command)
         {
             switch (command)
             {
                 case Promotion promotion:
-                    entries.Add((nint)promotion.Entry);
+                    entries.Add((nuint)promotion.Entry);
                     break;
                 case InvalidationSignal invalidation when invalidation.Target is not null:
-                    entries.Add((nint)invalidation.Target);
+                    entries.Add((nuint)invalidation.Target);
                     break;
             }
         }
 
         for (var entry = evictionHead; entry is not null; entry = entry->SieveNext)
         {
-            entries.Add((nint)entry);
+            entries.Add((nuint)entry);
         }
 
         for (var i = 0; i < Capacity; i++)
         {
-            for (var entry = this[i]->First; entry is not null; entry = entry->NextInBucket)
-            {
-                entries.Add((nint)entry);
-            }
+            this[i]->ExportEntries(entries);
         }
 
         foreach (var entry in entries)
