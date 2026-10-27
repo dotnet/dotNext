@@ -131,23 +131,12 @@ unsafe partial class RandomAccessCache<TValue>
         internal AsyncParkingLot.State LockState; // modified by AsyncParkingLot only
         internal Entry* First;
         internal Entry* Added; // the entry inserted by the session holding the lock
-
-        public static Bucket* Allocate(uint bucketCount)
-            => (Bucket*)NativeMemory.AllocZeroed(bucketCount, (uint)sizeof(Bucket));
-
-        public static void Free(Bucket* bucket) => NativeMemory.Free(bucket);
     }
 
     private void Free(Entry* entry)
     {
         OnReleased(entry);
         Entry.Free(entry);
-    }
-
-    private void Free(Bucket* entry)
-    {
-        OnBucketsReleased();
-        Bucket.Free(entry);
     }
 
     private bool Matches(Entry* entry, ReadOnlySpan<byte> key, int hashCode)

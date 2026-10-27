@@ -280,12 +280,6 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         // reclaim the entries deferred by the sessions concurrently with the flag
         await epoch.ClearAsync(CancellationToken.None).ConfigureAwait(false);
 
-        // the readers that could see the bucket array have left
-        unsafe
-        {
-            Free(buckets);
-        }
-
         parkingLot.Dispose();
         Cancel();
     }
@@ -370,8 +364,6 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         // the retired entries are not linked to the structures above, and no thread is in the epoch
         var cleared = epoch.TryClear();
         Debug.Assert(cleared);
-        
-        Free(buckets);
     }
     
     unsafe ref nuint Epoch.INativeResourceManager.GetNextHandle(nuint handle)

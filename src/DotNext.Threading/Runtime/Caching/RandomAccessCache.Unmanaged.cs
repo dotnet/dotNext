@@ -23,7 +23,7 @@ using Threading.Tasks;
 public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDisposable
     where TValue : unmanaged
 {
-    private readonly unsafe Bucket* buckets;
+    private readonly Bucket[] buckets; // pinned, so the buckets can be accessed through pointers
     private readonly FastMod fastMod;
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed by the eviction thread after the teardown")]
     private readonly AsyncParkingLot parkingLot;
@@ -56,15 +56,14 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     /// <paramref name="capacity"/> is less than or equal to zero;
     /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
     /// </exception>
-    public unsafe RandomAccessCache(int capacity, int concurrencyLevel)
+    public RandomAccessCache(int capacity, int concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        Capacity = int.GetPrime(capacity);
-        fastMod = new((uint)Capacity);
-        buckets = Bucket.Allocate((uint)Capacity);
-        OnBucketsAllocated();
+        
+        Capacity = capacity = int.GetPrime(capacity);
+        fastMod = new((uint)capacity);
+        buckets = GC.AllocateArray<Bucket>(capacity, pinned: true);
         parkingLot = new(concurrencyLevel);
         cancellationTokens = new() { MaximumRetained = concurrencyLevel };
         lifetimeSource = new();
@@ -629,7 +628,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         {
             Debug.Assert((uint)index < (uint)Capacity);
 
-            return buckets + index;
+            return (Bucket*)Unsafe.AsPointer(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index));
         }
     }
 
