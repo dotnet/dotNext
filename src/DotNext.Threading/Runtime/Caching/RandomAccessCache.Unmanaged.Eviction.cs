@@ -30,7 +30,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // the caller holds the bucket lock and passes the reference to the entry to the command
     private unsafe void Enqueue(Entry* entry)
     {
-        queue.Enqueue(new Promotion(entry));
+        queue.Enqueue(new Promotion(entry), notify: false);
         signal.Set();
     }
 
@@ -46,7 +46,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
 
     private unsafe void NotifyRemovedCore(Entry* removed)
     {
-        queue.Enqueue(new InvalidationSignal { Target = removed });
+        queue.Enqueue(new InvalidationSignal { Target = removed }, notify: false);
         signal.Set();
     }
 

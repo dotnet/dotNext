@@ -13,7 +13,7 @@ partial struct MpscQueue
         internal object? NextInQueue;
         private volatile IThreadPoolWorkItem? notification;
 
-        public void NotifyDequeued()
+        public void NotifyItemAttached()
         {
             if (Interlocked.Exchange(ref notification, SentinelNotification.Instance) is { } callback
                 && !ReferenceEquals(callback, SentinelNotification.Instance))
