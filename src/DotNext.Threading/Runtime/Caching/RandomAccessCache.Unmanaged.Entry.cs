@@ -44,7 +44,7 @@ unsafe partial class RandomAccessCache<TValue>
 
         public bool IsProcessed
         {
-            get => Unsafe.BitCast<byte, bool>(processed);
+            readonly get => Unsafe.BitCast<byte, bool>(processed);
             set => processed = Unsafe.BitCast<bool, byte>(value);
         }
 
