@@ -28,7 +28,7 @@ unsafe partial class RandomAccessCache<TValue>
         // The entry is retired when the counter reaches zero, and reclaimed when the readers leave the epoch
         private ReferenceCounter lifetimeCounter;
         private SieveState sieveState;
-        private volatile byte processed; // 1 when the eviction thread processed the entry
+        internal volatile bool IsProcessed; // true when the eviction thread processed the entry
 
         private Entry(int keyHashCode, int keyLength, in TValue value)
         {
@@ -36,12 +36,6 @@ unsafe partial class RandomAccessCache<TValue>
             KeyHashCode = keyHashCode;
             KeyLength = keyLength;
             Value = value;
-        }
-
-        public bool IsProcessed
-        {
-            readonly get => Unsafe.BitCast<byte, bool>(processed);
-            set => processed = Unsafe.BitCast<bool, byte>(value);
         }
 
         public readonly bool IsDead => sieveState.IsDead;
