@@ -122,9 +122,11 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         {
             if (!IsDisposingOrDisposed)
             {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First); current is not null; current = Volatile.Read(&current->NextInBucket))
+                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First);
+                     current is not null;
+                     current = Volatile.Read(&current->NextInBucket))
                 {
-                    if (Matches(current, key, hashCode) && current->Visit() && current->TryAcquire())
+                    if (current->Matches(key, hashCode, EqualityComparer) && current->Visit() && current->TryAcquire())
                     {
                         session = new(this, current);
                         return true;
@@ -150,9 +152,11 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         {
             if (!IsDisposingOrDisposed)
             {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First); current is not null; current = Volatile.Read(&current->NextInBucket))
+                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First);
+                     current is not null;
+                     current = Volatile.Read(&current->NextInBucket))
                 {
-                    if (Matches(current, key, hashCode) && !current->IsDead)
+                    if (current->Matches(key, hashCode, EqualityComparer) && !current->IsDead)
                         return true;
                 }
             }
@@ -674,7 +678,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
             }
             else
             {
-                if (result is null && Matches(current, key, hashCode))
+                if (result is null && current->Matches(key, hashCode, EqualityComparer))
                     result = current;
 
                 location = &current->NextInBucket;

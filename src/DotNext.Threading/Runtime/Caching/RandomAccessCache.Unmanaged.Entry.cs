@@ -104,6 +104,9 @@ unsafe partial class RandomAccessCache<TValue>
             }
         }
 
+        public readonly bool Matches(ReadOnlySpan<byte> key, int hashCode, IEqualityComparer<ReadOnlySpan<byte>> comparer)
+            => KeyHashCode == hashCode && comparer.Equals(key, Key);
+
         public static Entry* Allocate(ReadOnlySpan<byte> key, int hashCode, in TValue value)
         {
             var entry = (Entry*)NativeMemory.Alloc((nuint)(uint)sizeof(Entry) + (uint)key.Length);
@@ -138,9 +141,6 @@ unsafe partial class RandomAccessCache<TValue>
         OnReleased(entry);
         Entry.Free(entry);
     }
-
-    private bool Matches(Entry* entry, ReadOnlySpan<byte> key, int hashCode)
-        => entry->KeyHashCode == hashCode && EqualityComparer.Equals(key, entry->Key);
 
     private void Release(Entry* entry)
     {
