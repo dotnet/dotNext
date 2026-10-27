@@ -119,7 +119,7 @@ public partial class RandomAccessCache<TKey, TValue>
             if (sieveHand is null)
                 return false;
 
-            if (!sieveHand.Evict(out var removed))
+            if (!sieveHand.TryEvict(out var removed))
             {
                 sieveHand = sieveHand.MoveBackward() ?? evictionTail;
             }
@@ -197,12 +197,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
     internal partial class KeyValuePair
     {
-        private const int EvictedState = -1;
-        private const int NotVisitedState = 0;
-        private const int VisitedState = 1;
-
         private (KeyValuePair? Previous, KeyValuePair? Next) sieveLinks;
-        private volatile int cacheState;
+        private SieveState sieveState;
 
         // null, or Task, or AddedEventSource
         private volatile object? addedEvent;
@@ -257,27 +253,16 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal bool Evict(out bool removed)
-        {
-            var counter = Interlocked.Decrement(ref cacheState);
-            removed = counter < EvictedState;
-            return counter < NotVisitedState;
-        }
+        internal bool TryEvict(out bool removed) => sieveState.TryEvict(out removed);
 
-        internal bool Visit() => cacheState switch
-        {
-            VisitedState => true,
-            NotVisitedState => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState,
-            _ => false,
-        };
+        internal bool Visit() => sieveState.Visit();
 
-        internal bool MarkAsEvicted()
-            => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
+        internal bool MarkAsEvicted() => sieveState.MarkAsEvicted();
 
         internal bool MarkAsDead()
             => MarkAsEvicted() && !ReleaseCounter();
 
-        internal bool IsDead => cacheState < NotVisitedState;
+        internal bool IsDead => sieveState.IsDead;
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

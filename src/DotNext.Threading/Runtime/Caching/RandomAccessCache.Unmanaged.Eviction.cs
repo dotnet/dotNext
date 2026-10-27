@@ -177,7 +177,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         while (currentSize >= Capacity && sieveHand is not null)
         {
             var entry = sieveHand;
-            if (entry->Unvisit())
+            if (!entry->TryEvict(out var removed))
             {
                 sieveHand = entry->SievePrevious is not null ? entry->SievePrevious : evictionTail;
                 continue;
@@ -187,7 +187,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
             currentSize--;
 
             // the entry is still linked to its bucket if it was alive
-            if (entry->MarkAsEvicted())
+            if (!removed)
                 TryCleanUpBucket(entry->KeyHashCode);
 
             Release(entry); // the reference owned by the SIEVE list

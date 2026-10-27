@@ -70,7 +70,7 @@ public partial class RandomAccessCache<TKey, TValue>
         // Reference counting is used to establish lifetime of the stored value (not KeyValuePair instance).
         // Initial value 1 means that the pair is referenced by the eviction queue. There
         // are two competing threads that may decrement the counter to zero: removal thread (see TryRemove)
-        // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
+        // and eviction thread. To synchronize the decision, 'sieveState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
         // The promotion queue holds an extra reference until the eviction thread processes the pair.
         // The counter is shared with the copies of the pair created by resize, because the readers
@@ -88,7 +88,7 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             Key = other.Key;
             KeyHashCode = other.KeyHashCode;
-            cacheState = other.cacheState;
+            sieveState = other.sieveState;
             addedEvent = other.addedEvent;
             lifetimeCounter = other.lifetimeCounter;
         }

@@ -8,10 +8,6 @@ using Threading;
 
 unsafe partial class RandomAccessCache<TValue>
 {
-    private const sbyte NotVisited = 0;
-    private const sbyte Visited = 1;
-    private const sbyte Evicted = -1;
-
     // The entry is a single block of unmanaged memory: the header with the value, and the key bytes.
     // The runtime packs the fields to minimize padding, the code must not depend on their offsets
     [StructLayout(LayoutKind.Auto)]
@@ -31,7 +27,7 @@ unsafe partial class RandomAccessCache<TValue>
         // The owners of the entry: the bucket chain, the queue commands, the SIEVE list and the sessions.
         // The entry is retired when the counter reaches zero, and reclaimed when the readers leave the epoch
         private volatile uint lifetimeCounter;
-        private volatile sbyte cacheState;
+        private SieveState sieveState;
         private volatile byte processed; // 1 when the eviction thread processed the entry
 
         private Entry(int keyHashCode, int keyLength, in TValue value)
@@ -48,17 +44,12 @@ unsafe partial class RandomAccessCache<TValue>
             set => processed = Unsafe.BitCast<bool, byte>(value);
         }
 
-        public readonly bool IsDead => cacheState is Evicted;
+        public readonly bool IsDead => sieveState.IsDead;
 
-        public bool Visit() => cacheState switch
-        {
-            Visited => true,
-            NotVisited => Interlocked.CompareExchange(ref cacheState, Visited, NotVisited) is not Evicted,
-            _ => false,
-        };
+        public bool Visit() => sieveState.Visit();
 
-        public bool Unvisit() => cacheState is Visited
-                                 && Interlocked.CompareExchange(ref cacheState, NotVisited, Visited) is Visited;
+        // false if the entry gets a second chance; otherwise, removed is true if the entry was evicted before
+        public bool TryEvict(out bool removed) => sieveState.TryEvict(out removed);
 
         public bool TryAcquire()
         {
@@ -73,8 +64,7 @@ unsafe partial class RandomAccessCache<TValue>
         }
         
         // true if the entry was alive
-        public bool MarkAsEvicted()
-            => Interlocked.Exchange(ref cacheState, Evicted) is not Evicted;
+        public bool MarkAsEvicted() => sieveState.MarkAsEvicted();
         
         // the caller must own a reference
         public void AddReference()
