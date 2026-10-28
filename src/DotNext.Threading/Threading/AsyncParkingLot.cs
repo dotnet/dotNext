@@ -41,7 +41,7 @@ public partial class AsyncParkingLot : Disposable
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
         if (poolSizePerSlot.HasValue)
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(poolSizePerSlot.GetValueOrDefault(), nameof(poolSizePerSlot));
-
+        
         var length = int.CreateChecked(BitOperations.RoundUpToPowerOf2((ulong)(uint)capacity));
         slots = new WaitQueue[length];
         mask = length - 1;
@@ -206,12 +206,12 @@ public partial class AsyncParkingLot : Disposable
             case State.Locked:
                 break;
             default:
-                UnparkSlow(position, out state, userData);
+                UnparkSlow(position, ref state, userData);
                 break;
         }
     }
 
-    private void UnparkSlow(int position, out State state, object? userData)
+    private void UnparkSlow(int position, ref State state, object? userData)
     {
         ref var queue = ref this[position];
         WaitNode? node;
@@ -220,8 +220,8 @@ public partial class AsyncParkingLot : Disposable
         {
             // the lock is handed off to the signaled waiter, so it remains Locked
             node = queue.TrySignalFirst(position, userData, in measurementTags, out var hasMore, out resumable);
-            Volatile.WriteBarrier();
-            state = node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked;
+            var newState = node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked;
+            Volatile.Write(ref Unsafe.As<State, byte>(ref state), (byte)newState);
         }
 
         if (resumable)
