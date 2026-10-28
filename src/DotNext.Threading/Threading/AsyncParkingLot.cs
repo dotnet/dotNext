@@ -283,7 +283,7 @@ public partial class AsyncParkingLot : Disposable
     /// <summary>
     /// Represents the state of the lock.
     /// </summary>
-    public enum State
+    public enum State : byte
     {
         /// <summary>
         /// The lock is not acquired.
