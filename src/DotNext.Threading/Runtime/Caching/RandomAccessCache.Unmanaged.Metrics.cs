@@ -22,6 +22,10 @@ unsafe partial class RandomAccessCache<TValue>
         {
             value.Add(ValueTypeMeterAttribute, typeof(TValue).Name);
             measurementTags = value;
+            parkingLot = new(Capacity, poolSizePerSlot: 3)
+            {
+                MeasurementTags = measurementTags,
+            };
         }
     }
 
