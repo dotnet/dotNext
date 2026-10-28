@@ -59,48 +59,31 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 10-26-2026
+Release Date: 10-28-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.11.0">DotNext 6.11.0</a>
-* Added `ApplicationLock` class that allows only one running instance of the application, based on the exclusively opened lock file
-* `Epoch` now supports deferred release of unmanaged resources through `INativeResourceManager` interface and `RecycleBin.Defer(nuint)` method, without extra allocations
-* Replaced `Epoch.UnsafeClear` method with thread-safe `TryClear` and `ClearAsync` methods
-* `Epoch.RecycleBin` no longer allocates memory for the deferred actions
-* Added `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations
-* Added `MemoryMarshal.AsReadOnlyBytes` static extension method to represent a string as a span over bytes
-* Added `IEqualityComparer<ReadOnlySpan<byte>>.Default` static extension property
-* Fixed memory leaks in `BufferWriterSlim<T>.DetachOrCopyBuffer` and `BufferWriter<T>.DetachBuffer` methods
+<a href="https://www.nuget.org/packages/dotnext/6.11.1">DotNext 6.11.1</a>
+* Fixed `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations, so now these methods are compatible with managed pointers too
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.11.0">DotNext.Metaprogramming 6.11.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.11.1">DotNext.Metaprogramming 6.11.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.11.0">DotNext.Unsafe 6.11.0</a>
-* Introduced `Pointer<T>.IsStackAllocated` property
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.11.1">DotNext.Unsafe 6.11.1</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.11.0">DotNext.Threading 6.11.0</a>
-* Added `RandomAccessCache<TValue>`, the unmanaged version of SIEVE-based cache with keys represented by bytes. Its entries are allocated in the native memory and reclaimed with `Epoch`
-* Added `AsyncParkingLot` synchronization primitive that represents a set of wait queues shared by many lightweight asynchronous locks
-* `RandomAccessCache<TKey, TValue>` uses `AsyncParkingLot` instead of per-bucket locks to reduce memory footprint. The concurrency level can be specified in the constructor
-* Fixed eviction state corruption in `RandomAccessCache<TKey, TValue>`
-* Fixed lost promotion and race condition between the reader and the resize process in `RandomAccessCache<TKey, TValue>`
-* Improved CPU cache locality of `RandomAccessCache<TKey, TValue>`
-* Fixed [304](https://github.com/dotnet/dotNext/issues/304)
+<a href="https://www.nuget.org/packages/dotnext.threading/6.11.1">DotNext.Threading 6.11.1</a>
+* `RandomAccessCache<TValue>` now uses Pinned Object Heap to allocate _static_ parts of the cache when instantiated first time. Cache entries are still in unmanaged heap. This change allows to monitor memory consumption via .NET built-in metrics, while cache entry allocation has its own metrics
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.11.0">DotNext.IO 6.11.0</a>
-* Fixed potential race condition in `DiskSpacePool` that could lead to returning the same segment twice
-* Removed `AppendAndCommitAsync` default method from `IAuditTrail<TEntry>` interface
+<a href="https://www.nuget.org/packages/dotnext.io/6.11.1">DotNext.IO 6.11.1</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.0">DotNext.Net.Cluster 6.11.0</a>
-* Fixed [305](https://github.com/dotnet/dotNext/issues/305)
-* Fixed [307](https://github.com/dotnet/dotNext/pull/307)
-* `WriteAheadLog` now produces checkpoint on every commit to ensure consistency. `FlushInterval` and `FlushOnCommit` configuration properties are deprecated and have no effect
-* `WriteAheadLog.Options.Allocator` property returns default allocator if not specified explicitly
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.1">DotNext.Net.Cluster 6.11.1</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.0">DotNext.AspNetCore.Cluster 6.11.0</a>
-* Fixed [305](https://github.com/dotnet/dotNext/issues/305)
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.1">DotNext.AspNetCore.Cluster 6.11.1</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.0">DotNext.MaintenanceServices 1.11.0</a>
-* `CommandLineMaintenanceInterfaceHost` now supports custom Unix file mode for Unix Domain Socket pseudofile
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.1">DotNext.MaintenanceServices 1.11.1</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
