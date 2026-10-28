@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Runtime.Caching;
 
@@ -197,7 +198,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var hashCode = EqualityComparer.GetHashCode(key.Invoke());
-        return ChangeAsync(key, hashCode, IndexOf(hashCode), new(timeout), replace: false, token).Wait();
+        return ChangeAsync(key, hashCode, IndexOf(hashCode), timeout, replace: false, token).Wait();
     }
 
     /// <summary>
@@ -242,13 +243,14 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var hashCode = EqualityComparer.GetHashCode(key.Invoke());
-        return ChangeAsync(key, hashCode, IndexOf(hashCode), new(timeout), replace: true, token).Wait();
+        return ChangeAsync(key, hashCode, IndexOf(hashCode), timeout, replace: true, token).Wait();
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession<TKey>> ChangeAsync<TKey>(TKey key, int hashCode, int index, Timeout timeout, bool replace, CancellationToken token)
+    private async ValueTask<ReadWriteSession<TKey>> ChangeAsync<TKey>(TKey key, int hashCode, int index, TimeSpan timeout, bool replace, CancellationToken token)
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
+        Timeout.Validate(timeout);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
         var cts = cancellationTokens.Combine(token, lifetimeToken);
@@ -624,31 +626,24 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     }
 
     private unsafe ValueTask AcquireBucketAsync(int index, CancellationToken token)
-        => parkingLot.ParkAsync(index, ref this[index]->LockState, userData: null, token);
+        => parkingLot.ParkAsync(index, ref GetBucketState(index), userData: null, token);
 
-    private unsafe ValueTask AcquireBucketAsync(int index, in Timeout timeout, CancellationToken token)
+    private ValueTask AcquireBucketAsync(int index, TimeSpan timeout, CancellationToken token)
+        => timeout == InfiniteTimeSpan ? AcquireBucketAsync(index, token) : AcquireBucketSlowAsync(index, timeout, token);
+
+    private unsafe ref AsyncParkingLot.State GetBucketState(int index) => ref this[index]->LockState;
+
+    private async ValueTask AcquireBucketSlowAsync(int index, TimeSpan timeout, CancellationToken token)
     {
-        if (timeout.IsInfinite)
-            return AcquireBucketAsync(index, token);
-
-        var task = parkingLot.ParkAsync(index, ref this[index]->LockState, userData: null, timeout.RemainingTime, token);
-        if (!task.IsCompletedSuccessfully)
-            return ThrowIfTimedOutAsync(task);
-
-        return task.Result ? ValueTask.CompletedTask : ValueTask.FromException(new TimeoutException());
-    }
-
-    private static async ValueTask ThrowIfTimedOutAsync(ValueTask<bool> task)
-    {
-        if (!await task.ConfigureAwait(false))
+        if (!await parkingLot.ParkAsync(index, ref GetBucketState(index), userData: null, timeout, token).ConfigureAwait(false))
             throw new TimeoutException();
     }
 
     private unsafe bool TryAcquireBucket(int index)
-        => AsyncParkingLot.TryPark(ref this[index]->LockState);
+        => AsyncParkingLot.TryPark(ref GetBucketState(index));
 
     private unsafe void ReleaseBucket(int index)
-        => parkingLot.Unpark(index, ref this[index]->LockState);
+        => parkingLot.Unpark(index, ref GetBucketState(index));
 
     // the bucket lock must be held, removes the dead entries
     private unsafe Entry* FindAndCleanUp(Bucket* bucket, ReadOnlySpan<byte> key, int hashCode)
