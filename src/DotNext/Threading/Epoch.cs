@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
 using Runtime.ExceptionServices;
 
 /// <summary>
@@ -52,6 +53,7 @@ public sealed partial class Epoch
     /// </remarks>
     /// <returns>A scope that represents the current epoch.</returns>
     /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public Scope Enter() => new(this);
 
     /// <summary>
@@ -391,6 +393,7 @@ public sealed partial class Epoch
         /// <remarks>
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public void Dispose() => state?.ExitEpoch(handle);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

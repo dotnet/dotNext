@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
 using Runtime.CompilerServices;
 
 public static partial class Atomic
@@ -15,6 +16,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <returns>The value at the specified location.</returns>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static double Read(ref readonly double location)
         => IsAtomic<double>()
             ? Volatile.Read(in location)
@@ -29,6 +31,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <param name="value">The desired value at the specified location.</param>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.Release)]
     public static void Write(ref double location, double value)
     {
         if (IsAtomic<double>())

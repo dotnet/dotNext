@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
 
+using Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Provides implementation of dispose pattern.
 /// </summary>
@@ -18,21 +20,33 @@ public abstract class Disposable : IDisposable
     /// Indicates that this object is disposed.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    protected bool IsDisposed => state is ObjectState.Disposed;
+    protected bool IsDisposed
+    {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
+        get => state is ObjectState.Disposed;
+    }
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called but not yet completed.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    protected bool IsDisposing => state is ObjectState.Disposing;
+    protected bool IsDisposing
+    {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
+        get => state is ObjectState.Disposing;
+    }
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    protected bool IsDisposingOrDisposed => state is not ObjectState.NotDisposed;
+    protected bool IsDisposingOrDisposed
+    {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
+        get => state is not ObjectState.NotDisposed;
+    }
 
     private string ObjectName => GetType().Name;
 
@@ -77,6 +91,7 @@ public abstract class Disposable : IDisposable
     /// Releases managed and unmanaged resources associated with this object.
     /// </summary>
     /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
+    [MemoryOrdering(MemoryOrdering.Release)]
     protected virtual void Dispose(bool disposing)
         => state = ObjectState.Disposed;
 
@@ -87,6 +102,7 @@ public abstract class Disposable : IDisposable
     /// This method makes sense only if derived class implements <see cref="IAsyncDisposable"/> interface.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
+    [MemoryOrdering(MemoryOrdering.Release)]
     protected virtual ValueTask DisposeAsyncCore()
     {
         Dispose(true);
@@ -108,6 +124,7 @@ public abstract class Disposable : IDisposable
     /// can be trivially implemented through delegation of the call to this method.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref state, ObjectState.Disposing, ObjectState.NotDisposed) switch
     {
         ObjectState.NotDisposed => DisposeAsyncImpl(),
@@ -120,6 +137,7 @@ public abstract class Disposable : IDisposable
     /// </summary>
     /// <returns><see langword="true"/> if cleanup operations can be performed; <see langword="false"/> if the object is already disposing.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     protected bool TryBeginDispose()
         => Interlocked.CompareExchange(ref state, ObjectState.Disposing, ObjectState.NotDisposed) is ObjectState.NotDisposed;
 
@@ -127,6 +145,7 @@ public abstract class Disposable : IDisposable
     /// Releases all resources associated with this object.
     /// </summary>
     [SuppressMessage("Design", "CA1063", Justification = "No need to call Dispose(true) multiple times")]
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Dispose()
     {
         Dispose(TryBeginDispose());

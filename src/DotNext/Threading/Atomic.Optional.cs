@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 partial class Atomic
 {
     /// <summary>
@@ -16,6 +18,7 @@ partial class Atomic
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns><see langword="true"/> if <paramref name="value"/> is set to the empty receiver; otherwise, <see langword="false"/>.</returns>
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         public bool TrySet(T value)
         {
             var newValue = new Optional<T>(value);
@@ -45,6 +48,7 @@ partial class Atomic
         /// <see langword="false"/> if the receiver already has a value and <paramref name="value"/> is ignored.
         /// </param>
         /// <returns>The existing value contained in the receiver; or <paramref name="value"/>.</returns>
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         public T GetOrSet(T value, out bool isSet)
         {
             var newValue = new Optional<T>(value);
@@ -83,6 +87,7 @@ partial class Atomic
         /// </summary>
         public bool IsUndefined
         {
+            [MemoryOrdering(MemoryOrdering.Acquire)]
             get
             {
                 var spinner = new SpinWait();

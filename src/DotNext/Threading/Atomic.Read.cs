@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
 using Runtime.CompilerServices;
 
 partial struct Atomic<T>
@@ -12,6 +13,7 @@ partial struct Atomic<T>
     /// <typeparam name="TResult">The type of the field.</typeparam>
     /// <typeparam name="TReference">The field reference.</typeparam>
     /// <returns>The field value.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly TResult Read<TResult, TReference>()
         where TReference : IFieldReference<T, TResult>, allows ref struct
     {

@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 partial class Atomic
 {
     /// <summary>
@@ -26,6 +28,7 @@ partial class Atomic
         /// <returns>The pointer that was read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         public static unsafe T* Read<T>(T** location)
             where T : unmanaged
             => Read(in *location);
@@ -44,6 +47,7 @@ partial class Atomic
         /// <returns>The pointer that was read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         public static unsafe T* Read<T>(ref readonly T* location)
             where T : unmanaged
         {
@@ -67,6 +71,7 @@ partial class Atomic
         /// <param name="value">The pointer to write.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [MemoryOrdering(MemoryOrdering.Release)]
         public static unsafe void Write<T>(T** location, T* value)
             where T : unmanaged
             => Write(ref *location, value);
@@ -85,6 +90,7 @@ partial class Atomic
         /// <param name="value">The pointer to write.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [MemoryOrdering(MemoryOrdering.Release)]
         public static unsafe void Write<T>(ref T* location, T* value)
             where T : unmanaged
         {

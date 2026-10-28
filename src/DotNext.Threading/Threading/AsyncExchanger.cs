@@ -5,6 +5,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
 using Tasks;
 using Tasks.Pooling;
 
@@ -171,6 +172,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <returns><see langword="true"/> if another flow is ready for exchange; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
+    [MemoryOrdering(MemoryOrdering.AcquireRelease)]
     public bool TryExchange(ref T value)
     {
         bool result;
@@ -211,6 +213,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <param name="exception">The optional exception indicating termination reason.</param>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="InvalidOperationException">The exchange is already terminated.</exception>
+    [MemoryOrdering(MemoryOrdering.AcquireRelease)]
     public void Terminate(Exception? exception = null)
     {
         lock (syncRoot)
@@ -232,6 +235,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public bool IsTerminated
     {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         get
         {
             ObjectDisposedException.ThrowIf(IsDisposed, this);
@@ -262,6 +266,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     }
 
     /// <inheritdoc />
+    [MemoryOrdering(MemoryOrdering.AcquireRelease)]
     protected override ValueTask DisposeAsyncCore()
     {
         ValueTask result;
