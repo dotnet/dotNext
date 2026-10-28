@@ -547,7 +547,7 @@ public partial class RandomAccessCache<TKey, TValue>
                         }
                         finally
                         {
-                            if (!current.ReleaseRef())
+                            if (current.ReleaseRef())
                                 cleanup(current);
                         }
                     }

@@ -55,7 +55,7 @@ public partial class RandomAccessCache<TKey, TValue>
             currentSize++;
             OnAdded(promoted);
 
-            if (!promoted.ReleaseRef())
+            if (promoted.ReleaseRef())
                 OnRemoved(promoted);
         }
         else
@@ -65,7 +65,7 @@ public partial class RandomAccessCache<TKey, TValue>
             if (promoted.MarkAsEvicted())
                 promoted.ReleaseRef(); // the reference owned by the cache, cannot reach zero
 
-            if (!promoted.ReleaseRef())
+            if (promoted.ReleaseRef())
                 Clear(promoted);
 
             promoted.Added();
@@ -128,7 +128,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 var removedPair = sieveHand;
                 sieveHand = sieveHand.DetachAndMoveBackward(ref evictionHead, ref evictionTail) ?? evictionTail;
                 currentSize--;
-                if (!removed && !removedPair.ReleaseRef())
+                if (!removed && removedPair.ReleaseRef())
                 {
                     OnRemoved(removedPair);
                     buckets.CleanUp(parkingLot, removedPair.KeyHashCode);
@@ -260,7 +260,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal bool MarkAsEvicted() => sieveState.MarkAsEvicted();
 
         internal bool MarkAsDead()
-            => MarkAsEvicted() && !ReleaseRef();
+            => MarkAsEvicted() && ReleaseRef();
 
         internal bool IsDead => sieveState.IsDead;
         

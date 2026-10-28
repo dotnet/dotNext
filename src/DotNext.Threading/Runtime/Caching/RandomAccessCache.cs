@@ -242,7 +242,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             if (bucket.TryRemove(selector, hashCode) is { } removedPair)
             {
                 NotifyRemoved(removedPair);
-                if (!removedPair.ReleaseRef())
+                if (removedPair.ReleaseRef())
                     OnRemoved(removedPair);
             }
 
@@ -452,7 +452,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             return false;
         }
 
-        if (!removedPair.ReleaseRef())
+        if (removedPair.ReleaseRef())
         {
             OnRemoved(removedPair);
         }
@@ -532,7 +532,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     SetValue(pair, value);
                 }
 
-                if (!pair.ReleaseRef())
+                if (pair.ReleaseRef())
                     OnRemoved(pair);
             }
             else
@@ -701,7 +701,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// </summary>
         public void Dispose()
         {
-            if (valueHolder?.ReleaseRef() is false)
+            if (valueHolder?.ReleaseRef() is true)
             {
                 cache.OnRemoved(valueHolder);
             }
@@ -803,7 +803,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     lockedBuckets[index].MarkAsReadyToAdd();
                     lockedBuckets.Release(cache.parkingLot, index);
                     break;
-                case KeyValuePair pair when !pair.ReleaseRef():
+                case KeyValuePair pair when pair.ReleaseRef():
                     cache.OnRemoved(pair);
                     break;
             }
@@ -833,7 +833,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                         task = cache.DisposedTask;
                     
                     break;
-                case KeyValuePair pair when !pair.ReleaseRef():
+                case KeyValuePair pair when pair.ReleaseRef():
                     cache.OnRemoved(pair);
                     goto default;
                 default:
