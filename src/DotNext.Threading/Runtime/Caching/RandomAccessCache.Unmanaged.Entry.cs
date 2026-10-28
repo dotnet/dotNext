@@ -170,6 +170,6 @@ unsafe partial class RandomAccessCache<TValue>
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct AcquisitionVisitor : IKeyValuePairVisitor
     {
-        static bool IKeyValuePairVisitor.Visit(Entry* entry) => entry->Visit() && entry->TryAddRef();
+        public static bool Visit(Entry* entry) => entry->Visit() && entry->TryAddRef();
     }
 }

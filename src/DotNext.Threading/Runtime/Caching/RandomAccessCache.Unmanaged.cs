@@ -294,7 +294,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var entry = FindAndCleanUp(this[index], key.Invoke(), hashCode);
-        return entry is not null && entry->Visit() && entry->TryAddRef()
+        return entry is not null && AcquisitionVisitor.Visit(entry)
             ? new(this, entry)
             : default;
     }
