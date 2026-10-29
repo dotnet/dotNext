@@ -96,10 +96,7 @@ file sealed class RangeSet<T>(T lowerBound, T upperBound) : IReadOnlySet<T>
         }
     }
 
-    private bool Contains(T item)
-        => item >= lowerBound && item <= upperBound;
-
-    bool IReadOnlySet<T>.Contains(T item) => Contains(item);
+    public bool Contains(T item) => item >= lowerBound && item <= upperBound;
 
     bool IReadOnlySet<T>.SetEquals(IEnumerable<T> other)
     {
@@ -117,7 +114,7 @@ file sealed class RangeSet<T>(T lowerBound, T upperBound) : IReadOnlySet<T>
         return other switch
         {
             RangeSet<T> range => range.lowerBound <= upperBound && range.upperBound >= lowerBound,
-            SingletonList<T> list => list.Item >= lowerBound && list.Item <= upperBound,
+            SingletonList<T> list => Contains(list.Item),
             _ when other.TryGetNonEnumeratedCount(out var count) && count is 0 => true,
             _ => other.Any(Contains),
         };
@@ -163,32 +160,22 @@ file sealed class RangeSet<T>(T lowerBound, T upperBound) : IReadOnlySet<T>
     }
 
     bool IReadOnlySet<T>.IsSupersetOf(IEnumerable<T> other)
-    {
-        if (other is RangeSet<T> range)
-            return lowerBound <= range.lowerBound && upperBound >= range.upperBound;
-
-        if (other is SingletonList<T> list)
-            return list.Item >= lowerBound && list.Item <= upperBound;
-
-        if (other.TryGetNonEnumeratedCount(out var count) && count is 0)
-            return true;
-
-        foreach (var item in other)
+        => other switch
         {
-            if (item < lowerBound || item > upperBound)
-                return false;
-        }
-
-        return true;
-    }
+            RangeSet<T> range => lowerBound <= range.lowerBound && upperBound >= range.upperBound,
+            SingletonList<T> list => Contains(list.Item),
+            _ => other.TryGetNonEnumeratedCount(out var count) && count is 0 || other.All(Contains)
+        };
 
     bool IReadOnlySet<T>.IsProperSupersetOf(IEnumerable<T> other)
     {
-        if (other is RangeSet<T> range)
-            return lowerBound < range.lowerBound && upperBound > range.upperBound;
-
-        if (other is SingletonList<T> list)
-            return list.Item >= lowerBound && list.Item <= upperBound;
+        switch (other)
+        {
+            case RangeSet<T> range:
+                return lowerBound < range.lowerBound && upperBound > range.upperBound;
+            case SingletonList<T> list:
+                return list.Item >= lowerBound && list.Item <= upperBound;
+        }
 
         if (other.TryGetNonEnumeratedCount(out var count) && count is 0)
             return true;

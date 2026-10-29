@@ -340,8 +340,13 @@ file sealed class RepeatList<T>(T item, int count) : IReadOnlyList<T>
 {
     public IEnumerator<T> GetEnumerator()
     {
-        for (var i = 0; i < count; i++)
-            yield return item;
+        return GetEnumerator(item, count);
+        
+        static IEnumerator<T> GetEnumerator(T item, int count)
+        {
+            for (; count > 0; count--)
+                yield return item;
+        }
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
