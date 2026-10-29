@@ -10,7 +10,7 @@ using Diagnostics.CodeAnalysis;
 partial class Atomic
 {
     /// <summary>
-    /// Extends <see cref="Volatile"/> with pointer to pointer volatile operations.
+    /// Extends <see cref="System.Threading.Volatile"/> with pointer to pointer volatile operations.
     /// </summary>
     extension(Volatile)
     {
