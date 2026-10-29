@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 10-28-2026
+# 10-29-2026
 <a href="https://www.nuget.org/packages/dotnext/6.11.1">DotNext 6.11.1</a>
 * Fixed `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations, so now these methods are compatible with managed pointers too
 

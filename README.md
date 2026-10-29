@@ -59,7 +59,7 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 10-28-2026
+Release Date: 10-29-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.11.1">DotNext 6.11.1</a>
 * Fixed `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations, so now these methods are compatible with managed pointers too
