@@ -18,13 +18,13 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.1">DotNext.Net.Cluster 6.11.1</a>
-* Updated dependencies
+* Preparation for Runtime Async: removed `async void` methods
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.1">DotNext.AspNetCore.Cluster 6.11.1</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.1">DotNext.MaintenanceServices 1.11.1</a>
-* Updated dependencies
+* Preparation for Runtime Async: removed `async void` methods
 
 # 10-26-2026
 <a href="https://www.nuget.org/packages/dotnext/6.11.0">DotNext 6.11.0</a>
