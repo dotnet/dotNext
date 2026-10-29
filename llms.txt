@@ -107,6 +107,7 @@
 - [DotNext.Collections.Specialized](https://dotnet.github.io/dotNext/api/DotNext.Collections.Specialized.html)
 - [DotNext.ComponentModel.DataAnnotations](https://dotnet.github.io/dotNext/api/DotNext.ComponentModel.DataAnnotations.html)
 - [DotNext.Diagnostics](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.html)
+- [DotNext.Diagnostics.CodeAnalysis](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.CodeAnalysis.html)
 - [DotNext.Diagnostics.Metrics](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Metrics.html)
 - [DotNext.Hosting](https://dotnet.github.io/dotNext/api/DotNext.Hosting.html)
 - [DotNext.IO](https://dotnet.github.io/dotNext/api/DotNext.IO.html)

@@ -11939,6 +11939,84 @@ references:
   commentId: N:DotNext.Diagnostics
   fullName: DotNext.Diagnostics
   nameWithType: DotNext.Diagnostics
+- uid: DotNext.Diagnostics.CodeAnalysis
+  name: DotNext.Diagnostics.CodeAnalysis
+  href: api/DotNext.Diagnostics.CodeAnalysis.html
+  commentId: N:DotNext.Diagnostics.CodeAnalysis
+  fullName: DotNext.Diagnostics.CodeAnalysis
+  nameWithType: DotNext.Diagnostics.CodeAnalysis
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering
+  name: MemoryOrdering
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html
+  commentId: T:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering
+  nameWithType: MemoryOrdering
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Acquire
+  name: Acquire
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Acquire
+  commentId: F:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Acquire
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Acquire
+  nameWithType: MemoryOrdering.Acquire
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.AcquireRelease
+  name: AcquireRelease
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_AcquireRelease
+  commentId: F:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.AcquireRelease
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.AcquireRelease
+  nameWithType: MemoryOrdering.AcquireRelease
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Release
+  name: Release
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Release
+  commentId: F:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Release
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Release
+  nameWithType: MemoryOrdering.Release
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.SequentiallyConsistent
+  name: SequentiallyConsistent
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_SequentiallyConsistent
+  commentId: F:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.SequentiallyConsistent
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.SequentiallyConsistent
+  nameWithType: MemoryOrdering.SequentiallyConsistent
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Unknown
+  name: Unknown
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Unknown
+  commentId: F:DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Unknown
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.Unknown
+  nameWithType: MemoryOrdering.Unknown
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute
+  name: MemoryOrderingAttribute
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html
+  commentId: T:DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute
+  nameWithType: MemoryOrderingAttribute
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.#ctor(DotNext.Diagnostics.CodeAnalysis.MemoryOrdering)
+  name: MemoryOrderingAttribute(MemoryOrdering)
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrderingAttribute__ctor_DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_
+  commentId: M:DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.#ctor(DotNext.Diagnostics.CodeAnalysis.MemoryOrdering)
+  name.vb: New(MemoryOrdering)
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.MemoryOrderingAttribute(DotNext.Diagnostics.CodeAnalysis.MemoryOrdering)
+  fullName.vb: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.New(DotNext.Diagnostics.CodeAnalysis.MemoryOrdering)
+  nameWithType: MemoryOrderingAttribute.MemoryOrderingAttribute(MemoryOrdering)
+  nameWithType.vb: MemoryOrderingAttribute.New(MemoryOrdering)
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.#ctor*
+  name: MemoryOrderingAttribute
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrderingAttribute__ctor_
+  commentId: Overload:DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.#ctor
+  name.vb: New
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.MemoryOrderingAttribute
+  fullName.vb: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.New
+  nameWithType: MemoryOrderingAttribute.MemoryOrderingAttribute
+  nameWithType.vb: MemoryOrderingAttribute.New
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering
+  name: Ordering
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrderingAttribute_Ordering
+  commentId: P:DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering
+  nameWithType: MemoryOrderingAttribute.Ordering
+- uid: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering*
+  name: Ordering
+  href: api/DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrderingAttribute_Ordering_
+  commentId: Overload:DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering
+  fullName: DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.Ordering
+  nameWithType: MemoryOrderingAttribute.Ordering
 - uid: DotNext.Diagnostics.IApplicationStatusProvider
   name: IApplicationStatusProvider
   href: api/DotNext.Diagnostics.IApplicationStatusProvider.html
@@ -54109,6 +54187,15 @@ references:
   fullName.vb: DotNext.Threading.Atomic.Read(Of T)(T**)
   nameWithType: Atomic.Read<T>(T**)
   nameWithType.vb: Atomic.Read(Of T)(T**)
+- uid: DotNext.Threading.Atomic.Read``1(``0*@)
+  name: Read<T>(ref readonly T*)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read__1___0___
+  commentId: M:DotNext.Threading.Atomic.Read``1(``0*@)
+  name.vb: Read(Of T)(T*)
+  fullName: DotNext.Threading.Atomic.Read<T>(ref readonly T*)
+  fullName.vb: DotNext.Threading.Atomic.Read(Of T)(T*)
+  nameWithType: Atomic.Read<T>(ref readonly T*)
+  nameWithType.vb: Atomic.Read(Of T)(T*)
 - uid: DotNext.Threading.Atomic.TrueToFalse(System.Boolean@)
   name: TrueToFalse(ref bool)
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_TrueToFalse_System_Boolean__
@@ -54205,6 +54292,15 @@ references:
   fullName.vb: DotNext.Threading.Atomic.Write(Of T)(T**, T*)
   nameWithType: Atomic.Write<T>(T**, T*)
   nameWithType.vb: Atomic.Write(Of T)(T**, T*)
+- uid: DotNext.Threading.Atomic.Write``1(``0*@,``0*)
+  name: Write<T>(ref T*, T*)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write__1___0_____0__
+  commentId: M:DotNext.Threading.Atomic.Write``1(``0*@,``0*)
+  name.vb: Write(Of T)(T*, T*)
+  fullName: DotNext.Threading.Atomic.Write<T>(ref T*, T*)
+  fullName.vb: DotNext.Threading.Atomic.Write(Of T)(T*, T*)
+  nameWithType: Atomic.Write<T>(ref T*, T*)
+  nameWithType.vb: Atomic.Write(Of T)(T*, T*)
 - uid: DotNext.Threading.Atomic.get_IsUndefined*
   name: get_IsUndefined
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_get_IsUndefined_

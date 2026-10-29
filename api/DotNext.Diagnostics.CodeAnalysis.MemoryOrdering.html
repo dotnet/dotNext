@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Enum MemoryOrdering | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Enum MemoryOrdering | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Diagnostics.CodeAnalysis.MemoryOrdering">
+
+
+
+
+  <h1 id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering" data-uid="DotNext.Diagnostics.CodeAnalysis.MemoryOrdering" class="text-break">Enum MemoryOrdering</h1>
+  <div class="markdown level0 summary"><p>Represents memory ordering guarantees provided by the marked method.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Diagnostics.html">Diagnostics</a>.<a class="xref" href="DotNext.Diagnostics.CodeAnalysis.html">CodeAnalysis</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public enum MemoryOrdering</code></pre>
+  </div>
+  <h3 id="fields">Fields
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    <thead>
+    </thead></thead><tbody>
+      <tr>
+        <td id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Acquire">Acquire</td>
+        <td><p>No read or write that appears after the operation in the code can be moved before it.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_AcquireRelease">AcquireRelease</td>
+        <td><p>The operation provides both <a class="xref" href="DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Acquire">Acquire</a> and <a class="xref" href="DotNext.Diagnostics.CodeAnalysis.MemoryOrdering.html#DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Release">Release</a> guarantees.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Release">Release</td>
+        <td><p>No read or write that appears before the operation in the code can be moved after it.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_SequentiallyConsistent">SequentiallyConsistent</td>
+        <td><p>The operation acts as a full memory barrier: no read or write can be moved across it in either direction.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_Unknown">Unknown</td>
+        <td><p>The memory access guarantees are unknown.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Diagnostics_CodeAnalysis_MemoryOrdering_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Diagnostics.CodeAnalysis.MemoryOrderingAttribute.html">MemoryOrderingAttribute</a></div>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;MemoryOrdering, TLowerBound, TUpperBound&gt;(MemoryOrdering, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;MemoryOrdering&gt;(MemoryOrdering, params ReadOnlySpan&lt;MemoryOrdering&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;MemoryOrdering, T&gt;(ref MemoryOrdering, int)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttribute__2___0_">EnumType.GetCustomAttribute&lt;MemoryOrdering, TAttribute&gt;(MemoryOrdering)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttributes__2___0_">EnumType.GetCustomAttributes&lt;MemoryOrdering, TAttribute&gt;(MemoryOrdering)</a>
+  </div>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/101272c48b2f7eddbf5015703923c4126f6079d8/src/DotNext/Text/InterpolatedString.Utf8.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
