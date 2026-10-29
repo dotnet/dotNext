@@ -2,11 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Tcp;
 
 using Reflection;
+using Runtime.CompilerServices;
 using Threading;
 
 internal sealed class TcpServer : Server, ITcpTransport
@@ -80,7 +82,8 @@ internal sealed class TcpServer : Server, ITcpTransport
         init => gracefulShutdownTimeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    private async void HandleConnection(Socket remoteClient)
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task HandleConnection(Socket remoteClient)
     {
         var clientAddress = remoteClient.RemoteEndPoint;
         var transport = new TcpStream(remoteClient, owns: true);
@@ -162,7 +165,8 @@ internal sealed class TcpServer : Server, ITcpTransport
         }
     }
 
-    private async void Listen()
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task Listen()
     {
         while (!lifecycleToken.IsCancellationRequested && !IsDisposingOrDisposed)
         {
@@ -170,7 +174,7 @@ internal sealed class TcpServer : Server, ITcpTransport
             {
                 var remoteClient = await socket.AcceptAsync(lifecycleToken).ConfigureAwait(false);
                 ITcpTransport.ConfigureSocket(remoteClient, linger, ttl);
-                ThreadPool.UnsafeQueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
+                _ = HandleConnection(remoteClient);
             }
             catch (Exception e) when (e is ObjectDisposedException ||
                                       (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
@@ -217,7 +221,7 @@ internal sealed class TcpServer : Server, ITcpTransport
             {
                 socket.Bind(Address);
                 socket.Listen(backlog);
-                Listen();
+                _ = Listen();
             }
             catch (Exception e)
             {
