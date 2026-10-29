@@ -30,7 +30,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // the caller holds the bucket lock and passes the reference to the entry to the command
     private unsafe void Enqueue(Entry* entry)
     {
-        queue.Enqueue(new Promotion(entry));
+        queue.Enqueue(new Promotion(entry), notify: false);
         signal.Set();
     }
 
@@ -38,7 +38,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // The signal passes through the promotion queue, so it is processed after the promotion of the removed entry
     private unsafe void NotifyRemoved(Entry* removed)
     {
-        removed->AddReference(); // the reference owned by the signal
+        removed->AddRef(); // the reference owned by the signal
         NotifyRemovedCore(removed);
     }
 
@@ -46,7 +46,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
 
     private unsafe void NotifyRemovedCore(Entry* removed)
     {
-        queue.Enqueue(new InvalidationSignal { Target = removed });
+        queue.Enqueue(new InvalidationSignal { Target = removed }, notify: false);
         signal.Set();
     }
 
@@ -177,7 +177,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         while (currentSize >= Capacity && sieveHand is not null)
         {
             var entry = sieveHand;
-            if (entry->Unvisit())
+            if (!entry->TryEvict(out var removed))
             {
                 sieveHand = entry->SievePrevious is not null ? entry->SievePrevious : evictionTail;
                 continue;
@@ -187,7 +187,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
             currentSize--;
 
             // the entry is still linked to its bucket if it was alive
-            if (entry->MarkAsEvicted())
+            if (!removed)
                 TryCleanUpBucket(entry->KeyHashCode);
 
             Release(entry); // the reference owned by the SIEVE list
@@ -280,12 +280,6 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         // reclaim the entries deferred by the sessions concurrently with the flag
         await epoch.ClearAsync(CancellationToken.None).ConfigureAwait(false);
 
-        // the readers that could see the bucket array have left
-        unsafe
-        {
-            Free(buckets);
-        }
-
         parkingLot.Dispose();
         Cancel();
     }
@@ -315,16 +309,12 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
 
         for (var i = 0; i < Capacity; i++)
         {
-            var bucket = this[i];
-            var entry = bucket->First;
-            Volatile.Write(&bucket->First, null);
-
             // the readers can still traverse the chain, so the links remain intact
-            for (Entry* next; entry is not null; entry = next)
+            for (Entry* current = this[i]->Clear(), next; current is not null; current = next)
             {
-                next = entry->NextInBucket;
-                entry->MarkAsEvicted();
-                Release(entry);
+                next = current->NextInBucket;
+                current->MarkAsEvicted();
+                Release(current);
             }
         }
     }
@@ -334,32 +324,29 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     // sessions and promotion waiters never release their references. Thus, every reachable entry is released once
     private unsafe void ReleaseAbandonedMemory()
     {
-        var entries = new HashSet<nint>();
+        var entries = new HashSet<nuint>();
 
         while (queue.TryDequeue() is { } command)
         {
             switch (command)
             {
                 case Promotion promotion:
-                    entries.Add((nint)promotion.Entry);
+                    entries.Add((nuint)promotion.Entry);
                     break;
                 case InvalidationSignal invalidation when invalidation.Target is not null:
-                    entries.Add((nint)invalidation.Target);
+                    entries.Add((nuint)invalidation.Target);
                     break;
             }
         }
 
         for (var entry = evictionHead; entry is not null; entry = entry->SieveNext)
         {
-            entries.Add((nint)entry);
+            entries.Add((nuint)entry);
         }
 
         for (var i = 0; i < Capacity; i++)
         {
-            for (var entry = this[i]->First; entry is not null; entry = entry->NextInBucket)
-            {
-                entries.Add((nint)entry);
-            }
+            this[i]->ExportEntries(entries);
         }
 
         foreach (var entry in entries)
@@ -370,8 +357,6 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         // the retired entries are not linked to the structures above, and no thread is in the epoch
         var cleared = epoch.TryClear();
         Debug.Assert(cleared);
-        
-        Free(buckets);
     }
     
     unsafe ref nuint Epoch.INativeResourceManager.GetNextHandle(nuint handle)

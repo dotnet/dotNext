@@ -171,7 +171,8 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
         return AnonymousPrincipal.Instance;
     }
 
-    private async void ProcessRequestAsync(Socket clientSocket)
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task ProcessRequestAsync(Socket clientSocket)
     {
         var session = default(MaintenanceSession);
         var inputBuffer = default(BufferWriter<char>);
@@ -266,10 +267,10 @@ public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedS
     private async Task ListenAsync()
     {
         // preallocate delegate
-        for (var requestProcessor = ProcessRequestAsync; !stoppingToken.IsCancellationRequested;)
+        while (!stoppingToken.IsCancellationRequested)
         {
             var connection = await listener.AcceptAsync(stoppingToken).ConfigureAwait(false);
-            ThreadPool.QueueUserWorkItem(requestProcessor, connection, preferLocal: false);
+            _ = ProcessRequestAsync(connection);
         }
     }
 

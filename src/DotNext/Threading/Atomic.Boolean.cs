@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 public static partial class Atomic
 {
     /// <summary>
@@ -17,6 +19,7 @@ public static partial class Atomic
         /// <param name="location">The destination, whose value is compared with comparand and possibly replaced.</param>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static bool FalseToTrue(ref bool location) => !Interlocked.CompareExchange(ref location, true, false);
 
         /// <summary>
@@ -26,6 +29,7 @@ public static partial class Atomic
         /// <param name="location">The destination, whose value is compared with comparand and possibly replaced.</param>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static bool TrueToFalse(ref bool location) => Interlocked.CompareExchange(ref location, false, true);
 
         /// <summary>
@@ -33,6 +37,7 @@ public static partial class Atomic
         /// </summary>
         /// <param name="location">Reference to a value to be modified.</param>
         /// <returns>Negation result.</returns>
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static bool NegateAndGet(ref bool location) => UpdateAndGet(ref location, new Negation());
 
         /// <summary>
@@ -40,6 +45,7 @@ public static partial class Atomic
         /// </summary>
         /// <param name="location">Reference to a value to be modified.</param>
         /// <returns>The original value before negation.</returns>
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static bool GetAndNegate(ref bool location) => GetAndUpdate(ref location, new Negation());
     }
 

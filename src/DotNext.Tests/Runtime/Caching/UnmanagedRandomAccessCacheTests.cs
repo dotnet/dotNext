@@ -6,6 +6,7 @@ using System.Text;
 
 namespace DotNext.Runtime.Caching;
 
+using Diagnostics.Metrics;
 using static RandomAccessCache;
 
 public sealed class UnmanagedRandomAccessCacheTests : Test
@@ -505,9 +506,8 @@ public sealed class UnmanagedRandomAccessCacheTests : Test
         using var metrics = new CacheMetrics();
         var cache = new RandomAccessCache<long>(16) { MeasurementTags = metrics.Tags };
 
-        // the bucket array is allocated before the tags are set
-        var bucketsMemory = metrics.Memory;
-        True(bucketsMemory > 0L);
+        // the bucket array is allocated in the managed heap
+        Equal(0L, metrics.Memory);
         Equal(0L, metrics.Entries);
 
         True(await InsertAsync(cache, 1));
@@ -515,7 +515,7 @@ public sealed class UnmanagedRandomAccessCacheTests : Test
         Equal(2L, metrics.Entries);
 
         // the header with the value, and the key
-        var entryMemory = (metrics.Memory - bucketsMemory) / 2L;
+        var entryMemory = metrics.Memory / 2L;
         True(entryMemory >= sizeof(long) + sizeof(int));
 
         // the invalidated entry is allocated until the epoch reclaims it
@@ -620,41 +620,40 @@ file sealed class CacheMetrics : IDisposable
     private const string TestIdAttribute = "test.id";
 
     private readonly string id = Guid.NewGuid().ToString();
+    private readonly UpDownCounterObserver<long> entries, memory;
     private readonly MeterListener listener;
-    private long entries, memory;
 
     public CacheMetrics()
     {
-        listener = new()
-        {
-            InstrumentPublished = static (instrument, listener) =>
-            {
-                if (instrument.Meter.Name is "DotNext.Runtime.Caching.RandomAccessCache.Unmanaged")
-                    listener.EnableMeasurementEvents(instrument);
-            },
-        };
+        entries = new(IsTagged);
+        memory = new(IsTagged);
+        listener = new MeterListenerBuilder()
+            .Observe(static instrument => IsCacheInstrument(instrument, "entries-count"), entries)
+            .Observe(static instrument => IsCacheInstrument(instrument, "allocated-memory"), memory)
+            .Build();
 
-        listener.SetMeasurementEventCallback<long>(OnMeasurement);
         listener.Start();
+    }
+
+    private static bool IsCacheInstrument(Instrument instrument, string name)
+        => instrument.Meter.Name is "DotNext.Runtime.Caching.RandomAccessCache.Unmanaged" && instrument.Name == name;
+
+    private bool IsTagged(Instrument instrument, ReadOnlySpan<KeyValuePair<string, object>> tags)
+    {
+        foreach (var (key, value) in tags)
+        {
+            if (key is TestIdAttribute)
+                return Equals(value, id);
+        }
+
+        return false;
     }
 
     public TagList Tags => new() { { TestIdAttribute, id } };
 
-    public long Entries => Volatile.Read(in entries);
+    public long Entries => entries.Value;
 
-    public long Memory => Volatile.Read(in memory);
-
-    private void OnMeasurement(Instrument instrument, long measurement, ReadOnlySpan<KeyValuePair<string, object>> tags, object state)
-    {
-        foreach (var (key, value) in tags)
-        {
-            if (key is TestIdAttribute && Equals(value, id))
-            {
-                Interlocked.Add(ref instrument.Name is "entries-count" ? ref entries : ref memory, measurement);
-                break;
-            }
-        }
-    }
+    public long Memory => memory.Value;
 
     public void Dispose() => listener.Dispose();
 }

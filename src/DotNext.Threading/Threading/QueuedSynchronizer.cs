@@ -3,6 +3,8 @@ using System.Runtime.ExceptionServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
 /// </summary>
@@ -127,6 +129,7 @@ public abstract partial class QueuedSynchronizer : Disposable
     private protected virtual bool IsReadyToDispose => true;
 
     /// <inheritdoc />
+    [MemoryOrdering(MemoryOrdering.AcquireRelease)]
     protected override ValueTask DisposeAsyncCore()
     {
         ValueTask result;

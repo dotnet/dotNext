@@ -10,8 +10,7 @@ namespace DotNext.Numerics;
 /// <param name="divisor">The divisor.</param>
 [StructLayout(LayoutKind.Auto)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-[CLSCompliant(false)]
-public readonly struct FastMod(uint divisor)
+internal readonly struct FastMod(uint divisor)
 {
     private readonly ulong multiplier = Has64BitArithmetics ? ulong.MaxValue / divisor + 1UL : 0UL;
 

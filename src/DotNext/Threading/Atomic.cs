@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
 using Runtime.CompilerServices;
 
 /// <summary>
@@ -23,12 +24,17 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <summary>
     /// Gets a value indicating that the value of the container is writing.
     /// </summary>
-    public readonly bool IsWriteLockHeld => (Volatile.Read(in version) & 1U) is 1U;
+    public readonly bool IsWriteLockHeld
+    {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
+        get => (Volatile.Read(in version) & 1U) is 1U;
+    }
     
     /// <summary>
     /// Clones this container atomically.
     /// </summary>
     /// <returns>The cloned container.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly Atomic<T> Clone()
     {
         var result = new Atomic<T>();
@@ -55,6 +61,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// if a concurrent write happens during the copy of the value.
     /// </remarks>
     /// <param name="result">The result of atomic read.</param>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly void Read(out T result)
     {
         var spinner = new SpinWait();
@@ -68,6 +75,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// This operation is atomic for both containers.
     /// </remarks>
     /// <param name="other">The container for the value.</param>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Swap(ref Atomic<T> other)
     {
         var stamp = EnterWriteLock();
@@ -79,6 +87,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// Swaps the value stored in this container and the given value atomically.
     /// </summary>
     /// <param name="other">The managed pointer to the value to swap.</param>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Swap(ref T other)
     {
         var stamp = EnterWriteLock();
@@ -90,6 +99,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// Performs atomic write.
     /// </summary>
     /// <param name="newValue">The value to be stored into this container.</param>
+    [MemoryOrdering(MemoryOrdering.Release)]
     public void Write(in T newValue)
     {
         var stamp = EnterWriteLock();
@@ -104,6 +114,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="expected">The value that is compared to the stored value.</param>
     /// <param name="result">The origin value stored in this container before modification.</param>
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public bool CompareExchange(in T update, in T expected, out T result)
         => CompareExchange(new DefaultEqualityComparer(), in update, in expected, out result);
 
@@ -116,6 +127,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="result">The origin value stored in this container before modification.</param>
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public bool CompareExchange(Func<T, T, bool> comparer, in T update, in T expected, out T result)
     {
         ArgumentNullException.ThrowIfNull(comparer);
@@ -133,6 +145,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public unsafe bool CompareExchange(delegate*<in T, in T, bool> comparer, in T update, in T expected, out T result)
     {
         ArgumentNullException.ThrowIfNull(comparer);
@@ -154,6 +167,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <see langword="false"/> if this container is concurrently writing the value,
     /// or the current value is to equal to <paramref name="comparisonValue"/>.
     /// </returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public bool TryUpdate(in T comparisonValue, in T newValue)
         => TryUpdate(new DefaultEqualityComparer(), in comparisonValue, in newValue);
 
@@ -174,6 +188,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// or the current value is to equal to <paramref name="comparisonValue"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public bool TryUpdate(Func<T, T, bool> comparer, in T comparisonValue, in T newValue)
     {
         ArgumentNullException.ThrowIfNull(comparer);
@@ -199,6 +214,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null"/>.</exception>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public unsafe bool TryUpdate(delegate*<in T, in T, bool> comparer, in T comparisonValue, in T newValue)
     {
         ArgumentNullException.ThrowIfNull(comparer);
@@ -212,6 +228,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="expected">The expected value.</param>
     /// <param name="update">The new value.</param>
     /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public bool CompareAndSet(in T expected, in T update)
         => CompareAndSet(new DefaultEqualityComparer(), in expected, in update);
 
@@ -222,6 +239,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="expected">The expected value.</param>
     /// <param name="update">The new value.</param>
     /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public bool CompareAndSet(Func<T, T, bool> comparer, in T expected, in T update)
         => CompareAndSet(new DelegatingEqualityComparer(comparer), in expected, in update);
 
@@ -233,6 +251,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="update">The new value.</param>
     /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public unsafe bool CompareAndSet(delegate*<in T, in T, bool> comparer, in T expected, in T update)
         => CompareAndSet(new EqualityComparer(comparer), in expected, in update);
 
@@ -241,6 +260,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// </summary>
     /// <param name="update">The value that replaces the stored value.</param>
     /// <param name="previous">The original stored value before modification.</param>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Exchange(in T update, out T previous)
     {
         var stamp = EnterWriteLock();
@@ -255,6 +275,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void UpdateAndGet(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
@@ -279,6 +300,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="updater">A side-effect-free function.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void GetAndUpdate(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
@@ -307,6 +329,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The updated value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
@@ -335,6 +358,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <param name="result">The original value.</param>
     /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
@@ -361,11 +385,14 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// </remarks>
     public T Value
     {
+        [MemoryOrdering(MemoryOrdering.Acquire)]
         readonly get
         {
             Read(out var result);
             return result;
         }
+        
+        [MemoryOrdering(MemoryOrdering.Release)]
         set => Write(value);
     }
 
@@ -373,6 +400,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// Sets the default value and returns the previous value.
     /// </summary>
     /// <param name="previousValue">The previous value.</param>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Clear(out T previousValue)
     {
         var stamp = EnterWriteLock();
@@ -384,6 +412,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     /// <summary>
     /// Sets the default value.
     /// </summary>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Clear()
     {
         var stamp = EnterWriteLock();
@@ -402,6 +431,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     }
 
     /// <inheritdoc/>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly override string? ToString()
     {
         Read(out var result);
@@ -491,6 +521,7 @@ public static partial class Atomic
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T AccumulateAndGet<TAccumulator>(ref T location, T x, TAccumulator accumulator)
             where TAccumulator : ISupplier<T, T, T>, allows ref struct
             => Accumulate(ref location, x, accumulator).NewValue;
@@ -508,6 +539,7 @@ public static partial class Atomic
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T AccumulateAndGet(ref T location, T x, Func<T, T, T> accumulator)
             => AccumulateAndGet<T, DelegatingSupplier<T, T, T>>(ref location, x, accumulator);
 
@@ -525,6 +557,7 @@ public static partial class Atomic
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T GetAndAccumulate<TAccumulator>(ref T location, T x, TAccumulator accumulator)
             where TAccumulator : ISupplier<T, T, T>, allows ref struct
             => Accumulate(ref location, x, accumulator).OldValue;
@@ -542,6 +575,7 @@ public static partial class Atomic
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T GetAndAccumulate(ref T location, T x, Func<T, T, T> accumulator)
             => GetAndAccumulate<T, DelegatingSupplier<T, T, T>>(ref location, x, accumulator);
 
@@ -555,6 +589,7 @@ public static partial class Atomic
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T UpdateAndGet<TUpdater>(ref T location, TUpdater updater)
             where TUpdater : ISupplier<T, T>, allows ref struct
             => Update(ref location, updater).NewValue;
@@ -568,6 +603,7 @@ public static partial class Atomic
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T UpdateAndGet(ref T location, Func<T, T> updater)
             => UpdateAndGet<T, DelegatingSupplier<T, T>>(ref location, updater);
 
@@ -581,6 +617,7 @@ public static partial class Atomic
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T GetAndUpdate<TUpdater>(ref T location, TUpdater updater)
             where TUpdater : ISupplier<T, T>, allows ref struct
             => Update(ref location, updater).OldValue;
@@ -594,6 +631,7 @@ public static partial class Atomic
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNullIfNotNull(nameof(location))]
+        [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
         public static T GetAndUpdate(ref T location, Func<T, T> updater)
             => GetAndUpdate<T, DelegatingSupplier<T, T>>(ref location, updater);
     }

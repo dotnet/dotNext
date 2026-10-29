@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Custom;
 
 using Buffers;
+using Runtime.CompilerServices;
 using Threading;
 
 internal sealed class GenericServer : Server
@@ -35,7 +37,8 @@ internal sealed class GenericServer : Server
         init;
     }
 
-    private async void HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
     {
         var protocol = new ProtocolPipeStream(connection.Transport, allocator, transmissionSize)
         {
@@ -105,7 +108,11 @@ internal sealed class GenericServer : Server
                     if (connection is null)
                         break;
 
-                    ThreadPool.UnsafeQueueUserWorkItem(new ConnectionHandler(this, connection), preferLocal: false);
+                    _ = HandleConnection(connection,
+                        GetTransmissionSize(connection),
+                        connection.RemoteEndPoint,
+                        GetMemoryAllocator(connection)
+                    );
                 }
                 catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
                 {
@@ -124,7 +131,15 @@ internal sealed class GenericServer : Server
         {
             await listener.DisposeAsync().ConfigureAwait(false);
         }
+        
+        static int GetTransmissionSize(ConnectionContext connection)
+            => connection.Transport.Output.GetSpan().Length;
     }
+
+    private MemoryAllocator<byte> GetMemoryAllocator(BaseConnectionContext connection)
+        => connection.Features.Get<MemoryAllocator<byte>>()
+           ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
+           ?? MemoryAllocator;
 
     public override async ValueTask StartAsync(CancellationToken token)
         => listenerTask = Listen(await ListenerFactory.BindAsync(Address, token).ConfigureAwait(false));
@@ -149,30 +164,5 @@ internal sealed class GenericServer : Server
     {
         CleanUp();
         return new(listenerTask ?? Task.CompletedTask);
-    }
-
-    private sealed class ConnectionHandler : Tuple<ConnectionContext, int, EndPoint?, MemoryAllocator<byte>>, IThreadPoolWorkItem
-    {
-        private readonly WeakReference<GenericServer> serverRef;
-
-        internal ConnectionHandler(GenericServer server, ConnectionContext connection)
-            : base(connection, GetTransmissionSize(connection), connection.RemoteEndPoint, GetMemoryAllocator(server, connection))
-            => serverRef = new(server, trackResurrection: false);
-
-        private static int GetTransmissionSize(ConnectionContext connection)
-            => connection.Transport.Output.GetSpan().Length;
-
-        private static MemoryAllocator<byte> GetMemoryAllocator(GenericServer server, BaseConnectionContext connection)
-        {
-            return connection.Features.Get<MemoryAllocator<byte>>()
-                ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
-                ?? server.MemoryAllocator;
-        }
-
-        void IThreadPoolWorkItem.Execute()
-        {
-            if (serverRef.TryGetTarget(out var server))
-                server.HandleConnection(Item1, Item2, Item3, Item4);
-        }
     }
 }
