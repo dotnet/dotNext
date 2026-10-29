@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 10-29-2026
+<a href="https://www.nuget.org/packages/dotnext/6.11.1">DotNext 6.11.1</a>
+* Fixed `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations, so now these methods are compatible with managed pointers too
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.11.1">DotNext.Metaprogramming 6.11.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.11.1">DotNext.Unsafe 6.11.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.11.1">DotNext.Threading 6.11.1</a>
+* `RandomAccessCache<TValue>` now uses Pinned Object Heap to allocate _static_ parts of the cache when instantiated first time. Cache entries are still in unmanaged heap. This change allows to monitor memory consumption via .NET built-in metrics, while cache entry allocation has its own metrics
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.11.1">DotNext.IO 6.11.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.1">DotNext.Net.Cluster 6.11.1</a>
+* Preparation for Runtime Async: removed `async void` methods
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.1">DotNext.AspNetCore.Cluster 6.11.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.1">DotNext.MaintenanceServices 1.11.1</a>
+* Preparation for Runtime Async: removed `async void` methods
+
 # 10-26-2026
 <a href="https://www.nuget.org/packages/dotnext/6.11.0">DotNext 6.11.0</a>
 * Added `ApplicationLock` class that allows only one running instance of the application, based on the exclusively opened lock file

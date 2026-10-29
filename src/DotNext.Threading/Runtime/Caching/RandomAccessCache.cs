@@ -242,7 +242,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             if (bucket.TryRemove(selector, hashCode) is { } removedPair)
             {
                 NotifyRemoved(removedPair);
-                if (!removedPair.ReleaseCounter())
+                if (removedPair.ReleaseRef())
                     OnRemoved(removedPair);
             }
 
@@ -452,7 +452,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             return false;
         }
 
-        if (!removedPair.ReleaseCounter())
+        if (removedPair.ReleaseRef())
         {
             OnRemoved(removedPair);
         }
@@ -532,7 +532,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     SetValue(pair, value);
                 }
 
-                if (!pair.ReleaseCounter())
+                if (pair.ReleaseRef())
                     OnRemoved(pair);
             }
             else
@@ -701,7 +701,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// </summary>
         public void Dispose()
         {
-            if (valueHolder?.ReleaseCounter() is false)
+            if (valueHolder?.ReleaseRef() is true)
             {
                 cache.OnRemoved(valueHolder);
             }
@@ -803,7 +803,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     lockedBuckets[index].MarkAsReadyToAdd();
                     lockedBuckets.Release(cache.parkingLot, index);
                     break;
-                case KeyValuePair pair when !pair.ReleaseCounter():
+                case KeyValuePair pair when pair.ReleaseRef():
                     cache.OnRemoved(pair);
                     break;
             }
@@ -833,7 +833,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                         task = cache.DisposedTask;
                     
                     break;
-                case KeyValuePair pair when !pair.ReleaseCounter():
+                case KeyValuePair pair when pair.ReleaseRef():
                     cache.OnRemoved(pair);
                     goto default;
                 default:
@@ -848,7 +848,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct AcquisitionVisitor : IKeyValuePairVisitor
     {
-        static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => pair.Visit() && pair.TryAcquireCounter();
+        static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => pair.Visit() && pair.TryAddRef();
     }
 }
 

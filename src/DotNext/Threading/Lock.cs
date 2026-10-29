@@ -5,6 +5,8 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradeable read lock.
 /// </summary>
@@ -205,6 +207,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// Acquires lock.
     /// </summary>
     /// <returns>The holder of the acquired lock.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly Scope Acquire()
     {
         AssertLockType();
@@ -255,6 +258,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// </summary>
     /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly bool TryAcquire(out Scope scope)
     {
         if (TryAcquire())
@@ -289,6 +293,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly bool TryAcquire(TimeSpan timeout, out Scope scope)
     {
         if (TryAcquire(timeout))
@@ -307,6 +312,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The holder of the acquired lock.</returns>
     /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public readonly Scope Acquire(TimeSpan timeout)
         => TryAcquire(timeout) ? new Scope(in this) : throw new TimeoutException();
 
@@ -318,6 +324,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// otherwise, the underlying lock object will not be destroyed.
     /// As a result, this lock is not usable after calling of this method.
     /// </remarks>
+    [MemoryOrdering(MemoryOrdering.Release)]
     public void Dispose()
     {
         if (owner && lockedObject is IDisposable disposable)

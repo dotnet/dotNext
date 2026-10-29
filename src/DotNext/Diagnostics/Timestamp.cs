@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Diagnostics;
 
+using CodeAnalysis;
 using Threading;
 
 /// <summary>
@@ -280,6 +281,7 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <returns>The value at the specified location.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Timestamp VolatileRead(ref readonly Timestamp location)
         => new(Atomic.Read(in location.ticks));
 
@@ -288,6 +290,7 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <param name="newValue">The value to write.</param>
+    [MemoryOrdering(MemoryOrdering.Release)]
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
         => Atomic.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
@@ -295,6 +298,7 @@ public readonly record struct Timestamp :
     /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
     /// </summary>
     /// <param name="location">The location of the timestamp to update.</param>
+    [MemoryOrdering(MemoryOrdering.Release)]
     public static void Refresh(ref Timestamp location)
         => Refresh(ref location, TimeProvider.System);
 
@@ -303,10 +307,12 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="location">The location of the timestamp to update.</param>
     /// <param name="provider">Time provider.</param>
+    [MemoryOrdering(MemoryOrdering.Release)]
     public static void Refresh(ref Timestamp location, TimeProvider provider)
         => Atomic.Write(ref Unsafe.AsRef(in location.ticks), GetCurrentTicks(provider));
 
     /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
         => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.ticks), value.ticks, comparand.ticks));
 }

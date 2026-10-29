@@ -8,10 +8,6 @@ using Threading;
 
 unsafe partial class RandomAccessCache<TValue>
 {
-    private const sbyte NotVisited = 0;
-    private const sbyte Visited = 1;
-    private const sbyte Evicted = -1;
-
     // The entry is a single block of unmanaged memory: the header with the value, and the key bytes.
     // The runtime packs the fields to minimize padding, the code must not depend on their offsets
     [StructLayout(LayoutKind.Auto)]
@@ -30,66 +26,34 @@ unsafe partial class RandomAccessCache<TValue>
 
         // The owners of the entry: the bucket chain, the queue commands, the SIEVE list and the sessions.
         // The entry is retired when the counter reaches zero, and reclaimed when the readers leave the epoch
-        private volatile uint lifetimeCounter;
-        private volatile sbyte cacheState;
-        private volatile byte processed; // 1 when the eviction thread processed the entry
+        private ReferenceCounter lifetimeCounter;
+        private SieveState sieveState;
+        internal volatile bool IsProcessed; // true when the eviction thread processed the entry
 
         private Entry(int keyHashCode, int keyLength, in TValue value)
         {
-            lifetimeCounter = 2U;
+            lifetimeCounter = new(initialValue: 2U);
             KeyHashCode = keyHashCode;
             KeyLength = keyLength;
             Value = value;
         }
 
-        public bool IsProcessed
-        {
-            get => Unsafe.BitCast<byte, bool>(processed);
-            set => processed = Unsafe.BitCast<bool, byte>(value);
-        }
+        public readonly bool IsDead => sieveState.IsDead;
 
-        public readonly bool IsDead => cacheState is Evicted;
+        public bool Visit() => sieveState.Visit();
 
-        public bool Visit() => cacheState switch
-        {
-            Visited => true,
-            NotVisited => Interlocked.CompareExchange(ref cacheState, Visited, NotVisited) is not Evicted,
-            _ => false,
-        };
-
-        public bool Unvisit() => cacheState is Visited
-                                 && Interlocked.CompareExchange(ref cacheState, NotVisited, Visited) is Visited;
-
-        public bool TryAcquire()
-        {
-            for (uint current = lifetimeCounter, tmp; current > 0; current = tmp)
-            {
-                tmp = Interlocked.CompareExchange(ref lifetimeCounter, current + 1, current);
-                if (tmp == current)
-                    return true;
-            }
-
-            return false;
-        }
+        // false if the entry gets a second chance; otherwise, removed is true if the entry was evicted before
+        public bool TryEvict(out bool removed) => sieveState.TryEvict(out removed);
         
         // true if the entry was alive
-        public bool MarkAsEvicted()
-            => Interlocked.Exchange(ref cacheState, Evicted) is not Evicted;
+        public bool MarkAsEvicted() => sieveState.MarkAsEvicted();
+        
+        public bool TryAddRef() => lifetimeCounter.TryAdd();
         
         // the caller must own a reference
-        public void AddReference()
-        {
-            Debug.Assert(lifetimeCounter > 0U);
+        public void AddRef() => lifetimeCounter.Add();
 
-            Interlocked.Increment(ref lifetimeCounter);
-        }
-
-        public bool ReleaseReference()
-        {
-            Debug.Assert(lifetimeCounter > 0U);
-
-            return Interlocked.Decrement(ref lifetimeCounter) is 0U;
-        }
+        public bool ReleaseRef() => lifetimeCounter.Release();
 
         public readonly long Size
             => sizeof(Entry) + (long)KeyLength;
@@ -103,6 +67,9 @@ unsafe partial class RandomAccessCache<TValue>
                 return MemoryMarshal.CreateSpan(ref Unsafe.As<Entry, byte>(ref reference), KeyLength);
             }
         }
+
+        public readonly bool Matches(ReadOnlySpan<byte> key, int hashCode, IEqualityComparer<ReadOnlySpan<byte>> comparer)
+            => KeyHashCode == hashCode && comparer.Equals(key, Key);
 
         public static Entry* Allocate(ReadOnlySpan<byte> key, int hashCode, in TValue value)
         {
@@ -132,10 +99,49 @@ unsafe partial class RandomAccessCache<TValue>
         internal Entry* First;
         internal Entry* Added; // the entry inserted by the session holding the lock
 
-        public static Bucket* Allocate(uint bucketCount)
-            => (Bucket*)NativeMemory.AllocZeroed(bucketCount, (uint)sizeof(Bucket));
+        public void Add(Entry* entry)
+        {
+            entry->NextInBucket = First;
+            Volatile.Write(ref First, entry); // publish the initialized entry to the lock-free readers
+            Added = entry;
+        }
 
-        public static void Free(Bucket* bucket) => NativeMemory.Free(bucket);
+        public Entry* Clear()
+        {
+            var entry = First;
+            Volatile.Write(ref First, null);
+            return entry;
+        }
+
+        public readonly Entry* TryGet<TVisitor>(ReadOnlySpan<byte> key, int hashCode, IEqualityComparer<ReadOnlySpan<byte>> comparer)
+            where TVisitor : IKeyValuePairVisitor, allows ref struct
+        {
+            for (var current = Volatile.Read(in First);
+                 current is not null;
+                 current = Volatile.Read(&current->NextInBucket))
+            {
+                if (current->Matches(key, hashCode, comparer) && TVisitor.Visit(current))
+                    return current;
+            }
+
+            return null;
+        }
+
+        public readonly void MarkAllAsEvicted()
+        {
+            for (var entry = First; entry is not null; entry = entry->NextInBucket)
+            {
+                entry->MarkAsEvicted();
+            }
+        }
+
+        public readonly void ExportEntries(HashSet<nuint> entries)
+        {
+            for (var entry = First; entry is not null; entry = entry->NextInBucket)
+            {
+                entries.Add((nuint)entry);
+            }
+        }
     }
 
     private void Free(Entry* entry)
@@ -144,18 +150,26 @@ unsafe partial class RandomAccessCache<TValue>
         Entry.Free(entry);
     }
 
-    private void Free(Bucket* entry)
-    {
-        OnBucketsReleased();
-        Bucket.Free(entry);
-    }
-
-    private bool Matches(Entry* entry, ReadOnlySpan<byte> key, int hashCode)
-        => entry->KeyHashCode == hashCode && EqualityComparer.Equals(key, entry->Key);
-
     private void Release(Entry* entry)
     {
-        if (entry->ReleaseReference())
+        if (entry->ReleaseRef())
             Retire(entry);
+    }
+    
+    private interface IKeyValuePairVisitor
+    {
+        public static abstract bool Visit(Entry* entry);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct NotDeadFilter : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(Entry* entry) => !entry->IsDead;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct AcquisitionVisitor : IKeyValuePairVisitor
+    {
+        public static bool Visit(Entry* entry) => entry->Visit() && entry->TryAddRef();
     }
 }

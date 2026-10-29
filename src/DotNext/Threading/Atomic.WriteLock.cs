@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 partial struct Atomic<T>
 {
     /// <summary>
@@ -10,6 +12,7 @@ partial struct Atomic<T>
     /// </summary>
     /// <returns>The scope of the write lock.</returns>
     [UnscopedRef]
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public WriteLockScope EnterLock() => new(ref this);
     
     /// <summary>
@@ -35,6 +38,7 @@ partial struct Atomic<T>
         /// <summary>
         /// Releases write lock.
         /// </summary>
+        [MemoryOrdering(MemoryOrdering.Release)]
         public void Dispose() => atomic.ExitWriteLock(stamp);
     }
 }

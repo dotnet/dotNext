@@ -55,7 +55,7 @@ public partial class RandomAccessCache<TKey, TValue>
             currentSize++;
             OnAdded(promoted);
 
-            if (!promoted.ReleaseCounter())
+            if (promoted.ReleaseRef())
                 OnRemoved(promoted);
         }
         else
@@ -63,9 +63,9 @@ public partial class RandomAccessCache<TKey, TValue>
             // the cache doesn't have enough resources (pair has too high weight), release the enqueued pair.
             // The weight is not added, so use Clear instead of OnRemoved
             if (promoted.MarkAsEvicted())
-                promoted.ReleaseCounter(); // the reference owned by the cache, cannot reach zero
+                promoted.ReleaseRef(); // the reference owned by the cache, cannot reach zero
 
-            if (!promoted.ReleaseCounter())
+            if (promoted.ReleaseRef())
                 Clear(promoted);
 
             promoted.Added();
@@ -119,7 +119,7 @@ public partial class RandomAccessCache<TKey, TValue>
             if (sieveHand is null)
                 return false;
 
-            if (!sieveHand.Evict(out var removed))
+            if (!sieveHand.TryEvict(out var removed))
             {
                 sieveHand = sieveHand.MoveBackward() ?? evictionTail;
             }
@@ -128,7 +128,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 var removedPair = sieveHand;
                 sieveHand = sieveHand.DetachAndMoveBackward(ref evictionHead, ref evictionTail) ?? evictionTail;
                 currentSize--;
-                if (!removed && !removedPair.ReleaseCounter())
+                if (!removed && removedPair.ReleaseRef())
                 {
                     OnRemoved(removedPair);
                     buckets.CleanUp(parkingLot, removedPair.KeyHashCode);
@@ -197,12 +197,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
     internal partial class KeyValuePair
     {
-        private const int EvictedState = -1;
-        private const int NotVisitedState = 0;
-        private const int VisitedState = 1;
-
         private (KeyValuePair? Previous, KeyValuePair? Next) sieveLinks;
-        private volatile int cacheState;
+        private SieveState sieveState;
 
         // null, or Task, or AddedEventSource
         private volatile object? addedEvent;
@@ -257,27 +253,16 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal bool Evict(out bool removed)
-        {
-            var counter = Interlocked.Decrement(ref cacheState);
-            removed = counter < EvictedState;
-            return counter < NotVisitedState;
-        }
+        internal bool TryEvict(out bool removed) => sieveState.TryEvict(out removed);
 
-        internal bool Visit() => cacheState switch
-        {
-            VisitedState => true,
-            NotVisitedState => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState,
-            _ => false,
-        };
+        internal bool Visit() => sieveState.Visit();
 
-        internal bool MarkAsEvicted()
-            => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
+        internal bool MarkAsEvicted() => sieveState.MarkAsEvicted();
 
         internal bool MarkAsDead()
-            => MarkAsEvicted() && !ReleaseCounter();
+            => MarkAsEvicted() && ReleaseRef();
 
-        internal bool IsDead => cacheState < NotVisitedState;
+        internal bool IsDead => sieveState.IsDead;
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

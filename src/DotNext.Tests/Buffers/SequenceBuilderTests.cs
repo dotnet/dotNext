@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace DotNext.Buffers;
 
 public sealed class SequenceBuilderTests : Test
@@ -30,6 +32,17 @@ public sealed class SequenceBuilderTests : Test
         using var builder = new SequenceBuilder<byte>(1024);
 
         // must be greater than 4096 because it's a default size of arrays obtained from ArrayPool<T>.Shared
+        var expected = RandomBytes(5000);
+        builder.Write(expected);
+        True(builder.As<IReadOnlySequenceSource<byte>>().Sequence.SequenceEqual(expected));
+    }
+    
+    [Fact]
+    public static void BuildSequenceUsingMemoryPool()
+    {
+        using var builder = new SequenceBuilder<byte>(MemoryPool<byte>.Shared);
+
+        // must be greater than 4096 because it's a default size of buffers obtained from MemoryPool<T>.Shared
         var expected = RandomBytes(5000);
         builder.Write(expected);
         True(builder.As<IReadOnlySequenceSource<byte>>().Sequence.SequenceEqual(expected));

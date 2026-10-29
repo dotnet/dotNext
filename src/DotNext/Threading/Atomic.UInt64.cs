@@ -1,5 +1,7 @@
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 public static partial class Atomic
 {
     /// <summary>
@@ -11,6 +13,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <returns>The value at the specified location.</returns>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static ulong Read(ref readonly ulong location)
         => IsAtomic<ulong>() ? Volatile.Read(in location) : Interlocked.Read(in location);
 
@@ -23,6 +26,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <param name="value">The desired value at the specified location.</param>
     [CLSCompliant(false)]
+    [MemoryOrdering(MemoryOrdering.Release)]
     public static void Write(ref ulong location, ulong value)
     {
         if (IsAtomic<ulong>())

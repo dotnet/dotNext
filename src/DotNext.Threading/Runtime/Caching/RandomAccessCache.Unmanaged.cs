@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Runtime.Caching;
 
@@ -23,7 +24,7 @@ using Threading.Tasks;
 public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDisposable
     where TValue : unmanaged
 {
-    private readonly unsafe Bucket* buckets;
+    private readonly Bucket[] buckets; // pinned, so the buckets can be accessed through pointers
     private readonly FastMod fastMod;
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed by the eviction thread after the teardown")]
     private readonly AsyncParkingLot parkingLot;
@@ -56,16 +57,18 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     /// <paramref name="capacity"/> is less than or equal to zero;
     /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
     /// </exception>
-    public unsafe RandomAccessCache(int capacity, int concurrencyLevel)
+    public RandomAccessCache(int capacity, int concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        Capacity = int.GetPrime(capacity);
-        fastMod = new((uint)Capacity);
-        buckets = Bucket.Allocate((uint)Capacity);
-        OnBucketsAllocated();
-        parkingLot = new(concurrencyLevel);
+        
+        Capacity = capacity = int.GetPrime(capacity);
+        fastMod = new((uint)capacity);
+        buckets = GC.AllocateArray<Bucket>(capacity, pinned: true);
+        parkingLot = new(concurrencyLevel, poolSizePerSlot: 3)
+        {
+            MeasurementTags = measurementTags,
+        };
         cancellationTokens = new() { MaximumRetained = concurrencyLevel };
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
@@ -119,23 +122,20 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         var hashCode = EqualityComparer.GetHashCode(key);
 
         // the epoch protects the traversed entries from reclamation
+        Entry* entry;
         using (epoch.Enter())
         {
-            if (!IsDisposingOrDisposed)
-            {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First); current is not null; current = Volatile.Read(&current->NextInBucket))
-                {
-                    if (Matches(current, key, hashCode) && current->Visit() && current->TryAcquire())
-                    {
-                        session = new(this, current);
-                        return true;
-                    }
-                }
-            }
+            entry = IsDisposingOrDisposed
+                ? null
+                : this[IndexOf(hashCode)]->TryGet<AcquisitionVisitor>(key, hashCode, EqualityComparer);
         }
 
-        session = default;
-        return false;
+        var result = entry is not null;
+        session = result
+            ? new(this, entry)
+            : default;
+
+        return result;
     }
 
     /// <summary>
@@ -147,19 +147,15 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     {
         var hashCode = EqualityComparer.GetHashCode(key);
 
+        Entry* entry;
         using (epoch.Enter())
         {
-            if (!IsDisposingOrDisposed)
-            {
-                for (var current = Volatile.Read(&this[IndexOf(hashCode)]->First); current is not null; current = Volatile.Read(&current->NextInBucket))
-                {
-                    if (Matches(current, key, hashCode) && !current->IsDead)
-                        return true;
-                }
-            }
+            entry = IsDisposingOrDisposed
+                ? null
+                : this[IndexOf(hashCode)]->TryGet<NotDeadFilter>(key, hashCode, EqualityComparer);
         }
 
-        return false;
+        return entry is not null;
     }
 
     /// <summary>
@@ -202,7 +198,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var hashCode = EqualityComparer.GetHashCode(key.Invoke());
-        return ChangeAsync(key, hashCode, IndexOf(hashCode), new(timeout), replace: false, token).Wait();
+        return ChangeAsync(key, hashCode, IndexOf(hashCode), timeout, replace: false, token).Wait();
     }
 
     /// <summary>
@@ -247,13 +243,14 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var hashCode = EqualityComparer.GetHashCode(key.Invoke());
-        return ChangeAsync(key, hashCode, IndexOf(hashCode), new(timeout), replace: true, token).Wait();
+        return ChangeAsync(key, hashCode, IndexOf(hashCode), timeout, replace: true, token).Wait();
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadWriteSession<TKey>> ChangeAsync<TKey>(TKey key, int hashCode, int index, Timeout timeout, bool replace, CancellationToken token)
+    private async ValueTask<ReadWriteSession<TKey>> ChangeAsync<TKey>(TKey key, int hashCode, int index, TimeSpan timeout, bool replace, CancellationToken token)
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
+        Timeout.Validate(timeout);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
         var cts = cancellationTokens.Combine(token, lifetimeToken);
@@ -297,7 +294,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         where TKey : ISupplier<ReadOnlySpan<byte>>
     {
         var entry = FindAndCleanUp(this[index], key.Invoke(), hashCode);
-        return entry is not null && entry->Visit() && entry->TryAcquire()
+        return entry is not null && AcquisitionVisitor.Visit(entry)
             ? new(this, entry)
             : default;
     }
@@ -384,7 +381,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
 
         // the reference must be taken before the bucket chain releases its own reference
         if (addReference)
-            entry->AddReference();
+            entry->AddRef();
 
         // the eviction thread removes the entry from the SIEVE list, so it doesn't occupy the cache until the hand reaches it
         NotifyRemoved(entry);
@@ -529,10 +526,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         for (var i = 0; i < Capacity; i++)
         {
             var bucket = this[i];
-            for (var entry = bucket->First; entry is not null; entry = entry->NextInBucket)
-            {
-                entry->MarkAsEvicted();
-            }
+            bucket->MarkAllAsEvicted();
 
             CleanUp(bucket);
         }
@@ -553,9 +547,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         // the bucket chain and the promotion queue own the entry
         var entry = Entry.Allocate(key, hashCode, in value);
         OnAllocated(entry);
-        entry->NextInBucket = bucket->First;
-        Volatile.Write(&bucket->First, entry); // publish the initialized entry to the lock-free readers
-        bucket->Added = entry;
+        bucket->Add(entry);
         Enqueue(entry);
     }
 
@@ -573,7 +565,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
 
         // the entry must be alive until the waiter observes the promotion
         if (added is not null)
-            added->AddReference();
+            added->AddRef();
 
         ReleaseBucket(index);
         return added is null ? ValueTask.CompletedTask : WaitForPromotionAsync((nint)added);
@@ -629,36 +621,29 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         {
             Debug.Assert((uint)index < (uint)Capacity);
 
-            return buckets + index;
+            return (Bucket*)Unsafe.AsPointer(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index));
         }
     }
 
     private unsafe ValueTask AcquireBucketAsync(int index, CancellationToken token)
-        => parkingLot.ParkAsync(index, ref this[index]->LockState, userData: null, token);
+        => parkingLot.ParkAsync(index, ref GetBucketState(index), userData: null, token);
 
-    private unsafe ValueTask AcquireBucketAsync(int index, in Timeout timeout, CancellationToken token)
+    private ValueTask AcquireBucketAsync(int index, TimeSpan timeout, CancellationToken token)
+        => timeout == InfiniteTimeSpan ? AcquireBucketAsync(index, token) : AcquireBucketSlowAsync(index, timeout, token);
+
+    private unsafe ref AsyncParkingLot.State GetBucketState(int index) => ref this[index]->LockState;
+
+    private async ValueTask AcquireBucketSlowAsync(int index, TimeSpan timeout, CancellationToken token)
     {
-        if (timeout.IsInfinite)
-            return AcquireBucketAsync(index, token);
-
-        var task = parkingLot.ParkAsync(index, ref this[index]->LockState, userData: null, timeout.RemainingTime, token);
-        if (!task.IsCompletedSuccessfully)
-            return ThrowIfTimedOutAsync(task);
-
-        return task.Result ? ValueTask.CompletedTask : ValueTask.FromException(new TimeoutException());
-    }
-
-    private static async ValueTask ThrowIfTimedOutAsync(ValueTask<bool> task)
-    {
-        if (!await task.ConfigureAwait(false))
+        if (!await parkingLot.ParkAsync(index, ref GetBucketState(index), userData: null, timeout, token).ConfigureAwait(false))
             throw new TimeoutException();
     }
 
     private unsafe bool TryAcquireBucket(int index)
-        => AsyncParkingLot.TryPark(ref this[index]->LockState);
+        => AsyncParkingLot.TryPark(ref GetBucketState(index));
 
     private unsafe void ReleaseBucket(int index)
-        => parkingLot.Unpark(index, ref this[index]->LockState);
+        => parkingLot.Unpark(index, ref GetBucketState(index));
 
     // the bucket lock must be held, removes the dead entries
     private unsafe Entry* FindAndCleanUp(Bucket* bucket, ReadOnlySpan<byte> key, int hashCode)
@@ -675,7 +660,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
             }
             else
             {
-                if (result is null && Matches(current, key, hashCode))
+                if (result is null && current->Matches(key, hashCode, EqualityComparer))
                     result = current;
 
                 location = &current->NextInBucket;
@@ -689,7 +674,7 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
     private unsafe void CleanUp(Bucket* bucket)
     {
         Debug.Assert(bucket->LockState is not AsyncParkingLot.State.Free);
-        
+
         var location = &bucket->First;
         for (Entry* current; (current = *location) is not null;)
         {

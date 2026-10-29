@@ -1,5 +1,7 @@
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 partial struct Lock
 {
     private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = new();
@@ -28,6 +30,7 @@ partial struct Lock
     /// </summary>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired read lock.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireReadLock(object obj)
         => ReadLock(GetReaderWriterLock(obj), false).Acquire();
 
@@ -38,6 +41,7 @@ partial struct Lock
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired read lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireReadLock(object obj, TimeSpan timeout)
         => ReadLock(GetReaderWriterLock(obj), false).Acquire(timeout);
 
@@ -46,6 +50,7 @@ partial struct Lock
     /// </summary>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired write lock.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireWriteLock(object obj)
         => WriteLock(GetReaderWriterLock(obj)).Acquire();
 
@@ -56,6 +61,7 @@ partial struct Lock
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired write lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireWriteLock(object obj, TimeSpan timeout)
         => WriteLock(GetReaderWriterLock(obj)).Acquire(timeout);
 
@@ -64,6 +70,7 @@ partial struct Lock
     /// </summary>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired upgradeable read lock.</returns>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireUpgradeableReadLock(object obj)
         => ReadLock(GetReaderWriterLock(obj), true).Acquire();
 
@@ -74,6 +81,7 @@ partial struct Lock
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired upgradeable read lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Scope AcquireUpgradeableReadLock(object obj, TimeSpan timeout)
         => ReadLock(GetReaderWriterLock(obj), true).Acquire(timeout);
 }

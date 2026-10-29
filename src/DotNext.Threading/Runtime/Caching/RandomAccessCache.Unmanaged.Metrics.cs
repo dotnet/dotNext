@@ -21,22 +21,13 @@ unsafe partial class RandomAccessCache<TValue>
         init
         {
             value.Add(ValueTypeMeterAttribute, typeof(TValue).Name);
-
-            // the bucket array is measured by the constructor with the default tags
-            var bucketsSize = BucketsSize;
-            UnmanagedCacheMeters.AllocatedMemory.Add(-bucketsSize, in measurementTags);
-            UnmanagedCacheMeters.AllocatedMemory.Add(bucketsSize, in value);
             measurementTags = value;
+            parkingLot = new(Capacity, poolSizePerSlot: 3)
+            {
+                MeasurementTags = measurementTags,
+            };
         }
     }
-
-    private long BucketsSize => (long)Capacity * sizeof(Bucket);
-
-    private void OnBucketsAllocated()
-        => UnmanagedCacheMeters.AllocatedMemory.Add(BucketsSize, in measurementTags);
-
-    private void OnBucketsReleased()
-        => UnmanagedCacheMeters.AllocatedMemory.Add(-BucketsSize, in measurementTags);
 
     private void OnAllocated(Entry* entry)
     {

@@ -12,7 +12,8 @@ internal partial struct MpscQueue
 
     public MpscQueue() => queueHead = queueTail = new QueueHead();
     
-    public void Enqueue(Item newPair)
+    // notify is false if the consumer doesn't use WaitAsync
+    public void Enqueue(Item newPair, bool notify = true)
     {
         Item currentTail;
         do
@@ -23,7 +24,8 @@ internal partial struct MpscQueue
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
         Interlocked.CompareExchange(ref queueTail, newPair, currentTail);
 
-        currentTail.NotifyDequeued();
+        if (notify)
+            currentTail.NotifyItemAttached();
     }
 
     public ValueTask<bool> WaitAsync(CancelableValueTaskCompletionSource source)
