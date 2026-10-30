@@ -67,7 +67,10 @@ public sealed partial class RandomAccessCache<TValue> : Disposable, IAsyncDispos
         buckets = GC.AllocateArray<Bucket>(capacity, pinned: true);
         parkingLot = new(concurrencyLevel, poolSizePerSlot: 3)
         {
-            MeasurementTags = measurementTags,
+            MeasurementTags = new()
+            {
+                { ValueTypeMeterAttribute, typeof(TValue).Name },
+            }
         };
         cancellationTokens = new() { MaximumRetained = concurrencyLevel };
         lifetimeSource = new();
