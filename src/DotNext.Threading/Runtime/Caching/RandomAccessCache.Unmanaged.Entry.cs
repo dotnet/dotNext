@@ -71,6 +71,52 @@ unsafe partial class RandomAccessCache<TValue>
         public readonly bool Matches(ReadOnlySpan<byte> key, int hashCode, IEqualityComparer<ReadOnlySpan<byte>> comparer)
             => KeyHashCode == hashCode && comparer.Equals(key, Key);
 
+        public void ClearSieveLinks()
+            => SieveNext = SievePrevious = null;
+
+        public static void Prepend(Entry* entry, ref Entry* evictionHead, ref Entry* evictionTail)
+        {
+            entry->SievePrevious = null;
+            entry->SieveNext = evictionHead;
+            if (evictionHead is null)
+            {
+                evictionTail = entry;
+            }
+            else
+            {
+                evictionHead->SievePrevious = entry;
+            }
+
+            evictionHead = entry;
+        }
+        
+        public static Entry* DetachAndMoveBackward(Entry* entry, ref Entry* evictionHead, ref Entry* evictionTail)
+        {
+            var previous = entry->SievePrevious;
+            var next = entry->SieveNext;
+
+            if (previous is null)
+            {
+                evictionHead = next;
+            }
+            else
+            {
+                previous->SieveNext = next;
+            }
+
+            if (next is null)
+            {
+                evictionTail = previous;
+            }
+            else
+            {
+                next->SievePrevious = previous;
+            }
+
+            entry->ClearSieveLinks();
+            return previous is not null ? previous : evictionTail;
+        }
+
         public static Entry* Allocate(ReadOnlySpan<byte> key, int hashCode, in TValue value)
         {
             var entry = (Entry*)NativeMemory.Alloc((nuint)(uint)sizeof(Entry) + (uint)key.Length);
