@@ -229,6 +229,28 @@ public sealed partial class TcpTransportTests : TransportTestSuite
         return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
     }
 
+    [Fact]
+    public Task SendingLogEntriesAcrossFrames()
+    {
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            TransmissionBlockSize = 400,
+            ReceiveTimeout = timeout,
+            GracefulShutdownTimeout = 2000
+        };
+
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            TransmissionBlockSize = 400,
+            RequestTimeout = timeout,
+            ConnectTimeout = timeout,
+        };
+
+        return SendingLogEntriesAcrossFramesTest(CreateServer, CreateClient, 1000);
+    }
+
     [Theory]
     [InlineData(0, ReceiveEntriesBehavior.ReceiveAll)]
     [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst)]
