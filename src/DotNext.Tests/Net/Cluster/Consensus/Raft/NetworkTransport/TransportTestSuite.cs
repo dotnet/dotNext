@@ -481,6 +481,23 @@ public abstract class TransportTestSuite : RaftTest
         await host3.StopAsync();
     }
 
+    private protected async Task EmptyAppendEntriesAfterEntryCore(Func<int, bool, IPersistentState, RaftCluster> clusterFactory, long senderTerm, HeartbeatResult expected)
+    {
+        // the follower's last entry is of term 2
+        await using var wal = CreateWal();
+        Equal(1L, await wal.AppendAsync(new BufferedEntry(2L, false, RandomBytes(16)), TestToken));
+        await using var follower = clusterFactory(3398, false, wal);
+        await follower.StartAsync(TestToken);
+
+        // a heartbeat with no entries after it: the follower's log holds an entry of the sender's term only if that one is
+        var result = await follower.As<ILocalMember>().AppendEntriesAsync(Random.Shared.Next<ClusterMemberId>(), senderTerm,
+            new LogEntryProducer<BufferedEntry>(), prevLogIndex: 1L, prevLogTerm: 2L, commitIndex: 1L, stateVersion: 0, TestToken);
+        Equal(expected, result.Value.Result);
+        Equal(1L, result.Value.LastIndex);
+
+        await follower.StopAsync(TestToken);
+    }
+
     private protected async Task LeadershipCore(Func<int, bool, IPersistentState, RaftCluster> clusterFactory)
     {
         // first node - cold start
