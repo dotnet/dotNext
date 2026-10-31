@@ -7,6 +7,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Net.Cluster.Consensus.Raft.NetworkTransport.ConnectionOriented.Tcp;
 
 using Buffers;
+using IO.Log;
 using Membership;
 using NetworkTransport;
 using Replication;
@@ -305,6 +306,32 @@ public sealed partial class TcpTransportTests : TransportTestSuite
                 AuditTrail = wal,
             };
         }
+    }
+
+    [Theory]
+    [InlineData(2L, HeartbeatResult.ReplicatedWithLeaderTerm)]
+    [InlineData(3L, HeartbeatResult.Replicated)]
+    public async Task EmptyAppendEntriesAfterEntry(long senderTerm, HeartbeatResult expected)
+    {
+        // the follower's last entry is of term 2
+        await using var wal = CreateWal();
+        Equal(1L, await wal.AppendAsync(new TestLogEntry("SET X = 0") { Term = 2L }, TestToken));
+
+        var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3398))
+        {
+            ColdStart = false,
+            ConfigurationStorage = null,
+        };
+        await using var follower = new RaftCluster(config) { AuditTrail = wal };
+        await follower.StartAsync(TestToken);
+
+        // A heartbeat with no entries after it: the follower's log holds an entry of the sender's term only if that one is
+        var result = await follower.As<ILocalMember>().AppendEntriesAsync(Random.Shared.Next<ClusterMemberId>(), senderTerm,
+            new LogEntryProducer<TestLogEntry>(), prevLogIndex: 1L, prevLogTerm: 2L, commitIndex: 1L, stateVersion: 0, TestToken);
+        Equal(expected, result.Value.Result);
+        Equal(1L, result.Value.LastIndex);
+
+        await follower.StopAsync(TestToken);
     }
 
     [Fact]
