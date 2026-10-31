@@ -31,17 +31,8 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-#if DEBUG
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-#endif
-
-        var awaiter = System.Threading.Tasks.Task.Yield().GetAwaiter();
+        var awaiter = SpawningAsyncTaskMethodBuilder.SpawningAwaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
-
-#if DEBUG
-        SynchronizationContext.SetSynchronizationContext(currentContext);
-#endif
     }
 
     /// <summary>
@@ -115,6 +106,11 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <returns>A new builder.</returns>
     public static SpawningAsyncTaskMethodBuilder Create() => new();
 
+    internal static ConfiguredTaskAwaitable.ConfiguredTaskAwaiter SpawningAwaiter => Task
+        .CompletedTask
+        .ConfigureAwait(ConfigureAwaitOptions.ForceYielding)
+        .GetAwaiter();
+
     /// <summary>
     /// Initiates the builder's execution with the associated state machine.
     /// </summary>
@@ -123,17 +119,8 @@ public struct SpawningAsyncTaskMethodBuilder()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-#if DEBUG
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-#endif
-
-        var awaiter = Task.Yield().GetAwaiter();
+        var awaiter = SpawningAwaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
-
-#if DEBUG
-        SynchronizationContext.SetSynchronizationContext(currentContext);
-#endif
     }
 
     /// <summary>
