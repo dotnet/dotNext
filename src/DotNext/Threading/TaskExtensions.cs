@@ -23,8 +23,13 @@ public static class TaskExtensions
         /// <param name="arg">The argument to be passed to the function.</param>
         /// <typeparam name="T">The type of the argument to be passed to the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task Run<T>(Func<T, Task> func, T arg)
-            => Run<FuncWrapper<T, Task>>(new(func, arg));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<FuncWrapper<T, Task>>(new(func, arg));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -35,8 +40,13 @@ public static class TaskExtensions
         /// <typeparam name="T1">The type of the first argument to be passed to the function.</typeparam>
         /// <typeparam name="T2">The type of the second argument to be passed to the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task Run<T1, T2>(Func<T1, T2, Task> func, T1 arg1, T2 arg2)
-            => Run<FuncWrapper<T1, T2, Task>>(new(func, arg1, arg2));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<FuncWrapper<T1, T2, Task>>(new(func, arg1, arg2));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -49,8 +59,13 @@ public static class TaskExtensions
         /// <typeparam name="T2">The type of the second argument to be passed to the function.</typeparam>
         /// <typeparam name="T3">The type of the third argument to be passed to the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task Run<T1, T2, T3>(Func<T1, T2, T3, Task> func, T1 arg1, T2 arg2, T3 arg3)
-            => Run<FuncWrapper<T1, T2, T3, Task>>(new(func, arg1, arg2, arg3));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<FuncWrapper<T1, T2, T3, Task>>(new(func, arg1, arg2, arg3));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -63,10 +78,15 @@ public static class TaskExtensions
         /// <typeparam name="T1">The type of the first argument to be passed to the function.</typeparam>
         /// <typeparam name="T2">The type of the second argument to be passed to the function.</typeparam>
         /// <typeparam name="T3">The type of the third argument to be passed to the function.</typeparam>
-        /// <typeparam name="T4">The type of the third argument to be passed to the function.</typeparam>
+        /// <typeparam name="T4">The type of the fourth argument to be passed to the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task Run<T1, T2, T3, T4>(Func<T1, T2, T3, T4, Task> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-            => Run<FuncWrapper<T1, T2, T3, T4, Task>>(new(func, arg1, arg2, arg3, arg4));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<FuncWrapper<T1, T2, T3, T4, Task>>(new(func, arg1, arg2, arg3, arg4));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -89,8 +109,13 @@ public static class TaskExtensions
         /// <typeparam name="T">The type of the argument to be passed to the function.</typeparam>
         /// <typeparam name="TResult">The result of the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task<TResult> Run<T, TResult>(Func<T, Task<TResult>> func, T arg)
-            => Run<TResult, FuncWrapper<T, Task<TResult>>>(new(func, arg));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<TResult, FuncWrapper<T, Task<TResult>>>(new(func, arg));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -102,8 +127,13 @@ public static class TaskExtensions
         /// <typeparam name="T2">The type of the second argument to be passed to the function.</typeparam>
         /// <typeparam name="TResult">The result of the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task<TResult> Run<T1, T2, TResult>(Func<T1, T2, Task<TResult>> func, T1 arg1, T2 arg2)
-            => Run<TResult, FuncWrapper<T1, T2, Task<TResult>>>(new(func, arg1, arg2));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<TResult, FuncWrapper<T1, T2, Task<TResult>>>(new(func, arg1, arg2));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -117,8 +147,13 @@ public static class TaskExtensions
         /// <typeparam name="T3">The type of the third argument to be passed to the function.</typeparam>
         /// <typeparam name="TResult">The result of the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task<TResult> Run<T1, T2, T3, TResult>(Func<T1, T2, T3, Task<TResult>> func, T1 arg1, T2 arg2, T3 arg3)
-            => Run<TResult, FuncWrapper<T1, T2, T3, Task<TResult>>>(new(func, arg1, arg2, arg3));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<TResult, FuncWrapper<T1, T2, T3, Task<TResult>>>(new(func, arg1, arg2, arg3));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
@@ -131,11 +166,16 @@ public static class TaskExtensions
         /// <typeparam name="T1">The type of the first argument to be passed to the function.</typeparam>
         /// <typeparam name="T2">The type of the second argument to be passed to the function.</typeparam>
         /// <typeparam name="T3">The type of the third argument to be passed to the function.</typeparam>
-        /// <typeparam name="T4">The type of the third argument to be passed to the function.</typeparam>
+        /// <typeparam name="T4">The type of the fourth argument to be passed to the function.</typeparam>
         /// <typeparam name="TResult">The result of the function.</typeparam>
         /// <returns>A task that represents a proxy for the task returned by function.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static Task<TResult> Run<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, Task<TResult>> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-            => Run<TResult, FuncWrapper<T1, T2, T3, T4, Task<TResult>>>(new(func, arg1, arg2, arg3, arg4));
+        {
+            ArgumentNullException.ThrowIfNull(func);
+            
+            return Run<TResult, FuncWrapper<T1, T2, T3, T4, Task<TResult>>>(new(func, arg1, arg2, arg3, arg4));
+        }
 
         /// <summary>
         /// Queues the specified work to run on the thread pool and returns a proxy for the task returned by function.
