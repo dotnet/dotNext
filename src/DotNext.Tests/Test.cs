@@ -92,4 +92,12 @@ public abstract class Test : Assert
 
         return Path.Combine(root, Path.GetRandomFileName());
     }
+
+    protected static void SpinWait(Task task, CancellationToken token)
+    {
+        for (var spin = new SpinWait(); !task.IsCompleted; token.ThrowIfCancellationRequested())
+        {
+            spin.SpinOnce();
+        }
+    }
 }

@@ -340,12 +340,12 @@ public sealed class AsyncReaderWriterLockTests : Test
         using var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
         var threadId = Environment.CurrentManagedThreadId;
-        Task.Run(() =>
+        SpinWait(Task.Run(() =>
             {
                 NotEqual(threadId, Environment.CurrentManagedThreadId);
                 l.Release();
-            }, TestToken)
-            .Wait(TestToken);
+            }, TestToken),
+            TestToken);
 
         True(l.TryEnterWriteLock(TimeSpan.Zero, TestToken));
     }
