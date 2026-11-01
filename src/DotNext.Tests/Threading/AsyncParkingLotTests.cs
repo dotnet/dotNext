@@ -40,16 +40,15 @@ public sealed class AsyncParkingLotTests : Test
         True(lot.ParkAsync(0, ref states[0], token: TestToken).IsCompletedSuccessfully);
         Equal(State.Locked, states[0]);
 
-        var task = lot.ParkAsync(0, ref states[0], null, TimeSpan.Zero, TestToken);
-        True(task.IsCompleted);
-        False(task.Result);
+        var task = lot.ParkAsync(0, ref states[0], null, TimeSpan.Zero, TestToken).AsTask();
+        False(GetResultIfCompleted(task));
 
         lot.Unpark(0, ref states[0]);
         Equal(State.Free, states[0]);
 
-        task = lot.ParkAsync(0, ref states[0], null, TimeSpan.Zero, TestToken);
+        task = lot.ParkAsync(0, ref states[0], null, TimeSpan.Zero, TestToken).AsTask();
         True(task.IsCompletedSuccessfully);
-        True(task.Result);
+        True(GetResultIfCompleted(task));
     }
 
     [Fact]

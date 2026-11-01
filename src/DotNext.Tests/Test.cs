@@ -100,4 +100,10 @@ public abstract class Test : Assert
             spin.SpinOnce();
         }
     }
+
+    protected static T GetResultIfCompleted<T>(Task<T> task)
+    {
+        True(task.IsCompleted);
+        return task.Result;
+    }
 }
