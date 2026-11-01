@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using Threading;
+
 /// <summary>
 /// When applied to async method using <see cref="AsyncMethodBuilderAttribute"/> attribute,
 /// spawns method execution as a new work item in the thread pool, i.e. in parallel.
@@ -107,8 +109,7 @@ public struct SpawningAsyncTaskMethodBuilder()
     public static SpawningAsyncTaskMethodBuilder Create() => new();
 
     internal static ConfiguredTaskAwaitable.ConfiguredTaskAwaiter SpawningAwaiter => Task
-        .CompletedTask
-        .ConfigureAwait(ConfigureAwaitOptions.ForceYielding)
+        .SpawningAwaitable
         .GetAwaiter();
 
     /// <summary>
