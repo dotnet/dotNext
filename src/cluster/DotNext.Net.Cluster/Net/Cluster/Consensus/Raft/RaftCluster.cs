@@ -696,7 +696,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     var lastIndex = prevLogIndex + entries.RemainingCount;
                     commitIndex = long.Min(commitIndex, lastIndex);
 
-                    var notEmpty = UseTermDetector(ref entries, senderTerm);
+                    var isEmpty = !UseTermDetector(ref entries, senderTerm);
 
                     // prevent Follower state transition during processing of received log entries
                     using (new RefreshableState<TMember>.TransitionSuppressionScope(state as RefreshableState<TMember>))
@@ -714,14 +714,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         {
                             Value = new()
                             {
-                                Result = IsReplicatedWithExpectedTerm(entries) ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated,
+                                // an empty request whose preceding entry is of the sender's term proves the log holds the leader's entries of its term too
+                                Result = IsReplicatedWithExpectedTerm(entries) || (isEmpty && prevLogTerm == senderTerm)
+                                    ? HeartbeatResult.ReplicatedWithLeaderTerm
+                                    : HeartbeatResult.Replicated,
                                 LastIndex = lastIndex,
                             }
                         };
                     }
 
                     // This node is in sync with the leader and no entries arrived
-                    if (!notEmpty && senderMember is not null)
+                    if (isEmpty && senderMember is not null)
                         replicationHandlers.Invoke(this, senderMember);
                 }
             }

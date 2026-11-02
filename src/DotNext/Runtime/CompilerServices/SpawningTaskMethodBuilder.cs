@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using Threading;
+
 /// <summary>
 /// When applied to async method using <see cref="AsyncMethodBuilderAttribute"/> attribute,
 /// spawns method execution as a new work item in the thread pool, i.e. in parallel.
@@ -31,17 +33,8 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-#if DEBUG
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-#endif
-
-        var awaiter = System.Threading.Tasks.Task.Yield().GetAwaiter();
+        var awaiter = SpawningAsyncTaskMethodBuilder.SpawningAwaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
-
-#if DEBUG
-        SynchronizationContext.SetSynchronizationContext(currentContext);
-#endif
     }
 
     /// <summary>
@@ -115,6 +108,10 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <returns>A new builder.</returns>
     public static SpawningAsyncTaskMethodBuilder Create() => new();
 
+    internal static ConfiguredTaskAwaitable.ConfiguredTaskAwaiter SpawningAwaiter => Task
+        .SpawningAwaitable
+        .GetAwaiter();
+
     /// <summary>
     /// Initiates the builder's execution with the associated state machine.
     /// </summary>
@@ -123,17 +120,8 @@ public struct SpawningAsyncTaskMethodBuilder()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-#if DEBUG
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-#endif
-
-        var awaiter = Task.Yield().GetAwaiter();
+        var awaiter = SpawningAwaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
-
-#if DEBUG
-        SynchronizationContext.SetSynchronizationContext(currentContext);
-#endif
     }
 
     /// <summary>

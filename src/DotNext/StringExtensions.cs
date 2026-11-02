@@ -87,14 +87,14 @@ public static class StringExtensions
             return list.Concat(allocator);
         }
     }
+}
 
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StringList(ReadOnlySpan<string?> values) : IReadOnlySpanList<char>
-    {
-        private readonly ReadOnlySpan<string?> values = values;
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct StringList(ReadOnlySpan<string?> values) : IReadOnlySpanList<char>
+{
+    private readonly ReadOnlySpan<string?> values = values;
 
-        int IReadOnlySpanList<char>.Count => values.Length;
+    int IReadOnlySpanList<char>.Count => values.Length;
 
-        ReadOnlySpan<char> IReadOnlySpanList<char>.this[int index] => values[index];
-    }
+    ReadOnlySpan<char> IReadOnlySpanList<char>.this[int index] => values[index];
 }

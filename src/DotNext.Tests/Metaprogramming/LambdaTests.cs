@@ -108,7 +108,7 @@ public sealed class LambdaTests : Test
         });
         var fn = lambda.Compile();
         var result = new StrongBox<long>();
-        fn(5L, 10L, result).Wait(TestToken);
+        SpinWait(fn(5L, 10L, result), TestToken);
         Equal(15L, result.Value);
 
         static Task SumAction(long x, long y, StrongBox<long> result)

@@ -183,3 +183,31 @@ public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>
     /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
     public static implicit operator DelegatingSupplier<TResult>(Func<TResult> func) => new(func);
 }
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct FuncWrapper<T1, TResult>(Func<T1, TResult> func, T1 arg1) : ISupplier<TResult>
+{
+    TResult ISupplier<TResult>.Invoke()
+        => func.Invoke(arg1);
+}
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct FuncWrapper<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 arg1, T2 arg2) : ISupplier<TResult>
+{
+    TResult ISupplier<TResult>.Invoke()
+        => func.Invoke(arg1, arg2);
+}
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct FuncWrapper<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> func, T1 arg1, T2 arg2, T3 arg3) : ISupplier<TResult>
+{
+    TResult ISupplier<TResult>.Invoke()
+        => func.Invoke(arg1, arg2, arg3);
+}
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct FuncWrapper<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4) : ISupplier<TResult>
+{
+    TResult ISupplier<TResult>.Invoke()
+        => func.Invoke(arg1, arg2, arg3, arg4);
+}

@@ -159,67 +159,62 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         source.LinkTo(this, version);
         return source;
     }
+}
 
-    private sealed class LinkedTaskCompletionSource : TaskCompletionSource
+file sealed class LinkedTaskCompletionSource(object? state) : TaskCompletionSource(state, TaskCreationOptions.None)
+{
+    private IValueTaskSource? source;
+    private short version;
+
+    public void LinkTo(IValueTaskSource source, short version)
     {
-        private IValueTaskSource? source;
-        private short version;
-
-        internal LinkedTaskCompletionSource(object? state)
-            : base(state, TaskCreationOptions.None)
-        {
-        }
-
-        internal void LinkTo(IValueTaskSource source, short version)
-        {
-            this.source = source;
-            this.version = version;
-            source.OnCompleted(
-                static state =>
-                {
-                    Debug.Assert(state is LinkedTaskCompletionSource);
-
-                    Unsafe.As<LinkedTaskCompletionSource>(state).OnCompleted();
-                },
-                this,
-                version,
-                ValueTaskSourceOnCompletedFlags.None);
-        }
-
-        private void OnCompleted()
-        {
-            var sourceCopy = source;
-            source = null;
-            if (sourceCopy is not null)
+        this.source = source;
+        this.version = version;
+        source.OnCompleted(
+            static state =>
             {
-                try
-                {
-                    sourceCopy.GetResult(version);
-                }
-                catch (OperationCanceledException e)
-                {
-                    TrySetCanceled(e.CancellationToken);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    TrySetException(e);
-                    return;
-                }
-                
-                TrySetResult();
+                Debug.Assert(state is LinkedTaskCompletionSource);
+
+                Unsafe.As<LinkedTaskCompletionSource>(state).OnCompleted();
+            },
+            this,
+            version,
+            ValueTaskSourceOnCompletedFlags.None);
+    }
+
+    private void OnCompleted()
+    {
+        var sourceCopy = source;
+        source = null;
+        if (sourceCopy is not null)
+        {
+            try
+            {
+                sourceCopy.GetResult(version);
             }
+            catch (OperationCanceledException e)
+            {
+                TrySetCanceled(e.CancellationToken);
+                return;
+            }
+            catch (Exception e)
+            {
+                TrySetException(e);
+                return;
+            }
+                
+            TrySetResult();
         }
     }
+}
 
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ExceptionProvider(ref readonly ExceptionDispatchInfo? dispatchInfo) : ISupplier<Exception?>
-    {
-        private readonly ref readonly ExceptionDispatchInfo? dispatchInfo = ref dispatchInfo;
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ExceptionProvider(ref readonly ExceptionDispatchInfo? dispatchInfo) : ISupplier<Exception?>
+{
+    private readonly ref readonly ExceptionDispatchInfo? dispatchInfo = ref dispatchInfo;
 
-        Exception? ISupplier<Exception?>.Invoke() => dispatchInfo?.SourceException;
+    Exception? ISupplier<Exception?>.Invoke() => dispatchInfo?.SourceException;
 
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }

@@ -74,6 +74,7 @@ internal struct ConcurrentGrowableArray<T>()
 
 internal static class ConcurrentGrowableArray
 {
+    // TODO: Migrate to extension indexer
     public static ref T Get<T>(this ref ConcurrentGrowableArray<T> array, int index)
         where T : new()
         => ref array.Get<DefaultInitializer<T>>(index);
