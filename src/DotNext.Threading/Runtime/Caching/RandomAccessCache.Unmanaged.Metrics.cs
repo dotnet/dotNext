@@ -7,11 +7,6 @@ unsafe partial class RandomAccessCache<TValue>
 {
     private const string ValueTypeMeterAttribute = "dotnext.cache.value.type";
 
-    private readonly TagList measurementTags = new()
-    {
-        { ValueTypeMeterAttribute, typeof(TValue).Name },
-    };
-
     /// <summary>
     /// Sets a list of tags to be associated with each measurement.
     /// </summary>
@@ -21,16 +16,16 @@ unsafe partial class RandomAccessCache<TValue>
         init
         {
             value.Add(ValueTypeMeterAttribute, typeof(TValue).Name);
-            measurementTags = value;
             parkingLot = new(Capacity, poolSizePerSlot: 3)
             {
-                MeasurementTags = measurementTags,
+                MeasurementTags = value,
             };
         }
     }
 
     private void OnAllocated(Entry* entry)
     {
+        ref readonly var measurementTags = ref parkingLot.measurementTags;
         UnmanagedCacheMeters.EntriesCount.Add(1L, in measurementTags);
         UnmanagedCacheMeters.AllocatedMemory.Add(entry->Size, in measurementTags);
     }
@@ -38,6 +33,7 @@ unsafe partial class RandomAccessCache<TValue>
     // must be called before the entry is released
     private void OnReleased(Entry* entry)
     {
+        ref readonly var measurementTags = ref parkingLot.measurementTags;
         UnmanagedCacheMeters.EntriesCount.Add(-1L, in measurementTags);
         UnmanagedCacheMeters.AllocatedMemory.Add(-entry->Size, in measurementTags);
     }

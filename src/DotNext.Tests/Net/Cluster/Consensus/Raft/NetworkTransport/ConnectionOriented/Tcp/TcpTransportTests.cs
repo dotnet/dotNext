@@ -229,6 +229,28 @@ public sealed partial class TcpTransportTests : TransportTestSuite
         return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
     }
 
+    [Fact]
+    public Task SendingLogEntriesAcrossFrames()
+    {
+        static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, NullLoggerFactory.Instance)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            TransmissionBlockSize = 400,
+            ReceiveTimeout = timeout,
+            GracefulShutdownTimeout = 2000
+        };
+
+        static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address)
+        {
+            MemoryAllocator = MemoryAllocator<byte>.Default,
+            TransmissionBlockSize = 400,
+            RequestTimeout = timeout,
+            ConnectTimeout = timeout,
+        };
+
+        return SendingLogEntriesAcrossFramesTest(CreateServer, CreateClient, 1000);
+    }
+
     [Theory]
     [InlineData(0, ReceiveEntriesBehavior.ReceiveAll)]
     [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst)]
@@ -298,6 +320,28 @@ public sealed partial class TcpTransportTests : TransportTestSuite
                 ColdStart = coldStart,
                 ConfigurationStorage = null,
                 IsLeaderLeaseEnabled = true,
+            };
+
+            return new(config)
+            {
+                AuditTrail = wal,
+            };
+        }
+    }
+
+    [Theory]
+    [InlineData(2L, HeartbeatResult.ReplicatedWithLeaderTerm)]
+    [InlineData(3L, HeartbeatResult.Replicated)]
+    public Task EmptyAppendEntriesAfterEntry(long senderTerm, HeartbeatResult expected)
+    {
+        return EmptyAppendEntriesAfterEntryCore(CreateCluster, senderTerm, expected);
+
+        static RaftCluster CreateCluster(int port, bool coldStart, IPersistentState wal)
+        {
+            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                ColdStart = coldStart,
+                ConfigurationStorage = null,
             };
 
             return new(config)

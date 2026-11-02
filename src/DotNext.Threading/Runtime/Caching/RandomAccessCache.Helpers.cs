@@ -9,6 +9,7 @@ using InteropServices;
 /// </summary>
 public static class RandomAccessCache
 {
+    internal const int PoolSizePerSlot = 3;
     internal static int DefaultConcurrencyLevel => Environment.ProcessorCount * 2 + 1;
     
     /// <summary>

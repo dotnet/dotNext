@@ -84,7 +84,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             ? collisionThreshold
             : dictionarySize;
 
-        parkingLot = new(concurrencyLevel);
+        parkingLot = new(concurrencyLevel, RandomAccessCache.PoolSizePerSlot);
         buckets = new(dictionarySize);
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;

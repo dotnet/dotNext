@@ -160,7 +160,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <inheritdoc cref="IValueTaskSource.GetStatus"/>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public ValueTaskSourceStatus GetStatus(short token)
-        => GetStatus<ExceptionProvider>(token, new(in result));
+        => GetStatus<ExceptionProvider<T>>(token, new(in result));
 
     /// <summary>
     /// Creates a linked <see cref="TaskCompletionSource{TResult}"/> that can be used cooperatively to
@@ -174,72 +174,67 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     public TaskCompletionSource<T> CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
         var version = Activate(timeout, token);
-        var source = new LinkedTaskCompletionSource(userData);
+        var source = new LinkedTaskCompletionSource<T>(userData);
         source.LinkTo(this, version);
         return source;
     }
+}
 
-    private sealed class LinkedTaskCompletionSource : TaskCompletionSource<T>
+file sealed class LinkedTaskCompletionSource<T>(object? state) : TaskCompletionSource<T>(state, TaskCreationOptions.None)
+{
+    private IValueTaskSource<T>? source;
+    private short version;
+
+    public void LinkTo(IValueTaskSource<T> source, short version)
     {
-        private IValueTaskSource<T>? source;
-        private short version;
-
-        internal LinkedTaskCompletionSource(object? state)
-            : base(state, TaskCreationOptions.None)
-        {
-        }
-
-        internal void LinkTo(IValueTaskSource<T> source, short version)
-        {
-            this.source = source;
-            this.version = version;
-            source.OnCompleted(
-                static state =>
-                {
-                    Debug.Assert(state is LinkedTaskCompletionSource);
-
-                    Unsafe.As<LinkedTaskCompletionSource>(state).OnCompleted();
-                },
-                this,
-                version,
-                ValueTaskSourceOnCompletedFlags.None);
-        }
-
-        private void OnCompleted()
-        {
-            var sourceCopy = source;
-            source = null;
-            if (sourceCopy is not null)
+        this.source = source;
+        this.version = version;
+        source.OnCompleted(
+            static state =>
             {
-                T result;
-                try
-                {
-                    result = sourceCopy.GetResult(version);
-                }
-                catch (OperationCanceledException e)
-                {
-                    TrySetCanceled(e.CancellationToken);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    TrySetException(e);
-                    return;
-                }
+                Debug.Assert(state is LinkedTaskCompletionSource<T>);
 
-                TrySetResult(result);
+                Unsafe.As<LinkedTaskCompletionSource<T>>(state).OnCompleted();
+            },
+            this,
+            version,
+            ValueTaskSourceOnCompletedFlags.None);
+    }
+
+    private void OnCompleted()
+    {
+        var sourceCopy = source;
+        source = null;
+        if (sourceCopy is not null)
+        {
+            T result;
+            try
+            {
+                result = sourceCopy.GetResult(version);
             }
+            catch (OperationCanceledException e)
+            {
+                TrySetCanceled(e.CancellationToken);
+                return;
+            }
+            catch (Exception e)
+            {
+                TrySetException(e);
+                return;
+            }
+
+            TrySetResult(result);
         }
     }
-    
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ExceptionProvider(ref readonly Result<T> sourceResult) : ISupplier<Exception?>
-    {
-        private readonly ref readonly Result<T> sourceResult = ref sourceResult;
+}
 
-        Exception? ISupplier<Exception?>.Invoke() => sourceResult.Error;
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ExceptionProvider<T>(ref readonly Result<T> sourceResult) : ISupplier<Exception?>
+{
+    private readonly ref readonly Result<T> sourceResult = ref sourceResult;
 
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
+    Exception? ISupplier<Exception?>.Invoke() => sourceResult.Error;
+
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }

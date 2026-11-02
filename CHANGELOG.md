@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 11-02-2026
+<a href="https://www.nuget.org/packages/dotnext/6.11.2">DotNext 6.11.2</a>
+* Introduced `Task.Run` overloads as a replacement of `SpawningAsyncTaskMethodBuilder` for better compatibility with Runtime Async
+* `SpawningAsyncTaskMethodBuilder` skips any ambient synchronization context
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.11.2">DotNext.Metaprogramming 6.11.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.11.2">DotNext.Unsafe 6.11.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.11.2">DotNext.Threading 6.11.2</a>
+* Small performance improvements of `RandomAccessCache<TValue>` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.11.2">DotNext.IO 6.11.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.11.2">DotNext.Net.Cluster 6.11.2</a>
+* Fixed [308](https://github.com/dotnet/dotNext/issues/308)
+* Fixed [309](https://github.com/dotnet/dotNext/issues/309)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.11.2">DotNext.AspNetCore.Cluster 6.11.2</a>
+* Fixed [309](https://github.com/dotnet/dotNext/issues/309)
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.2">DotNext.MaintenanceServices 1.11.2</a>
+* Updated dependencies
+
 # 10-29-2026
 <a href="https://www.nuget.org/packages/dotnext/6.11.1">DotNext 6.11.1</a>
 * Fixed `Volatile.Read` and `Volatile.Write` static extension methods for pointer-to-pointer locations, so now these methods are compatible with managed pointers too

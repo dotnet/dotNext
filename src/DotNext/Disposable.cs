@@ -48,13 +48,11 @@ public abstract class Disposable : IDisposable
         get => state is not ObjectState.NotDisposed;
     }
 
-    private string ObjectName => GetType().Name;
-
     /// <summary>
     /// Creates a new instance of <see cref="ObjectDisposedException"/> class.
     /// </summary>
     /// <returns>A new instance of the exception that can be thrown by the caller.</returns>
-    protected ObjectDisposedException CreateException() => new(ObjectName);
+    protected ObjectDisposedException CreateException() => new(GetType().Name);
 
     /// <summary>
     /// Gets a task representing <see cref="ObjectDisposedException"/> exception.

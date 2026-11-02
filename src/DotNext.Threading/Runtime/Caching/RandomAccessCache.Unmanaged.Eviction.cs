@@ -123,7 +123,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         // the entry can be detached by the SIEVE hand already, or skipped as dead before the promotion
         if (removed->SievePrevious is not null || removed->SieveNext is not null || removed == evictionHead)
         {
-            var previous = Detach(removed);
+            var previous = Entry.DetachAndMoveBackward(removed, ref evictionHead, ref evictionTail);
             if (removed == sieveHand)
                 sieveHand = previous;
 
@@ -142,7 +142,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
         for (Entry* entry = evictionHead, next; entry is not null; entry = next)
         {
             next = entry->SieveNext;
-            entry->SievePrevious = entry->SieveNext = null;
+            entry->ClearSieveLinks();
             Release(entry); // the reference owned by the SIEVE list
         }
 
@@ -154,18 +154,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
     {
         Evict();
 
-        entry->SievePrevious = null;
-        entry->SieveNext = evictionHead;
-        if (evictionHead is null)
-        {
-            evictionTail = entry;
-        }
-        else
-        {
-            evictionHead->SievePrevious = entry;
-        }
-
-        evictionHead = entry;
+        Entry.Prepend(entry, ref evictionHead, ref evictionTail);
         if (sieveHand is null)
             sieveHand = evictionTail;
 
@@ -183,7 +172,7 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
                 continue;
             }
 
-            sieveHand = Detach(entry);
+            sieveHand = Entry.DetachAndMoveBackward(entry, ref evictionHead, ref evictionTail);
             currentSize--;
 
             // the entry is still linked to its bucket if it was alive
@@ -192,33 +181,6 @@ partial class RandomAccessCache<TValue> : Epoch.INativeResourceManager
 
             Release(entry); // the reference owned by the SIEVE list
         }
-    }
-
-    private unsafe Entry* Detach(Entry* entry)
-    {
-        var previous = entry->SievePrevious;
-        var next = entry->SieveNext;
-
-        if (previous is null)
-        {
-            evictionHead = next;
-        }
-        else
-        {
-            previous->SieveNext = next;
-        }
-
-        if (next is null)
-        {
-            evictionTail = previous;
-        }
-        else
-        {
-            next->SievePrevious = previous;
-        }
-
-        entry->SievePrevious = entry->SieveNext = null;
-        return previous is not null ? previous : evictionTail;
     }
 
     // the entry has no owners, but the readers can still traverse it
