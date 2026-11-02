@@ -324,6 +324,34 @@ public abstract class TransportTestSuite : RaftTest
         }
     }
 
+    private protected async Task SendingLogEntriesAcrossFramesTest(ServerFactory serverFactory, ClientFactory clientFactory, int maxPayloadSize)
+    {
+        var timeout = DefaultTimeout;
+        var member = new LocalMember(false);
+
+        //prepare server
+        var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+        await using var server = serverFactory(member, serverAddr, timeout);
+        await server.StartAsync(TestToken);
+
+        //prepare client
+        using var client = clientFactory(serverAddr, member, timeout);
+
+        // One of the sizes ends the first entry's payload exactly where the client's buffer ends: the frame goes out
+        // full and not final, followed by an empty final frame, which the server must read before the next entry.
+        var entry2 = new BufferedEntry(11L, false, RandomBytes(100));
+        for (var payloadSize = 1; payloadSize <= maxPayloadSize; payloadSize++)
+        {
+            member.ReceivedEntries.Clear();
+            var entry1 = new BufferedEntry(10L, false, RandomBytes(payloadSize));
+            var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, [entry1, entry2], 1, 56, 10, TestToken);
+            Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value.Result);
+            Equal(2, member.ReceivedEntries.Count);
+            Equal(entry1, member.ReceivedEntries[0]);
+            Equal(entry2, member.ReceivedEntries[1]);
+        }
+    }
+
     private protected async Task SendingSnapshotTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
     {
         var timeout = DefaultTimeout;
