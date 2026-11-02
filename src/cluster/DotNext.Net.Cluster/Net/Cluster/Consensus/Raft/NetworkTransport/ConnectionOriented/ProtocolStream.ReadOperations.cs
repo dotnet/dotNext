@@ -134,33 +134,6 @@ internal partial class ProtocolStream
         frameSize -= count;
     }
 
-    public bool TryReadFrameData(int length, out ReadOnlyMemory<byte> frame)
-    {
-        if (readState is ReadState.FrameNotStarted)
-        {
-            BeginReadFrameHeader();
-            
-            // how many bytes we should read from the stream to parse the frame headers
-            if (FrameHeadersSize - bufferEnd <= 0)
-            {
-                // the header is in the buffer
-                EndReadFrameHeader();
-                var writtenBuffer = WrittenBuffer;
-                // only a final frame: a payload ending where the leader's buffer ended is followed by an empty final frame, which must be read too
-                if (readState is ReadState.EndOfStreamReached && frameSize >= length && writtenBuffer.Length >= length)
-                {
-                    AdvanceReadCursor(length);
-                    frame = writtenBuffer.Slice(0, length);
-                    frameSize -= length;
-                    return true;
-                }
-            }
-        }
-
-        frame = default;
-        return false;
-    }
-
     public sealed override int Read(Span<byte> output)
     {
     check_state:
