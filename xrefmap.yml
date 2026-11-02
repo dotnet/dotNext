@@ -57732,6 +57732,108 @@ references:
   fullName.vb: DotNext.Threading.ReferenceCounted(Of T).Scope.ValueRef
   nameWithType: ReferenceCounted<T>.Scope.ValueRef
   nameWithType.vb: ReferenceCounted(Of T).Scope.ValueRef
+- uid: DotNext.Threading.TaskExtensions
+  name: TaskExtensions
+  href: api/DotNext.Threading.TaskExtensions.html
+  commentId: T:DotNext.Threading.TaskExtensions
+  fullName: DotNext.Threading.TaskExtensions
+  nameWithType: TaskExtensions
+- uid: DotNext.Threading.TaskExtensions.Run*
+  name: Run
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run_
+  commentId: Overload:DotNext.Threading.TaskExtensions.Run
+  fullName: DotNext.Threading.TaskExtensions.Run
+  nameWithType: TaskExtensions.Run
+- uid: DotNext.Threading.TaskExtensions.Run``1(System.Func{``0,System.Threading.Tasks.Task},``0)
+  name: Run<T>(Func<T, Task>, T)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__1_System_Func___0_System_Threading_Tasks_Task____0_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``1(System.Func{``0,System.Threading.Tasks.Task},``0)
+  name.vb: Run(Of T)(Func(Of T, Task), T)
+  fullName: DotNext.Threading.TaskExtensions.Run<T>(System.Func<T, System.Threading.Tasks.Task>, T)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T)(System.Func(Of T, System.Threading.Tasks.Task), T)
+  nameWithType: TaskExtensions.Run<T>(Func<T, Task>, T)
+  nameWithType.vb: TaskExtensions.Run(Of T)(Func(Of T, Task), T)
+- uid: DotNext.Threading.TaskExtensions.Run``1(``0)
+  name: Run<TWorkItem>(TWorkItem)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__1___0_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``1(``0)
+  name.vb: Run(Of TWorkItem)(TWorkItem)
+  fullName: DotNext.Threading.TaskExtensions.Run<TWorkItem>(TWorkItem)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of TWorkItem)(TWorkItem)
+  nameWithType: TaskExtensions.Run<TWorkItem>(TWorkItem)
+  nameWithType.vb: TaskExtensions.Run(Of TWorkItem)(TWorkItem)
+- uid: DotNext.Threading.TaskExtensions.Run``2(System.Func{``0,System.Threading.Tasks.Task{``1}},``0)
+  name: Run<T, TResult>(Func<T, Task<TResult>>, T)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__2_System_Func___0_System_Threading_Tasks_Task___1_____0_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``2(System.Func{``0,System.Threading.Tasks.Task{``1}},``0)
+  name.vb: Run(Of T, TResult)(Func(Of T, Task(Of TResult)), T)
+  fullName: DotNext.Threading.TaskExtensions.Run<T, TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>>, T)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T, TResult)(System.Func(Of T, System.Threading.Tasks.Task(Of TResult)), T)
+  nameWithType: TaskExtensions.Run<T, TResult>(Func<T, Task<TResult>>, T)
+  nameWithType.vb: TaskExtensions.Run(Of T, TResult)(Func(Of T, Task(Of TResult)), T)
+- uid: DotNext.Threading.TaskExtensions.Run``2(System.Func{``0,``1,System.Threading.Tasks.Task},``0,``1)
+  name: Run<T1, T2>(Func<T1, T2, Task>, T1, T2)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__2_System_Func___0___1_System_Threading_Tasks_Task____0___1_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``2(System.Func{``0,``1,System.Threading.Tasks.Task},``0,``1)
+  name.vb: Run(Of T1, T2)(Func(Of T1, T2, Task), T1, T2)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2>(System.Func<T1, T2, System.Threading.Tasks.Task>, T1, T2)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2)(System.Func(Of T1, T2, System.Threading.Tasks.Task), T1, T2)
+  nameWithType: TaskExtensions.Run<T1, T2>(Func<T1, T2, Task>, T1, T2)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2)(Func(Of T1, T2, Task), T1, T2)
+- uid: DotNext.Threading.TaskExtensions.Run``2(``1)
+  name: Run<TResult, TWorkItem>(TWorkItem)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__2___1_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``2(``1)
+  name.vb: Run(Of TResult, TWorkItem)(TWorkItem)
+  fullName: DotNext.Threading.TaskExtensions.Run<TResult, TWorkItem>(TWorkItem)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of TResult, TWorkItem)(TWorkItem)
+  nameWithType: TaskExtensions.Run<TResult, TWorkItem>(TWorkItem)
+  nameWithType.vb: TaskExtensions.Run(Of TResult, TWorkItem)(TWorkItem)
+- uid: DotNext.Threading.TaskExtensions.Run``3(System.Func{``0,``1,System.Threading.Tasks.Task{``2}},``0,``1)
+  name: Run<T1, T2, TResult>(Func<T1, T2, Task<TResult>>, T1, T2)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__3_System_Func___0___1_System_Threading_Tasks_Task___2_____0___1_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``3(System.Func{``0,``1,System.Threading.Tasks.Task{``2}},``0,``1)
+  name.vb: Run(Of T1, T2, TResult)(Func(Of T1, T2, Task(Of TResult)), T1, T2)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2, TResult>(System.Func<T1, T2, System.Threading.Tasks.Task<TResult>>, T1, T2)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, TResult)(System.Func(Of T1, T2, System.Threading.Tasks.Task(Of TResult)), T1, T2)
+  nameWithType: TaskExtensions.Run<T1, T2, TResult>(Func<T1, T2, Task<TResult>>, T1, T2)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2, TResult)(Func(Of T1, T2, Task(Of TResult)), T1, T2)
+- uid: DotNext.Threading.TaskExtensions.Run``3(System.Func{``0,``1,``2,System.Threading.Tasks.Task},``0,``1,``2)
+  name: Run<T1, T2, T3>(Func<T1, T2, T3, Task>, T1, T2, T3)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__3_System_Func___0___1___2_System_Threading_Tasks_Task____0___1___2_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``3(System.Func{``0,``1,``2,System.Threading.Tasks.Task},``0,``1,``2)
+  name.vb: Run(Of T1, T2, T3)(Func(Of T1, T2, T3, Task), T1, T2, T3)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2, T3>(System.Func<T1, T2, T3, System.Threading.Tasks.Task>, T1, T2, T3)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, T3)(System.Func(Of T1, T2, T3, System.Threading.Tasks.Task), T1, T2, T3)
+  nameWithType: TaskExtensions.Run<T1, T2, T3>(Func<T1, T2, T3, Task>, T1, T2, T3)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2, T3)(Func(Of T1, T2, T3, Task), T1, T2, T3)
+- uid: DotNext.Threading.TaskExtensions.Run``4(System.Func{``0,``1,``2,System.Threading.Tasks.Task{``3}},``0,``1,``2)
+  name: Run<T1, T2, T3, TResult>(Func<T1, T2, T3, Task<TResult>>, T1, T2, T3)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__4_System_Func___0___1___2_System_Threading_Tasks_Task___3_____0___1___2_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``4(System.Func{``0,``1,``2,System.Threading.Tasks.Task{``3}},``0,``1,``2)
+  name.vb: Run(Of T1, T2, T3, TResult)(Func(Of T1, T2, T3, Task(Of TResult)), T1, T2, T3)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2, T3, TResult>(System.Func<T1, T2, T3, System.Threading.Tasks.Task<TResult>>, T1, T2, T3)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, T3, TResult)(System.Func(Of T1, T2, T3, System.Threading.Tasks.Task(Of TResult)), T1, T2, T3)
+  nameWithType: TaskExtensions.Run<T1, T2, T3, TResult>(Func<T1, T2, T3, Task<TResult>>, T1, T2, T3)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2, T3, TResult)(Func(Of T1, T2, T3, Task(Of TResult)), T1, T2, T3)
+- uid: DotNext.Threading.TaskExtensions.Run``4(System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task},``0,``1,``2,``3)
+  name: Run<T1, T2, T3, T4>(Func<T1, T2, T3, T4, Task>, T1, T2, T3, T4)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__4_System_Func___0___1___2___3_System_Threading_Tasks_Task____0___1___2___3_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``4(System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task},``0,``1,``2,``3)
+  name.vb: Run(Of T1, T2, T3, T4)(Func(Of T1, T2, T3, T4, Task), T1, T2, T3, T4)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2, T3, T4>(System.Func<T1, T2, T3, T4, System.Threading.Tasks.Task>, T1, T2, T3, T4)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, T3, T4)(System.Func(Of T1, T2, T3, T4, System.Threading.Tasks.Task), T1, T2, T3, T4)
+  nameWithType: TaskExtensions.Run<T1, T2, T3, T4>(Func<T1, T2, T3, T4, Task>, T1, T2, T3, T4)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2, T3, T4)(Func(Of T1, T2, T3, T4, Task), T1, T2, T3, T4)
+- uid: DotNext.Threading.TaskExtensions.Run``5(System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task{``4}},``0,``1,``2,``3)
+  name: Run<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, Task<TResult>>, T1, T2, T3, T4)
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_Run__5_System_Func___0___1___2___3_System_Threading_Tasks_Task___4_____0___1___2___3_
+  commentId: M:DotNext.Threading.TaskExtensions.Run``5(System.Func{``0,``1,``2,``3,System.Threading.Tasks.Task{``4}},``0,``1,``2,``3)
+  name.vb: Run(Of T1, T2, T3, T4, TResult)(Func(Of T1, T2, T3, T4, Task(Of TResult)), T1, T2, T3, T4)
+  fullName: DotNext.Threading.TaskExtensions.Run<T1, T2, T3, T4, TResult>(System.Func<T1, T2, T3, T4, System.Threading.Tasks.Task<TResult>>, T1, T2, T3, T4)
+  fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, T3, T4, TResult)(System.Func(Of T1, T2, T3, T4, System.Threading.Tasks.Task(Of TResult)), T1, T2, T3, T4)
+  nameWithType: TaskExtensions.Run<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, Task<TResult>>, T1, T2, T3, T4)
+  nameWithType.vb: TaskExtensions.Run(Of T1, T2, T3, T4, TResult)(Func(Of T1, T2, T3, T4, Task(Of TResult)), T1, T2, T3, T4)
 - uid: DotNext.Threading.Tasks
   name: DotNext.Threading.Tasks
   href: api/DotNext.Threading.Tasks.html
