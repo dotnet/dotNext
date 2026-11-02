@@ -307,6 +307,28 @@ public sealed partial class TcpTransportTests : TransportTestSuite
         }
     }
 
+    [Theory]
+    [InlineData(2L, HeartbeatResult.ReplicatedWithLeaderTerm)]
+    [InlineData(3L, HeartbeatResult.Replicated)]
+    public Task EmptyAppendEntriesAfterEntry(long senderTerm, HeartbeatResult expected)
+    {
+        return EmptyAppendEntriesAfterEntryCore(CreateCluster, senderTerm, expected);
+
+        static RaftCluster CreateCluster(int port, bool coldStart, IPersistentState wal)
+        {
+            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                ColdStart = coldStart,
+                ConfigurationStorage = null,
+            };
+
+            return new(config)
+            {
+                AuditTrail = wal,
+            };
+        }
+    }
+
     [Fact]
     public Task ClusterRecovery()
     {
