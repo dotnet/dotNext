@@ -714,7 +714,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         {
                             Value = new()
                             {
-                                Result = IsReplicatedWithExpectedTerm(entries) ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated,
+                                // an empty request whose preceding entry is of the sender's term proves the log holds the leader's entries of its term too
+                                Result = IsReplicatedWithExpectedTerm(entries) || (!notEmpty && prevLogTerm == senderTerm)
+                                    ? HeartbeatResult.ReplicatedWithLeaderTerm
+                                    : HeartbeatResult.Replicated,
                                 LastIndex = lastIndex,
                             }
                         };

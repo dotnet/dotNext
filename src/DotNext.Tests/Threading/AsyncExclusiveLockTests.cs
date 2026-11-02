@@ -267,13 +267,13 @@ public sealed class AsyncExclusiveLockTests : Test
         using var l = new AsyncExclusiveLock();
         True(l.TryAcquire());
         var threadId = Environment.CurrentManagedThreadId;
-        
-        Task.Run(() =>
+
+        SpinWait(Task.Run(() =>
             {
                 NotEqual(threadId, Environment.CurrentManagedThreadId);
                 l.Release();
-            }, TestToken)
-            .Wait(TestToken);
+            }, TestToken),
+            TestToken);
         
         True(l.TryAcquire(TimeSpan.Zero, TestToken));
     }
