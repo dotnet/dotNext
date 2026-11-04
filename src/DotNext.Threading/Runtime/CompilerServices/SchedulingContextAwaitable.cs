@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -61,7 +62,9 @@ public readonly struct SchedulingContextAwaitable
             {
                 context.Post(static state =>
                 {
-                    var (continuation, executionContext) = (Tuple<Action, ExecutionContext>)state!;
+                    Debug.Assert(state is Tuple<Action, ExecutionContext>);
+
+                    var (continuation, executionContext) = Unsafe.As<Tuple<Action, ExecutionContext>>(state);
                     ExecutionContext.Run(executionContext, Invoke, continuation);
                 }, Tuple.Create(continuation, executionContext));
             }
@@ -85,6 +88,11 @@ public readonly struct SchedulingContextAwaitable
             }
         }
 
-        private static void Invoke(object? continuation) => ((Action)continuation!).Invoke();
+        private static void Invoke(object? continuation)
+        {
+            Debug.Assert(continuation is Action);
+
+            Unsafe.As<Action>(continuation).Invoke();
+        }
     }
 }
