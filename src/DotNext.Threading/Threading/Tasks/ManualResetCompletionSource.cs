@@ -135,9 +135,9 @@ public abstract partial class ManualResetCompletionSource
                 return;
         }
 
-        // execute continuation in-place because the source is completed already
+        // the source is completed already: schedule the continuation instead of invoking it inside OnCompleted
         Debug.Assert(IsCompleted);
-        continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
+        continuation.InvokeOnCurrentContext();
     }
 
     private protected ValueTaskSourceStatus GetStatus<TExceptionProvider>(short expectedToken, TExceptionProvider provider)
@@ -271,15 +271,13 @@ public abstract partial class ManualResetCompletionSource
                 : null;
         }
 
-        public void InvokeOnCurrentContext(bool runAsynchronously)
+        // Never invokes the continuation synchronously to avoid stack dives and reentrancy of the caller of OnCompleted,
+        // as ManualResetValueTaskSourceCore<T> does
+        public void InvokeOnCurrentContext()
         {
             if (schedulingContext is not null)
             {
                 action.InvokeInCurrentExecutionContext(state, schedulingContext);
-            }
-            else if (!runAsynchronously)
-            {
-                action(state);
             }
             else if (context is not null)
             {
