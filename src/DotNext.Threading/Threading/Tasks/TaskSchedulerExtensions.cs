@@ -3,8 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
-using ScopedTaskSchedulerAwaitable = Runtime.CompilerServices.ScopedTaskSchedulerAwaitable;
-using TaskSchedulerAwaitable = Runtime.CompilerServices.TaskSchedulerAwaitable;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents timer-based scheduler.
