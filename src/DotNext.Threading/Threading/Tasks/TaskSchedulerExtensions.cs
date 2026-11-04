@@ -62,6 +62,7 @@ public static partial class TaskSchedulerExtensions
         /// </param>
         /// <returns>The awaitable object that resumes the caller on the target scheduler.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="scheduler"/> is <see langword="null"/>.</exception>
+        /// <seealso cref="TaskSchedulerExtensions.SwitchToAsync"/>
         public TaskSchedulerAwaitable SwitchTo(bool forceYield = false)
         {
             ArgumentNullException.ThrowIfNull(scheduler);
