@@ -15,6 +15,9 @@ partial class ManualResetCompletionSource
     private const uint SubscribingState = 0B_0001_1100;
     private const uint SubscribedState = 0B_0011_1100; // this state guarantees that the continuation is set
 
+    // the bit is set by both SubscribingState and SubscribedState
+    private const uint SubscriptionFlag = SubscribingState & ~ActivatedState;
+
     private const uint CompletingState = 0B_0000_0001;
     private const uint CompletedState = 0B_0000_0011; // this state guarantees that the result is set
 
@@ -134,11 +137,26 @@ partial class ManualResetCompletionSource
             if (tmp == expectedState)
                 break;
 
+            string message;
             if (GetVersion(tmp) != expectedToken)
-                throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
-
-            if ((tmp & CompletedState) is CompletedState)
+            {
+                message = ExceptionMessages.InvalidSourceToken;
+            }
+            else if ((tmp & (SubscriptionFlag | ConsumedState)) is not 0)
+            {
+                // the continuation is attached already or concurrently, or the task is consumed
+                message = ExceptionMessages.InvalidSourceState;
+            }
+            else if ((tmp & CompletedState) is CompletedState)
+            {
                 return false;
+            }
+            else
+            {
+                continue;
+            }
+
+            throw new InvalidOperationException(message);
         }
 
         return true;
