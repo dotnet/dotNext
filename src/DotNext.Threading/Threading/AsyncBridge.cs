@@ -84,7 +84,7 @@ public static partial class AsyncBridge
         var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
             handle,
             Complete,
-            new Tuple<WaitHandleValueTask, short>(result, token),
+            Tuple.Create(result, token),
             timeout,
             executeOnlyOnce: true);
 
