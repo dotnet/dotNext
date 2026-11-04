@@ -66,7 +66,7 @@ public static partial class TaskSchedulerExtensions
         {
             ArgumentNullException.ThrowIfNull(scheduler);
 
-            return new(scheduler, forceYield);
+            return new(scheduler) { IsYieldForced = forceYield };
         }
 
         /// <summary>

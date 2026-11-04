@@ -33,7 +33,7 @@ public readonly struct SchedulingContextAwaitable
         internal Awaiter(object? schedulingContext) => this.schedulingContext = schedulingContext;
 
         private TaskSchedulerAwaitable.Awaiter SchedulerAwaiter
-            => new(schedulingContext as TaskScheduler ?? TaskScheduler.Default, forceYield: false);
+            => new(schedulingContext as TaskScheduler ?? TaskScheduler.Default);
 
         /// <summary>
         /// Gets a value indicating that the caller is already running in the captured context,

@@ -39,7 +39,7 @@ public readonly struct ScopedTaskSchedulerAwaitable
         internal Awaiter(object? previous, TaskScheduler scheduler)
         {
             this.previous = previous;
-            awaiter = new(scheduler, forceYield: false);
+            awaiter = new(scheduler);
         }
 
         /// <summary>

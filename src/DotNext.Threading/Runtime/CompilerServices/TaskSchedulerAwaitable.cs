@@ -10,19 +10,17 @@ namespace DotNext.Runtime.CompilerServices;
 public readonly struct TaskSchedulerAwaitable
 {
     private readonly TaskScheduler scheduler;
-    private readonly bool forceYield;
 
-    internal TaskSchedulerAwaitable(TaskScheduler scheduler, bool forceYield)
-    {
-        this.scheduler = scheduler;
-        this.forceYield = forceYield;
-    }
+    internal TaskSchedulerAwaitable(TaskScheduler scheduler)
+        => this.scheduler = scheduler;
+    
+    internal bool IsYieldForced { get; init; }
 
     /// <summary>
     /// Gets the awaiter of this object.
     /// </summary>
     /// <returns>The awaiter of this object.</returns>
-    public Awaiter GetAwaiter() => new(scheduler, forceYield);
+    public Awaiter GetAwaiter() => new(scheduler) { IsYieldForced = IsYieldForced };
 
     /// <summary>
     /// Represents the awaiter that switches the asynchronous method to the specified task scheduler.
@@ -31,12 +29,14 @@ public readonly struct TaskSchedulerAwaitable
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
         private readonly TaskScheduler? scheduler;
-        private readonly bool forceYield;
 
-        internal Awaiter(TaskScheduler scheduler, bool forceYield)
+        internal Awaiter(TaskScheduler scheduler)
+            => this.scheduler = scheduler;
+
+        internal bool IsYieldForced
         {
-            this.scheduler = scheduler;
-            this.forceYield = forceYield;
+            get;
+            init;
         }
 
         private TaskScheduler Scheduler => scheduler ?? TaskScheduler.Default;
@@ -45,7 +45,7 @@ public readonly struct TaskSchedulerAwaitable
         /// Gets a value indicating that the caller is already running on the target scheduler,
         /// so the switch is not needed.
         /// </summary>
-        public bool IsCompleted => !forceYield && IsCurrent(Scheduler);
+        public bool IsCompleted => !IsYieldForced && Scheduler.IsCurrent;
 
         /// <summary>
         /// Ends the switch.
@@ -55,20 +55,26 @@ public readonly struct TaskSchedulerAwaitable
         }
 
         /// <inheritdoc/>
-        public void OnCompleted(Action continuation) => Schedule(continuation, flowExecutionContext: true);
+        public void OnCompleted(Action continuation)
+            => Scheduler.Schedule(continuation, flowExecutionContext: true);
 
         /// <inheritdoc/>
-        public void UnsafeOnCompleted(Action continuation) => Schedule(continuation, flowExecutionContext: false);
+        public void UnsafeOnCompleted(Action continuation)
+            => Scheduler.Schedule(continuation, flowExecutionContext: false);
+    }
+}
 
-        private static bool IsCurrent(TaskScheduler scheduler)
-            => SynchronizationContext.Current is null
-               && ReferenceEquals(TaskScheduler.Current, scheduler)
-               && (!ReferenceEquals(scheduler, TaskScheduler.Default) || Thread.CurrentThread.IsThreadPoolThread);
-
-        private void Schedule(Action continuation, bool flowExecutionContext)
+file static class TaskSchedulerHelpers
+{
+    extension(TaskScheduler scheduler)
+    {
+        public bool IsCurrent => SynchronizationContext.Current is null
+                                 && ReferenceEquals(TaskScheduler.Current, scheduler)
+                                 && (!ReferenceEquals(scheduler, TaskScheduler.Default) || Thread.CurrentThread.IsThreadPoolThread);
+        
+        public void Schedule(Action continuation, bool flowExecutionContext)
         {
-            var schedulerCopy = Scheduler;
-            if (ReferenceEquals(schedulerCopy, TaskScheduler.Default))
+            if (ReferenceEquals(scheduler, TaskScheduler.Default))
             {
                 // no need to allocate a task: TaskScheduler.Current is Default outside any task
                 if (flowExecutionContext)
@@ -82,13 +88,13 @@ public readonly struct TaskSchedulerAwaitable
             }
             else if (flowExecutionContext || ExecutionContext.IsFlowSuppressed())
             {
-                StartNew(continuation, schedulerCopy);
+                StartNew(continuation, scheduler);
             }
             else
             {
                 using (ExecutionContext.SuppressFlow())
                 {
-                    StartNew(continuation, schedulerCopy);
+                    StartNew(continuation, scheduler);
                 }
             }
 
