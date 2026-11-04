@@ -23,7 +23,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     public AsyncReaderWriterLock() => state = new();
 
-    private bool IsLockHelpByCurrentThread
+    private bool IsLockHeldByCurrentThread
     {
         get => lockOwnerState?.Value ?? false;
         set
@@ -126,7 +126,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     private bool TryEnter<TLockManager>(TLockManager manager, TimeSpan timeout, CancellationToken token)
         where TLockManager : struct, ILockManager<WaitNode>, allows ref struct
     {
-        if (IsLockHelpByCurrentThread)
+        if (IsLockHeldByCurrentThread)
             throw new LockRecursionException();
 
         bool result;
@@ -141,7 +141,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
             result = false;
         }
 
-        return IsLockHelpByCurrentThread = result;
+        return IsLockHeldByCurrentThread = result;
     }
 
     /// <summary>
@@ -351,7 +351,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         else
         {
             // Read lock is lost, erase information about the ownership
-            IsLockHelpByCurrentThread = false;
+            IsLockHeldByCurrentThread = false;
         }
 
         return acquired;
@@ -561,7 +561,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            IsLockHelpByCurrentThread = false;
+            IsLockHeldByCurrentThread = false;
             DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
