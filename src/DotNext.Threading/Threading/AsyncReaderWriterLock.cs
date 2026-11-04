@@ -603,6 +603,92 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         }
     }
 
+    /// <summary>
+    /// Temporarily releases the write lock to let the suspended callers in, and then reacquires it.
+    /// </summary>
+    /// <remarks>
+    /// If there are no suspended callers, the method completes synchronously and the write lock remains held by the caller.
+    /// Otherwise, the lock is passed to the suspended callers at the head of the queue (a writer, or a group of readers),
+    /// and the current caller is placed at the head of the wait queue. Thus, it reacquires the write lock ahead of the callers
+    /// suspended by <see cref="EnterReadLockAsync(CancellationToken)"/>, <see cref="EnterWriteLockAsync(CancellationToken)"/>
+    /// and similar methods.
+    /// Callers that keep yielding to each other in a loop can starve the callers suspended by regular acquisition methods.
+    /// <br/>
+    /// The caller must restore the invariants of the protected state before calling this method, because
+    /// other callers can observe and modify that state while the lock is yielded. Reacquisition of the write lock
+    /// invalidates the stamps returned by <see cref="TryOptimisticRead"/>.
+    /// <br/>
+    /// If reacquisition is canceled or interrupted, the method throws an exception, and the lock is no longer
+    /// held by the caller. In this case, the caller must not call <see cref="Release"/>: the lock might be already
+    /// acquired by another caller. Track the lock state explicitly to release the lock correctly:
+    /// <code>
+    /// var lockTaken = false;
+    /// await rwLock.EnterWriteLockAsync(token);
+    /// lockTaken = true;
+    /// try
+    /// {
+    ///     // ...
+    ///     lockTaken = false;
+    ///     await rwLock.YieldAsync(token);
+    ///     lockTaken = true;
+    ///     // ...
+    /// }
+    /// finally
+    /// {
+    ///     if (lockTaken)
+    ///         rwLock.Release();
+    /// }
+    /// </code>
+    /// </remarks>
+    /// <param name="token">The token that can be used to abort lock reacquisition.</param>
+    /// <returns>The task representing lock reacquisition.</returns>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The lock is acquired synchronously by <see cref="TryEnterWriteLock(TimeSpan, CancellationToken)"/>.
+    /// In this case, the lock remains held by the caller.
+    /// </exception>
+    /// <exception cref="ObjectDisposedException">
+    /// This object has been disposed. If the object is being disposed gracefully with <see cref="QueuedSynchronizer.DisposeAsync"/>,
+    /// the lock is released and not held by the caller.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">
+    /// The operation has been canceled. The lock is not held by the caller.
+    /// </exception>
+    /// <exception cref="PendingTaskInterruptedException">
+    /// The operation has been interrupted manually. The lock is not held by the caller.
+    /// </exception>
+    public ValueTask YieldAsync(CancellationToken token = default)
+    {
+        if (!IsDisposed)
+        {
+            var queue = CaptureWaitQueue();
+            try
+            {
+                if (!state.WriteLock)
+                    return ValueTask.FromException(new SynchronizationLockException(ExceptionMessages.NotInLock));
+
+                if (IsLockHeldByCurrentThread)
+                    return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LockAcquiredSynchronously));
+
+                state.ExitLock();
+                DrainWaitQueue(ref queue);
+
+                if (!IsDisposing)
+                    return Yield<WaitNode, WriteLockManager>(new(ref state), token);
+
+                // graceful disposal is in progress: give up the lock, as Release does
+                if (IsReadyToDispose)
+                    Dispose(true);
+            }
+            finally
+            {
+                queue.Dispose();
+            }
+        }
+
+        return new(DisposedTask);
+    }
+
     private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
 
     /// <inheritdoc/>

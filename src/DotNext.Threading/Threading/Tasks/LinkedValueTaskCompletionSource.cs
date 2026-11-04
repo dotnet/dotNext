@@ -88,6 +88,25 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
             }
         }
 
+        internal void Prepend(LinkedValueTaskCompletionSource<T> node)
+        {
+            Debug.Assert(node is not null);
+            
+            if (last is null)
+            {
+                Debug.Assert(first is null);
+
+                first = last = node;
+            }
+            else
+            {
+                Debug.Assert(first is not null);
+
+                node.Append(first);
+                first = node;
+            }
+        }
+
         // true if the first node in the queue is removed
         internal bool Remove(LinkedValueTaskCompletionSource<T> node)
         {

@@ -3,7 +3,7 @@
 namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
-public sealed class AsyncReaderWriterLockTests : Test
+public sealed partial class AsyncReaderWriterLockTests : Test
 {
     [Fact]
     public static async Task TrivialLock()

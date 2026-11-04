@@ -21,6 +21,8 @@ partial class QueuedSynchronizer
         void Complete();
 
         bool IsCompleted { get; }
+
+        static virtual bool PreferFairness => true;
     }
 
     private protected interface ITaskBuilder<out TOutput> : ITaskBuilder
@@ -44,6 +46,39 @@ partial class QueuedSynchronizer
     private protected interface IWaitQueueProvider : ITaskBuilder
     {
         WaitQueueScope CaptureWaitQueue();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private ref struct YieldingAcquisition(CancellationToken token) : IValueTaskBuilder
+    {
+        private ISupplier<TimeSpan, CancellationToken, ValueTask>? taskFactory = token.IsCancellationRequested
+            ? CanceledTaskFactory.Instance
+            : null;
+
+        void ITaskBuilder.Complete(WaitNode node)
+            => taskFactory = node;
+
+        void ITaskBuilder.CompleteAsDisposed(string objectName)
+            => taskFactory = new QueuedSynchronizerDisposedException(objectName);
+
+        readonly bool ITaskBuilder.TryCompleteAsTimedOut() => false;
+
+        void ITaskBuilder.Complete<TFactory>()
+            => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
+
+        void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
+
+        [MemberNotNullWhen(true, nameof(taskFactory))]
+        public readonly bool IsCompleted => taskFactory is not null;
+
+        public readonly ValueTask Build()
+        {
+            Debug.Assert(IsCompleted);
+
+            return taskFactory.Invoke(InfiniteTimeSpan, token);
+        }
+
+        static bool ITaskBuilder.PreferFairness => false;
     }
 
     [StructLayout(LayoutKind.Auto)]
