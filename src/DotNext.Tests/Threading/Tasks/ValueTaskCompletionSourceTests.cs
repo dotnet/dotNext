@@ -280,4 +280,106 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource();
         Throws<ArgumentOutOfRangeException>(() => source.CreateTask(TimeSpan.MinValue, TestToken));
     }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task CompleteWithSuppressedFlow(bool runContinuationsAsynchronously)
+    {
+        var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var local = new AsyncLocal<int>();
+        var result = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // subscribe with the captured synchronization context and execution context
+        var consumer = new Thread(() =>
+        {
+            local.Value = 42;
+            SynchronizationContext.SetSynchronizationContext(new PostingSynchronizationContext());
+            task.ConfigureAwait(true).GetAwaiter().OnCompleted(() => result.SetResult(local.Value));
+        });
+        consumer.Start();
+        consumer.Join();
+
+        // the completer must remain in its own execution context with suppressed flow
+        using (ExecutionContext.SuppressFlow())
+        {
+            True(source.TrySetResult());
+            True(ExecutionContext.IsFlowSuppressed());
+            Equal(0, local.Value);
+        }
+
+        Equal(42, await result.Task.WaitAsync(DefaultTimeout, TestToken));
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public static async Task SubscribeToCompletedSource(bool runContinuationsAsynchronously, bool flowExecutionContext)
+    {
+        var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        True(source.TrySetResult());
+
+        // the awaiter subscribes without checking IsCompleted, as the builder does when it loses the race
+        var result = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Action continuation = () => result.SetResult(insideOnCompleted);
+        var awaiter = task.GetAwaiter();
+        insideOnCompleted = true;
+        try
+        {
+            if (flowExecutionContext)
+                awaiter.OnCompleted(continuation);
+            else
+                awaiter.UnsafeOnCompleted(continuation);
+        }
+        finally
+        {
+            insideOnCompleted = false;
+        }
+
+        // the continuation must not be invoked synchronously by OnCompleted
+        False(await result.Task.WaitAsync(DefaultTimeout, TestToken));
+        await task;
+    }
+
+    [ThreadStatic]
+    private static bool insideOnCompleted;
+
+    [Fact]
+    public static async Task DoubleSubscription()
+    {
+        var source = new ValueTaskCompletionSource();
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var result = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var awaiter = task.GetAwaiter();
+        awaiter.UnsafeOnCompleted(() => result.SetResult());
+        Throws<InvalidOperationException>(() => awaiter.UnsafeOnCompleted(static () => { }));
+
+        // the source is still usable by the first consumer
+        True(source.TrySetResult());
+        await result.Task.WaitAsync(DefaultTimeout, TestToken);
+        await task;
+    }
+
+    [Fact]
+    public static async Task SubscribeToConsumedSource()
+    {
+        var source = new ValueTaskCompletionSource();
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        True(source.TrySetResult());
+        await task;
+
+        Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
+        Throws<InvalidOperationException>(() => task.GetAwaiter().UnsafeOnCompleted(static () => { }));
+    }
+
+    private sealed class PostingSynchronizationContext : SynchronizationContext
+    {
+        public override void Post(SendOrPostCallback d, object? state)
+            => ThreadPool.QueueUserWorkItem(static args => args.d(args.state), (d, state), preferLocal: false);
+    }
 }

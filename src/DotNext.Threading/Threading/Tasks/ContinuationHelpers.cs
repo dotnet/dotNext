@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
@@ -19,27 +20,42 @@ internal static class ContinuationHelpers
 
     extension(Action<object?> continuation)
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void InvokeInExecutionContext(object? state, object schedulingContext,
             ExecutionContext? context)
         {
             if (context is not null)
             {
-                var currentContext = ExecutionContext.Capture();
-                ExecutionContext.Restore(context);
-
-                try
-                {
-                    continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
-                }
-                finally
-                {
-                    if (currentContext is not null)
-                        ExecutionContext.Restore(currentContext);
-                }
+                continuation.InvokeInExecutionContextCore(state, schedulingContext, context);
             }
             else
             {
                 continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+            }
+        }
+        
+        private void InvokeInExecutionContextCore(object? state, object schedulingContext, ExecutionContext context)
+        {
+            // Capture returns null if the flow is suppressed, so the flow must be restored temporarily
+            var flowSuppressed = ExecutionContext.IsFlowSuppressed();
+            if (flowSuppressed)
+                ExecutionContext.RestoreFlow();
+
+            var currentContext = ExecutionContext.Capture();
+            Debug.Assert(currentContext is not null);
+            ExecutionContext.Restore(context);
+
+            try
+            {
+                continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+            }
+            finally
+            {
+                ExecutionContext.Restore(currentContext);
+
+                // AsyncFlowControl of the caller remains valid: Undo checks the thread and the suppression only
+                if (flowSuppressed)
+                    ExecutionContext.SuppressFlow();
             }
         }
 
