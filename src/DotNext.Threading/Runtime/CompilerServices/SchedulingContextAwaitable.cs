@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using Threading.Tasks;
+
 /// <summary>
 /// Represents an awaitable object that resumes the asynchronous method
 /// on the captured synchronization context or task scheduler.
@@ -11,10 +13,10 @@ namespace DotNext.Runtime.CompilerServices;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct SchedulingContextAwaitable
 {
-    // SynchronizationContext, TaskScheduler or null for TaskScheduler.Default
-    private readonly object? schedulingContext;
+    private readonly SchedulingContext schedulingContext;
 
-    internal SchedulingContextAwaitable(object? schedulingContext) => this.schedulingContext = schedulingContext;
+    internal SchedulingContextAwaitable(SchedulingContext schedulingContext)
+        => this.schedulingContext = schedulingContext;
 
     /// <summary>
     /// Gets the awaiter of this object.
@@ -29,18 +31,18 @@ public readonly struct SchedulingContextAwaitable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private readonly object? schedulingContext;
+        private readonly SchedulingContext schedulingContext;
 
-        internal Awaiter(object? schedulingContext) => this.schedulingContext = schedulingContext;
+        internal Awaiter(SchedulingContext schedulingContext) => this.schedulingContext = schedulingContext;
 
         private TaskSchedulerAwaitable.Awaiter SchedulerAwaiter
-            => new(schedulingContext as TaskScheduler ?? TaskScheduler.Default);
+            => new(schedulingContext.Scheduler);
 
         /// <summary>
         /// Gets a value indicating that the caller is already running in the captured context,
         /// so the switch is not needed.
         /// </summary>
-        public bool IsCompleted => schedulingContext is SynchronizationContext context
+        public bool IsCompleted => schedulingContext.Context is { } context
             ? ReferenceEquals(SynchronizationContext.Current, context) && ReferenceEquals(TaskScheduler.Current, TaskScheduler.Default)
             : SchedulerAwaiter.IsCompleted;
 
@@ -54,7 +56,7 @@ public readonly struct SchedulingContextAwaitable
         /// <inheritdoc/>
         public void OnCompleted(Action continuation)
         {
-            if (schedulingContext is not SynchronizationContext context)
+            if (schedulingContext.Context is not { } context)
             {
                 SchedulerAwaiter.OnCompleted(continuation);
             }
@@ -65,34 +67,27 @@ public readonly struct SchedulingContextAwaitable
                     Debug.Assert(state is Tuple<Action, ExecutionContext>);
 
                     var (continuation, executionContext) = Unsafe.As<Tuple<Action, ExecutionContext>>(state);
-                    ExecutionContext.Run(executionContext, Invoke, continuation);
+                    executionContext.Run(continuation);
                 }, Tuple.Create(continuation, executionContext));
             }
             else
             {
-                context.Post(Invoke, continuation);
+                context.Post(continuation);
             }
         }
 
         /// <inheritdoc/>
         public void UnsafeOnCompleted(Action continuation)
         {
-            if (schedulingContext is SynchronizationContext context)
+            if (schedulingContext.Context is { } context)
             {
                 // posted directly instead of wrapping into a task, so TaskScheduler.Current remains Default
-                context.Post(Invoke, continuation);
+                context.Post(continuation);
             }
             else
             {
                 SchedulerAwaiter.UnsafeOnCompleted(continuation);
             }
-        }
-
-        private static void Invoke(object? continuation)
-        {
-            Debug.Assert(continuation is Action);
-
-            Unsafe.As<Action>(continuation).Invoke();
         }
     }
 }

@@ -15,10 +15,9 @@ using Runtime.CompilerServices;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct TaskSchedulerScope
 {
-    // SynchronizationContext, TaskScheduler or null for TaskScheduler.Default
-    private readonly object? previous;
+    private readonly SchedulingContext previous;
 
-    internal TaskSchedulerScope(object? previous) => this.previous = previous;
+    internal TaskSchedulerScope(SchedulingContext previous) => this.previous = previous;
 
     /// <summary>
     /// Switches the asynchronous method back to the original synchronization context or scheduler.

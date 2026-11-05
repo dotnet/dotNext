@@ -25,7 +25,7 @@ public readonly struct ScopedTaskSchedulerAwaitable
     /// to be restored by <see cref="TaskSchedulerScope.DisposeAsync"/>.
     /// </remarks>
     /// <returns>The awaiter of this object.</returns>
-    public Awaiter GetAwaiter() => new(ContinuationHelpers.CaptureSchedulingContext(), scheduler);
+    public Awaiter GetAwaiter() => new(scheduler);
 
     /// <summary>
     /// Represents the awaiter that switches the asynchronous method to the specified task scheduler.
@@ -33,12 +33,12 @@ public readonly struct ScopedTaskSchedulerAwaitable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private readonly object? previous;
+        private readonly SchedulingContext previous;
         private readonly TaskSchedulerAwaitable.Awaiter awaiter;
 
-        internal Awaiter(object? previous, TaskScheduler scheduler)
+        internal Awaiter(TaskScheduler scheduler)
         {
-            this.previous = previous;
+            previous = new();
             awaiter = new(scheduler);
         }
 

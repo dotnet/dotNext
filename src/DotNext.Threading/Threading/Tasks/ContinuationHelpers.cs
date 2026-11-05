@@ -1,40 +1,49 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
 internal static class ContinuationHelpers
 {
-    public static object? CaptureSchedulingContext()
+    extension(Action action)
     {
-        object? schedulingContext = SynchronizationContext.Current;
-        if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
+        public void Schedule(bool flowExecutionContext, bool preferLocal = false)
         {
-            schedulingContext = TaskScheduler.Current;
-            if (ReferenceEquals(schedulingContext, TaskScheduler.Default))
-                schedulingContext = null;
-        }
-
-        return schedulingContext;
-    }
-
-    extension(Action<object?> continuation)
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void InvokeInExecutionContext(object? state, object schedulingContext,
-            ExecutionContext? context)
-        {
-            if (context is not null)
+            var workItem = Invoke;
+            if (flowExecutionContext)
             {
-                continuation.InvokeInExecutionContextCore(state, schedulingContext, context);
+                ThreadPool.QueueUserWorkItem(workItem, action, preferLocal);
             }
             else
             {
-                continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+                ThreadPool.UnsafeQueueUserWorkItem(workItem, action, preferLocal);
             }
         }
         
-        private void InvokeInExecutionContextCore(object? state, object schedulingContext, ExecutionContext context)
+        // The continuation must run inside a task executed by the scheduler, so subsequent awaits capture it.
+        // HideScheduler must not be used, otherwise TaskScheduler.Current returns Default.
+        public void Schedule(TaskScheduler scheduler)
+            => Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+    }
+
+    extension(SynchronizationContext context)
+    {
+        public void Post(Action callback)
+            => context.Post(Invoke, callback);
+    }
+
+    extension(ExecutionContext context)
+    {
+        public void Run(Action callback)
+            => Run<ActionWorkItem>(context, new(callback));
+
+        public void Run<T>(Action<T> callback, T arg)
+            where T : allows ref struct
+            => Run<ActionWorkItem<T>>(context, new(callback, arg));
+
+        public void Run<TWorkItem>(TWorkItem workItem)
+            where TWorkItem : IThreadPoolWorkItem, allows ref struct
         {
             // Capture returns null if the flow is suppressed, so the flow must be restored temporarily
             var flowSuppressed = ExecutionContext.IsFlowSuppressed();
@@ -47,7 +56,7 @@ internal static class ContinuationHelpers
 
             try
             {
-                continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+                workItem.Execute();
             }
             finally
             {
@@ -58,21 +67,60 @@ internal static class ContinuationHelpers
                     ExecutionContext.SuppressFlow();
             }
         }
+    }
+    
+    private static void Invoke(object? continuation)
+    {
+        Debug.Assert(continuation is Action);
 
-        public void InvokeInCurrentExecutionContext(object? state, object schedulingContext)
+        Unsafe.As<Action>(continuation).Invoke();
+    }
+}
+
+// Arbitrary callbacks can change the synchronization context, so it must be restored
+// as ExecutionContext.Run does
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ActionWorkItem(Action action) : IThreadPoolWorkItem
+{
+    void IThreadPoolWorkItem.Execute()
+    {
+        var context = SynchronizationContext.Current;
+        try
         {
-            switch (schedulingContext)
-            {
-                case SynchronizationContext context:
-                    context.Post(continuation.Invoke, state);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-                default:
-                    Debug.Fail($"Unexpected scheduling context {schedulingContext}");
-                    break;
-            }
+            action();
         }
+        finally
+        {
+            context.RestoreIfChanged();
+        }
+    }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ActionWorkItem<T>(Action<T> action, T arg) : IThreadPoolWorkItem
+    where T : allows ref struct
+{
+    private readonly T arg = arg;
+
+    void IThreadPoolWorkItem.Execute()
+    {
+        var context = SynchronizationContext.Current;
+        try
+        {
+            action(arg);
+        }
+        finally
+        {
+            context.RestoreIfChanged();
+        }
+    }
+}
+
+file static class SynchronizationContextHelpers
+{
+    public static void RestoreIfChanged(this SynchronizationContext? context)
+    {
+        if (!ReferenceEquals(SynchronizationContext.Current, context))
+            SynchronizationContext.SetSynchronizationContext(context);
     }
 }

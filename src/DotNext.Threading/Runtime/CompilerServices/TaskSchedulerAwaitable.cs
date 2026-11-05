@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using Threading.Tasks;
+
 /// <summary>
 /// Represents an awaitable object that switches the asynchronous method to the specified task scheduler.
 /// </summary>
@@ -77,33 +79,19 @@ file static class TaskSchedulerHelpers
             if (ReferenceEquals(scheduler, TaskScheduler.Default))
             {
                 // no need to allocate a task: TaskScheduler.Current is Default outside any task
-                if (flowExecutionContext)
-                {
-                    ThreadPool.QueueUserWorkItem(Invoke, continuation, preferLocal: false);
-                }
-                else
-                {
-                    ThreadPool.UnsafeQueueUserWorkItem(Invoke, continuation, preferLocal: false);
-                }
+                continuation.Schedule(flowExecutionContext);
             }
             else if (flowExecutionContext || ExecutionContext.IsFlowSuppressed())
             {
-                StartNew(continuation, scheduler);
+                continuation.Schedule(scheduler);
             }
             else
             {
                 using (ExecutionContext.SuppressFlow())
                 {
-                    StartNew(continuation, scheduler);
+                    continuation.Schedule(scheduler);
                 }
             }
-
-            static void Invoke(Action continuation) => continuation();
-
-            // The continuation must run inside a task executed by the scheduler, so subsequent awaits capture it.
-            // HideScheduler must not be used, otherwise TaskScheduler.Current returns Default.
-            static void StartNew(Action continuation, TaskScheduler scheduler)
-                => Task.Factory.StartNew(continuation, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
         }
     }
 }

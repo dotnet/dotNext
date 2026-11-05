@@ -252,7 +252,8 @@ public abstract partial class ManualResetCompletionSource
     private readonly struct Continuation : IThreadPoolWorkItem
     {
         private readonly Action<object?> action;
-        private readonly object? state, schedulingContext;
+        private readonly object? state;
+        private readonly SchedulingContext schedulingContext;
         private readonly ExecutionContext? context;
 
         public Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
@@ -263,8 +264,8 @@ public abstract partial class ManualResetCompletionSource
             this.state = state;
 
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? ContinuationHelpers.CaptureSchedulingContext()
-                : null;
+                ? new()
+                : default;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
@@ -275,9 +276,9 @@ public abstract partial class ManualResetCompletionSource
         // as ManualResetValueTaskSourceCore<T> does
         public void InvokeOnCurrentContext()
         {
-            if (schedulingContext is not null)
+            if (schedulingContext.IsCaptured)
             {
-                action.InvokeInCurrentExecutionContext(state, schedulingContext);
+                schedulingContext.Invoke(action, state);
             }
             else if (context is not null)
             {
@@ -293,9 +294,9 @@ public abstract partial class ManualResetCompletionSource
         {
             Debug.Assert(action is not null);
 
-            if (schedulingContext is not null)
+            if (schedulingContext.IsCaptured)
             {
-                action.InvokeInExecutionContext(state, schedulingContext, context);
+                schedulingContext.Invoke(action, state, context);
             }
             else
             {
@@ -310,9 +311,7 @@ public abstract partial class ManualResetCompletionSource
                     case (false, true):
                         Debug.Assert(context is not null);
 
-                        // ContextCallback has the same signature as Action<object?> so we
-                        // can reinterpret the reference
-                        ExecutionContext.Run(context, Unsafe.As<ContextCallback>(action), state);
+                        context.Run(action, state);
                         break;
                     default:
                         action(state);
