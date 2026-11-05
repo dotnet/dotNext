@@ -59,7 +59,7 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 11-02-2026
+Release Date: 11-06-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.12.0">DotNext 6.12.0</a>
 * Introduced `Task.Run` overloads as a replacement of `SpawningAsyncTaskMethodBuilder` for better compatibility with Runtime Async
@@ -74,6 +74,8 @@ Release Date: 11-02-2026
 <a href="https://www.nuget.org/packages/dotnext.threading/6.12.0">DotNext.Threading 6.12.0</a>
 * Small performance improvements of `RandomAccessCache<TValue>` class
 * Introduced `YieldAsync` method in `AsyncExclusiveLock` and `AsyncReaderWriterLock` classes
+* Added `SwitchToAsync` extension method for [TaskScheduler](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskscheduler) class which allows to switch task scheduler safely within the method body
+* Removed memory allocations caused by continuations in async primitives
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.12.0">DotNext.IO 6.12.0</a>
 * Updated dependencies
@@ -85,8 +87,8 @@ Release Date: 11-02-2026
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.0">DotNext.AspNetCore.Cluster 6.12.0</a>
 * Fixed [309](https://github.com/dotnet/dotNext/issues/309)
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.11.2">DotNext.MaintenanceServices 1.12.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.12.0">DotNext.MaintenanceServices 1.12.0</a>
+* Smallish performance improvements
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
