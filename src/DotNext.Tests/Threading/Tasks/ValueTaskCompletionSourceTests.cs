@@ -345,6 +345,31 @@ public sealed class ValueTaskCompletionSourceTests : Test
         await task;
     }
 
+    [Fact]
+    public static async Task RestoreSynchronizationContextAfterInlineContinuation() => await Task.Run(async () =>
+    {
+        var source = new ValueTaskCompletionSource(runContinuationsAsynchronously: false);
+        var task = source.CreateTask(InfiniteTimeSpan, TestToken);
+        var invoked = false;
+
+        // flows the execution context without capturing the scheduling context, so the continuation runs inline
+        task.ConfigureAwait(false).GetAwaiter().OnCompleted(() =>
+        {
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+            invoked = true;
+        });
+
+        await Task.Run(() =>
+        {
+            Null(SynchronizationContext.Current);
+            True(source.TrySetResult());
+            True(invoked);
+
+            // the continuation must not leak its synchronization context to the completer
+            Null(SynchronizationContext.Current);
+        }, TestToken);
+    }, TestToken);
+
     [ThreadStatic]
     private static bool insideOnCompleted;
 
@@ -356,8 +381,8 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var result = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
         var awaiter = task.GetAwaiter();
-        awaiter.UnsafeOnCompleted(() => result.SetResult());
-        Throws<InvalidOperationException>(() => awaiter.UnsafeOnCompleted(static () => { }));
+        awaiter.UnsafeOnCompleted(result.SetResult);
+        Throws<InvalidOperationException>(() => awaiter.UnsafeOnCompleted(Action.NoOp));
 
         // the source is still usable by the first consumer
         True(source.TrySetResult());
