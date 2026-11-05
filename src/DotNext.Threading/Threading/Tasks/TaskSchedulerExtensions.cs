@@ -60,7 +60,7 @@ public static partial class TaskSchedulerExtensions
         /// otherwise, <see langword="false"/>.
         /// </param>
         /// <returns>The awaitable object that resumes the caller on the target scheduler.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="scheduler"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">The <c>scheduler</c> is <see langword="null"/>.</exception>
         /// <seealso cref="TaskSchedulerExtensions.SwitchToAsync"/>
         public TaskSchedulerAwaitable SwitchTo(bool forceYield = false)
         {
@@ -90,7 +90,7 @@ public static partial class TaskSchedulerExtensions
         /// The code inside the scope that awaits with <c>ConfigureAwait(false)</c> leaves the scheduler.
         /// </remarks>
         /// <returns>The awaitable object that resumes the caller on the target scheduler and returns the scope.</returns>
-        /// <exception cref="ArgumentNullException">The scheduler is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException">The <c>scheduler</c> is <see langword="null"/>.</exception>
         public ScopedTaskSchedulerAwaitable SwitchToAsync()
         {
             ArgumentNullException.ThrowIfNull(scheduler);
