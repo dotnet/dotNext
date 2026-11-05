@@ -280,13 +280,9 @@ public abstract partial class ManualResetCompletionSource
             {
                 schedulingContext.Invoke(action, state);
             }
-            else if (context is not null)
-            {
-                ThreadPool.QueueUserWorkItem(action, state, preferLocal: true);
-            }
             else
             {
-                ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+                action.Schedule(state, context is not null, preferLocal: true);
             }
         }
 

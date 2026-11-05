@@ -9,17 +9,7 @@ internal static class ContinuationHelpers
     extension(Action action)
     {
         public void Schedule(bool flowExecutionContext, bool preferLocal = false)
-        {
-            var workItem = Invoke;
-            if (flowExecutionContext)
-            {
-                ThreadPool.QueueUserWorkItem(workItem, action, preferLocal);
-            }
-            else
-            {
-                ThreadPool.UnsafeQueueUserWorkItem(workItem, action, preferLocal);
-            }
-        }
+            => new Action<object?>(Invoke).Schedule(action, flowExecutionContext, preferLocal);
         
         // The continuation must run inside a task executed by the scheduler, so subsequent awaits capture it.
         // HideScheduler must not be used, otherwise TaskScheduler.Current returns Default.
@@ -29,6 +19,18 @@ internal static class ContinuationHelpers
 
     extension(Action<object?> action)
     {
+        public void Schedule(object? state, bool flowExecutionContext, bool preferLocal = false)
+        {
+            if (flowExecutionContext)
+            {
+                ThreadPool.QueueUserWorkItem(action, state, preferLocal);
+            }
+            else
+            {
+                ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal);
+            }
+        }
+        
         public void Schedule(TaskScheduler scheduler, object? state)
             => Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
     }
