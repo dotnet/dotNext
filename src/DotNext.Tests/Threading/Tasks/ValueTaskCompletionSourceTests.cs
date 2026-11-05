@@ -325,7 +325,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
 
         // the awaiter subscribes without checking IsCompleted, as the builder does when it loses the race
         var result = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        Action continuation = () => result.SetResult(insideOnCompleted);
+        var continuation = () => result.SetResult(insideOnCompleted);
         var awaiter = task.GetAwaiter();
         insideOnCompleted = true;
         try
@@ -376,10 +376,10 @@ public sealed class ValueTaskCompletionSourceTests : Test
         Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
         Throws<InvalidOperationException>(() => task.GetAwaiter().UnsafeOnCompleted(static () => { }));
     }
+}
 
-    private sealed class PostingSynchronizationContext : SynchronizationContext
-    {
-        public override void Post(SendOrPostCallback d, object? state)
-            => ThreadPool.QueueUserWorkItem(static args => args.d(args.state), (d, state), preferLocal: false);
-    }
+file sealed class PostingSynchronizationContext : SynchronizationContext
+{
+    public override void Post(SendOrPostCallback d, object state)
+        => ThreadPool.QueueUserWorkItem(static args => args.d(args.state), (d, state), preferLocal: false);
 }
