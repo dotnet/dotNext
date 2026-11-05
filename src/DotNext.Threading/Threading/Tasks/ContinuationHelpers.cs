@@ -45,14 +45,14 @@ internal static class ContinuationHelpers
     extension(ExecutionContext context)
     {
         public void Run(Action callback)
-            => Run(context, new SynchronizationContextAwareWorkItem<ActionWorkItem>(new(callback)));
+            => Run<ExecutionContextAction>(context, new(callback));
 
         public void Run<T>(Action<T> callback, T arg)
             where T : allows ref struct
-            => Run(context, new SynchronizationContextAwareWorkItem<ActionWorkItem<T>>(new(callback, arg)));
+            => Run<ExecutionContextAction<T>>(context, new(callback, arg));
 
-        public void Run<TWorkItem>(TWorkItem workItem)
-            where TWorkItem : IThreadPoolWorkItem, allows ref struct
+        public void Run<TAction>(TAction action)
+            where TAction : IExecutionContextAction, allows ref struct
         {
             // Capture returns null if the flow is suppressed, so the flow must be restored temporarily
             var flowSuppressed = ExecutionContext.IsFlowSuppressed();
@@ -63,12 +63,21 @@ internal static class ContinuationHelpers
             Debug.Assert(currentContext is not null);
             ExecutionContext.Restore(context);
 
+            // Arbitrary callbacks can change the synchronization context, so it must be restored
+            // as ExecutionContext.Run does
+            var syncContext = TAction.MayChangeSynchronizationContext
+                ? SynchronizationContext.Current
+                : null;
             try
             {
-                workItem.Execute();
+                action.Invoke();
             }
             finally
             {
+                if (TAction.MayChangeSynchronizationContext
+                    && !ReferenceEquals(SynchronizationContext.Current, syncContext))
+                    SynchronizationContext.SetSynchronizationContext(syncContext);
+                
                 ExecutionContext.Restore(currentContext);
 
                 // AsyncFlowControl of the caller remains valid: Undo checks the thread and the suppression only
@@ -86,40 +95,17 @@ internal static class ContinuationHelpers
     }
 }
 
-// Arbitrary callbacks can change the synchronization context, so it must be restored
-// as ExecutionContext.Run does
 [StructLayout(LayoutKind.Auto)]
-file readonly ref struct ActionWorkItem(Action action) : IThreadPoolWorkItem
+file readonly ref struct ExecutionContextAction(Action action) : IExecutionContextAction
 {
-    void IThreadPoolWorkItem.Execute() => action();
+    void IExecutionContextAction.Invoke() => action();
 }
 
 [StructLayout(LayoutKind.Auto)]
-file readonly ref struct ActionWorkItem<T>(Action<T> action, T arg) : IThreadPoolWorkItem
+file readonly ref struct ExecutionContextAction<T>(Action<T> action, T arg) : IExecutionContextAction
     where T : allows ref struct
 {
     private readonly T arg = arg;
 
-    void IThreadPoolWorkItem.Execute() => action(arg);
-}
-
-[StructLayout(LayoutKind.Auto)]
-file ref struct SynchronizationContextAwareWorkItem<TWorkItem>(TWorkItem workItem) : IThreadPoolWorkItem
-    where TWorkItem : IThreadPoolWorkItem, allows ref struct
-{
-    private TWorkItem workItem = workItem;
-
-    void IThreadPoolWorkItem.Execute()
-    {
-        var context = SynchronizationContext.Current;
-        try
-        {
-            workItem.Execute();
-        }
-        finally
-        {
-            if (!ReferenceEquals(SynchronizationContext.Current, context))
-                SynchronizationContext.SetSynchronizationContext(context);
-        }
-    }
+    void IExecutionContextAction.Invoke() => action(arg);
 }

@@ -54,8 +54,10 @@ internal readonly struct SchedulingContext
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ContextfulAction(Action<object?> action, object? state, SchedulingContext context) : IThreadPoolWorkItem
+    private readonly ref struct ContextfulAction(Action<object?> action, object? state, SchedulingContext context) : IExecutionContextAction
     {
-        void IThreadPoolWorkItem.Execute() => context.Invoke(action, state);
+        void IExecutionContextAction.Invoke() => context.Invoke(action, state);
+
+        static bool IExecutionContextAction.MayChangeSynchronizationContext => false;
     }
 }
