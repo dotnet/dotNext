@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -62,13 +61,7 @@ public readonly struct SchedulingContextAwaitable
             }
             else if (ExecutionContext.Capture() is { } executionContext)
             {
-                context.Post(static state =>
-                {
-                    Debug.Assert(state is Tuple<Action, ExecutionContext>);
-
-                    var (continuation, executionContext) = Unsafe.As<Tuple<Action, ExecutionContext>>(state);
-                    executionContext.Run(continuation);
-                }, Tuple.Create(continuation, executionContext));
+                context.Post(continuation, executionContext);
             }
             else
             {

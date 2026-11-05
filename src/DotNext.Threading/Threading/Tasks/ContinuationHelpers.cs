@@ -40,13 +40,26 @@ internal static class ContinuationHelpers
         public void Post(Action callback)
             => context.Post(Invoke, callback);
 
+        public void Post(Action callback, ExecutionContext executionContext)
+        {
+            context.Post(Execute, Tuple.Create(callback, executionContext));
+            
+            static void Execute(object? state)
+            {
+                Debug.Assert(state is Tuple<Action, ExecutionContext>);
+
+                var (continuation, executionContext) = Unsafe.As<Tuple<Action, ExecutionContext>>(state);
+                executionContext.Run(continuation);
+            }
+        }
+
         public void Post(Action<object?> callback, object? state)
             => context.Post(callback.Invoke, state);
     }
 
     extension(ExecutionContext context)
     {
-        public void Run(Action callback)
+        private void Run(Action callback)
             => Run<ExecutionContextAction>(context, new(callback));
 
         public void Run<T>(Action<T> callback, T arg)
