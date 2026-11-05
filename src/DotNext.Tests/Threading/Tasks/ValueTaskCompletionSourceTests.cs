@@ -399,7 +399,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         await task;
 
         Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
-        Throws<InvalidOperationException>(() => task.GetAwaiter().UnsafeOnCompleted(static () => { }));
+        Throws<InvalidOperationException>(() => task.GetAwaiter().UnsafeOnCompleted(Action.NoOp));
     }
 }
 
