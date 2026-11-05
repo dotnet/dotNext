@@ -9,12 +9,12 @@ internal static class ContinuationHelpers
     extension(Action action)
     {
         public void Schedule(bool flowExecutionContext, bool preferLocal = false)
-            => new Action<object?>(Invoke).Schedule(action, flowExecutionContext, preferLocal);
+            => Schedule(Invoke, action, flowExecutionContext, preferLocal);
         
         // The continuation must run inside a task executed by the scheduler, so subsequent awaits capture it.
         // HideScheduler must not be used, otherwise TaskScheduler.Current returns Default.
         public void Schedule(TaskScheduler scheduler)
-            => Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+            => Schedule(Invoke, scheduler, action);
     }
 
     extension(Action<object?> action)
