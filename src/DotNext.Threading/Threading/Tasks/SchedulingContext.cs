@@ -30,10 +30,10 @@ internal readonly struct SchedulingContext
         switch (context)
         {
             case SynchronizationContext syncContext:
-                syncContext.Post(action.Invoke, state);
+                syncContext.Post(action, state);
                 break;
             case TaskScheduler scheduler:
-                Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+                action.Schedule(scheduler, state);
                 break;
             default:
                 Debug.Fail($"Unexpected scheduling context {context}");

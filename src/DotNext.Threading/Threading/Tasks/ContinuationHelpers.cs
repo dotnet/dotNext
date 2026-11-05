@@ -27,20 +27,29 @@ internal static class ContinuationHelpers
             => Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
     }
 
+    extension(Action<object?> action)
+    {
+        public void Schedule(TaskScheduler scheduler, object? state)
+            => Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+    }
+
     extension(SynchronizationContext context)
     {
         public void Post(Action callback)
             => context.Post(Invoke, callback);
+
+        public void Post(Action<object?> callback, object? state)
+            => context.Post(callback.Invoke, state);
     }
 
     extension(ExecutionContext context)
     {
         public void Run(Action callback)
-            => Run<ActionWorkItem>(context, new(callback));
+            => Run(context, new SynchronizationContextAwareWorkItem<ActionWorkItem>(new(callback)));
 
         public void Run<T>(Action<T> callback, T arg)
             where T : allows ref struct
-            => Run<ActionWorkItem<T>>(context, new(callback, arg));
+            => Run(context, new SynchronizationContextAwareWorkItem<ActionWorkItem<T>>(new(callback, arg)));
 
         public void Run<TWorkItem>(TWorkItem workItem)
             where TWorkItem : IThreadPoolWorkItem, allows ref struct
@@ -82,18 +91,7 @@ internal static class ContinuationHelpers
 [StructLayout(LayoutKind.Auto)]
 file readonly ref struct ActionWorkItem(Action action) : IThreadPoolWorkItem
 {
-    void IThreadPoolWorkItem.Execute()
-    {
-        var context = SynchronizationContext.Current;
-        try
-        {
-            action();
-        }
-        finally
-        {
-            context.RestoreIfChanged();
-        }
-    }
+    void IThreadPoolWorkItem.Execute() => action();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -102,25 +100,26 @@ file readonly ref struct ActionWorkItem<T>(Action<T> action, T arg) : IThreadPoo
 {
     private readonly T arg = arg;
 
+    void IThreadPoolWorkItem.Execute() => action(arg);
+}
+
+[StructLayout(LayoutKind.Auto)]
+file ref struct SynchronizationContextAwareWorkItem<TWorkItem>(TWorkItem workItem) : IThreadPoolWorkItem
+    where TWorkItem : IThreadPoolWorkItem, allows ref struct
+{
+    private TWorkItem workItem = workItem;
+
     void IThreadPoolWorkItem.Execute()
     {
         var context = SynchronizationContext.Current;
         try
         {
-            action(arg);
+            workItem.Execute();
         }
         finally
         {
-            context.RestoreIfChanged();
+            if (!ReferenceEquals(SynchronizationContext.Current, context))
+                SynchronizationContext.SetSynchronizationContext(context);
         }
-    }
-}
-
-file static class SynchronizationContextHelpers
-{
-    public static void RestoreIfChanged(this SynchronizationContext? context)
-    {
-        if (!ReferenceEquals(SynchronizationContext.Current, context))
-            SynchronizationContext.SetSynchronizationContext(context);
     }
 }
