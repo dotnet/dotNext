@@ -633,6 +633,13 @@ public sealed partial class DelegateHelpersTests : Test
         Delegate.Combine(actions)?.Invoke();
         Equal(3, box.Value);
     }
+
+    [Fact]
+    public static void NullableConstant()
+    {
+        var func = Func<byte?>.Constant((byte)0);
+        Equal((byte)0, func());
+    }
 }
 
 file sealed class StrongBox : StrongBox<int>

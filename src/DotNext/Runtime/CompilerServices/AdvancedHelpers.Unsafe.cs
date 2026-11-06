@@ -84,9 +84,14 @@ partial class AdvancedHelpers
     {
         Debug.Assert(obj is T);
 
-        return typeof(T).IsValueType
-            ? Unsafe.As<byte, T>(ref GetRawData(obj))
-            : Unsafe.As<object, T>(ref obj);
+        if (!typeof(T).IsValueType)
+            return Unsafe.As<object, T>(ref obj);
+
+        // Handle special case when T is Nullable<T>
+        if (RuntimeHelpers.IsNullable<T>())
+            return (T)obj;
+
+        return Unsafe.As<byte, T>(ref GetRawData(obj));
     }
 }
 

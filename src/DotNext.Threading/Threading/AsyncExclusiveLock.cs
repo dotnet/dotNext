@@ -45,7 +45,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         return lockTaken;
     }
 
-    private bool IsLockHelpByCurrentThread
+    private bool IsLockHeldByCurrentThread
     {
         get => lockOwner is { } owner && ReferenceEquals(owner, Thread.CurrentThread);
         set => lockOwner = value ? Thread.CurrentThread : null;
@@ -65,7 +65,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="LockRecursionException">The lock is already acquired by the current thread.</exception>
     public bool TryAcquire(TimeSpan timeout, CancellationToken token = default)
     {
-        if (IsLockHelpByCurrentThread)
+        if (IsLockHeldByCurrentThread)
             throw new LockRecursionException();
         
         bool result;
@@ -78,7 +78,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             result = false;
         }
 
-        return IsLockHelpByCurrentThread = result;
+        return IsLockHeldByCurrentThread = result;
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             acquired = false;
-            IsLockHelpByCurrentThread = false;
+            IsLockHeldByCurrentThread = false;
             DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
@@ -235,6 +235,90 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         {
             queue.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Temporarily releases the lock to let the suspended callers in, and then reacquires it.
+    /// </summary>
+    /// <remarks>
+    /// If there are no suspended callers, the method completes synchronously and the lock remains held by the caller.
+    /// Otherwise, the lock is passed to the first suspended caller, and the current caller is placed at the head
+    /// of the wait queue. Thus, it reacquires the lock ahead of the callers suspended by
+    /// <see cref="AcquireAsync(CancellationToken)"/> and similar methods.
+    /// Callers that keep yielding to each other in a loop can starve the callers suspended by regular acquisition methods.
+    /// <br/>
+    /// The caller must restore the invariants of the protected state before calling this method, because
+    /// other callers can observe and modify that state while the lock is yielded.
+    /// <br/>
+    /// If reacquisition is canceled or interrupted, the method throws an exception, and the lock is no longer
+    /// held by the caller. In this case, the caller must not call <see cref="Release"/>: the lock might be already
+    /// acquired by another caller. Track the lock state explicitly to release the lock correctly:
+    /// <code>
+    /// var lockTaken = false;
+    /// await exclusiveLock.AcquireAsync(token);
+    /// lockTaken = true;
+    /// try
+    /// {
+    ///     // ...
+    ///     lockTaken = false;
+    ///     await exclusiveLock.YieldAsync(token);
+    ///     lockTaken = true;
+    ///     // ...
+    /// }
+    /// finally
+    /// {
+    ///     if (lockTaken)
+    ///         exclusiveLock.Release();
+    /// }
+    /// </code>
+    /// </remarks>
+    /// <param name="token">The token that can be used to abort lock reacquisition.</param>
+    /// <returns>The task representing lock reacquisition.</returns>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// The lock is acquired synchronously by <see cref="TryAcquire(TimeSpan, CancellationToken)"/>.
+    /// In this case, the lock remains held by the caller.
+    /// </exception>
+    /// <exception cref="ObjectDisposedException">
+    /// This object has been disposed. If the object is being disposed gracefully with <see cref="QueuedSynchronizer.DisposeAsync"/>,
+    /// the lock is released and not held by the caller.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">
+    /// The operation has been canceled. The lock is not held by the caller.
+    /// </exception>
+    /// <exception cref="PendingTaskInterruptedException">
+    /// The operation has been interrupted manually. The lock is not held by the caller.
+    /// </exception>
+    public ValueTask YieldAsync(CancellationToken token = default)
+    {
+        if (!IsDisposed)
+        {
+            var queue = CaptureWaitQueue();
+            try
+            {
+                if (!acquired)
+                    return ValueTask.FromException(new SynchronizationLockException(ExceptionMessages.NotInLock));
+
+                if (IsLockHeldByCurrentThread)
+                    return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LockAcquiredSynchronously));
+
+                acquired = false;
+                DrainWaitQueue(ref queue);
+
+                if (!IsDisposing)
+                    return Yield<WaitNode, LockManager>(new(ref acquired), token);
+
+                // graceful disposal is in progress: give up the lock, as Release does
+                if (IsReadyToDispose)
+                    Dispose(true);
+            }
+            finally
+            {
+                queue.Dispose();
+            }
+        }
+
+        return new(DisposedTask);
     }
 
     private protected sealed override bool IsReadyToDispose => !acquired && IsEmptyQueue;

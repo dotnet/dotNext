@@ -135,9 +135,9 @@ public abstract partial class ManualResetCompletionSource
                 return;
         }
 
-        // execute continuation in-place because the source is completed already
+        // the source is completed already: schedule the continuation instead of invoking it inside OnCompleted
         Debug.Assert(IsCompleted);
-        continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
+        continuation.InvokeOnCurrentContext();
     }
 
     private protected ValueTaskSourceStatus GetStatus<TExceptionProvider>(short expectedToken, TExceptionProvider provider)
@@ -252,7 +252,8 @@ public abstract partial class ManualResetCompletionSource
     private readonly struct Continuation : IThreadPoolWorkItem
     {
         private readonly Action<object?> action;
-        private readonly object? state, schedulingContext;
+        private readonly object? state;
+        private readonly SchedulingContext schedulingContext;
         private readonly ExecutionContext? context;
 
         public Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
@@ -263,31 +264,25 @@ public abstract partial class ManualResetCompletionSource
             this.state = state;
 
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? ContinuationHelpers.CaptureSchedulingContext()
-                : null;
+                ? new()
+                : default;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
                 : null;
         }
 
-        public void InvokeOnCurrentContext(bool runAsynchronously)
+        // Never invokes the continuation synchronously to avoid stack dives and reentrancy of the caller of OnCompleted,
+        // as ManualResetValueTaskSourceCore<T> does
+        public void InvokeOnCurrentContext()
         {
-            if (schedulingContext is not null)
+            if (schedulingContext.IsCaptured)
             {
-                action.InvokeInCurrentExecutionContext(state, schedulingContext);
-            }
-            else if (!runAsynchronously)
-            {
-                action(state);
-            }
-            else if (context is not null)
-            {
-                ThreadPool.QueueUserWorkItem(action, state, preferLocal: true);
+                schedulingContext.Invoke(action, state);
             }
             else
             {
-                ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+                action.Schedule(state, context is not null, preferLocal: true);
             }
         }
 
@@ -295,9 +290,9 @@ public abstract partial class ManualResetCompletionSource
         {
             Debug.Assert(action is not null);
 
-            if (schedulingContext is not null)
+            if (schedulingContext.IsCaptured)
             {
-                action.InvokeInExecutionContext(state, schedulingContext, context);
+                schedulingContext.Invoke(action, state, context);
             }
             else
             {
@@ -312,9 +307,7 @@ public abstract partial class ManualResetCompletionSource
                     case (false, true):
                         Debug.Assert(context is not null);
 
-                        // ContextCallback has the same signature as Action<object?> so we
-                        // can reinterpret the reference
-                        ExecutionContext.Run(context, Unsafe.As<ContextCallback>(action), state);
+                        context.Run(action, state);
                         break;
                     default:
                         action(state);

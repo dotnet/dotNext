@@ -428,7 +428,7 @@ public sealed class ResultTests : Test
         True(result.HasValue);
         Equal(42, result.Value);
         Equal(42, result.ValueOrDefault);
-        Equal(42, result.OrInvoke(static _ => 56));
+        Equal(42, result.OrInvoke(Func<Exception, int>.Constant(56)));
         Null(result.Error);
         True(result.TryGet(out var value));
         Equal(42, value);
@@ -447,7 +447,7 @@ public sealed class ResultTests : Test
         False(result.HasValue);
         Throws<ArithmeticException>(() => result.Value);
         Equal(0, result.ValueOrDefault);
-        Equal(56, result.OrInvoke(static _ => 56));
+        Equal(56, result.OrInvoke(Func<Exception, int>.Constant(56)));
         IsType<ArithmeticException>(result.Error);
         False(result.TryGet(out _));
     }

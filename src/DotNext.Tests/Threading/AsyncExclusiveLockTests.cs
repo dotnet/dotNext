@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
-public sealed class AsyncExclusiveLockTests : Test
+public sealed partial class AsyncExclusiveLockTests : Test
 {
     [Fact]
     public static async Task TrivialLock()

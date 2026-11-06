@@ -12,7 +12,17 @@ public static class TaskExtensions
     /// </summary>
     extension(Task)
     {
-        internal static ConfiguredTaskAwaitable SpawningAwaitable => Task
+        /// <summary>
+        /// Yields control to the caller and resumes the asynchronous method on <see cref="ThreadPool"/>.
+        /// </summary>
+        /// <remarks>
+        /// In contrast to <see cref="Task.Yield"/>, the continuation ignores the current <see cref="SynchronizationContext"/>
+        /// and <see cref="TaskScheduler"/>. For instance, awaiting this method inside a task
+        /// scheduled by <see cref="ConcurrentExclusiveSchedulerPair.ExclusiveScheduler"/> leaves the exclusive scheduler.
+        /// The method always yields, even if the caller is already running on the thread pool.
+        /// </remarks>
+        /// <returns>The awaitable object that resumes the caller on the thread pool.</returns>
+        public static ConfiguredTaskAwaitable YieldToThreadPool() => Task
             .CompletedTask
             .ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
 
@@ -97,7 +107,7 @@ public static class TaskExtensions
         public static async Task Run<TWorkItem>(TWorkItem workItem)
             where TWorkItem : ISupplier<Task>
         {
-            await Task.SpawningAwaitable;
+            await Task.YieldToThreadPool();
             await workItem.Invoke().ConfigureAwait(false);
         }
 
@@ -187,7 +197,7 @@ public static class TaskExtensions
         public static async Task<TResult> Run<TResult, TWorkItem>(TWorkItem workItem)
             where TWorkItem : ISupplier<Task<TResult>>
         {
-            await Task.SpawningAwaitable;
+            await Task.YieldToThreadPool();
             return await workItem.Invoke().ConfigureAwait(false);
         }
     }

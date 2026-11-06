@@ -28,7 +28,7 @@ partial class ApplicationMaintenanceCommand
         {
             Description = CommandResources.ProbeCommandTimeoutArgDescription,
             CustomParser = ParseTimeout,
-            DefaultValueFactory = static _ => Timeout.InfiniteTimeSpan,
+            DefaultValueFactory = Func<ArgumentResult, TimeSpan>.Constant(Timeout.InfiniteTimeSpan),
         };
 
         var successfulResponseOption = new Option<string>("--successful-response", "-s", "-ok")
@@ -36,7 +36,7 @@ partial class ApplicationMaintenanceCommand
             Arity = ArgumentArity.ExactlyOne,
             Required = false,
             Description = CommandResources.ProbeCommandSuccessfulResponseOptionDescription,
-            DefaultValueFactory = static _ => "ok"
+            DefaultValueFactory = Func<ArgumentResult, string>.Constant("ok"),
         };
 
         var failedResponseOption = new Option<string>("--unsuccessful-response", "-u", "-f")
@@ -44,7 +44,7 @@ partial class ApplicationMaintenanceCommand
             Arity = ArgumentArity.ExactlyOne,
             Required = false,
             Description = CommandResources.ProbeCommandUnsuccessfulResponseOptionDescription,
-            DefaultValueFactory = static _ => "fail",
+            DefaultValueFactory = Func<ArgumentResult, string>.Constant("fail"),
         };
 
         var command = new ApplicationMaintenanceCommand("probe")

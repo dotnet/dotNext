@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Threading;
 
 partial class QueuedSynchronizer
@@ -85,5 +87,30 @@ partial class QueuedSynchronizer
         var task = builder.Build();
         scope.ResumeSuspendedCallers();
         return task;
+    }
+
+    private protected ValueTask Yield<TNode, TLockManager>(TLockManager manager, CancellationToken token)
+        where TNode : WaitNode, new()
+        where TLockManager : struct, ILockManager<TNode>, allows ref struct
+    {
+        var builder = new YieldingAcquisition(token);
+        return EndAcquisition<ValueTask, YieldingAcquisition, TNode, YieldingLockManager<TNode, TLockManager>>(ref builder, new(manager));
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private ref struct YieldingLockManager<TNode, TLockManager>(TLockManager manager) : ILockManager<TNode>
+        where TNode : WaitNode, new()
+        where TLockManager : struct, ILockManager<TNode>, allows ref struct
+    {
+        private TLockManager manager = manager;
+
+        bool ILockManager.IsLockAllowed => manager.IsLockAllowed;
+
+        void ILockManager.AcquireLock() => manager.AcquireLock();
+
+        static void ILockManager<TNode>.Initialize(TNode node) => TLockManager.Initialize(node);
+
+        // the yielding caller has the highest priority, the queue cannot block it
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }
