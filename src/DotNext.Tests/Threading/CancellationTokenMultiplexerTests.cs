@@ -212,4 +212,35 @@ public class CancellationTokenMultiplexerTests : Test
         await cts1.CancelAsync();
         Equal(cts3.Token, await task);
     }
+
+    [Fact]
+    public static async Task FlowExecutionContextWithSynchronizationContext()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        using var cts = new CancellationTokenSource();
+        var local = new AsyncLocal<int> { Value = 1 };
+        var task = multiplexer.WaitAnyAsync(cts.Token);
+        var result = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // subscribe with the captured synchronization context and execution context
+        var consumer = new Thread(() =>
+        {
+            local.Value = 42;
+            SynchronizationContext.SetSynchronizationContext(new PostingSynchronizationContext());
+            task.ConfigureAwait(true).GetAwaiter().OnCompleted(() => result.SetResult(local.Value));
+        });
+        consumer.Start();
+        consumer.Join();
+
+        // the continuation must observe the execution context of the consumer, not the canceller
+        await cts.CancelAsync();
+        Equal(42, await result.Task.WaitAsync(DefaultTimeout, TestToken));
+        Equal(cts.Token, await task);
+    }
+
+    private sealed class PostingSynchronizationContext : SynchronizationContext
+    {
+        public override void Post(SendOrPostCallback d, object? state)
+            => ThreadPool.QueueUserWorkItem(static args => args.d(args.state), (d, state), preferLocal: false);
+    }
 }

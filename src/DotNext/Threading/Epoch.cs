@@ -230,13 +230,13 @@ public sealed partial class Epoch
                     break;
                 case (false, true):
                     Debug.Assert(resourceManager is not null);
-                    state = new Tuple<INativeResourceManager, nuint>(resourceManager, rootHandle);
+                    state = Tuple.Create(resourceManager, rootHandle);
                     action = ClearNativeOnly;
                     break;
                 case (true, true):
                     Debug.Assert(root is not null);
                     Debug.Assert(resourceManager is not null);
-                    state = new Tuple<Discardable, INativeResourceManager, nuint>(root, resourceManager, rootHandle);
+                    state = Tuple.Create(root, resourceManager, rootHandle);
                     action = ClearAll;
                     break;
             }

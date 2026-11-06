@@ -12,7 +12,8 @@ partial struct CancellationTokenMultiplexer
     partial class PooledCancellationTokenSource: IValueTaskSource<CancellationToken>, IThreadPoolWorkItem
     {
         private IObjectPool<PooledCancellationTokenSource>? pool;
-        private object? callbackOrSentinel, callbackState, schedulingContext;
+        private object? callbackOrSentinel, callbackState;
+        private SchedulingContext schedulingContext;
         private ExecutionContext? context;
         private short version;
 
@@ -54,8 +55,8 @@ partial struct CancellationTokenMultiplexer
             
             callbackState = state;
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? ContinuationHelpers.CaptureSchedulingContext()
-                : null;
+                ? new()
+                : default;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
@@ -66,9 +67,9 @@ partial struct CancellationTokenMultiplexer
             {
                 // nothing to do
             }
-            else if (schedulingContext is not null)
+            else if (schedulingContext.IsCaptured)
             {
-                continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+                schedulingContext.Invoke(continuation, state);
             }
             else
             {
@@ -94,9 +95,9 @@ partial struct CancellationTokenMultiplexer
             {
                 // nothing to do
             }
-            else if (schedulingContext is not null)
+            else if (schedulingContext.IsCaptured)
             {
-                continuation.InvokeInExecutionContext(callbackState, schedulingContext, context);
+                schedulingContext.Invoke(continuation, callbackState, context);
             }
             else
             {

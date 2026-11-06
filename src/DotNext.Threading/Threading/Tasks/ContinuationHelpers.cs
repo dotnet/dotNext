@@ -1,62 +1,127 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
 internal static class ContinuationHelpers
 {
-    public static object? CaptureSchedulingContext()
+    extension(Action action)
     {
-        object? schedulingContext = SynchronizationContext.Current;
-        if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
-        {
-            schedulingContext = TaskScheduler.Current;
-            if (ReferenceEquals(schedulingContext, TaskScheduler.Default))
-                schedulingContext = null;
-        }
-
-        return schedulingContext;
+        public void Schedule(bool flowExecutionContext, bool preferLocal = false)
+            => Schedule(Invoke, action, flowExecutionContext, preferLocal);
+        
+        // The continuation must run inside a task executed by the scheduler, so subsequent awaits capture it.
+        // HideScheduler must not be used, otherwise TaskScheduler.Current returns Default.
+        public void Schedule(TaskScheduler scheduler)
+            => Schedule(Invoke, scheduler, action);
     }
 
-    extension(Action<object?> continuation)
+    extension(Action<object?> action)
     {
-        public void InvokeInExecutionContext(object? state, object schedulingContext,
-            ExecutionContext? context)
+        public void Schedule(object? state, bool flowExecutionContext, bool preferLocal = false)
         {
-            if (context is not null)
+            if (flowExecutionContext)
             {
-                var currentContext = ExecutionContext.Capture();
-                ExecutionContext.Restore(context);
-
-                try
-                {
-                    continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
-                }
-                finally
-                {
-                    if (currentContext is not null)
-                        ExecutionContext.Restore(currentContext);
-                }
+                ThreadPool.QueueUserWorkItem(action, state, preferLocal);
             }
             else
             {
-                continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
+                ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal);
+            }
+        }
+        
+        public void Schedule(TaskScheduler scheduler, object? state)
+            => Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+    }
+
+    extension(SynchronizationContext context)
+    {
+        public void Post(Action callback)
+            => context.Post(Invoke, callback);
+
+        public void Post(Action callback, ExecutionContext executionContext)
+        {
+            context.Post(Execute, Tuple.Create(callback, executionContext));
+            
+            static void Execute(object? state)
+            {
+                Debug.Assert(state is Tuple<Action, ExecutionContext>);
+
+                var (continuation, executionContext) = Unsafe.As<Tuple<Action, ExecutionContext>>(state);
+                executionContext.Run(continuation);
             }
         }
 
-        public void InvokeInCurrentExecutionContext(object? state, object schedulingContext)
+        public void Post(Action<object?> callback, object? state)
+            => context.Post(callback.Invoke, state);
+    }
+
+    extension(ExecutionContext context)
+    {
+        private void Run(Action callback)
+            => Run<ExecutionContextAction>(context, new(callback));
+
+        public void Run<T>(Action<T> callback, T arg)
+            where T : allows ref struct
+            => Run<ExecutionContextAction<T>>(context, new(callback, arg));
+
+        public void Run<TAction>(TAction action)
+            where TAction : IExecutionContextAction, allows ref struct
         {
-            switch (schedulingContext)
+            // Capture returns null if the flow is suppressed, so the flow must be restored temporarily
+            var flowSuppressed = ExecutionContext.IsFlowSuppressed();
+            if (flowSuppressed)
+                ExecutionContext.RestoreFlow();
+
+            var currentContext = ExecutionContext.Capture();
+            Debug.Assert(currentContext is not null);
+            ExecutionContext.Restore(context);
+
+            // Arbitrary callbacks can change the synchronization context, so it must be restored
+            // as ExecutionContext.Run does
+            var syncContext = TAction.MayChangeSynchronizationContext
+                ? SynchronizationContext.Current
+                : null;
+            try
             {
-                case SynchronizationContext context:
-                    context.Post(continuation.Invoke, state);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-                default:
-                    Debug.Fail($"Unexpected scheduling context {schedulingContext}");
-                    break;
+                action.Invoke();
+            }
+            finally
+            {
+                if (TAction.MayChangeSynchronizationContext
+                    && !ReferenceEquals(SynchronizationContext.Current, syncContext))
+                    SynchronizationContext.SetSynchronizationContext(syncContext);
+                
+                ExecutionContext.Restore(currentContext);
+
+                // AsyncFlowControl of the caller remains valid: Undo checks the thread and the suppression only
+                if (flowSuppressed)
+                    ExecutionContext.SuppressFlow();
             }
         }
     }
+    
+    [StackTraceHidden]
+    private static void Invoke(object? continuation)
+    {
+        Debug.Assert(continuation is Action);
+
+        Unsafe.As<Action>(continuation).Invoke();
+    }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ExecutionContextAction(Action action) : IExecutionContextAction
+{
+    void IExecutionContextAction.Invoke() => action();
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ExecutionContextAction<T>(Action<T> action, T arg) : IExecutionContextAction
+    where T : allows ref struct
+{
+    private readonly T arg = arg;
+
+    void IExecutionContextAction.Invoke() => action(arg);
 }

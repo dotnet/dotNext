@@ -33,7 +33,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-        var awaiter = SpawningAsyncTaskMethodBuilder.SpawningAwaiter;
+        var awaiter = System.Threading.Tasks.Task.YieldToThreadPool().GetAwaiter();
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
     }
 
@@ -108,10 +108,6 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <returns>A new builder.</returns>
     public static SpawningAsyncTaskMethodBuilder Create() => new();
 
-    internal static ConfiguredTaskAwaitable.ConfiguredTaskAwaiter SpawningAwaiter => Task
-        .SpawningAwaitable
-        .GetAwaiter();
-
     /// <summary>
     /// Initiates the builder's execution with the associated state machine.
     /// </summary>
@@ -120,7 +116,7 @@ public struct SpawningAsyncTaskMethodBuilder()
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
     {
-        var awaiter = SpawningAwaiter;
+        var awaiter = Task.YieldToThreadPool().GetAwaiter();
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
     }
 

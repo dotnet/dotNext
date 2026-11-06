@@ -25,7 +25,7 @@ partial class WriteAheadLog
     {
         if (TBackground.Value)
         {
-            await Task.Yield();
+            await Task.YieldToThreadPool();
         }
 
         try

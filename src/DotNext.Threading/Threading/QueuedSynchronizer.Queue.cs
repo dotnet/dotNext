@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -92,7 +93,7 @@ partial class QueuedSynchronizer
         {
             node = pool.Rent<TNode>();
             node.Initialize(this, TBuilder.ThrowOnTimeout);
-            waitQueue.Add(node);
+            waitQueue.Add(node, TBuilder.PreferFairness);
             builder.Complete(node);
         }
 
@@ -291,12 +292,21 @@ partial class QueuedSynchronizer
             return waitQueue.Remove(node);
         }
 
-        public void Add(LinkedValueTaskCompletionSource<bool> node)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(LinkedValueTaskCompletionSource<bool> node, bool preferFairness)
         {
             Debug.Assert(SyncRoot.IsHeldByCurrentThread);
             
             SuspendedCallersMeter.Add(1, measurementTags);
-            waitQueue.Add(node);
+            if (preferFairness)
+            {
+                waitQueue.Add(node);
+            }
+            else
+            {
+                waitQueue.Prepend(node);
+            }
+
             length++;
         }
 
