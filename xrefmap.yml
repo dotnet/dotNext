@@ -44259,6 +44259,78 @@ references:
   commentId: Overload:DotNext.Runtime.CompilerServices.InterpolatedStringTemplateBuilder.ToString
   fullName: DotNext.Runtime.CompilerServices.InterpolatedStringTemplateBuilder.ToString
   nameWithType: InterpolatedStringTemplateBuilder.ToString
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable
+  name: SchedulingContextAwaitable
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.html
+  commentId: T:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable
+  nameWithType: SchedulingContextAwaitable
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter
+  name: SchedulingContextAwaitable.Awaiter
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html
+  commentId: T:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter
+  nameWithType: SchedulingContextAwaitable.Awaiter
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult
+  name: GetResult()
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult()
+  nameWithType: SchedulingContextAwaitable.Awaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult*
+  name: GetResult
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.GetResult
+  nameWithType: SchedulingContextAwaitable.Awaiter.GetResult
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_IsCompleted
+  commentId: P:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted
+  nameWithType: SchedulingContextAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_IsCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.IsCompleted
+  nameWithType: SchedulingContextAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted(System.Action)
+  name: OnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_OnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted(System.Action)
+  nameWithType: SchedulingContextAwaitable.Awaiter.OnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_OnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.OnCompleted
+  nameWithType: SchedulingContextAwaitable.Awaiter.OnCompleted
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  name: UnsafeOnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_UnsafeOnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  nameWithType: SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted*
+  name: UnsafeOnCompleted
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_Awaiter_UnsafeOnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted
+  nameWithType: SchedulingContextAwaitable.Awaiter.UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter
+  name: GetAwaiter()
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_GetAwaiter
+  commentId: M:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter()
+  nameWithType: SchedulingContextAwaitable.GetAwaiter()
+- uid: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter*
+  name: GetAwaiter
+  href: api/DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.html#DotNext_Runtime_CompilerServices_SchedulingContextAwaitable_GetAwaiter_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.GetAwaiter
+  nameWithType: SchedulingContextAwaitable.GetAwaiter
 - uid: DotNext.Runtime.CompilerServices.Scope
   name: Scope
   href: api/DotNext.Runtime.CompilerServices.Scope.html
@@ -44334,6 +44406,78 @@ references:
   commentId: Overload:DotNext.Runtime.CompilerServices.Scope.RegisterForDisposeAsync
   fullName: DotNext.Runtime.CompilerServices.Scope.RegisterForDisposeAsync
   nameWithType: Scope.RegisterForDisposeAsync
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable
+  name: ScopedTaskSchedulerAwaitable
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.html
+  commentId: T:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable
+  nameWithType: ScopedTaskSchedulerAwaitable
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter
+  name: ScopedTaskSchedulerAwaitable.Awaiter
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html
+  commentId: T:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult
+  name: GetResult()
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult()
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult*
+  name: GetResult
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.GetResult
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.GetResult
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_IsCompleted
+  commentId: P:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_IsCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  name: OnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_OnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_OnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.OnCompleted
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  name: UnsafeOnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_UnsafeOnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted*
+  name: UnsafeOnCompleted
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_Awaiter_UnsafeOnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+  nameWithType: ScopedTaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter
+  name: GetAwaiter()
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_GetAwaiter
+  commentId: M:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter()
+  nameWithType: ScopedTaskSchedulerAwaitable.GetAwaiter()
+- uid: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter*
+  name: GetAwaiter
+  href: api/DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.html#DotNext_Runtime_CompilerServices_ScopedTaskSchedulerAwaitable_GetAwaiter_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.GetAwaiter
+  nameWithType: ScopedTaskSchedulerAwaitable.GetAwaiter
 - uid: DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder
   name: SpawningAsyncTaskMethodBuilder
   href: api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html
@@ -44823,6 +44967,78 @@ references:
   fullName.vb: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable(Of TArg).GetAwaiter
   nameWithType: SuspendedExceptionTaskAwaitable<TArg>.GetAwaiter
   nameWithType.vb: SuspendedExceptionTaskAwaitable(Of TArg).GetAwaiter
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable
+  name: TaskSchedulerAwaitable
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.html
+  commentId: T:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable
+  nameWithType: TaskSchedulerAwaitable
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter
+  name: TaskSchedulerAwaitable.Awaiter
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html
+  commentId: T:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter
+  nameWithType: TaskSchedulerAwaitable.Awaiter
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult
+  name: GetResult()
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult()
+  nameWithType: TaskSchedulerAwaitable.Awaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult*
+  name: GetResult
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.GetResult
+  nameWithType: TaskSchedulerAwaitable.Awaiter.GetResult
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_IsCompleted
+  commentId: P:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted
+  nameWithType: TaskSchedulerAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_IsCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.IsCompleted
+  nameWithType: TaskSchedulerAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  name: OnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_OnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted(System.Action)
+  nameWithType: TaskSchedulerAwaitable.Awaiter.OnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_OnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.OnCompleted
+  nameWithType: TaskSchedulerAwaitable.Awaiter.OnCompleted
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  name: UnsafeOnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_UnsafeOnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  nameWithType: TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted*
+  name: UnsafeOnCompleted
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_Awaiter_UnsafeOnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+  nameWithType: TaskSchedulerAwaitable.Awaiter.UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter
+  name: GetAwaiter()
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_GetAwaiter
+  commentId: M:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter()
+  nameWithType: TaskSchedulerAwaitable.GetAwaiter()
+- uid: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter*
+  name: GetAwaiter
+  href: api/DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.html#DotNext_Runtime_CompilerServices_TaskSchedulerAwaitable_GetAwaiter_
+  commentId: Overload:DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.GetAwaiter
+  nameWithType: TaskSchedulerAwaitable.GetAwaiter
 - uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder
   name: ValueTupleBuilder
   href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html
@@ -52322,6 +52538,18 @@ references:
   commentId: Overload:DotNext.Threading.AsyncExclusiveLock.TryStealAsync
   fullName: DotNext.Threading.AsyncExclusiveLock.TryStealAsync
   nameWithType: AsyncExclusiveLock.TryStealAsync
+- uid: DotNext.Threading.AsyncExclusiveLock.YieldAsync(System.Threading.CancellationToken)
+  name: YieldAsync(CancellationToken)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_YieldAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.YieldAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncExclusiveLock.YieldAsync(System.Threading.CancellationToken)
+  nameWithType: AsyncExclusiveLock.YieldAsync(CancellationToken)
+- uid: DotNext.Threading.AsyncExclusiveLock.YieldAsync*
+  name: YieldAsync
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_YieldAsync_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.YieldAsync
+  fullName: DotNext.Threading.AsyncExclusiveLock.YieldAsync
+  nameWithType: AsyncExclusiveLock.YieldAsync
 - uid: DotNext.Threading.AsyncLazy`1
   name: AsyncLazy<T>
   href: api/DotNext.Threading.AsyncLazy-1.html
@@ -53509,6 +53737,18 @@ references:
   commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.Validate
   fullName: DotNext.Threading.AsyncReaderWriterLock.Validate
   nameWithType: AsyncReaderWriterLock.Validate
+- uid: DotNext.Threading.AsyncReaderWriterLock.YieldAsync(System.Threading.CancellationToken)
+  name: YieldAsync(CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_YieldAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.YieldAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.YieldAsync(System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.YieldAsync(CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.YieldAsync*
+  name: YieldAsync
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_YieldAsync_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.YieldAsync
+  fullName: DotNext.Threading.AsyncReaderWriterLock.YieldAsync
+  nameWithType: AsyncReaderWriterLock.YieldAsync
 - uid: DotNext.Threading.AsyncSharedLock
   name: AsyncSharedLock
   href: api/DotNext.Threading.AsyncSharedLock.html
@@ -57834,6 +58074,18 @@ references:
   fullName.vb: DotNext.Threading.TaskExtensions.Run(Of T1, T2, T3, T4, TResult)(System.Func(Of T1, T2, T3, T4, System.Threading.Tasks.Task(Of TResult)), T1, T2, T3, T4)
   nameWithType: TaskExtensions.Run<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, Task<TResult>>, T1, T2, T3, T4)
   nameWithType.vb: TaskExtensions.Run(Of T1, T2, T3, T4, TResult)(Func(Of T1, T2, T3, T4, Task(Of TResult)), T1, T2, T3, T4)
+- uid: DotNext.Threading.TaskExtensions.YieldToThreadPool
+  name: YieldToThreadPool()
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_YieldToThreadPool
+  commentId: M:DotNext.Threading.TaskExtensions.YieldToThreadPool
+  fullName: DotNext.Threading.TaskExtensions.YieldToThreadPool()
+  nameWithType: TaskExtensions.YieldToThreadPool()
+- uid: DotNext.Threading.TaskExtensions.YieldToThreadPool*
+  name: YieldToThreadPool
+  href: api/DotNext.Threading.TaskExtensions.html#DotNext_Threading_TaskExtensions_YieldToThreadPool_
+  commentId: Overload:DotNext.Threading.TaskExtensions.YieldToThreadPool
+  fullName: DotNext.Threading.TaskExtensions.YieldToThreadPool
+  nameWithType: TaskExtensions.YieldToThreadPool
 - uid: DotNext.Threading.Tasks
   name: DotNext.Threading.Tasks
   href: api/DotNext.Threading.Tasks.html
@@ -59089,6 +59341,51 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskSchedulerExtensions.ScheduleAsync(Of TArgs, TResult)(System.Func(Of TArgs, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TResult)), TArgs, System.TimeSpan, System.Threading.CancellationToken)
   nameWithType: TaskSchedulerExtensions.ScheduleAsync<TArgs, TResult>(Func<TArgs, CancellationToken, ValueTask<TResult>>, TArgs, TimeSpan, CancellationToken)
   nameWithType.vb: TaskSchedulerExtensions.ScheduleAsync(Of TArgs, TResult)(Func(Of TArgs, CancellationToken, ValueTask(Of TResult)), TArgs, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo(System.Threading.Tasks.TaskScheduler,System.Boolean)
+  name: SwitchTo(TaskScheduler, bool)
+  href: api/DotNext.Threading.Tasks.TaskSchedulerExtensions.html#DotNext_Threading_Tasks_TaskSchedulerExtensions_SwitchTo_System_Threading_Tasks_TaskScheduler_System_Boolean_
+  commentId: M:DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo(System.Threading.Tasks.TaskScheduler,System.Boolean)
+  name.vb: SwitchTo(TaskScheduler, Boolean)
+  fullName: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo(System.Threading.Tasks.TaskScheduler, bool)
+  fullName.vb: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo(System.Threading.Tasks.TaskScheduler, Boolean)
+  nameWithType: TaskSchedulerExtensions.SwitchTo(TaskScheduler, bool)
+  nameWithType.vb: TaskSchedulerExtensions.SwitchTo(TaskScheduler, Boolean)
+- uid: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo*
+  name: SwitchTo
+  href: api/DotNext.Threading.Tasks.TaskSchedulerExtensions.html#DotNext_Threading_Tasks_TaskSchedulerExtensions_SwitchTo_
+  commentId: Overload:DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo
+  fullName: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchTo
+  nameWithType: TaskSchedulerExtensions.SwitchTo
+- uid: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync(System.Threading.Tasks.TaskScheduler)
+  name: SwitchToAsync(TaskScheduler)
+  href: api/DotNext.Threading.Tasks.TaskSchedulerExtensions.html#DotNext_Threading_Tasks_TaskSchedulerExtensions_SwitchToAsync_System_Threading_Tasks_TaskScheduler_
+  commentId: M:DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync(System.Threading.Tasks.TaskScheduler)
+  fullName: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync(System.Threading.Tasks.TaskScheduler)
+  nameWithType: TaskSchedulerExtensions.SwitchToAsync(TaskScheduler)
+- uid: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync*
+  name: SwitchToAsync
+  href: api/DotNext.Threading.Tasks.TaskSchedulerExtensions.html#DotNext_Threading_Tasks_TaskSchedulerExtensions_SwitchToAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync
+  fullName: DotNext.Threading.Tasks.TaskSchedulerExtensions.SwitchToAsync
+  nameWithType: TaskSchedulerExtensions.SwitchToAsync
+- uid: DotNext.Threading.Tasks.TaskSchedulerScope
+  name: TaskSchedulerScope
+  href: api/DotNext.Threading.Tasks.TaskSchedulerScope.html
+  commentId: T:DotNext.Threading.Tasks.TaskSchedulerScope
+  fullName: DotNext.Threading.Tasks.TaskSchedulerScope
+  nameWithType: TaskSchedulerScope
+- uid: DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.Tasks.TaskSchedulerScope.html#DotNext_Threading_Tasks_TaskSchedulerScope_DisposeAsync
+  commentId: M:DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync
+  fullName: DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync()
+  nameWithType: TaskSchedulerScope.DisposeAsync()
+- uid: DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.Tasks.TaskSchedulerScope.html#DotNext_Threading_Tasks_TaskSchedulerScope_DisposeAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync
+  fullName: DotNext.Threading.Tasks.TaskSchedulerScope.DisposeAsync
+  nameWithType: TaskSchedulerScope.DisposeAsync
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource
   name: ValueTaskCompletionSource
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html

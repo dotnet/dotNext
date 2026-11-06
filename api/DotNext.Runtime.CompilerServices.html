@@ -109,8 +109,23 @@ Structs
       <section><p>Represents a builder of the lambda expression
 that can be compiled to the renderer of the interpolated string.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.html">SchedulingContextAwaitable</a></h4>
+      <section><p>Represents an awaitable object that resumes the asynchronous method
+on the captured synchronization context or task scheduler.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.SchedulingContextAwaitable.Awaiter.html">SchedulingContextAwaitable.Awaiter</a></h4>
+      <section><p>Represents the awaiter that resumes the asynchronous method
+on the captured synchronization context or task scheduler.</p>
+</section>
       <h4><a class="xref" href="DotNext.Runtime.CompilerServices.Scope.html">Scope</a></h4>
       <section><p>Represents a collection of callbacks to be executed at the end of the lexical scope.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.html">ScopedTaskSchedulerAwaitable</a></h4>
+      <section><p>Represents an awaitable object that switches the asynchronous method to the specified task scheduler,
+and returns the scope that switches the method back.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.ScopedTaskSchedulerAwaitable.Awaiter.html">ScopedTaskSchedulerAwaitable.Awaiter</a></h4>
+      <section><p>Represents the awaiter that switches the asynchronous method to the specified task scheduler.</p>
 </section>
       <h4><a class="xref" href="DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html">SpawningAsyncTaskMethodBuilder</a></h4>
       <section><p>When applied to async method using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute">AsyncMethodBuilderAttribute</a> attribute,
@@ -131,6 +146,12 @@ spawns method execution as a new work item in the thread pool, i.e. in parallel.
 </section>
       <h4><a class="xref" href="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable-1.Awaiter.html">SuspendedExceptionTaskAwaitable&lt;TArg&gt;.Awaiter</a></h4>
       <section><p>Represents the awaiter that suspends exception.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.html">TaskSchedulerAwaitable</a></h4>
+      <section><p>Represents an awaitable object that switches the asynchronous method to the specified task scheduler.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Runtime.CompilerServices.TaskSchedulerAwaitable.Awaiter.html">TaskSchedulerAwaitable.Awaiter</a></h4>
+      <section><p>Represents the awaiter that switches the asynchronous method to the specified task scheduler.</p>
 </section>
     <h3 id="interfaces">
 Interfaces
