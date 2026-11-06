@@ -102,6 +102,7 @@ internal static class ContinuationHelpers
         }
     }
     
+    [StackTraceHidden]
     private static void Invoke(object? continuation)
     {
         Debug.Assert(continuation is Action);
