@@ -237,6 +237,8 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
         if (task is not null && !ReferenceEquals(task, sentinel))
         {
             await task.As<Task>().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            if (task.IsCompletedSuccessfully)
+                await RollbackSnapshotAsync(task).ConfigureAwait(false);
         }
     }
 
