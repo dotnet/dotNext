@@ -23,21 +23,10 @@ partial struct CancellationTokenMultiplexer
         private readonly MultiplexerOrToken multiplexerOrToken;
         private readonly PooledCancellationTokenSource? source;
 
-        internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens, bool timeoutSupport = false)
+        internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
         {
             multiplexerOrToken = new(multiplexer.sources);
             source = multiplexer.Rent(tokens);
-
-            if (timeoutSupport)
-                source.RegisterTimeoutHandler();
-        }
-
-        internal Scope(CancellationTokenMultiplexer multiplexer, TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens)
-        {
-            multiplexerOrToken = new(multiplexer.sources);
-            source = multiplexer.Rent(tokens);
-            source.RegisterTimeoutHandler();
-            source.CancelAfter(timeout);
         }
 
         internal Scope(CancellationToken token)
@@ -63,8 +52,11 @@ partial struct CancellationTokenMultiplexer
         /// Gets a value indicating that the multiplexed token is canceled by the timeout.
         /// </summary>
         public bool IsTimedOut => source?.IsRootCause ?? GetToken(multiplexerOrToken) == TimedOutToken;
-
-        internal void SetTimeout(TimeSpan value) => source?.CancelAfter(value);
+        
+        internal TimeSpan Timeout
+        {
+            set => source?.CancelAfter(value);
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -115,7 +107,7 @@ partial struct CancellationTokenMultiplexer
         private readonly Scope scope;
 
         internal ScopeWithTimeout(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
-            => scope = new(multiplexer, tokens, timeoutSupport: true);
+            => scope = new(multiplexer, tokens);
 
         /// <summary>
         /// Sets the optional timeout.
@@ -128,7 +120,7 @@ partial struct CancellationTokenMultiplexer
             {
                 Validate(value);
 
-                scope.SetTimeout(value);
+                scope.Timeout = value;
             }
         }
 

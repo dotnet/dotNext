@@ -27,21 +27,10 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         ? Unsafe.BitCast<CancellationToken, InlinedToken>(token)
         : new(token);
     
-    internal void RegisterTimeoutHandler()
-    {
-        Token.UnsafeRegister(OnTimeout, this);
-
-        static void OnTimeout(object? source, CancellationToken token)
-        {
-            Debug.Assert(source is LinkedCancellationTokenSource);
-
-            Unsafe.As<LinkedCancellationTokenSource>(source).TrySetCancellationOrigin(token);
-        }
-    }
-
     private void NotifyCancellation(CancellationToken token)
     {
-        if (TrySetCancellationOrigin(token))
+        // If this source is already canceled (by timeout), the linked token cannot be the origin
+        if (!IsCancellationRequested && TrySetCancellationOrigin(token))
         {
             OnCanceled();
         }
@@ -65,35 +54,18 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         return Interlocked.CompareExchange(ref cancellationOrigin.Item1, inlinedToken.Item1, comparand: null) is null;
     }
 
+    // null means that the source is not canceled yet
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private object RawToken
+    private object? RawToken
     {
         get
         {
-            // There is rare race condition that could lead to incorrect detection of the cancellation root:
-            // the linked token gets canceled in the same time as the timeout happens for this source.
-            // In this case, the timeout thread resumes the attached callbacks. However, the order
-            // of these callbacks is not guaranteed. Thus, OnTimeout is not yet called, and cancellationOrigin
-            // is still null. The resumed thread observes CancellationOrigin == Token. But then,
-            // the linked token calls Cancel callback that sets cancellationOrigin to the real token.
-            // In that case, CancellationOrigin != Token. It means that the consumer of CancellationOrigin
-            // can see two different values when the property getter is called sequentially. This
-            // is non-deterministic behavior. Currently, nothing we can do with incorrect detection
-            // of the cancellation root due to absence of the necessary methods in CTS. But we can
-            // achieve deterministic behavior for CancellationOrigin and IsRootCause properties:
-            // if cancellation is requested for this source by timeout, switch cancellationOrigin to not-null
-            // value in getter to prevent concurrent overwrite by the linked token cancellation callback.
-            var tokenCopy = cancellationOrigin.Item1;
-            if (CancellationToken.CanBeInlined)
+            var tokenCopy = Volatile.Read(in cancellationOrigin.Item1);
+            if (tokenCopy is null && IsCancellationRequested)
             {
-                tokenCopy ??= IsCancellationRequested
-                    ? Interlocked.CompareExchange(ref cancellationOrigin.Item1, this, comparand: null) ?? this
-                    : this;
-            }
-            else if (tokenCopy is null)
-            {
-                object boxedToken = Token;
-                tokenCopy = Interlocked.CompareExchange(ref cancellationOrigin.Item1, boxedToken, comparand: null) ?? boxedToken;
+                // Canceled by timeout. Claim the origin to make the result stable for the subsequent calls
+                var self = CancellationToken.CanBeInlined ? this : (object)Token;
+                tokenCopy = Interlocked.CompareExchange(ref cancellationOrigin.Item1, self, comparand: null) ?? self;
             }
 
             return tokenCopy;
@@ -115,16 +87,12 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         {
             var rawToken = RawToken;
             return CancellationToken.CanBeInlined
-                ? Unsafe.BitCast<InlinedToken, CancellationToken>(new(rawToken))
-                : Unsafe.Unbox<CancellationToken>(rawToken);
-        }
-
-        private protected set
-        {
-            var tokenCopy = InlineToken(value);
-            Volatile.Write(ref cancellationOrigin.Item1, tokenCopy.Item1);
+                ? Unsafe.BitCast<InlinedToken, CancellationToken>(new(rawToken ?? this))
+                : rawToken is null ? Token : Unsafe.Unbox<CancellationToken>(rawToken);
         }
     }
+
+    private protected void ResetCancellationOrigin() => Volatile.Write(ref cancellationOrigin.Item1, null);
 
     /// <summary>
     /// Gets a value indicating that this token source is canceled by the timeout associated with this source,
@@ -137,7 +105,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
             var rawToken = RawToken;
             return CancellationToken.CanBeInlined
                 ? ReferenceEquals(rawToken, this)
-                : Unsafe.Unbox<CancellationToken>(rawToken) == Token;
+                : rawToken is not null && Unsafe.Unbox<CancellationToken>(rawToken) == Token;
         }
     }
 }

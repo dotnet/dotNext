@@ -56,7 +56,7 @@ public readonly partial struct CancellationTokenMultiplexer()
         0L => new(TimedOutToken),
         Timeout.InfiniteTicks => Combine(tokens),
         < 0L or > Timeout.MaxTimeoutParameterTicks => throw new ArgumentOutOfRangeException(nameof(timeout)),
-        _ => new(this, timeout, tokens)
+        _ => new(this, tokens) { Timeout = timeout },
     };
 
     /// <summary>
