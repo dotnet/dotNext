@@ -10,10 +10,6 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
 {
     // represents inlined CancellationToken
     private InlinedToken cancellationOrigin;
-
-    private protected LinkedCancellationTokenSource()
-    {
-    }
     
     private protected CancellationTokenRegistration Attach(CancellationToken token)
     {
