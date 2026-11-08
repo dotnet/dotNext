@@ -28,7 +28,7 @@ public sealed class SimpleStateMachineTests : Test
                 if (preservePublishedSnapshot)
                 {
                     await AppendAndApplyAsync(wal);
-                    Equal(1L, ((ISnapshotManager)stateMachine).Snapshot.Index);
+                    Equal(1L, stateMachine.As<ISnapshotManager>().Snapshot?.Index);
                     await AppendAndApplyAsync(wal);
                     pendingWriter = await stateMachine.WaitForWriterAsync();
                     await WaitForWriteAsync(pendingWriter);
@@ -42,7 +42,7 @@ public sealed class SimpleStateMachineTests : Test
 
             if (preservePublishedSnapshot)
             {
-                Equal(1L, ((ISnapshotManager)stateMachine).Snapshot.Index);
+                Equal(1L, stateMachine.As<ISnapshotManager>().Snapshot?.Index);
                 var bytes = await File.ReadAllBytesAsync(Path.Combine(stateMachine.Location.FullName, "1-1"), TestToken);
                 Equal(42L, BinaryPrimitives.ReadInt64LittleEndian(bytes));
             }
@@ -137,7 +137,7 @@ public sealed class SimpleStateMachineTests : Test
 
         protected override async ValueTask PersistAsync(IAsyncBinaryWriter writer, CancellationToken token)
         {
-            var fileWriter = IsAssignableFrom<FileWriter>(writer);
+            var fileWriter = IsType<FileWriter>(writer, exactMatch: false);
             capturedWriters.Add(fileWriter);
             await writer.WriteLittleEndianAsync(42L, token);
             True(writers.Writer.TryWrite(fileWriter));
