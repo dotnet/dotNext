@@ -103,7 +103,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
 
     /// <inheritdoc/>
     void IList<T>.Insert(int index, T item)
-        => Insert(index, new(ref item));
+        => Insert(index, item);
 
     /// <summary>
     /// Inserts the elements into this buffer at the specified index.
@@ -112,7 +112,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     /// <param name="items">The span whose elements should be inserted into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Insert(int index, ReadOnlySpan<T> items)
+    public void Insert(int index, params ReadOnlySpan<T> items)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
@@ -153,7 +153,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     /// <param name="items">The span whose elements should be added into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Overwrite(int index, ReadOnlySpan<T> items)
+    public void Overwrite(int index, params ReadOnlySpan<T> items)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
