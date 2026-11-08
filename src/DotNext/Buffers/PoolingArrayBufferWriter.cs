@@ -28,12 +28,12 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     /// <inheritdoc/>
     bool ICollection<T>.IsReadOnly => false;
 
+    private ReadOnlySpan<T> WrittenSpan
+        => MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(buffer), position);
+
     /// <inheritdoc/>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-    {
-        var source = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(buffer), position);
-        source.CopyTo(array.AsSpan(arrayIndex));
-    }
+        => WrittenSpan.CopyTo(array.AsSpan(arrayIndex));
 
     /// <summary>
     /// Gets the element at the specified index.
@@ -55,14 +55,14 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     int IList<T>.IndexOf(T item)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return Array.IndexOf(buffer, item, 0, position);
+        return WrittenSpan.IndexOf(item);
     }
 
     /// <inheritdoc/>
     bool ICollection<T>.Contains(T item)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return Array.IndexOf(buffer, item, 0, position) >= 0;
+        return WrittenSpan.Contains(item);
     }
 
     private void RemoveAt(int index)
@@ -93,7 +93,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     bool ICollection<T>.Remove(T item)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        var index = Array.IndexOf(buffer, item, 0, position);
+        var index = WrittenSpan.IndexOf(item);
         if (index < 0)
             return false;
 
