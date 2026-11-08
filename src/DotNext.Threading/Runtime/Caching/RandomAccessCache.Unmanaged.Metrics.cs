@@ -16,7 +16,7 @@ unsafe partial class RandomAccessCache<TValue>
         init
         {
             value.Add(ValueTypeMeterAttribute, typeof(TValue).Name);
-            parkingLot = new(Capacity, poolSizePerSlot: 3)
+            parkingLot = new(Capacity, RandomAccessCache.PoolSizePerSlot)
             {
                 MeasurementTags = value,
             };
