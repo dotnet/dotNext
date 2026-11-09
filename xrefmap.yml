@@ -3208,13 +3208,13 @@ references:
   nameWithType: PoolingArrayBufferWriter<T>.GetSpan
   nameWithType.vb: PoolingArrayBufferWriter(Of T).GetSpan
 - uid: DotNext.Buffers.PoolingArrayBufferWriter`1.Insert(System.Int32,System.ReadOnlySpan{`0})
-  name: Insert(int, ReadOnlySpan<T>)
+  name: Insert(int, params ReadOnlySpan<T>)
   href: api/DotNext.Buffers.PoolingArrayBufferWriter-1.html#DotNext_Buffers_PoolingArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__
   commentId: M:DotNext.Buffers.PoolingArrayBufferWriter`1.Insert(System.Int32,System.ReadOnlySpan{`0})
   name.vb: Insert(Integer, ReadOnlySpan(Of T))
-  fullName: DotNext.Buffers.PoolingArrayBufferWriter<T>.Insert(int, System.ReadOnlySpan<T>)
+  fullName: DotNext.Buffers.PoolingArrayBufferWriter<T>.Insert(int, params System.ReadOnlySpan<T>)
   fullName.vb: DotNext.Buffers.PoolingArrayBufferWriter(Of T).Insert(Integer, System.ReadOnlySpan(Of T))
-  nameWithType: PoolingArrayBufferWriter<T>.Insert(int, ReadOnlySpan<T>)
+  nameWithType: PoolingArrayBufferWriter<T>.Insert(int, params ReadOnlySpan<T>)
   nameWithType.vb: PoolingArrayBufferWriter(Of T).Insert(Integer, ReadOnlySpan(Of T))
 - uid: DotNext.Buffers.PoolingArrayBufferWriter`1.Insert*
   name: Insert
@@ -3243,13 +3243,13 @@ references:
   nameWithType: PoolingArrayBufferWriter<T>.this
   nameWithType.vb: PoolingArrayBufferWriter(Of T).this[]
 - uid: DotNext.Buffers.PoolingArrayBufferWriter`1.Overwrite(System.Int32,System.ReadOnlySpan{`0})
-  name: Overwrite(int, ReadOnlySpan<T>)
+  name: Overwrite(int, params ReadOnlySpan<T>)
   href: api/DotNext.Buffers.PoolingArrayBufferWriter-1.html#DotNext_Buffers_PoolingArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__
   commentId: M:DotNext.Buffers.PoolingArrayBufferWriter`1.Overwrite(System.Int32,System.ReadOnlySpan{`0})
   name.vb: Overwrite(Integer, ReadOnlySpan(Of T))
-  fullName: DotNext.Buffers.PoolingArrayBufferWriter<T>.Overwrite(int, System.ReadOnlySpan<T>)
+  fullName: DotNext.Buffers.PoolingArrayBufferWriter<T>.Overwrite(int, params System.ReadOnlySpan<T>)
   fullName.vb: DotNext.Buffers.PoolingArrayBufferWriter(Of T).Overwrite(Integer, System.ReadOnlySpan(Of T))
-  nameWithType: PoolingArrayBufferWriter<T>.Overwrite(int, ReadOnlySpan<T>)
+  nameWithType: PoolingArrayBufferWriter<T>.Overwrite(int, params ReadOnlySpan<T>)
   nameWithType.vb: PoolingArrayBufferWriter(Of T).Overwrite(Integer, ReadOnlySpan(Of T))
 - uid: DotNext.Buffers.PoolingArrayBufferWriter`1.Overwrite*
   name: Overwrite
