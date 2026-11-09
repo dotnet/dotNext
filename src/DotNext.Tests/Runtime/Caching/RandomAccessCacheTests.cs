@@ -673,11 +673,33 @@ public sealed class RandomAccessCacheTests : Test
     [Fact]
     public static async Task ThrowingEvictionDoesNotLeakLock()
     {
-        await using var cache = new RandomAccessCache<int, string>(16) { Eviction = static (_, _) => throw new ArithmeticException() };
+        var barrier = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var cache = new RandomAccessCache<int, string>(16)
+        {
+            Eviction = (_, value) =>
+            {
+                if (value is "barrier")
+                    barrier.SetResult();
+                else
+                    throw new ArithmeticException();
+            },
+        };
+
         await using (var session = await cache.ChangeAsync(1, TestToken))
         {
             session.SetValue("a");
         }
+
+        // The callback is invoked by the owner of the last reference. If the promotion of the entry is not yet
+        // processed, the eviction loop owns it, and the callback throws there instead of ReplaceAsync.
+        // The queue is FIFO, so the eviction of the barrier entry guarantees that the promotion is processed
+        await using (var session = await cache.ChangeAsync(2, TestToken))
+        {
+            session.SetValue("barrier");
+        }
+
+        True(await cache.InvalidateAsync(2, TestToken));
+        await barrier.Task.WaitAsync(DefaultTimeout, TestToken);
 
         // the replaced entry is removed under the bucket lock, the callback throws
         await ThrowsAsync<ArithmeticException>(cache.ReplaceAsync(1, TestToken).AsTask);
