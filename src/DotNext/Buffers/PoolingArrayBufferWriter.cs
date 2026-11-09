@@ -52,18 +52,10 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     }
 
     /// <inheritdoc/>
-    int IList<T>.IndexOf(T item)
-    {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return WrittenSpan.IndexOf(item);
-    }
+    int IList<T>.IndexOf(T item) => WrittenSpan.IndexOf(item);
 
     /// <inheritdoc/>
-    bool ICollection<T>.Contains(T item)
-    {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return WrittenSpan.Contains(item);
-    }
+    bool ICollection<T>.Contains(T item) => WrittenSpan.Contains(item);
 
     private void RemoveAt(int index)
     {
@@ -277,13 +269,11 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
             result = new(pool, buffer, position);
             position = 0;
         }
-        else if (buffer.Length > 0)
-        {
-            ReturnBuffer();
-            result = default;
-        }
         else
         {
+            if (buffer is not [])
+                ReturnBuffer();
+
             result = default;
         }
 
