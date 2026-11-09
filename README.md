@@ -59,36 +59,31 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 11-06-2026
+Release Date: 11-09-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.12.0">DotNext 6.12.0</a>
-* Introduced `Task.Run` overloads as a replacement of `SpawningAsyncTaskMethodBuilder` for better compatibility with Runtime Async
-* `SpawningAsyncTaskMethodBuilder` skips any ambient synchronization context
+<a href="https://www.nuget.org/packages/dotnext/6.12.1">DotNext 6.12.1</a>
+* Added **params** keyword to some methods of `PoolingArrayBufferWriter` class
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.12.0">DotNext.Metaprogramming 6.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.12.1">DotNext.Metaprogramming 6.12.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.12.0">DotNext.Unsafe 6.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.12.1">DotNext.Unsafe 6.12.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.12.0">DotNext.Threading 6.12.0</a>
-* Small performance improvements of `RandomAccessCache<TValue>` class
-* Introduced `YieldAsync` method in `AsyncExclusiveLock` and `AsyncReaderWriterLock` classes
-* Added `SwitchToAsync` extension method for [TaskScheduler](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskscheduler) class which allows to switch task scheduler safely within the method body
-* Removed memory allocations caused by continuations in async primitives
+<a href="https://www.nuget.org/packages/dotnext.threading/6.12.1">DotNext.Threading 6.12.1</a>
+* Optimized memory allocations required for timeout support in `CancellationTokenMultiplexer` class
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.12.0">DotNext.IO 6.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/6.12.1">DotNext.IO 6.12.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.12.0">DotNext.Net.Cluster 6.12.0</a>
-* Fixed [308](https://github.com/dotnet/dotNext/issues/308)
-* Fixed [309](https://github.com/dotnet/dotNext/issues/309)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.12.1">DotNext.Net.Cluster 6.12.1</a>
+* Fixed [313](https://github.com/dotnet/dotNext/issues/313)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.0">DotNext.AspNetCore.Cluster 6.12.0</a>
-* Fixed [309](https://github.com/dotnet/dotNext/issues/309)
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.1">DotNext.AspNetCore.Cluster 6.12.1</a>
+* Fixed [313](https://github.com/dotnet/dotNext/issues/313)
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.12.0">DotNext.MaintenanceServices 1.12.0</a>
-* Smallish performance improvements
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.12.1">DotNext.MaintenanceServices 1.12.1</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

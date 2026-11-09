@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 11-09-2026
+<a href="https://www.nuget.org/packages/dotnext/6.12.1">DotNext 6.12.1</a>
+* Added **params** keyword to some methods of `PoolingArrayBufferWriter` class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.12.1">DotNext.Metaprogramming 6.12.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.12.1">DotNext.Unsafe 6.12.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.12.1">DotNext.Threading 6.12.1</a>
+* Optimized memory allocations required for timeout support in `CancellationTokenMultiplexer` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.12.1">DotNext.IO 6.12.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.12.1">DotNext.Net.Cluster 6.12.1</a>
+* Fixed [313](https://github.com/dotnet/dotNext/issues/313)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.1">DotNext.AspNetCore.Cluster 6.12.1</a>
+* Fixed [313](https://github.com/dotnet/dotNext/issues/313)
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.12.1">DotNext.MaintenanceServices 1.12.1</a>
+* Updated dependencies
+
 # 11-06-2026
 <a href="https://www.nuget.org/packages/dotnext/6.12.0">DotNext 6.12.0</a>
 * Introduced `Task.Run` overloads as a replacement of `SpawningAsyncTaskMethodBuilder` for better compatibility with Runtime Async
