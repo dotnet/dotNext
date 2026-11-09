@@ -157,6 +157,47 @@ public class CancellationTokenMultiplexerTests : Test
         await scope.DisposeAsync();
     }
 
+    [Fact]
+    public static async Task LinkedTokenCanceledAfterTimeout()
+    {
+        using var cts = new CancellationTokenSource();
+        var multiplexer = new CancellationTokenMultiplexer();
+
+        var scope = multiplexer.CombineAndSetTimeoutLater(cts.Token);
+        var source = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var registration = scope.Token.Register(() =>
+        {
+            // the scope is already canceled by the timeout, so the linked token is not the origin
+            cts.Cancel();
+            source.SetResult();
+        });
+
+        scope.Timeout = TimeSpan.Zero;
+        await source.Task.WaitAsync(DefaultTimeout, TestToken);
+
+        True(scope.IsTimedOut);
+        Equal(scope.Token, scope.CancellationOrigin);
+
+        await scope.DisposeAsync();
+    }
+
+    [Fact]
+    public static async Task CheckOriginBeforeCancellation()
+    {
+        using var cts = new CancellationTokenSource();
+        var multiplexer = new CancellationTokenMultiplexer();
+
+        await using var scope = multiplexer.CombineAndSetTimeoutLater(cts.Token);
+        Equal(scope.Token, scope.CancellationOrigin);
+        False(scope.IsTimedOut);
+
+        // reading the origin before cancellation must not prevent the linked token from canceling the scope
+        cts.Cancel();
+        True(scope.Token.IsCancellationRequested);
+        Equal(cts.Token, scope.CancellationOrigin);
+        False(scope.IsTimedOut);
+    }
+
     [Theory]
     [InlineData(8)]
     [InlineData(16)]
