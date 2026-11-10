@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -239,6 +240,29 @@ public sealed class ValueReferenceTests : Test
         reference = new ReadOnlyValueReference<int>(array, 0);
         Equal(42, reference.Value);
     }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.AllFields, typeof(MyClass))]
+    public static void ReferenceFromField()
+    {
+        var obj = new MyClass();
+        var field = obj.GetType().GetField(nameof(MyClass.Field));
+        NotNull(field);
+        var reference = ValueReference<int>.FromField(obj, field);
+        reference.Value = 42;
+        Equal(42, obj.Field);
+    }
+    
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.AllFields, typeof(MyClass))]
+    public static void ReadOnlyReferenceFromField()
+    {
+        var obj = new MyClass { Field = 42 };
+        var field = obj.GetType().GetField(nameof(MyClass.Field));
+        NotNull(field);
+        var reference = ReadOnlyValueReference<int>.FromField(obj, field);
+        True(Unsafe.AreSame(in obj.Field, in reference.Value));
+    }
 }
 
 file record MyClass : IResettable
@@ -248,8 +272,8 @@ file record MyClass : IResettable
     [FixedAddressValueType]
     internal static int StaticValueType;
         
-    internal int Field;
-    internal string AnotherField;
+    public int Field;
+    public string AnotherField;
 
     public void Reset()
     {
