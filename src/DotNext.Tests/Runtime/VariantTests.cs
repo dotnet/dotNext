@@ -129,4 +129,25 @@ public sealed class VariantTests : Test
         NotNull(field);
         Throws<ArgumentException>(() => Variant.FromField("", field));
     }
+
+    [Fact]
+    public static void MutableToImmutable()
+    {
+        var i = 42;
+        var mutable = Variant.Mutable(ref i);
+        True(mutable.IsMutable);
+
+        var immutable = Variant.Immutable(mutable);
+        False(immutable.IsMutable);
+        True(mutable.Equals(immutable));
+
+        immutable = Variant.Immutable(immutable);
+        False(immutable.IsMutable);
+        True(mutable.Equals(immutable));
+
+        immutable = Variant.Empty;
+        False(immutable.IsMutable);
+        immutable = Variant.Immutable(immutable);
+        Equal(typeof(void), immutable.TargetType);
+    }
 }

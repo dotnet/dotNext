@@ -99,6 +99,17 @@ public readonly ref struct Variant : IEquatable<Variant>
         => Create(in location, mutable: false);
 
     /// <summary>
+    /// Creates immutable value.
+    /// </summary>
+    /// <param name="value">The location of the value.</param>
+    /// <returns>The untyped immutable value.</returns>
+    public static Variant Immutable(Variant value)
+    {
+        Unsafe.AsRef(in value.typeInfo) = value.TypeHandle;
+        return value;
+    }
+
+    /// <summary>
     /// Creates mutable value and stores its type.
     /// </summary>
     /// <param name="location">The location of the value.</param>
