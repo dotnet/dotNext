@@ -117,7 +117,9 @@ public readonly ref struct Variant : IEquatable<Variant>
     {
         ArgumentNullException.ThrowIfNull(boxedValue);
 
-        return new(ref Unsafe.GetRawData(boxedValue), Type.GetTypeHandle(boxedValue), mutable: true);
+        return new(ref Unsafe.GetRawData(boxedValue),
+            boxedValue.GetType().TypeHandle,
+            mutable: true);
     }
 
     /// <summary>
