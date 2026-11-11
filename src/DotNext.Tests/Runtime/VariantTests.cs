@@ -1,4 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using DotNext.Reflection;
+
 namespace DotNext.Runtime;
+
+using Reflection;
 
 public sealed class VariantTests : Test
 {
@@ -101,5 +107,26 @@ public sealed class VariantTests : Test
 
         v = default(TypedReference);
         True(v.IsEmpty);
+    }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.AllFields, typeof(StrongBox<int>))]
+    public static void FromInstanceField()
+    {
+        var obj = new StrongBox<int> { Value = 42 };
+        var field = obj.GetType().GetField(nameof(StrongBox<>.Value));
+        NotNull(field);
+        var value = Variant.FromField(obj, field);
+        True(value.IsMutable);
+        True(Unsafe.AreSame(in obj.Value, in value.Mutable<int>()));
+    }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.AllFields, typeof(string))]
+    public static void FromStaticField()
+    {
+        var field = typeof(string).GetField(nameof(string.Empty));
+        NotNull(field);
+        Throws<ArgumentException>(() => Variant.FromField("", field));
     }
 }

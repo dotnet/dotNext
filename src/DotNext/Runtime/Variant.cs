@@ -34,9 +34,15 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="typedRef">The typed reference to convert.</param>
     [CLSCompliant(false)]
     public Variant(TypedReference typedRef)
+        : this(typedRef, mutable: true)
+    {
+    }
+
+    internal Variant(TypedReference typedRef, bool mutable)
     {
         TypedReferenceAlias.AssertLayout();
-        targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
+        var underlyingType = TypedReference.GetTargetType(typedRef);
+        targetType = mutable ? underlyingType.MakeByRefType() : underlyingType;
 #pragma warning disable CS8500
         unsafe
         {
