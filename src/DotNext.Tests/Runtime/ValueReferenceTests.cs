@@ -263,6 +263,16 @@ public sealed class ValueReferenceTests : Test
         var reference = ReadOnlyValueReference<int>.FromField(obj, field);
         True(Unsafe.AreSame(in obj.Field, in reference.Value));
     }
+    
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.AllFields, typeof(string))]
+    public static void FromStaticField()
+    {
+        var field = typeof(string).GetField(nameof(string.Empty));
+        NotNull(field);
+        Throws<ArgumentException>(() => ValueReference<string>.FromField("", field));
+        Throws<ArgumentException>(() => ReadOnlyValueReference<string>.FromField("", field));
+    }
 }
 
 file record MyClass : IResettable
