@@ -17,6 +17,7 @@ using Reflection;
 /// This type is a counterpart of <see cref="TypedReference"/>.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"Type = {{{nameof(TargetType)}}}, IsMutable = {{{nameof(IsMutable)}}}")]
 public readonly ref struct Variant : IEquatable<Variant>
 {
     // The lowest bit of the type handle is always zero due to alignment, so it's used as the mutability flag
