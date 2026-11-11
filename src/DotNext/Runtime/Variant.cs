@@ -228,7 +228,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="x">The first container to compare.</param>
     /// <param name="y">The second container to compare.</param>
     /// <returns><see langword="true"/> if both containers reference the same value and type; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(Variant x, Variant y)
+    public static bool operator ==(scoped Variant x, scoped Variant y)
         => x.Equals(y);
 
     /// <summary>
@@ -237,7 +237,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="x">The first container to compare.</param>
     /// <param name="y">The second container to compare.</param>
     /// <returns><see langword="true"/> if both containers reference the different values and types; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(Variant x, Variant y)
+    public static bool operator !=(scoped Variant x, scoped Variant y)
         => !x.Equals(y);
 
     /// <summary>
