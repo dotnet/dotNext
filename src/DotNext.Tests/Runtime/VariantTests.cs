@@ -4,8 +4,6 @@ using DotNext.Reflection;
 
 namespace DotNext.Runtime;
 
-using Reflection;
-
 public sealed class VariantTests : Test
 {
     [Fact]
