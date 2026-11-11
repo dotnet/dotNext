@@ -104,13 +104,19 @@ partial class AdvancedHelpers
         }
 
         /// <summary>
-        /// Gets a value indicating that the value type has overridden <see cref="ValueType.ToString"/> method.
+        /// Gets a value indicating that the call of <see cref="object.ToString"/> method on the value of type <typeparamref name="T"/>
+        /// requires boxing.
         /// </summary>
         /// <remarks>
-        /// <see cref="Enum.ToString()"/> is not considered as overridden method because it causes boxing.
+        /// The method returns <see langword="false"/> only if <typeparamref name="T"/> is a value type that declares its own
+        /// override of <see cref="object.ToString"/> method. Inherited implementations such as <see cref="ValueType.ToString"/>
+        /// or <see cref="Enum.ToString()"/> require boxing. For reference types, the method always returns <see langword="true"/>.
         /// </remarks>
         /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns><see langword="true"/> if <typeparamref name="T"/> has overridden <see cref="ValueType.ToString"/> method.</returns>
+        /// <returns>
+        /// <see langword="true"/> if <typeparamref name="T"/> doesn't override <see cref="object.ToString"/> method or it is a reference type;
+        /// <see langword="false"/> if <typeparamref name="T"/> is a value type with its own override of <see cref="object.ToString"/> method.
+        /// </returns>
         public static bool ToStringRequiresBoxing<T>()
             where T : allows ref struct
         {
