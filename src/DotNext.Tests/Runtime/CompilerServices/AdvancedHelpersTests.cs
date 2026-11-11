@@ -155,7 +155,6 @@ public class AdvancedHelpersTests : Test
         False(RuntimeHelpers.ToStringRequiresBoxing<int?>());
         False(RuntimeHelpers.ToStringRequiresBoxing<Optional<int>>());
         
-        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
         True(RuntimeHelpers.ToStringRequiresBoxing<EnvironmentVariableTarget>());
         True(RuntimeHelpers.ToStringRequiresBoxing<string>());
         True(RuntimeHelpers.ToStringRequiresBoxing<object>());

@@ -171,13 +171,36 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// </summary>
     /// <returns>The underlying value.</returns>
     /// <exception cref="NotSupportedException">The underlying value is by-ref like struct and cannot be boxed.</exception>
-    public object? ToObject() => TargetType switch
+    public object? ToObject()
+        => ToObject(out var result) ? result : throw new NotSupportedException();
+
+    /// <inheritdoc/>
+    public override string? ToString()
     {
-        { IsVoid: true } => null,
-        { IsByRefLike: true } => throw new NotSupportedException(),
-        { IsValueType: true } vt => RuntimeHelpers.Box(ref location, vt.TypeHandle),
-        _ => Unsafe.As<byte, object>(ref location)
-    };
+        ToObject(out var result);
+        return result?.ToString();
+    }
+
+    private bool ToObject(out object? result)
+    {
+        switch (TargetType)
+        {
+            case { IsVoid: true }:
+                result = null;
+                break;
+            case { IsByRefLike: true } bt:
+                result = bt;
+                return false;
+            case { IsValueType: true } vt:
+                result = RuntimeHelpers.Box(ref location, vt.TypeHandle);
+                break;
+            default:
+                result = Unsafe.As<byte, object?>(ref location);
+                break;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Checks whether this container references the same value and type as <paramref name="other"/>.

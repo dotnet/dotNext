@@ -150,4 +150,25 @@ public sealed class VariantTests : Test
         immutable = Variant.Immutable(immutable);
         Equal(typeof(void), immutable.TargetType);
     }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(int?))]
+    public static void VariantToString()
+    {
+        Null(Variant.Empty.ToString());
+        
+        var span = ReadOnlySpan<byte>.Empty;
+        var immutable = Variant.Immutable(in span);
+        Equal(typeof(ReadOnlySpan<byte>).ToString(), immutable.ToString());
+
+        int? nullable = null;
+        immutable = Variant.Immutable(in nullable);
+        Null(immutable.ToString());
+
+        nullable = 42;
+        Equal(nullable.ToString(), immutable.ToString());
+
+        immutable = Variant.Immutable(in string.Empty);
+        Equal(string.Empty, immutable.ToString());
+    }
 }
