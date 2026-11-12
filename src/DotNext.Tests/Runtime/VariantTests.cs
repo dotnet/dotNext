@@ -237,6 +237,43 @@ public sealed class VariantTests : Test
     }
 
     [Fact]
+    public static void VariantSetValue()
+    {
+        var i = 0;
+        True(Variant.Mutable(ref i).TrySetValue(42));
+        Equal(42, i);
+        False(Variant.Mutable(ref i).TrySetValue(null));
+        False(Variant.Mutable(ref i).TrySetValue(42L));
+        False(Variant.Mutable(ref i).TrySetValue(DayOfWeek.Monday));
+        False(Variant.Immutable(in i).TrySetValue(43));
+        Equal(42, i);
+        False(Variant.Empty.TrySetValue(null));
+
+        int? ni = null;
+        True(Variant.Mutable(ref ni).TrySetValue(42));
+        Equal(42, ni);
+        True(Variant.Mutable(ref ni).TrySetValue(null));
+        Null(ni);
+
+        KeyValuePair<string, int>? pair = null;
+        True(Variant.Mutable(ref pair).TrySetValue(new KeyValuePair<string, int>("a", 1)));
+        Equal(new KeyValuePair<string, int>("a", 1), pair);
+
+        var s = "a";
+        True(Variant.Mutable(ref s).TrySetValue("b"));
+        Equal("b", s);
+        False(Variant.Mutable(ref s).TrySetValue(42));
+        True(Variant.Mutable(ref s).TrySetValue(null));
+        Null(s);
+
+        // boxed value is stored as-is
+        object boxed = 42;
+        ValueType vt = 0;
+        True(Variant.Mutable(ref vt).TrySetValue(boxed));
+        Same(boxed, vt);
+    }
+
+    [Fact]
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicFields, typeof(PointerHolder))]
     public static unsafe void PointerField()
     {
@@ -255,6 +292,13 @@ public sealed class VariantTests : Test
 
         Variant.FromField(holder, destination).Clear();
         True(holder.Pointer2 is null);
+
+        True(Variant.FromField(holder, destination).TrySetValue(Variant.FromField(holder, source).ToObject()));
+        True(holder.Pointer2 == &value);
+        True(Variant.FromField(holder, destination).TrySetValue(Pointer.Box(null, typeof(int*))));
+        True(holder.Pointer2 is null);
+        False(Variant.FromField(holder, destination).TrySetValue(null));
+        False(Variant.FromField(holder, destination).TrySetValue((nint)42));
     }
 
     [Fact]
@@ -275,6 +319,12 @@ public sealed class VariantTests : Test
 
         Variant.FromField(holder, destination).Clear();
         True(holder.FunctionPointer2 is null);
+
+        True(Variant.FromField(holder, destination).TrySetValue(Variant.FromField(holder, source).ToObject()));
+        Equal((nint)holder.FunctionPointer1, (nint)holder.FunctionPointer2);
+        True(Variant.FromField(holder, destination).TrySetValue(nint.Zero));
+        True(holder.FunctionPointer2 is null);
+        False(Variant.FromField(holder, destination).TrySetValue(null));
     }
 }
 

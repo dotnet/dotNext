@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime;
 
+using CompilerServices;
 using Reflection;
 
 partial struct Variant
@@ -49,14 +51,14 @@ partial struct Variant
                 {
                     ValueType.Copy(ref destination, ref source, sourceTypeHandle);
                 }
-                else if (!NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
-                {
-                    goto default;
-                }
-                else
+                else if (NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
                 {
                     ValueType.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
                     nullableInfo.HasValue = true;
+                }
+                else
+                {
+                    goto default;
                 }
 
                 return true;
@@ -74,6 +76,96 @@ partial struct Variant
             default:
                 return false;
         }
+    }
+    
+    /// <summary>
+    /// Tries to replace the referenced value.
+    /// </summary>
+    /// <remarks>
+    /// The accepted <paramref name="value"/> depends on <see cref="TargetType"/>:
+    /// <list type="bullet">
+    /// <item>For a value type, the boxed value of exactly the same type.</item>
+    /// <item>For <see cref="Nullable{T}"/>, the boxed value of the underlying type, or <see langword="null"/>.</item>
+    /// <item>For a reference type, any compatible object, or <see langword="null"/>.</item>
+    /// <item>For an unmanaged pointer type, the boxed pointer as <see cref="Pointer"/>.
+    /// The type of the boxed pointer is not checked against <see cref="TargetType"/>.</item>
+    /// <item>For a function pointer type, the boxed <see cref="nint"/>.</item>
+    /// </list>
+    /// Pointers are boxed the same way as <see cref="ToObject"/> does, including zero pointers.
+    /// By-ref-like types are not supported.
+    /// </remarks>
+    /// <param name="value">The value to set.</param>
+    /// <returns>
+    /// <see langword="true"/> if the value is replaced successfully;
+    /// <see langword="false"/> if the current value is immutable or empty, or <paramref name="value"/> is of incompatible type.
+    /// </returns>
+    public bool TrySetValue(object? value)
+    {
+        var destinationTypeHandle = TypeHandle;
+        if (destinationTypeHandle == typeInfo)
+            return false;
+
+        var destinationRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(destinationTypeHandle);
+        switch (Type.GetTypeFromHandle(destinationRuntimeTypeHandle))
+        {
+            case null or { IsByRefLike: true }:
+                goto default;
+            case { IsValueType: true } destinationType:
+                NullableInfo nullableInfo;
+                if (value is not null)
+                {
+                    var sourceType = value.GetType();
+                    if (!destinationType.IsAssignableFrom(sourceType))
+                        goto default;
+
+                    if (sourceType == destinationType)
+                    {
+                        ValueType.Copy(ref location, ref Unsafe.GetRawData(value), destinationRuntimeTypeHandle);
+                    }
+                    else if (NullableInfo.TryCreate(ref location, destinationType, out nullableInfo))
+                    {
+                        ValueType.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(value), sourceType.TypeHandle);
+                        nullableInfo.HasValue = true;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                }
+                else if (NullableInfo.TryCreate(ref location, destinationType, out nullableInfo))
+                {
+                    ValueType.Clear(ref location, destinationRuntimeTypeHandle);
+                }
+                else
+                {
+                    goto default;
+                }
+
+                break;
+            case { IsPointer: true }:
+                if (value is not Pointer)
+                    goto default;
+
+                unsafe
+                {
+                    Unsafe.As<byte, nuint>(ref location) = new(Pointer.Unbox(value));
+                }
+
+                break;
+            case { IsFunctionPointer: true }:
+                if (value is not nint)
+                    goto default;
+
+                Unsafe.As<byte, nint>(ref location) = (nint)value;
+                break;
+            case { } destinationType when value is null || destinationType.IsAssignableFrom(value.GetType()):
+                Unsafe.As<byte, object?>(ref location) = value;
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 
     /// <summary>
