@@ -10,11 +10,8 @@ internal static class Program
 {
     private static IConfig BenchConfig => DefaultConfig.Instance.AddJob(Job.Default.AsDefault()
         .WithArguments([new MsBuildArgument("/p:Optimize=true")])
-        .WithCustomBuildConfiguration("Bench"));
+        .WithCustomBuildConfiguration("Release"));
 
     static void Main(string[] args)
-    {
-        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, BenchConfig);
-        Console.ReadKey();
-    }
+        => BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, BenchConfig);
 }
