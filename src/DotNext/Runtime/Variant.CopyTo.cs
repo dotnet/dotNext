@@ -22,12 +22,25 @@ partial struct Variant
         if (Unsafe.AreSame(in location, in destination.location))
             return sourceTypeHandle == destinationTypeHandle;
 
-        var sourceRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
-        var destinationRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(destinationTypeHandle);
+        RuntimeTypeHandle sourceRuntimeTypeHandle;
+        RuntimeTypeHandle destinationRuntimeTypeHandle;
+        var equalTypes = sourceTypeHandle == destinationTypeHandle;
+        if (equalTypes)
+        {
+            sourceRuntimeTypeHandle
+                = destinationRuntimeTypeHandle
+                    = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
+        }
+        else
+        {
+            sourceRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
+            destinationRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(destinationTypeHandle);
+        }
+
         return destinationTypeHandle != destination.typeInfo
                && Type.GetTypeFromHandle(sourceRuntimeTypeHandle) is { } sourceType
                && Type.GetTypeFromHandle(destinationRuntimeTypeHandle) is { } destinationType
-               && destinationType.IsAssignableFrom(sourceType)
+               && (equalTypes || destinationType.IsAssignableFrom(sourceType))
                && TryCopy(ref location,
                    sourceType,
                    sourceRuntimeTypeHandle,
