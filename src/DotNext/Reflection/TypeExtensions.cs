@@ -1,8 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Reflection;
+
+using Buffers;
 
 /// <summary>
 /// Various extension methods for type reflection.
@@ -227,7 +230,7 @@ public static class TypeExtensions
     /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="type">The type to extend.</param>
-    extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type type)
+    extension(Type type)
     {
         /// <summary>
         /// Gets default value for the specified type.
@@ -237,6 +240,36 @@ public static class TypeExtensions
         /// and default boxed value for value types.
         /// </remarks>
         /// <value>The default value of type <paramref name="type"/>.</value>
-        public object? DefaultValue => type.IsValueType ? RuntimeHelpers.GetUninitializedObject(type) : null;
+        /// <exception cref="NotSupportedException">If the type is <see cref="Type.IsByRefLike"/>.</exception>
+        public object? DefaultValue
+        {
+            get
+            {
+                return type switch
+                {
+                    { IsByRefLike: true } => throw new NotSupportedException(),
+                    { IsValueType: true } => CreateDefaultValueType(type.TypeHandle),
+                    _ => null
+                };
+
+                // relies on localsinit: stackalloc is zeroed
+                static object? CreateDefaultValueType(RuntimeTypeHandle handle)
+                {
+                    const int stackallocThreshold = 1024;
+                    var size = RuntimeHelpers.SizeOf(handle);
+
+                    // fast path
+                    if (size < stackallocThreshold && RuntimeHelpers.TryEnsureSufficientExecutionStack())
+                        return Box(stackalloc byte[size], handle);
+
+                    using var buffer = new SpanOwner<byte>(size, exactSize: true);
+                    buffer.Span.Clear();
+                    return Box(buffer.Span, handle);
+                }
+
+                static object? Box(Span<byte> zeroBytes, RuntimeTypeHandle handle)
+                    => RuntimeHelpers.Box(ref MemoryMarshal.GetReference(zeroBytes), handle);
+            }
+        }
     }
 }
