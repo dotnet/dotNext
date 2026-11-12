@@ -18,7 +18,7 @@ partial struct Variant
     {
         var sourceTypeHandle = TypeHandle;
         var destinationTypeHandle = destination.TypeHandle;
-        
+
         if (Unsafe.AreSame(in location, in destination.location))
             return sourceTypeHandle == destinationTypeHandle;
 
@@ -34,50 +34,50 @@ partial struct Variant
                    ref destination.location,
                    destinationType,
                    destinationRuntimeTypeHandle);
-    }
 
-    private static bool TryCopy(ref byte source, Type sourceType, RuntimeTypeHandle sourceTypeHandle,
-        ref byte destination, Type destinationType, RuntimeTypeHandle destinationTypeHandle)
-    {
-        Debug.Assert(destinationType.IsAssignableFrom(sourceType));
-
-        switch (sourceType.IsValueType, destinationType.IsValueType)
+        static bool TryCopy(ref byte source, Type sourceType, RuntimeTypeHandle sourceTypeHandle,
+            ref byte destination, Type destinationType, RuntimeTypeHandle destinationTypeHandle)
         {
-            case (true, false) when !sourceType.IsByRefLike:
-                Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
-                return true;
-            case (true, true):
-                if (sourceTypeHandle.Value == destinationTypeHandle.Value)
-                {
-                    ValueType.Copy(ref destination, ref source, sourceTypeHandle);
-                }
-                else if (NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
-                {
-                    ValueType.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
-                    nullableInfo.HasValue = true;
-                }
-                else
-                {
-                    goto default;
-                }
+            Debug.Assert(destinationType.IsAssignableFrom(sourceType));
 
-                return true;
-            case (false, false):
-                if (sourceType.IsPointer || sourceType.IsFunctionPointer)
-                {
-                    Unsafe.As<byte, nuint>(ref destination) = Unsafe.As<byte, nuint>(ref source);
-                }
-                else
-                {
-                    Unsafe.As<byte, object?>(ref destination) = Unsafe.As<byte, object?>(ref source);
-                }
+            switch (sourceType.IsValueType, destinationType.IsValueType)
+            {
+                case (true, false) when !sourceType.IsByRefLike:
+                    Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
+                    return true;
+                case (true, true):
+                    if (sourceTypeHandle.Value == destinationTypeHandle.Value)
+                    {
+                        ValueType.Copy(ref destination, ref source, sourceTypeHandle);
+                    }
+                    else if (NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
+                    {
+                        ValueType.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
+                        nullableInfo.HasValue = true;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
 
-                return true;
-            default:
-                return false;
+                    return true;
+                case (false, false):
+                    if (sourceType.IsPointer || sourceType.IsFunctionPointer)
+                    {
+                        Unsafe.As<byte, nuint>(ref destination) = Unsafe.As<byte, nuint>(ref source);
+                    }
+                    else
+                    {
+                        Unsafe.As<byte, object?>(ref destination) = Unsafe.As<byte, object?>(ref source);
+                    }
+
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
-    
+
     /// <summary>
     /// Tries to replace the referenced value.
     /// </summary>
@@ -102,70 +102,81 @@ partial struct Variant
     public bool TrySetValue(object? value)
     {
         var destinationTypeHandle = TypeHandle;
+        RuntimeTypeHandle sourceTypeHandle;
         if (destinationTypeHandle == typeInfo)
-            return false;
-
-        var destinationRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(destinationTypeHandle);
-        switch (Type.GetTypeFromHandle(destinationRuntimeTypeHandle))
         {
-            case null or { IsByRefLike: true }:
-                goto default;
-            case { IsValueType: true } destinationType:
-                NullableInfo nullableInfo;
-                if (value is not null)
-                {
-                    var sourceType = value.GetType();
-                    if (!destinationType.IsAssignableFrom(sourceType))
+            // fast path: immutable reference cannot be modified
+            return false;
+        }
+        else if (value is null || (sourceTypeHandle = value.GetType().TypeHandle).Value != destinationTypeHandle)
+        {
+            // slow path: type mismatch
+            return TrySetValueSlow(value, ref location, RuntimeTypeHandle.FromIntPtr(destinationTypeHandle));
+        }
+        else if (value is ValueType)
+        {
+            // fast path: the boxed value is of the target type exactly
+            ValueType.Copy(ref location, ref Unsafe.GetRawData(value), sourceTypeHandle);
+        }
+        else
+        {
+            // fast path: the value is of the target type exactly
+            Unsafe.As<byte, object?>(ref location) = value;
+        }
+
+        return true;
+
+        static bool TrySetValueSlow(object? source, ref byte destination, RuntimeTypeHandle destinationTypeHandle)
+        {
+            switch (Type.GetTypeFromHandle(destinationTypeHandle))
+            {
+                case null or { IsByRefLike: true }:
+                    goto default;
+                // the exact type is handled by the fast path, so only Nullable<T> remains
+                case { IsValueType: true } destinationType:
+                    if (!NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
                         goto default;
 
-                    if (sourceType == destinationType)
+                    if (source is null)
                     {
-                        ValueType.Copy(ref location, ref Unsafe.GetRawData(value), destinationRuntimeTypeHandle);
+                        ValueType.Clear(ref destination, destinationTypeHandle);
                     }
-                    else if (NullableInfo.TryCreate(ref location, destinationType, out nullableInfo))
+                    else if (source.GetType() == nullableInfo.ValueType)
                     {
-                        ValueType.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(value), sourceType.TypeHandle);
+                        ValueType.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType.TypeHandle);
                         nullableInfo.HasValue = true;
                     }
                     else
                     {
                         goto default;
                     }
-                }
-                else if (NullableInfo.TryCreate(ref location, destinationType, out nullableInfo))
-                {
-                    ValueType.Clear(ref location, destinationRuntimeTypeHandle);
-                }
-                else
-                {
-                    goto default;
-                }
 
-                break;
-            case { IsPointer: true }:
-                if (value is not Pointer)
-                    goto default;
+                    break;
+                case { IsPointer: true }:
+                    if (source is not Pointer)
+                        goto default;
 
-                unsafe
-                {
-                    Unsafe.As<byte, nuint>(ref location) = new(Pointer.Unbox(value));
-                }
+                    unsafe
+                    {
+                        Unsafe.As<byte, nuint>(ref destination) = new(Pointer.Unbox(source));
+                    }
 
-                break;
-            case { IsFunctionPointer: true }:
-                if (value is not nint)
-                    goto default;
+                    break;
+                case { IsFunctionPointer: true }:
+                    if (source is not nint)
+                        goto default;
 
-                Unsafe.As<byte, nint>(ref location) = (nint)value;
-                break;
-            case { } destinationType when value is null || destinationType.IsAssignableFrom(value.GetType()):
-                Unsafe.As<byte, object?>(ref location) = value;
-                break;
-            default:
-                return false;
+                    Unsafe.As<byte, nint>(ref destination) = (nint)source;
+                    break;
+                case { } destinationType when source is null || destinationType.IsAssignableFrom(source.GetType()):
+                    Unsafe.As<byte, object?>(ref destination) = source;
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
         }
-
-        return true;
     }
 
     /// <summary>
