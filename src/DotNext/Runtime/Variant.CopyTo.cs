@@ -91,7 +91,7 @@ partial struct Variant
     /// The type of the boxed pointer is not checked against <see cref="TargetType"/>.</item>
     /// <item>For a function pointer type, the boxed <see cref="nint"/>.</item>
     /// </list>
-    /// Pointers are boxed the same way as <see cref="ToObject"/> does, including zero pointers.
+    /// Pointers are boxed the same way as <see cref="ToObject()"/> does, including zero pointers.
     /// By-ref-like types are not supported.
     /// </remarks>
     /// <param name="value">The value to set.</param>
