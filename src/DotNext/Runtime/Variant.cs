@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -18,7 +19,7 @@ using Reflection;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"Type = {{{nameof(TargetType)}}}, IsMutable = {{{nameof(IsMutable)}}}")]
-public readonly ref struct Variant : IEquatable<Variant>
+public readonly ref partial struct Variant : IEquatable<Variant>
 {
     // The lowest bit of the type handle is always zero due to alignment, so it's used as the mutability flag
     private const nint MutableFlag = 1;
@@ -88,9 +89,14 @@ public readonly ref struct Variant : IEquatable<Variant>
     private static Variant Create<T>(ref readonly T location, bool mutable = false)
         where T : allows ref struct
         => new(ref Unsafe.InToRef<T, byte>(in location), AdvancedHelpers.get_TypeId<T>(), mutable);
+    
+    private static Variant Create(ValueType boxedValue, bool mutable)
+        => new(ref Unsafe.GetRawData(boxedValue),
+            boxedValue.GetType().TypeHandle,
+            mutable);
 
     /// <summary>
-    /// Creates immutable value and stores its type.
+    /// Creates an immutable value and stores its type.
     /// </summary>
     /// <param name="location">The location of the value.</param>
     /// <typeparam name="T">The type of the value.</typeparam>
@@ -129,9 +135,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     {
         ArgumentNullException.ThrowIfNull(boxedValue);
 
-        return new(ref Unsafe.GetRawData(boxedValue),
-            boxedValue.GetType().TypeHandle,
-            mutable: true);
+        return Create(boxedValue, mutable: true);
     }
 
     /// <summary>
@@ -193,6 +197,17 @@ public readonly ref struct Variant : IEquatable<Variant>
                 return false;
             case { IsValueType: true } vt:
                 result = RuntimeHelpers.Box(ref location, vt.TypeHandle);
+                break;
+            case { IsPointer: true } pt:
+                unsafe
+                {
+                    result = Pointer.Box((void*)Unsafe.As<byte, nuint>(ref location), pt);
+                }
+
+                break;
+            case { IsFunctionPointer: true }:
+                // the same as FieldInfo.GetValue for the function pointer field
+                result = Unsafe.As<byte, nint>(ref location);
                 break;
             default:
                 result = Unsafe.As<byte, object?>(ref location);

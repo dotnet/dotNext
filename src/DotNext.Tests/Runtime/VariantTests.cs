@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using DotNext.Reflection;
 
@@ -112,7 +113,7 @@ public sealed class VariantTests : Test
     public static void FromInstanceField()
     {
         var obj = new StrongBox<int> { Value = 42 };
-        var field = obj.GetType().GetField(nameof(StrongBox<>.Value));
+        var field = typeof(StrongBox<int>).GetField(nameof(StrongBox<>.Value));
         NotNull(field);
         var value = Variant.FromField(obj, field);
         True(value.IsMutable);
@@ -168,5 +169,95 @@ public sealed class VariantTests : Test
 
         immutable = Variant.Immutable(in string.Empty);
         Equal(string.Empty, immutable.ToString());
+    }
+
+    [Fact]
+    public static void ClearVariant()
+    {
+        Throws<InvalidOperationException>(static () => Variant.Empty.Clear());
+
+        var i = 42;
+        var v = Variant.Mutable(ref i);
+        v.Clear();
+        Equal(0, i);
+
+        var str = string.Empty;
+        v = Variant.Mutable(ref str);
+        v.Clear();
+        Null(str);
+
+        var nullable = new int?(42);
+        v = Variant.Mutable(ref nullable);
+        v.Clear();
+        Null(nullable);
+    }
+
+    [Fact]
+    public static void VariantCopyTo()
+    {
+        True(Variant.Empty.TryCopyTo(Variant.Empty));
+
+        int sourceInt = 42, destInt = 0;
+        True(Variant.Immutable(in sourceInt).TryCopyTo(Variant.Mutable(ref destInt)));
+        Equal(sourceInt, destInt);
+
+        int? sourceNullable = 42, destNullable = null;
+        True(Variant.Immutable(in sourceNullable).TryCopyTo(Variant.Mutable(ref destNullable)));
+        Equal(sourceNullable, destNullable);
+
+        string sourceObj = string.Empty, destObj = null;
+        True(Variant.Immutable(in sourceObj).TryCopyTo(Variant.Mutable(ref destObj)));
+        Equal(sourceObj, destObj);
+    }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicFields, typeof(PointerHolder))]
+    public static unsafe void PointerField()
+    {
+        var value = 42;
+        var holder = new PointerHolder { Pointer1 = &value, Pointer2 = null };
+        var source = typeof(PointerHolder).GetField(nameof(PointerHolder.Pointer1));
+        var destination = typeof(PointerHolder).GetField(nameof(PointerHolder.Pointer2));
+        NotNull(source);
+        NotNull(destination);
+
+        Equal(typeof(int*), Variant.FromField(holder, source).TargetType);
+        True(Pointer.Unbox(Variant.FromField(holder, source).ToObject()!) == &value);
+
+        True(Variant.FromField(holder, source).TryCopyTo(Variant.FromField(holder, destination)));
+        True(holder.Pointer2 == &value);
+
+        Variant.FromField(holder, destination).Clear();
+        True(holder.Pointer2 is null);
+    }
+
+    [Fact]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicFields, typeof(PointerHolder))]
+    public static unsafe void FunctionPointerField()
+    {
+        var holder = new PointerHolder { FunctionPointer1 = &PointerHolder.Target, FunctionPointer2 = null };
+        var source = typeof(PointerHolder).GetField(nameof(PointerHolder.FunctionPointer1));
+        var destination = typeof(PointerHolder).GetField(nameof(PointerHolder.FunctionPointer2));
+        NotNull(source);
+        NotNull(destination);
+
+        True(Variant.FromField(holder, source).TargetType.IsFunctionPointer);
+        Equal((nint)holder.FunctionPointer1, Variant.FromField(holder, source).ToObject());
+
+        True(Variant.FromField(holder, source).TryCopyTo(Variant.FromField(holder, destination)));
+        Equal((nint)holder.FunctionPointer1, (nint)holder.FunctionPointer2);
+
+        Variant.FromField(holder, destination).Clear();
+        True(holder.FunctionPointer2 is null);
+    }
+}
+
+file sealed unsafe class PointerHolder
+{
+    public int* Pointer1, Pointer2;
+    public delegate*<void> FunctionPointer1, FunctionPointer2;
+
+    public static void Target()
+    {
     }
 }

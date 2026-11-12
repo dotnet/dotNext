@@ -246,7 +246,7 @@ public sealed class ValueReferenceTests : Test
     public static void ReferenceFromField()
     {
         var obj = new MyClass();
-        var field = obj.GetType().GetField(nameof(MyClass.Field));
+        var field = typeof(MyClass).GetField(nameof(MyClass.Field));
         NotNull(field);
         var reference = ValueReference<int>.FromField(obj, field);
         reference.Value = 42;
@@ -258,7 +258,7 @@ public sealed class ValueReferenceTests : Test
     public static void ReadOnlyReferenceFromField()
     {
         var obj = new MyClass { Field = 42 };
-        var field = obj.GetType().GetField(nameof(MyClass.Field));
+        var field = typeof(MyClass).GetField(nameof(MyClass.Field));
         NotNull(field);
         var reference = ReadOnlyValueReference<int>.FromField(obj, field);
         True(Unsafe.AreSame(in obj.Field, in reference.Value));
