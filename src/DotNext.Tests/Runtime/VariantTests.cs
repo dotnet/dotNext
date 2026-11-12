@@ -211,6 +211,32 @@ public sealed class VariantTests : Test
     }
 
     [Fact]
+    public static void VariantCopyToNullable()
+    {
+        int sourceInt = 42;
+        int? destInt = null;
+        True(Variant.Immutable(in sourceInt).TryCopyTo(Variant.Mutable(ref destInt)));
+        Equal(sourceInt, destInt);
+
+        sourceInt = 43;
+        True(Variant.Immutable(in sourceInt).TryCopyTo(Variant.Mutable(ref destInt)));
+        Equal(sourceInt, destInt);
+
+        // contains references, the value is located at non-zero offset
+        var sourcePair = new KeyValuePair<string, int>("a", 1);
+        KeyValuePair<string, int>? destPair = null;
+        True(Variant.Immutable(in sourcePair).TryCopyTo(Variant.Mutable(ref destPair)));
+        Equal(sourcePair, destPair);
+
+        int? sourceNullable = 1;
+        int destPlain = 0;
+        False(Variant.Immutable(in sourceNullable).TryCopyTo(Variant.Mutable(ref destPlain)));
+        Equal(0, destPlain);
+
+        False(Variant.Immutable(in sourceInt).TryCopyTo(Variant.Immutable(in destInt)));
+    }
+
+    [Fact]
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicFields, typeof(PointerHolder))]
     public static unsafe void PointerField()
     {

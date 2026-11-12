@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime;
 
+using Reflection;
+
 partial struct Variant
 {
     /// <summary>
@@ -42,8 +44,21 @@ partial struct Variant
             case (true, false) when !sourceType.IsByRefLike:
                 Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
                 return true;
-            case (true, true) when sourceTypeHandle.Value == destinationTypeHandle.Value:
-                ValueType.Copy(ref destination, ref source, sourceTypeHandle);
+            case (true, true):
+                if (sourceTypeHandle.Value == destinationTypeHandle.Value)
+                {
+                    ValueType.Copy(ref destination, ref source, sourceTypeHandle);
+                }
+                else if (!NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
+                {
+                    goto default;
+                }
+                else
+                {
+                    ValueType.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
+                    nullableInfo.HasValue = true;
+                }
+
                 return true;
             case (false, false):
                 if (sourceType.IsPointer || sourceType.IsFunctionPointer)
