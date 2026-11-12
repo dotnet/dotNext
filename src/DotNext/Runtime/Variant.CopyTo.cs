@@ -43,7 +43,7 @@ partial struct Variant
                 Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
                 return true;
             case (true, true) when sourceTypeHandle.Value == destinationTypeHandle.Value:
-                Buffer.CopyValueType(ref destination, ref source, sourceTypeHandle);
+                ValueType.Copy(ref destination, ref source, sourceTypeHandle);
                 return true;
             case (false, false):
                 if (sourceType.IsPointer || sourceType.IsFunctionPointer)
@@ -78,7 +78,7 @@ partial struct Variant
         switch (Type.GetTypeFromHandle(runtimeHandle))
         {
             case { IsValueType: true }:
-                Buffer.ClearValueType(ref location, runtimeHandle);
+                ValueType.Clear(ref location, runtimeHandle);
                 break;
             case { IsPointer: true } or { IsFunctionPointer: true }:
                 Unsafe.As<byte, nuint>(ref location) = 0U;
@@ -90,11 +90,11 @@ partial struct Variant
     }
 }
 
-file static class BufferExtensions
+file static class ValueTypeExtensions
 {
-    extension(Buffer)
+    extension(ValueType)
     {
-        public static void CopyValueType(ref byte destination, ref byte source, RuntimeTypeHandle handle)
+        public static void Copy(ref byte destination, ref byte source, RuntimeTypeHandle handle)
         {
             var size = RuntimeHelpers.SizeOf(handle);
             if (size % nuint.Size is 0)
@@ -107,7 +107,7 @@ file static class BufferExtensions
             }
         }
 
-        public static void ClearValueType(ref byte location, RuntimeTypeHandle handle)
+        public static void Clear(ref byte location, RuntimeTypeHandle handle)
         {
             var size = RuntimeHelpers.SizeOf(handle);
             if (size % nuint.Size is 0)
