@@ -14,6 +14,7 @@ public sealed class VariantTests : Test
         False(Variant.Empty.IsMutable);
         True(Variant.Empty == default);
         False(Variant.Empty != default);
+        False(Variant.Empty.IsTypeOf<bool>());
         
         Same(typeof(void), Variant.Empty.TargetType);
     }
@@ -25,6 +26,7 @@ public sealed class VariantTests : Test
         var variant = Variant.Mutable(value);
         True(variant.IsMutable);
         Same(typeof(int), variant.TargetType);
+        True(variant.IsTypeOf<int>());
         
         variant.Mutable<int>() = 43;
         Equal(43, value);
@@ -65,7 +67,7 @@ public sealed class VariantTests : Test
     {
         var i = 42;
         var v = Variant.Immutable(in i);
-        v.Immutable<int>();
+        Equal(i, v.Immutable<int>());
 
         var thrown = false;
         try

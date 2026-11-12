@@ -171,6 +171,17 @@ public readonly ref partial struct Variant : IEquatable<Variant>
     }
 
     /// <summary>
+    /// Determines whether the type of the referenced value is exactly <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the <see langword="is"/> operator, this method doesn't take inheritance into account,
+    /// so it returns <see langword="true"/> only if <see cref="Immutable{T}()"/> succeeds.
+    /// </remarks>
+    public bool IsTypeOf<T>()
+        where T : allows ref struct
+        => TypeHandle == AdvancedHelpers.get_TypeId<T>().Value;
+
+    /// <summary>
     /// Tries to extract the underlying value.
     /// </summary>
     /// <returns>The underlying value.</returns>
