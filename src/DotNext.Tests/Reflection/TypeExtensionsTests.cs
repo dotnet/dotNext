@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace DotNext.Reflection;
 
 public sealed class TypeExtensionsTests : Test
@@ -134,10 +136,10 @@ public sealed class TypeExtensionsTests : Test
     }
 
     [Fact]
-    public static void DefaultValues()
+    public static unsafe void DefaultValues()
     {
         Null(typeof(string).DefaultValue);
-        Null(typeof(void*).DefaultValue);
+        True(Pointer.Unbox(IsType<Pointer>(typeof(void*).DefaultValue)) is null);
         Equal(0, typeof(int).DefaultValue);
         Equal((nuint)0, typeof(nuint).DefaultValue);
         Equal(Guid.Empty, typeof(Guid).DefaultValue);

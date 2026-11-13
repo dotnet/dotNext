@@ -236,18 +236,22 @@ public static class TypeExtensions
         /// Gets default value for the specified type.
         /// </summary>
         /// <remarks>
-        /// The method returns <see langword="null"/> for all reference and pointer types
-        /// and default boxed value for value types.
+        /// The method returns <see langword="null"/> for all reference types
+        /// and default boxed value for value types. For function pointer,
+        /// the property returns <see cref="nint.Zero"/>. For regular pointer,
+        /// it returns <see cref="Pointer"/> instance.
         /// </remarks>
         /// <value>The default value of type <paramref name="type"/>.</value>
         /// <exception cref="NotSupportedException">If the type is <see cref="Type.IsByRefLike"/>.</exception>
-        public object? DefaultValue
+        public unsafe object? DefaultValue
         {
             get
             {
                 return type switch
                 {
                     { IsByRefLike: true } => throw new NotSupportedException(),
+                    { IsPointer: true } => Pointer.Box(null, type),
+                    { IsFunctionPointer: true } => nint.Zero,
                     { IsValueType: true } => CreateDefaultValueType(type.TypeHandle),
                     _ => null
                 };
