@@ -138,9 +138,9 @@ partial struct Variant
                     {
                         Buffer.Clear(ref destination, destinationTypeHandle);
                     }
-                    else if (source.GetType() == nullableInfo.ValueType)
+                    else if (nullableInfo.ValueType.Equals(source.GetType().TypeHandle))
                     {
-                        Buffer.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType.TypeHandle);
+                        Buffer.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType);
                         nullableInfo.HasValue = true;
                     }
                     else

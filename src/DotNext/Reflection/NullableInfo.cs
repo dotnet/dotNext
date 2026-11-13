@@ -9,11 +9,11 @@ namespace DotNext.Reflection;
 [StructLayout(LayoutKind.Auto)]
 internal readonly ref struct NullableInfo
 {
-    public readonly Type ValueType;
+    public readonly RuntimeTypeHandle ValueType;
     public readonly ref bool HasValue;
     public readonly ref byte Value;
 
-    private NullableInfo(ref byte location, int valueOffset, Type valueType)
+    private NullableInfo(ref byte location, int valueOffset, RuntimeTypeHandle valueType)
     {
         HasValue = ref Unsafe.As<byte, bool>(ref location);
         Value = ref Unsafe.Add(ref location, valueOffset);
@@ -22,9 +22,9 @@ internal readonly ref struct NullableInfo
     
     public static bool TryCreate(ref byte location, Type type, out NullableInfo info)
     {
-        if (Nullable.GetUnderlyingType(type) is { } valueType)
+        if (Nullable.GetUnderlyingType(type)?.TypeHandle is { } valueType)
         {
-            var offset = RuntimeHelpers.SizeOf(type.TypeHandle) - RuntimeHelpers.SizeOf(valueType.TypeHandle);
+            var offset = RuntimeHelpers.SizeOf(type.TypeHandle) - RuntimeHelpers.SizeOf(valueType);
             info = new(ref location, offset, valueType);
             return true;
         }
