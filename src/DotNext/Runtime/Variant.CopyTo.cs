@@ -46,57 +46,30 @@ partial struct Variant
         static bool TryCopySlow(ref byte source, RuntimeTypeHandle sourceTypeHandle,
             ref byte destination, RuntimeTypeHandle destinationTypeHandle)
         {
-            return Type.GetTypeFromHandle(sourceTypeHandle) is { } sourceType
-                   && Type.GetTypeFromHandle(destinationTypeHandle) is { } destinationType
-                   && destinationType.IsAssignableFrom(sourceType)
-                   && TryCopyCore(ref source,
-                       sourceType,
-                       sourceTypeHandle,
-                       ref destination,
-                       destinationType,
-                       destinationTypeHandle);
-        }
-
-        static bool TryCopyCore(ref byte source, Type sourceType, RuntimeTypeHandle sourceTypeHandle,
-            ref byte destination, Type destinationType, RuntimeTypeHandle destinationTypeHandle)
-        {
-            Debug.Assert(destinationType.IsAssignableFrom(sourceType));
-
-            switch (sourceType.IsValueType, destinationType.IsValueType)
+            if (Type.GetTypeFromHandle(sourceTypeHandle) is { } sourceType
+                && Type.GetTypeFromHandle(destinationTypeHandle) is { } destinationType
+                && destinationType.IsAssignableFrom(sourceType))
             {
-                case (true, false) when !sourceType.IsByRefLike:
-                    Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
-                    return true;
-                case (true, true):
-                    if (sourceTypeHandle.Value == destinationTypeHandle.Value)
-                    {
-                        Buffer.Copy(ref destination, ref source, sourceTypeHandle);
-                    }
-                    else if (NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
-                    {
+                switch (sourceType.IsValueType, destinationType.IsValueType)
+                {
+                    case (true, false) when !sourceType.IsByRefLike:
+                        Unsafe.As<byte, object?>(ref destination) = RuntimeHelpers.Box(ref source, sourceTypeHandle);
+                        return true;
+                    // the equal types are handled by the fast path, so only Nullable<T> remains
+                    case (true, true) when NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo):
                         Buffer.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
                         nullableInfo.HasValue = true;
-                    }
-                    else
-                    {
-                        goto default;
-                    }
+                        return true;
+                    // pointers are not assignable to other types, so they are handled by the fast path
+                    case (false, false):
+                        Debug.Assert(sourceType is { IsPointer: false, IsFunctionPointer: false });
 
-                    return true;
-                case (false, false):
-                    if (sourceType.IsPointer || sourceType.IsFunctionPointer)
-                    {
-                        Unsafe.As<byte, nuint>(ref destination) = Unsafe.As<byte, nuint>(ref source);
-                    }
-                    else
-                    {
                         Unsafe.As<byte, object?>(ref destination) = Unsafe.As<byte, object?>(ref source);
-                    }
-
-                    return true;
-                default:
-                    return false;
+                        return true;
+                }
             }
+
+            return false;
         }
     }
 
