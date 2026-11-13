@@ -38,7 +38,7 @@ public sealed class VariantTests : Test
         Null(Variant.Empty.ToObject());
 
         var i = 42;
-        Equal(42, Variant.Immutable(in i).ToObject());
+        Equal(i, Variant.Immutable(in i).ToObject());
 
         var str = "Hello, world!";
         Same(str, Variant.Immutable(in str).ToObject());
@@ -60,6 +60,8 @@ public sealed class VariantTests : Test
         var y = Variant.Immutable(in i);
         
         True(x == y);
+        False(x != y);
+        True(x.Equals(y));
     }
 
     [Fact]
