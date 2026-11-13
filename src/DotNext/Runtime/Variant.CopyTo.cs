@@ -220,6 +220,12 @@ file static class BufferExtensions
             {
                 Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)size);
             }
+
+            [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "BulkMoveWithWriteBarrier")]
+            static extern void CopyWithGcBarrier(
+                [UnsafeAccessorType("System.Buffer, System.Private.CoreLib")]
+                object? buffer,
+                ref byte destination, ref byte source, nuint byteCount);
         }
 
         public static void Clear(ref byte location, RuntimeTypeHandle handle)
@@ -235,18 +241,12 @@ file static class BufferExtensions
             {
                 Unsafe.InitBlockUnaligned(ref location, 0, (uint)size);
             }
+
+            [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ClearWithReferences")]
+            static extern void ClearWithGcBarrier(
+                [UnsafeAccessorType("System.SpanHelpers, System.Private.CoreLib")]
+                object? helpers,
+                ref nint ip, nuint pointerSizeLength);
         }
     }
-    
-    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "BulkMoveWithWriteBarrier")]
-    private static extern void CopyWithGcBarrier(
-        [UnsafeAccessorType("System.Buffer, System.Private.CoreLib")]
-        object? buffer,
-        ref byte destination, ref byte source, nuint byteCount);
-    
-    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ClearWithReferences")]
-    private static extern void ClearWithGcBarrier(
-        [UnsafeAccessorType("System.SpanHelpers, System.Private.CoreLib")]
-        object? helpers,
-        ref nint ip, nuint pointerSizeLength);
 }
