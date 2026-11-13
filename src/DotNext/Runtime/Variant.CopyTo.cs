@@ -22,33 +22,42 @@ partial struct Variant
         if (Unsafe.AreSame(in location, in destination.location))
             return sourceTypeHandle == destinationTypeHandle;
 
-        RuntimeTypeHandle sourceRuntimeTypeHandle;
-        RuntimeTypeHandle destinationRuntimeTypeHandle;
-        var equalTypes = sourceTypeHandle == destinationTypeHandle;
-        if (equalTypes)
+        if (destinationTypeHandle == destination.typeInfo)
         {
-            sourceRuntimeTypeHandle
-                = destinationRuntimeTypeHandle
-                    = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
-        }
-        else
-        {
-            sourceRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
-            destinationRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(destinationTypeHandle);
+            // fast path: immutable or empty destination cannot be modified
+            return false;
         }
 
-        return destinationTypeHandle != destination.typeInfo
-               && Type.GetTypeFromHandle(sourceRuntimeTypeHandle) is { } sourceType
-               && Type.GetTypeFromHandle(destinationRuntimeTypeHandle) is { } destinationType
-               && (equalTypes || destinationType.IsAssignableFrom(sourceType))
-               && TryCopy(ref location,
-                   sourceType,
-                   sourceRuntimeTypeHandle,
-                   ref destination.location,
-                   destinationType,
-                   destinationRuntimeTypeHandle);
+        var sourceRuntimeTypeHandle = RuntimeTypeHandle.FromIntPtr(sourceTypeHandle);
+        if (sourceTypeHandle != destinationTypeHandle)
+        {
+            // slow path: type conversion
+            return TryCopySlow(ref location,
+                sourceRuntimeTypeHandle,
+                ref destination.location,
+                RuntimeTypeHandle.FromIntPtr(destinationTypeHandle));
+        }
 
-        static bool TryCopy(ref byte source, Type sourceType, RuntimeTypeHandle sourceTypeHandle,
+        // fast path: the types are equal. SizeOf returns the pointer size for reference and pointer types,
+        // so the copy with GC barrier handles all kinds of types
+        Buffer.Copy(ref destination.location, ref location, sourceRuntimeTypeHandle);
+        return true;
+
+        static bool TryCopySlow(ref byte source, RuntimeTypeHandle sourceTypeHandle,
+            ref byte destination, RuntimeTypeHandle destinationTypeHandle)
+        {
+            return Type.GetTypeFromHandle(sourceTypeHandle) is { } sourceType
+                   && Type.GetTypeFromHandle(destinationTypeHandle) is { } destinationType
+                   && destinationType.IsAssignableFrom(sourceType)
+                   && TryCopyCore(ref source,
+                       sourceType,
+                       sourceTypeHandle,
+                       ref destination,
+                       destinationType,
+                       destinationTypeHandle);
+        }
+
+        static bool TryCopyCore(ref byte source, Type sourceType, RuntimeTypeHandle sourceTypeHandle,
             ref byte destination, Type destinationType, RuntimeTypeHandle destinationTypeHandle)
         {
             Debug.Assert(destinationType.IsAssignableFrom(sourceType));
@@ -61,11 +70,11 @@ partial struct Variant
                 case (true, true):
                     if (sourceTypeHandle.Value == destinationTypeHandle.Value)
                     {
-                        ValueType.Copy(ref destination, ref source, sourceTypeHandle);
+                        Buffer.Copy(ref destination, ref source, sourceTypeHandle);
                     }
                     else if (NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo))
                     {
-                        ValueType.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
+                        Buffer.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
                         nullableInfo.HasValue = true;
                     }
                     else
@@ -121,15 +130,17 @@ partial struct Variant
             // fast path: immutable reference cannot be modified
             return false;
         }
-        else if (value is null || (sourceTypeHandle = value.GetType().TypeHandle).Value != destinationTypeHandle)
+        
+        if (value is null || (sourceTypeHandle = value.GetType().TypeHandle).Value != destinationTypeHandle)
         {
             // slow path: type mismatch
             return TrySetValueSlow(value, ref location, RuntimeTypeHandle.FromIntPtr(destinationTypeHandle));
         }
-        else if (value is ValueType)
+        
+        if (value is ValueType)
         {
             // fast path: the boxed value is of the target type exactly
-            ValueType.Copy(ref location, ref Unsafe.GetRawData(value), sourceTypeHandle);
+            Buffer.Copy(ref location, ref Unsafe.GetRawData(value), sourceTypeHandle);
         }
         else
         {
@@ -152,11 +163,11 @@ partial struct Variant
 
                     if (source is null)
                     {
-                        ValueType.Clear(ref destination, destinationTypeHandle);
+                        Buffer.Clear(ref destination, destinationTypeHandle);
                     }
                     else if (source.GetType() == nullableInfo.ValueType)
                     {
-                        ValueType.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType.TypeHandle);
+                        Buffer.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType.TypeHandle);
                         nullableInfo.HasValue = true;
                     }
                     else
@@ -209,7 +220,7 @@ partial struct Variant
         switch (Type.GetTypeFromHandle(runtimeHandle))
         {
             case { IsValueType: true }:
-                ValueType.Clear(ref location, runtimeHandle);
+                Buffer.Clear(ref location, runtimeHandle);
                 break;
             case { IsPointer: true } or { IsFunctionPointer: true }:
                 Unsafe.As<byte, nuint>(ref location) = 0U;
@@ -221,9 +232,9 @@ partial struct Variant
     }
 }
 
-file static class ValueTypeExtensions
+file static class BufferExtensions
 {
-    extension(ValueType)
+    extension(Buffer)
     {
         public static void Copy(ref byte destination, ref byte source, RuntimeTypeHandle handle)
         {
