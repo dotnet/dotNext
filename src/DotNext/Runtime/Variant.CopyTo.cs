@@ -40,7 +40,7 @@ partial struct Variant
 
         // fast path: the types are equal. SizeOf returns the pointer size for reference and pointer types,
         // so the copy with GC barrier handles all kinds of types
-        Buffer.Copy(ref destination.location, ref location, sourceRuntimeTypeHandle);
+        Buffer.Copy(ref destination.location, in location, sourceRuntimeTypeHandle);
         return true;
 
         static bool TryCopySlow(ref byte source, RuntimeTypeHandle sourceTypeHandle,
@@ -57,7 +57,7 @@ partial struct Variant
                         return true;
                     // the equal types are handled by the fast path, so only Nullable<T> remains
                     case (true, true) when NullableInfo.TryCreate(ref destination, destinationType, out var nullableInfo):
-                        Buffer.Copy(ref nullableInfo.Value, ref source, sourceTypeHandle);
+                        Buffer.Copy(ref nullableInfo.Value, in source, sourceTypeHandle);
                         nullableInfo.HasValue = true;
                         return true;
                     // pointers are not assignable to other types, so they are handled by the fast path
@@ -113,7 +113,7 @@ partial struct Variant
         if (value is ValueType)
         {
             // fast path: the boxed value is of the target type exactly
-            Buffer.Copy(ref location, ref Unsafe.GetRawData(value), sourceTypeHandle);
+            Buffer.Copy(ref location, in Unsafe.GetRawData(value), sourceTypeHandle);
         }
         else
         {
@@ -140,7 +140,7 @@ partial struct Variant
                     }
                     else if (nullableInfo.ValueType.Equals(source.GetType().TypeHandle))
                     {
-                        Buffer.Copy(ref nullableInfo.Value, ref Unsafe.GetRawData(source), nullableInfo.ValueType);
+                        Buffer.Copy(ref nullableInfo.Value, in Unsafe.GetRawData(source), nullableInfo.ValueType);
                         nullableInfo.HasValue = true;
                     }
                     else
@@ -209,23 +209,23 @@ file static class BufferExtensions
 {
     extension(Buffer)
     {
-        public static void Copy(ref byte destination, ref byte source, RuntimeTypeHandle handle)
+        public static void Copy(ref byte destination, ref readonly byte source, RuntimeTypeHandle handle)
         {
             var size = RuntimeHelpers.SizeOf(handle);
             if (size % nuint.Size is 0)
             {
-                CopyWithGcBarrier(null, ref destination, ref source, (uint)size);
+                CopyWithGcBarrier(null, ref destination, in source, (uint)size);
             }
             else
             {
-                Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)size);
+                Unsafe.CopyBlockUnaligned(ref destination, in source, (uint)size);
             }
 
             [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "BulkMoveWithWriteBarrier")]
             static extern void CopyWithGcBarrier(
                 [UnsafeAccessorType("System.Buffer, System.Private.CoreLib")]
                 object? buffer,
-                ref byte destination, ref byte source, nuint byteCount);
+                ref byte destination, ref readonly byte source, nuint byteCount);
         }
 
         public static void Clear(ref byte location, RuntimeTypeHandle handle)
