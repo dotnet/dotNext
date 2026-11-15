@@ -73,6 +73,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         try
         {
+            File.SetAttributes(handle, FileAttributes.NotContentIndexed);
             WriteInt64LittleEndian(versionBuffer.Span, configurationVersion);
             await RandomAccess
                 .WriteAsync(handle, [versionBuffer.Memory, configuration], fileOffset: 0L, token)
