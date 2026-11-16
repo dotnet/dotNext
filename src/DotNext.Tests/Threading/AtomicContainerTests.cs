@@ -2,8 +2,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
-
 public sealed class AtomicContainerTests : Test
 {
     [Fact]
@@ -160,15 +158,15 @@ public sealed class AtomicContainerTests : Test
         Equal(20L, atomic.Read<long, YReference>());
     }
 
-    private struct XReference : IFieldReference<Point, long>
+    private struct XReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<Point, long>.GetReference(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetReference(in Point value)
             => ref value.X;
     }
     
-    private struct YReference : IFieldReference<Point, long>
+    private struct YReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<Point, long>.GetReference(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetReference(in Point value)
             => ref value.Y;
     }
 }

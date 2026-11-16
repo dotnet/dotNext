@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Diagnostics;
 using IO.Log;
-using Runtime.CompilerServices;
 using Threading;
 
 partial class WriteAheadLog
@@ -232,9 +231,9 @@ partial class WriteAheadLog
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UnflushedIndexField : IFieldReference<FlushState, long>
+    private readonly struct UnflushedIndexField : Atomic<FlushState>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<FlushState, long>.GetReference(in FlushState value)
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetReference(in FlushState value)
             => ref value.UnflushedIndex;
     }
 }
