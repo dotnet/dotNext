@@ -115,15 +115,24 @@ public sealed class BoxedValue<T> // do not add any interfaces or base types
 
     /// <inheritdoc />
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => data.Equals(obj);
+    {
+        ValueType vt = this;
+        return vt.Equals(obj);
+    }
 
     /// <inheritdoc />
-    [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
     public override int GetHashCode()
-        => data.GetHashCode();
+    {
+        ValueType vt = this;
+        return vt.GetHashCode();
+    }
 
     /// <inheritdoc />
-    public override string? ToString() => data.ToString();
+    public override string? ToString()
+    {
+        ValueType vt = this;
+        return vt.ToString();
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref T UnsafeUnbox(object boxedValue)
