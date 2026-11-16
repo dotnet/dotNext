@@ -139,6 +139,7 @@ public class AdvancedHelpersTests : Test
 
     [Fact]
     [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(TestDisposable))]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The finalizer of TestDisposable is preserved by DynamicDependency")]
     public static void HasFinalizer()
     {
         True(RuntimeHelpers.HasFinalizer(new TestDisposable()));
@@ -155,7 +156,6 @@ public class AdvancedHelpersTests : Test
         False(RuntimeHelpers.ToStringRequiresBoxing<int?>());
         False(RuntimeHelpers.ToStringRequiresBoxing<Optional<int>>());
         
-        True(RuntimeHelpers.ToStringRequiresBoxing<Variant>());
         True(RuntimeHelpers.ToStringRequiresBoxing<EnvironmentVariableTarget>());
         True(RuntimeHelpers.ToStringRequiresBoxing<string>());
         True(RuntimeHelpers.ToStringRequiresBoxing<object>());

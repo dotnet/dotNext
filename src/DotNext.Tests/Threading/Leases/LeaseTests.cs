@@ -76,7 +76,7 @@ public sealed class LeaseTests : Test
         await using var consumer2 = new TestLeaseConsumer(provider);
 
         var acquisition1 = Task.Run(async () => await consumer1.TryAcquireAsync(TestToken), TestToken);
-        var acquisition2 = Task.Run(async () => await consumer1.TryAcquireAsync(TestToken), TestToken);
+        var acquisition2 = Task.Run(async () => await consumer2.TryAcquireAsync(TestToken), TestToken);
 
         var tasks = await Task.WhenAll(acquisition1, acquisition2);
 
@@ -98,7 +98,7 @@ public sealed class LeaseTests : Test
 
         await consumer.Token.WaitAsync();
         await Task.Delay(provider.TimeToLive, TestToken);
-        
+
         False(await consumer.ReleaseAsync(TestToken));
     }
 
@@ -123,7 +123,7 @@ public sealed class LeaseTests : Test
         True(await consumer.TryAcquireAsync(TestToken));
         await consumer.AcquireAsync(pause, Random.Shared, TestToken);
     }
-    
+
     [Fact]
     public static async Task WorkerProtectedWithLease()
     {
@@ -141,7 +141,7 @@ public sealed class LeaseTests : Test
             return 42;
         }
     }
-    
+
     [Fact]
     public static async Task WorkerLeaseExpired()
     {
@@ -225,7 +225,7 @@ public sealed class LeaseTests : Test
             base.Dispose(disposing);
         }
     }
-    
+
     private sealed class TestLeaseConsumer(TestLeaseProvider provider) : LeaseConsumer
     {
         protected override async ValueTask<AcquisitionResult?> TryAcquireCoreAsync(CancellationToken token = default)

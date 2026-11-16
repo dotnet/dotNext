@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using static Reflection.FieldExtensions;
 using static Text.IInterpolatedStringHandler;
 
 /// <summary>
@@ -70,6 +71,39 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     public ValueReference(ref T staticFieldRef)
         : this(Sentinel.Instance, ref staticFieldRef)
     {
+    }
+
+    /// <summary>
+    /// Returns a reference to the field.
+    /// </summary>
+    /// <param name="owner">The object which contains a field.</param>
+    /// <param name="field">The field reference.</param>
+    /// <returns>A reference to the field.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="owner"/> or <paramref name="field"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="field"/> is static or readonly.
+    /// </exception>
+    public static ValueReference<T> FromField(object owner, FieldInfo field)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        ArgumentNullException.ThrowIfNull(field);
+
+        string message;
+        switch (field)
+        {
+            case { IsStatic: true }:
+                message = ExceptionMessages.FieldIsStatic;
+                break;
+            case { IsInitOnly: true }:
+                message = ExceptionMessages.FieldIsReadOnly;
+                break;
+            default:
+                return new(owner, ref field.GetValue<T>(owner));
+        }
+
+        throw new ArgumentException(message, nameof(field));
     }
 
     /// <summary>
@@ -273,7 +307,27 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         : this(Sentinel.Instance, in staticFieldRef)
     {
     }
-    
+
+    /// <summary>
+    /// Returns a reference to the field.
+    /// </summary>
+    /// <param name="owner">The object which contains a field.</param>
+    /// <param name="field">The field reference.</param>
+    /// <returns>A reference to the field.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="owner"/> or <paramref name="field"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException"> <paramref name="field"/> is static.</exception>
+    public static ReadOnlyValueReference<T> FromField(object owner, FieldInfo field)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        ArgumentNullException.ThrowIfNull(field);
+
+        return !field.IsStatic
+            ? new(owner, in field.GetValue<T>(owner))
+            : throw new ArgumentException(ExceptionMessages.FieldIsStatic, nameof(field));
+    }
+
     /// <summary>
     /// Gets a value indicating that is reference is empty.
     /// </summary>

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -17,16 +18,29 @@ using Reflection;
 /// This type is a counterpart of <see cref="TypedReference"/>.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public readonly ref struct Variant : IEquatable<Variant>
+[DebuggerDisplay($"Type = {{{nameof(TargetType)}}}, IsMutable = {{{nameof(IsMutable)}}}")]
+public readonly ref partial struct Variant : IEquatable<Variant>
 {
-    private readonly ref byte location;
-    private readonly Type? targetType;
+    // The lowest bit of the type handle is always zero due to alignment, so it's used as the mutability flag
+    private const nint MutableFlag = 1;
 
-    private Variant(ref byte location, Type type, bool mutable)
+    private readonly ref byte location;
+    private readonly nint typeInfo; // RuntimeTypeHandle.Value | MutableFlag
+
+    private Variant(ref byte location, RuntimeTypeHandle type, bool mutable)
     {
         this.location = ref location;
-        targetType = mutable ? type.MakeByRefType() : type;
+        typeInfo = Encode(type.Value, mutable);
     }
+
+    private static nint Encode(nint typeHandle, bool mutable)
+    {
+        Debug.Assert((typeHandle & MutableFlag) is 0);
+
+        return typeHandle | Unsafe.BitCast<bool, byte>(mutable);
+    }
+
+    private nint TypeHandle => typeInfo & ~MutableFlag;
 
     /// <summary>
     /// Converts <see cref="TypedReference"/> to the variant value.
@@ -34,13 +48,19 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="typedRef">The typed reference to convert.</param>
     [CLSCompliant(false)]
     public Variant(TypedReference typedRef)
+        : this(typedRef, mutable: true)
+    {
+    }
+
+    internal Variant(TypedReference typedRef, bool mutable)
     {
         TypedReferenceAlias.AssertLayout();
-        targetType = TypedReference.GetTargetType(typedRef)?.MakeByRefType();
 #pragma warning disable CS8500
         unsafe
         {
-            location = ref TypedReferenceAlias.Create(&typedRef).Location;
+            ref readonly var alias = ref TypedReferenceAlias.Create(&typedRef);
+            location = ref alias.Location;
+            typeInfo = Encode(alias.TypeHandle, mutable);
         }
 #pragma warning restore CS8500
     }
@@ -59,31 +79,24 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// Gets the type of the value.
     /// </summary>
     public Type TargetType
-    {
-        get
-        {
-            return Infer(targetType);
-            
-            static Type Infer(Type? targetType) => targetType switch
-            {
-                null => typeof(void),
-                { IsByRef: true } => targetType.GetElementType()!,
-                _ => targetType,
-            };
-        }
-    }
+        => Type.GetTypeFromHandle(RuntimeTypeHandle.FromIntPtr(TypeHandle)) ?? typeof(void);
 
     /// <summary>
     /// Gets a value indicating that the underlying value can be mutated.
     /// </summary>
-    public bool IsMutable => targetType is { IsByRef: true };
+    public bool IsMutable => (typeInfo & MutableFlag) is not 0;
 
     private static Variant Create<T>(ref readonly T location, bool mutable = false)
         where T : allows ref struct
-        => new(ref Unsafe.InToRef<T, byte>(in location), typeof(T), mutable);
+        => new(ref Unsafe.InToRef<T, byte>(in location), AdvancedHelpers.get_TypeId<T>(), mutable);
+    
+    private static Variant Create(ValueType boxedValue, bool mutable)
+        => new(ref Unsafe.GetRawData(boxedValue),
+            boxedValue.GetType().TypeHandle,
+            mutable);
 
     /// <summary>
-    /// Creates immutable value and stores its type.
+    /// Creates an immutable value and stores its type.
     /// </summary>
     /// <param name="location">The location of the value.</param>
     /// <typeparam name="T">The type of the value.</typeparam>
@@ -91,6 +104,17 @@ public readonly ref struct Variant : IEquatable<Variant>
     public static Variant Immutable<T>(ref readonly T location)
         where T : allows ref struct
         => Create(in location, mutable: false);
+
+    /// <summary>
+    /// Creates immutable value.
+    /// </summary>
+    /// <param name="value">The location of the value.</param>
+    /// <returns>The untyped immutable value.</returns>
+    public static Variant Immutable(Variant value)
+    {
+        Unsafe.AsRef(in value.typeInfo) = value.TypeHandle;
+        return value;
+    }
 
     /// <summary>
     /// Creates mutable value and stores its type.
@@ -111,7 +135,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     {
         ArgumentNullException.ThrowIfNull(boxedValue);
 
-        return new(ref Unsafe.GetRawData(boxedValue), boxedValue.GetType(), mutable: true);
+        return Create(boxedValue, mutable: true);
     }
 
     /// <summary>
@@ -123,14 +147,10 @@ public readonly ref struct Variant : IEquatable<Variant>
     public ref readonly T Immutable<T>()
         where T : allows ref struct
     {
-        if (!CheckType(TargetType, typeof(T)))
+        if (TypeHandle != AdvancedHelpers.get_TypeId<T>().Value)
             InvalidCastException.Throw();
 
         return ref Unsafe.As<byte, T>(ref location);
-
-        static bool CheckType(Type? expected, Type actual) => expected is { IsByRef: true }
-            ? expected.GetElementType() == actual
-            : expected == actual;
     }
 
     /// <summary>
@@ -143,27 +163,70 @@ public readonly ref struct Variant : IEquatable<Variant>
     public ref T Mutable<T>()
         where T : allows ref struct
     {
-        if (!CheckMutableType(targetType, typeof(T)))
+        // checks both the type and mutability flag
+        if (typeInfo != (AdvancedHelpers.get_TypeId<T>().Value | MutableFlag))
             InvalidCastException.Throw();
 
         return ref Unsafe.As<byte, T>(ref location);
-
-        static bool CheckMutableType(Type? expected, Type actual)
-            => expected is { IsByRef: true } && expected.GetElementType() == actual;
     }
+
+    /// <summary>
+    /// Determines whether the type of the referenced value is exactly <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the <see langword="is"/> operator, this method doesn't take inheritance into account,
+    /// so it returns <see langword="true"/> only if <see cref="Immutable{T}()"/> succeeds.
+    /// </remarks>
+    public bool IsTypeOf<T>()
+        where T : allows ref struct
+        => TypeHandle == AdvancedHelpers.get_TypeId<T>().Value;
 
     /// <summary>
     /// Tries to extract the underlying value.
     /// </summary>
     /// <returns>The underlying value.</returns>
     /// <exception cref="NotSupportedException">The underlying value is by-ref like struct and cannot be boxed.</exception>
-    public object? ToObject() => TargetType switch
+    public object? ToObject()
+        => ToObject(out var result) ? result : throw new NotSupportedException();
+
+    /// <inheritdoc/>
+    public override string? ToString()
     {
-        { IsVoid: true } => null,
-        { IsByRefLike: true } => throw new NotSupportedException(),
-        { IsValueType: true } vt => RuntimeHelpers.Box(ref location, vt.TypeHandle),
-        _ => Unsafe.As<byte, object>(ref location)
-    };
+        ToObject(out var result);
+        return result?.ToString();
+    }
+
+    private bool ToObject(out object? result)
+    {
+        switch (TargetType)
+        {
+            case { IsVoid: true }:
+                result = null;
+                break;
+            case { IsByRefLike: true } bt:
+                result = bt;
+                return false;
+            case { IsValueType: true } vt:
+                result = RuntimeHelpers.Box(ref location, vt.TypeHandle);
+                break;
+            case { IsPointer: true } pt:
+                unsafe
+                {
+                    result = Pointer.Box((void*)Unsafe.As<byte, nuint>(ref location), pt);
+                }
+
+                break;
+            case { IsFunctionPointer: true }:
+                // the same as FieldInfo.GetValue for the function pointer field
+                result = Unsafe.As<byte, nint>(ref location);
+                break;
+            default:
+                result = Unsafe.As<byte, object?>(ref location);
+                break;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Checks whether this container references the same value and type as <paramref name="other"/>.
@@ -171,7 +234,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="other">The value to compare.</param>
     /// <returns><see langword="true"/>, if this container references the same value and type as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public bool Equals(scoped Variant other)
-        => TargetType == other.TargetType && Unsafe.AreSame(in location, in other.location);
+        => TypeHandle == other.TypeHandle && Unsafe.AreSame(in location, in other.location);
     
     /// <inheritdoc/>
     [DoesNotReturn]
@@ -191,7 +254,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="x">The first container to compare.</param>
     /// <param name="y">The second container to compare.</param>
     /// <returns><see langword="true"/> if both containers reference the same value and type; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(Variant x, Variant y)
+    public static bool operator ==(scoped Variant x, scoped Variant y)
         => x.Equals(y);
 
     /// <summary>
@@ -200,7 +263,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="x">The first container to compare.</param>
     /// <param name="y">The second container to compare.</param>
     /// <returns><see langword="true"/> if both containers reference the different values and types; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(Variant x, Variant y)
+    public static bool operator !=(scoped Variant x, scoped Variant y)
         => !x.Equals(y);
 
     /// <summary>

@@ -1,8 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Reflection;
+
+using Buffers;
 
 /// <summary>
 /// Various extension methods for type reflection.
@@ -227,16 +230,50 @@ public static class TypeExtensions
     /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="type">The type to extend.</param>
-    extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type type)
+    extension(Type type)
     {
         /// <summary>
         /// Gets default value for the specified type.
         /// </summary>
         /// <remarks>
-        /// The method returns <see langword="null"/> for all reference and pointer types
-        /// and default boxed value for value types.
+        /// The method returns <see langword="null"/> for all reference types
+        /// and default boxed value for value types. For function pointer,
+        /// the property returns <see cref="nint.Zero"/>. For regular pointer,
+        /// it returns <see cref="Pointer"/> instance.
         /// </remarks>
         /// <value>The default value of type <paramref name="type"/>.</value>
-        public object? DefaultValue => type.IsValueType ? RuntimeHelpers.GetUninitializedObject(type) : null;
+        /// <exception cref="NotSupportedException">If the type is <see cref="Type.IsByRefLike"/>.</exception>
+        public unsafe object? DefaultValue
+        {
+            get
+            {
+                return type switch
+                {
+                    { IsByRefLike: true } => throw new NotSupportedException(),
+                    { IsPointer: true } => Pointer.Box(null, type),
+                    { IsFunctionPointer: true } => nint.Zero,
+                    { IsValueType: true } => CreateDefaultValueType(type.TypeHandle),
+                    _ => null
+                };
+
+                // relies on localsinit: stackalloc is zeroed
+                static object? CreateDefaultValueType(RuntimeTypeHandle handle)
+                {
+                    const int stackallocThreshold = 1024;
+                    var size = RuntimeHelpers.SizeOf(handle);
+
+                    // fast path
+                    if (size < stackallocThreshold && RuntimeHelpers.TryEnsureSufficientExecutionStack())
+                        return Box(stackalloc byte[size], handle);
+
+                    using var buffer = new SpanOwner<byte>(size, exactSize: true);
+                    buffer.Span.Clear();
+                    return Box(buffer.Span, handle);
+                }
+
+                static object? Box(Span<byte> zeroBytes, RuntimeTypeHandle handle)
+                    => RuntimeHelpers.Box(ref MemoryMarshal.GetReference(zeroBytes), handle);
+            }
+        }
     }
 }

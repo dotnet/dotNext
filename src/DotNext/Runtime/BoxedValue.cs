@@ -21,7 +21,7 @@ namespace DotNext.Runtime;
 /// not for <see cref="BoxedValue{T}"/>.
 /// </remarks>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BoxedValue<T> // do not add any interfaces or base types
+public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     private T data;
@@ -105,8 +105,7 @@ public sealed class BoxedValue<T> // do not add any interfaces or base types
     /// Creates a bitwise copy of the boxed value.
     /// </summary>
     /// <returns>A reference to bitwise copy of the boxed value.</returns>
-    public BoxedValue<T> Copy()
-        => Unsafe.As<BoxedValue<T>>(MemberwiseClone());
+    public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(data);
 
     /// <summary>
     /// Unboxes the value.
@@ -115,16 +114,13 @@ public sealed class BoxedValue<T> // do not add any interfaces or base types
     public ref T Value => ref data;
 
     /// <inheritdoc />
-    public override bool Equals([NotNullWhen(true)] object? obj)
-        => data.Equals(obj);
+    public abstract override bool Equals([NotNullWhen(true)] object? obj);
 
     /// <inheritdoc />
-    [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
-    public override int GetHashCode()
-        => data.GetHashCode();
+    public abstract override int GetHashCode();
 
     /// <inheritdoc />
-    public override string? ToString() => data.ToString();
+    public abstract override string? ToString();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref T UnsafeUnbox(object boxedValue)
