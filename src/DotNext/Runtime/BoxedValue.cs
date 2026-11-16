@@ -21,7 +21,7 @@ namespace DotNext.Runtime;
 /// not for <see cref="BoxedValue{T}"/>.
 /// </remarks>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BoxedValue<T> // do not add any interfaces or base types
+public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     private T data;
@@ -114,25 +114,13 @@ public sealed class BoxedValue<T> // do not add any interfaces or base types
     public ref T Value => ref data;
 
     /// <inheritdoc />
-    public override bool Equals([NotNullWhen(true)] object? obj)
-    {
-        ValueType vt = this;
-        return vt.Equals(obj);
-    }
+    public abstract override bool Equals([NotNullWhen(true)] object? obj);
 
     /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        ValueType vt = this;
-        return vt.GetHashCode();
-    }
+    public abstract override int GetHashCode();
 
     /// <inheritdoc />
-    public override string? ToString()
-    {
-        ValueType vt = this;
-        return vt.ToString();
-    }
+    public abstract override string? ToString();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref T UnsafeUnbox(object boxedValue)
