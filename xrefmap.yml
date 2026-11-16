@@ -40104,6 +40104,42 @@ references:
   fullName.vb: DotNext.Reflection.EnumType.GetCustomAttributes(Of TEnum, TAttribute)(TEnum)
   nameWithType: EnumType.GetCustomAttributes<TEnum, TAttribute>(TEnum)
   nameWithType.vb: EnumType.GetCustomAttributes(Of TEnum, TAttribute)(TEnum)
+- uid: DotNext.Reflection.FieldExtensions
+  name: FieldExtensions
+  href: api/DotNext.Reflection.FieldExtensions.html
+  commentId: T:DotNext.Reflection.FieldExtensions
+  fullName: DotNext.Reflection.FieldExtensions
+  nameWithType: FieldExtensions
+- uid: DotNext.Reflection.FieldExtensions.FromField(System.Object,System.Reflection.FieldInfo)
+  name: FromField(object, FieldInfo)
+  href: api/DotNext.Reflection.FieldExtensions.html#DotNext_Reflection_FieldExtensions_FromField_System_Object_System_Reflection_FieldInfo_
+  commentId: M:DotNext.Reflection.FieldExtensions.FromField(System.Object,System.Reflection.FieldInfo)
+  name.vb: FromField(Object, FieldInfo)
+  fullName: DotNext.Reflection.FieldExtensions.FromField(object, System.Reflection.FieldInfo)
+  fullName.vb: DotNext.Reflection.FieldExtensions.FromField(Object, System.Reflection.FieldInfo)
+  nameWithType: FieldExtensions.FromField(object, FieldInfo)
+  nameWithType.vb: FieldExtensions.FromField(Object, FieldInfo)
+- uid: DotNext.Reflection.FieldExtensions.FromField*
+  name: FromField
+  href: api/DotNext.Reflection.FieldExtensions.html#DotNext_Reflection_FieldExtensions_FromField_
+  commentId: Overload:DotNext.Reflection.FieldExtensions.FromField
+  fullName: DotNext.Reflection.FieldExtensions.FromField
+  nameWithType: FieldExtensions.FromField
+- uid: DotNext.Reflection.FieldExtensions.GetValue*
+  name: GetValue
+  href: api/DotNext.Reflection.FieldExtensions.html#DotNext_Reflection_FieldExtensions_GetValue_
+  commentId: Overload:DotNext.Reflection.FieldExtensions.GetValue
+  fullName: DotNext.Reflection.FieldExtensions.GetValue
+  nameWithType: FieldExtensions.GetValue
+- uid: DotNext.Reflection.FieldExtensions.GetValue``1(System.Reflection.FieldInfo,System.Object)
+  name: GetValue<T>(FieldInfo, object)
+  href: api/DotNext.Reflection.FieldExtensions.html#DotNext_Reflection_FieldExtensions_GetValue__1_System_Reflection_FieldInfo_System_Object_
+  commentId: M:DotNext.Reflection.FieldExtensions.GetValue``1(System.Reflection.FieldInfo,System.Object)
+  name.vb: GetValue(Of T)(FieldInfo, Object)
+  fullName: DotNext.Reflection.FieldExtensions.GetValue<T>(System.Reflection.FieldInfo, object)
+  fullName.vb: DotNext.Reflection.FieldExtensions.GetValue(Of T)(System.Reflection.FieldInfo, Object)
+  nameWithType: FieldExtensions.GetValue<T>(FieldInfo, object)
+  nameWithType.vb: FieldExtensions.GetValue(Of T)(FieldInfo, Object)
 - uid: DotNext.Reflection.InlineArrayType
   name: InlineArrayType
   href: api/DotNext.Reflection.InlineArrayType.html
@@ -47546,6 +47582,23 @@ references:
   fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Equals
   nameWithType: ReadOnlyValueReference<T>.Equals
   nameWithType.vb: ReadOnlyValueReference(Of T).Equals
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.FromField(System.Object,System.Reflection.FieldInfo)
+  name: FromField(object, FieldInfo)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_FromField_System_Object_System_Reflection_FieldInfo_
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.FromField(System.Object,System.Reflection.FieldInfo)
+  name.vb: FromField(Object, FieldInfo)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.FromField(object, System.Reflection.FieldInfo)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).FromField(Object, System.Reflection.FieldInfo)
+  nameWithType: ReadOnlyValueReference<T>.FromField(object, FieldInfo)
+  nameWithType.vb: ReadOnlyValueReference(Of T).FromField(Object, FieldInfo)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.FromField*
+  name: FromField
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_FromField_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.FromField
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.FromField
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).FromField
+  nameWithType: ReadOnlyValueReference<T>.FromField
+  nameWithType.vb: ReadOnlyValueReference(Of T).FromField
 - uid: DotNext.Runtime.ReadOnlyValueReference`1.GetHashCode
   name: GetHashCode()
   href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_GetHashCode
@@ -48136,6 +48189,23 @@ references:
   fullName.vb: DotNext.Runtime.ValueReference(Of T).Equals
   nameWithType: ValueReference<T>.Equals
   nameWithType.vb: ValueReference(Of T).Equals
+- uid: DotNext.Runtime.ValueReference`1.FromField(System.Object,System.Reflection.FieldInfo)
+  name: FromField(object, FieldInfo)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_FromField_System_Object_System_Reflection_FieldInfo_
+  commentId: M:DotNext.Runtime.ValueReference`1.FromField(System.Object,System.Reflection.FieldInfo)
+  name.vb: FromField(Object, FieldInfo)
+  fullName: DotNext.Runtime.ValueReference<T>.FromField(object, System.Reflection.FieldInfo)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).FromField(Object, System.Reflection.FieldInfo)
+  nameWithType: ValueReference<T>.FromField(object, FieldInfo)
+  nameWithType.vb: ValueReference(Of T).FromField(Object, FieldInfo)
+- uid: DotNext.Runtime.ValueReference`1.FromField*
+  name: FromField
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_FromField_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.FromField
+  fullName: DotNext.Runtime.ValueReference<T>.FromField
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).FromField
+  nameWithType: ValueReference<T>.FromField
+  nameWithType.vb: ValueReference(Of T).FromField
 - uid: DotNext.Runtime.ValueReference`1.GetHashCode
   name: GetHashCode()
   href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_GetHashCode
@@ -48334,6 +48404,18 @@ references:
   fullName.vb: DotNext.Runtime.Variant.New
   nameWithType: Variant.Variant
   nameWithType.vb: Variant.New
+- uid: DotNext.Runtime.Variant.Clear
+  name: Clear()
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Clear
+  commentId: M:DotNext.Runtime.Variant.Clear
+  fullName: DotNext.Runtime.Variant.Clear()
+  nameWithType: Variant.Clear()
+- uid: DotNext.Runtime.Variant.Clear*
+  name: Clear
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Clear_
+  commentId: Overload:DotNext.Runtime.Variant.Clear
+  fullName: DotNext.Runtime.Variant.Clear
+  nameWithType: Variant.Clear
 - uid: DotNext.Runtime.Variant.Empty
   name: Empty
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Empty
@@ -48361,6 +48443,12 @@ references:
   commentId: Overload:DotNext.Runtime.Variant.Equals
   fullName: DotNext.Runtime.Variant.Equals
   nameWithType: Variant.Equals
+- uid: DotNext.Runtime.Variant.Immutable(DotNext.Runtime.Variant)
+  name: Immutable(Variant)
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Immutable_DotNext_Runtime_Variant_
+  commentId: M:DotNext.Runtime.Variant.Immutable(DotNext.Runtime.Variant)
+  fullName: DotNext.Runtime.Variant.Immutable(DotNext.Runtime.Variant)
+  nameWithType: Variant.Immutable(Variant)
 - uid: DotNext.Runtime.Variant.Immutable*
   name: Immutable
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Immutable_
@@ -48409,6 +48497,21 @@ references:
   commentId: Overload:DotNext.Runtime.Variant.IsMutable
   fullName: DotNext.Runtime.Variant.IsMutable
   nameWithType: Variant.IsMutable
+- uid: DotNext.Runtime.Variant.IsTypeOf*
+  name: IsTypeOf
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_IsTypeOf_
+  commentId: Overload:DotNext.Runtime.Variant.IsTypeOf
+  fullName: DotNext.Runtime.Variant.IsTypeOf
+  nameWithType: Variant.IsTypeOf
+- uid: DotNext.Runtime.Variant.IsTypeOf``1
+  name: IsTypeOf<T>()
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_IsTypeOf__1
+  commentId: M:DotNext.Runtime.Variant.IsTypeOf``1
+  name.vb: IsTypeOf(Of T)()
+  fullName: DotNext.Runtime.Variant.IsTypeOf<T>()
+  fullName.vb: DotNext.Runtime.Variant.IsTypeOf(Of T)()
+  nameWithType: Variant.IsTypeOf<T>()
+  nameWithType.vb: Variant.IsTypeOf(Of T)()
 - uid: DotNext.Runtime.Variant.Mutable(System.ValueType)
   name: Mutable(ValueType)
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Mutable_System_ValueType_
@@ -48463,14 +48566,56 @@ references:
   commentId: Overload:DotNext.Runtime.Variant.ToObject
   fullName: DotNext.Runtime.Variant.ToObject
   nameWithType: Variant.ToObject
+- uid: DotNext.Runtime.Variant.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_ToString
+  commentId: M:DotNext.Runtime.Variant.ToString
+  fullName: DotNext.Runtime.Variant.ToString()
+  nameWithType: Variant.ToString()
+- uid: DotNext.Runtime.Variant.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_ToString_
+  commentId: Overload:DotNext.Runtime.Variant.ToString
+  fullName: DotNext.Runtime.Variant.ToString
+  nameWithType: Variant.ToString
+- uid: DotNext.Runtime.Variant.TryCopyTo(DotNext.Runtime.Variant)
+  name: TryCopyTo(scoped Variant)
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TryCopyTo_DotNext_Runtime_Variant_
+  commentId: M:DotNext.Runtime.Variant.TryCopyTo(DotNext.Runtime.Variant)
+  name.vb: TryCopyTo(Variant)
+  fullName: DotNext.Runtime.Variant.TryCopyTo(scoped DotNext.Runtime.Variant)
+  fullName.vb: DotNext.Runtime.Variant.TryCopyTo(DotNext.Runtime.Variant)
+  nameWithType: Variant.TryCopyTo(scoped Variant)
+  nameWithType.vb: Variant.TryCopyTo(Variant)
+- uid: DotNext.Runtime.Variant.TryCopyTo*
+  name: TryCopyTo
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TryCopyTo_
+  commentId: Overload:DotNext.Runtime.Variant.TryCopyTo
+  fullName: DotNext.Runtime.Variant.TryCopyTo
+  nameWithType: Variant.TryCopyTo
+- uid: DotNext.Runtime.Variant.TrySetValue(System.Object)
+  name: TrySetValue(object?)
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TrySetValue_System_Object_
+  commentId: M:DotNext.Runtime.Variant.TrySetValue(System.Object)
+  name.vb: TrySetValue(Object)
+  fullName: DotNext.Runtime.Variant.TrySetValue(object?)
+  fullName.vb: DotNext.Runtime.Variant.TrySetValue(Object)
+  nameWithType: Variant.TrySetValue(object?)
+  nameWithType.vb: Variant.TrySetValue(Object)
+- uid: DotNext.Runtime.Variant.TrySetValue*
+  name: TrySetValue
+  href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TrySetValue_
+  commentId: Overload:DotNext.Runtime.Variant.TrySetValue
+  fullName: DotNext.Runtime.Variant.TrySetValue
+  nameWithType: Variant.TrySetValue
 - uid: DotNext.Runtime.Variant.op_Equality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)
-  name: operator ==(Variant, Variant)
+  name: operator ==(scoped Variant, scoped Variant)
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_op_Equality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_
   commentId: M:DotNext.Runtime.Variant.op_Equality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)
   name.vb: =(Variant, Variant)
-  fullName: DotNext.Runtime.Variant.operator ==(DotNext.Runtime.Variant, DotNext.Runtime.Variant)
+  fullName: DotNext.Runtime.Variant.operator ==(scoped DotNext.Runtime.Variant, scoped DotNext.Runtime.Variant)
   fullName.vb: DotNext.Runtime.Variant.=(DotNext.Runtime.Variant, DotNext.Runtime.Variant)
-  nameWithType: Variant.operator ==(Variant, Variant)
+  nameWithType: Variant.operator ==(scoped Variant, scoped Variant)
   nameWithType.vb: Variant.=(Variant, Variant)
 - uid: DotNext.Runtime.Variant.op_Equality*
   name: operator ==
@@ -48501,13 +48646,13 @@ references:
   nameWithType: Variant.implicit operator
   nameWithType.vb: Variant.CType
 - uid: DotNext.Runtime.Variant.op_Inequality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)
-  name: operator !=(Variant, Variant)
+  name: operator !=(scoped Variant, scoped Variant)
   href: api/DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_op_Inequality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_
   commentId: M:DotNext.Runtime.Variant.op_Inequality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)
   name.vb: <>(Variant, Variant)
-  fullName: DotNext.Runtime.Variant.operator !=(DotNext.Runtime.Variant, DotNext.Runtime.Variant)
+  fullName: DotNext.Runtime.Variant.operator !=(scoped DotNext.Runtime.Variant, scoped DotNext.Runtime.Variant)
   fullName.vb: DotNext.Runtime.Variant.<>(DotNext.Runtime.Variant, DotNext.Runtime.Variant)
-  nameWithType: Variant.operator !=(Variant, Variant)
+  nameWithType: Variant.operator !=(scoped Variant, scoped Variant)
   nameWithType.vb: Variant.<>(Variant, Variant)
 - uid: DotNext.Runtime.Variant.op_Inequality*
   name: operator !=

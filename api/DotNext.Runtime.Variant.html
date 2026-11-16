@@ -86,9 +86,6 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
@@ -111,7 +108,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant__ctor_" data-uid="DotNext.Runtime.Variant.#ctor*"></a>
   <h4 id="DotNext_Runtime_Variant__ctor_System_TypedReference_" data-uid="DotNext.Runtime.Variant.#ctor(System.TypedReference)">Variant(TypedReference)</h4>
@@ -145,7 +142,7 @@ public Variant(TypedReference typedRef)</code></pre>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Empty_" data-uid="DotNext.Runtime.Variant.Empty*"></a>
   <h4 id="DotNext_Runtime_Variant_Empty" data-uid="DotNext.Runtime.Variant.Empty">Empty</h4>
@@ -173,7 +170,7 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_IsEmpty_" data-uid="DotNext.Runtime.Variant.IsEmpty*"></a>
   <h4 id="DotNext_Runtime_Variant_IsEmpty" data-uid="DotNext.Runtime.Variant.IsEmpty">IsEmpty</h4>
@@ -201,7 +198,7 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_IsMutable_" data-uid="DotNext.Runtime.Variant.IsMutable*"></a>
   <h4 id="DotNext_Runtime_Variant_IsMutable" data-uid="DotNext.Runtime.Variant.IsMutable">IsMutable</h4>
@@ -229,7 +226,7 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_TargetType_" data-uid="DotNext.Runtime.Variant.TargetType*"></a>
   <h4 id="DotNext_Runtime_Variant_TargetType" data-uid="DotNext.Runtime.Variant.TargetType">TargetType</h4>
@@ -259,7 +256,39 @@ public Variant(TypedReference typedRef)</code></pre>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.CopyTo.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_Clear_" data-uid="DotNext.Runtime.Variant.Clear*"></a>
+  <h4 id="DotNext_Runtime_Variant_Clear" data-uid="DotNext.Runtime.Variant.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Resets the referenced value to the default value of type <a class="xref" href="DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TargetType">TargetType</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+  <h5 id="DotNext_Runtime_Variant_Clear_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Reference types are set to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, value types are zeroed.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The current value is immutable or empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Equals_" data-uid="DotNext.Runtime.Variant.Equals*"></a>
   <h4 id="DotNext_Runtime_Variant_Equals_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.Equals(DotNext.Runtime.Variant)">Equals(scoped Variant)</h4>
@@ -306,7 +335,54 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_Immutable_" data-uid="DotNext.Runtime.Variant.Immutable*"></a>
+  <h4 id="DotNext_Runtime_Variant_Immutable_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.Immutable(DotNext.Runtime.Variant)">Immutable(Variant)</h4>
+  <div class="markdown level1 summary"><p>Creates immutable value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Variant Immutable(Variant value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Variant.html">Variant</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The location of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Variant.html">Variant</a></td>
+        <td><p>The untyped immutable value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Immutable_" data-uid="DotNext.Runtime.Variant.Immutable*"></a>
   <h4 id="DotNext_Runtime_Variant_Immutable__1" data-uid="DotNext.Runtime.Variant.Immutable``1">Immutable&lt;T&gt;()</h4>
@@ -367,11 +443,11 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Immutable_" data-uid="DotNext.Runtime.Variant.Immutable*"></a>
   <h4 id="DotNext_Runtime_Variant_Immutable__1___0__" data-uid="DotNext.Runtime.Variant.Immutable``1(``0@)">Immutable&lt;T&gt;(ref readonly T)</h4>
-  <div class="markdown level1 summary"><p>Creates immutable value and stores its type.</p>
+  <div class="markdown level1 summary"><p>Creates an immutable value and stores its type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -430,7 +506,54 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_IsTypeOf_" data-uid="DotNext.Runtime.Variant.IsTypeOf*"></a>
+  <h4 id="DotNext_Runtime_Variant_IsTypeOf__1" data-uid="DotNext.Runtime.Variant.IsTypeOf``1">IsTypeOf&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Determines whether the type of the referenced value is exactly <code class="typeparamref">T</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsTypeOf&lt;T&gt;() where T : allows ref struct</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Variant_IsTypeOf__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Unlike the <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/operators/is">is</a> operator, this method doesn't take inheritance into account,
+so it returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> only if <a class="xref" href="DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_Immutable__1">Immutable&lt;T&gt;()</a> succeeds.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Mutable_" data-uid="DotNext.Runtime.Variant.Mutable*"></a>
   <h4 id="DotNext_Runtime_Variant_Mutable_System_ValueType_" data-uid="DotNext.Runtime.Variant.Mutable(System.ValueType)">Mutable(ValueType)</h4>
@@ -477,7 +600,7 @@ public Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Mutable_" data-uid="DotNext.Runtime.Variant.Mutable*"></a>
   <h4 id="DotNext_Runtime_Variant_Mutable__1" data-uid="DotNext.Runtime.Variant.Mutable``1">Mutable&lt;T&gt;()</h4>
@@ -539,7 +662,7 @@ or it is not mutable.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_Mutable_" data-uid="DotNext.Runtime.Variant.Mutable*"></a>
   <h4 id="DotNext_Runtime_Variant_Mutable__1___0__" data-uid="DotNext.Runtime.Variant.Mutable``1(``0@)">Mutable&lt;T&gt;(ref T)</h4>
@@ -602,7 +725,7 @@ or it is not mutable.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_ToObject_" data-uid="DotNext.Runtime.Variant.ToObject*"></a>
   <h4 id="DotNext_Runtime_Variant_ToObject" data-uid="DotNext.Runtime.Variant.ToObject">ToObject()</h4>
@@ -645,20 +768,151 @@ or it is not mutable.</p>
       </tr>
     </tbody>
   </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_ToString_" data-uid="DotNext.Runtime.Variant.ToString*"></a>
+  <h4 id="DotNext_Runtime_Variant_ToString" data-uid="DotNext.Runtime.Variant.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.CopyTo.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_TryCopyTo_" data-uid="DotNext.Runtime.Variant.TryCopyTo*"></a>
+  <h4 id="DotNext_Runtime_Variant_TryCopyTo_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.TryCopyTo(DotNext.Runtime.Variant)">TryCopyTo(scoped Variant)</h4>
+  <div class="markdown level1 summary"><p>Copies the value from the current location to the destination.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryCopyTo(scoped Variant destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Variant.html">Variant</a></td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if both memory locations of compatible types; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.CopyTo.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Variant_TrySetValue_" data-uid="DotNext.Runtime.Variant.TrySetValue*"></a>
+  <h4 id="DotNext_Runtime_Variant_TrySetValue_System_Object_" data-uid="DotNext.Runtime.Variant.TrySetValue(System.Object)">TrySetValue(object?)</h4>
+  <div class="markdown level1 summary"><p>Tries to replace the referenced value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TrySetValue(object? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to set.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the value is replaced successfully;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the current value is immutable or empty, or <code class="paramref">value</code> is of incompatible type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Variant_TrySetValue_System_Object__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The accepted <code class="paramref">value</code> depends on <a class="xref" href="DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TargetType">TargetType</a>:</p>
+<ul><li>For a value type, the boxed value of exactly the same type.</li><li>For <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a>, the boxed value of the underlying type, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</li><li>For a reference type, any compatible object, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</li><li>For an unmanaged pointer type, the boxed pointer as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.pointer">Pointer</a>.
+The type of the boxed pointer is not checked against <a class="xref" href="DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_TargetType">TargetType</a>.</li><li>For a function pointer type, the boxed <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a>.</li></ul>
+<p>Pointers are boxed the same way as <a class="xref" href="DotNext.Runtime.Variant.html#DotNext_Runtime_Variant_ToObject">ToObject()</a> does, including zero pointers.
+By-ref-like types are not supported.</p>
+</div>
   <h3 id="operators">Operators
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_op_Equality_" data-uid="DotNext.Runtime.Variant.op_Equality*"></a>
-  <h4 id="DotNext_Runtime_Variant_op_Equality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.op_Equality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)">operator ==(Variant, Variant)</h4>
+  <h4 id="DotNext_Runtime_Variant_op_Equality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.op_Equality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)">operator ==(scoped Variant, scoped Variant)</h4>
   <div class="markdown level1 summary"><p>Determines whether the two containers reference the same value and type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(Variant x, Variant y)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator ==(scoped Variant x, scoped Variant y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -702,7 +956,7 @@ or it is not mutable.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_op_Implicit_" data-uid="DotNext.Runtime.Variant.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_Variant_op_Implicit_System_TypedReference__DotNext_Runtime_Variant" data-uid="DotNext.Runtime.Variant.op_Implicit(System.TypedReference)~DotNext.Runtime.Variant">implicit operator Variant(TypedReference)</h4>
@@ -750,16 +1004,16 @@ public static implicit operator Variant(TypedReference typedRef)</code></pre>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_Variant_op_Inequality_" data-uid="DotNext.Runtime.Variant.op_Inequality*"></a>
-  <h4 id="DotNext_Runtime_Variant_op_Inequality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.op_Inequality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)">operator !=(Variant, Variant)</h4>
+  <h4 id="DotNext_Runtime_Variant_op_Inequality_DotNext_Runtime_Variant_DotNext_Runtime_Variant_" data-uid="DotNext.Runtime.Variant.op_Inequality(DotNext.Runtime.Variant,DotNext.Runtime.Variant)">operator !=(scoped Variant, scoped Variant)</h4>
   <div class="markdown level1 summary"><p>Determines whether the two containers reference the different values and types.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(Variant x, Variant y)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool operator !=(scoped Variant x, scoped Variant y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -821,7 +1075,7 @@ public static implicit operator Variant(TypedReference typedRef)</code></pre>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/749bd7cdcc68fdcd24e644afe4615325167c9e3f/src/DotNext/Runtime/Variant.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/aa23621e53ca02da06f50aeb49aca0ceddecbb6d/src/DotNext/Runtime/Variant.CopyTo.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
