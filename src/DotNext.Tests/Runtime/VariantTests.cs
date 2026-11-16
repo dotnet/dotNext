@@ -217,7 +217,7 @@ public sealed class VariantTests : Test
     [Fact]
     public static void VariantCopyToNullable()
     {
-        int sourceInt = 42;
+        var sourceInt = 42;
         int? destInt = null;
         True(Variant.Immutable(in sourceInt).TryCopyTo(Variant.Mutable(ref destInt)));
         Equal(sourceInt, destInt);
