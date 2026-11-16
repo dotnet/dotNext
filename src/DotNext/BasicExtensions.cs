@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Various extension methods for core data types.
 /// </summary>
@@ -160,7 +162,8 @@ public static class BasicExtensions
         /// <param name="obj">The object to test.</param>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExactTypeOf(object? obj) => obj?.GetType() == typeof(T);
+        public static bool IsExactTypeOf(object? obj)
+            => obj is not null && AdvancedHelpers.get_TypeId<T>().Equals(obj.GetType().TypeHandle);
     }
 
     /// <summary>

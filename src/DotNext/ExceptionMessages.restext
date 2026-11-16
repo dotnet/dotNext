@@ -21,3 +21,5 @@ BufferTooSmall=The buffer is too small (or empty)
 EmptyCollection=The collection is empty
 BufferSizeLimitExceeded=The maximum buffer size limit is exceeded
 InvalidLockFilePath=The path to the lock file doesn't contain a directory name
+FieldIsReadOnly=The field is read-only
+FieldIsStatic=The field is static

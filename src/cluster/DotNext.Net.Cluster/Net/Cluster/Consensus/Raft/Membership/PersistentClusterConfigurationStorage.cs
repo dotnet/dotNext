@@ -73,6 +73,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         try
         {
+            File.SetAttributes(handle, FileAttributes.NotContentIndexed);
             WriteInt64LittleEndian(versionBuffer.Span, configurationVersion);
             await RandomAccess
                 .WriteAsync(handle, [versionBuffer.Memory, configuration], fileOffset: 0L, token)
@@ -92,6 +93,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     private async ValueTask<bool> RewriteConfigurationAsync(ReadOnlyMemory<byte> configuration, long configurationVersion,
         CancellationToken token)
     {
+        var tempFile = default(string);
         var versionBuffer = MemoryAllocator.AllocateExactly(sizeof(long));
         try
         {
@@ -108,7 +110,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
                 return false;
 
             // rewrite config
-            var tempFile = Path.Combine(Path.GetDirectoryName(configurationFile.AsSpan()).ToString(),
+            tempFile = Path.Combine(Path.GetDirectoryName(configurationFile.AsSpan()).ToString(),
                 string.Concat(Path.GetRandomFileName(), ".tmp"));
             using (var handle = File.OpenHandle(tempFile,
                        FileMode.CreateNew,
@@ -127,12 +129,29 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
             Move(tempFile, configurationFile);
         }
+        catch (Exception) when (tempFile is not null)
+        {
+            DeleteSilent(tempFile);
+            throw;
+        }
         finally
         {
             versionBuffer.Dispose();
         }
 
         return true;
+
+        static void DeleteSilent(string path)
+        {
+            try
+            {
+                File.Delete(path);
+            }
+            catch
+            {
+                // suppress exception
+            }
+        }
     }
 
     private unsafe void Move(string sourceFileName, string destFileName)
