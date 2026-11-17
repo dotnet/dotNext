@@ -46,6 +46,11 @@ public static class Optional
     private static async Task<T?> Or<T>(Task<Optional<T>> task, T? defaultValue)
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
+    /// <inheritdoc cref="Unwrap{T}(Task{Optional{T}})"/>
+    [Obsolete("Use Unwrap<T>() method instead.")]
+    public static Task<T> Flatten<T>(this Task<Optional<T>> task)
+        => task.Unwrap();
+
     /// <summary>
     /// Returns a task that contains unwrapped value; or exception if <see cref="Optional{T}"/> has no value.
     /// </summary>
@@ -53,7 +58,7 @@ public static class Optional
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The task containing a value of type <typeparamref name="T"/>; or the exception if <see cref="Optional{T}"/> has no value.</returns>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
-    public static async Task<T> Flatten<T>(this Task<Optional<T>> task)
+    public static async Task<T> Unwrap<T>(this Task<Optional<T>> task)
         => (await task.ConfigureAwait(false)).Value;
 
     /// <summary>
@@ -213,13 +218,18 @@ public static class Optional
         where T : class?
         => new(isNull: true);
 
+    /// <inheritdoc cref="Unwrap{T}(in Optional{Optional{T}})"/>
+    [Obsolete("Use Unwrap<T>() method instead.")]
+    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+        => optional.Unwrap();
+
     /// <summary>
     /// Flattens the nested optional value.
     /// </summary>
     /// <typeparam name="T">The type of the underlying value.</typeparam>
     /// <param name="optional">The nested optional value.</param>
     /// <returns>Flattened value.</returns>
-    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+    public static Optional<T> Unwrap<T>(this in Optional<Optional<T>> optional)
         => new(in optional);
 }
 
