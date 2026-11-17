@@ -211,7 +211,7 @@ public static class Optional
     /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
     public static Optional<T> Null<T>()
         where T : class?
-        => new(null);
+        => new(isNull: true);
 
     /// <summary>
     /// Flattens the nested optional value.
