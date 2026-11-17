@@ -265,7 +265,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
     }
 
-    internal Optional(in Optional<Optional<T>> value)
+    internal Optional(ref readonly Optional<Optional<T>> value)
     {
         this.value = value.value.value;
         kind = value.kind;
@@ -354,7 +354,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Boxes value encapsulated by this object.
     /// </summary>
     /// <returns>The boxed value.</returns>
-    public Optional<object> Box() => IsUndefined ? default : new(value);
+    public Optional<object> Box() => IsUndefined ? None : new(value);
 
     /// <summary>
     /// Attempts to extract value from this container if it is present.
