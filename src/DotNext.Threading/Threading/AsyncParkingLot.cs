@@ -220,8 +220,7 @@ public partial class AsyncParkingLot : Disposable
         {
             // the lock is handed off to the signaled waiter, so it remains Locked
             node = queue.TrySignalFirst(position, userData, in measurementTags, out var hasMore, out resumable);
-            var newState = node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked;
-            Volatile.Write(ref Unsafe.As<State, byte>(ref state), (byte)newState);
+            Atomic.Write(ref state, node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked);
         }
 
         if (resumable)
