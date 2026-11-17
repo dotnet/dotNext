@@ -369,20 +369,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
     public bool TryGet([NotNullWhen(true)] out T? value, out bool isNull)
     {
-        value = this.value!;
-        switch (kind)
-        {
-            default:
-                isNull = false;
-                return false;
-            case NullValue:
-                isNull = true;
-                return false;
-            case NotEmptyValue:
-                Debug.Assert(value is not null);
-                isNull = false;
-                return true;
-        }
+        value = this.value;
+        isNull = kind is NullValue;
+        return HasValue;
     }
 
     /// <summary>
