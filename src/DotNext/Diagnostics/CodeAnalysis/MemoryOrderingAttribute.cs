@@ -19,4 +19,7 @@ public sealed class MemoryOrderingAttribute(MemoryOrdering ordering) : Attribute
     /// Gets the memory ordering guarantees provided by the marked method.
     /// </summary>
     public MemoryOrdering Ordering => ordering;
+
+    /// <inheritdoc/>
+    public override bool IsDefaultAttribute() => ordering is MemoryOrdering.Unknown;
 }
