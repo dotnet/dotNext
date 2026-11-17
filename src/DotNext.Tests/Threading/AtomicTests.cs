@@ -79,4 +79,14 @@ public sealed class AtomicTests : Test
         False(Interlocked.IsAtomic<ValueTuple<byte, long>>());
         False(Interlocked.IsAtomic<Guid>());
     }
+
+    [Fact]
+    public static void ReadWriteEnum()
+    {
+        var value = EnvironmentVariableTarget.Machine;
+        Equal(EnvironmentVariableTarget.Machine, Atomic.Read(in value));
+        
+        Atomic.Write(ref value, EnvironmentVariableTarget.Process);
+        Equal(EnvironmentVariableTarget.Process, Atomic.Read(in value));
+    }
 }
