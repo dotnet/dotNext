@@ -20,7 +20,7 @@ public static partial class Atomic
     public static double Read(ref readonly double location)
         => IsAtomic<double>()
             ? Volatile.Read(in location)
-            : Interlocked.Read(in Unsafe.InToRef<double, long>(in location));
+            : BitConverter.Int64BitsToDouble(Interlocked.Read(in Unsafe.InToRef<double, long>(in location)));
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
