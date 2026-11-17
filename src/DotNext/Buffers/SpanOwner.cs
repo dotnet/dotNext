@@ -72,14 +72,21 @@ public ref struct SpanOwner<T> : IDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
     public SpanOwner(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
     {
-        ArgumentNullException.ThrowIfNull(pool);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
-
-        var owner = pool.Rent(minBufferSize);
-        memory = owner.Memory.Span;
-        if (exactSize)
-            memory = memory.Slice(0, minBufferSize);
-        this.owner = owner;
+        if (ReferenceEquals(MemoryPool<T>.Shared, pool))
+        {
+            this = new(minBufferSize, exactSize);
+        }
+        else
+        {
+            ArgumentNullException.ThrowIfNull(pool);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
+            
+            var owner = pool.Rent(minBufferSize);
+            memory = owner.Memory.Span;
+            if (exactSize)
+                memory = memory.Slice(0, minBufferSize);
+            this.owner = owner;
+        }
     }
 
     /// <summary>
@@ -90,6 +97,7 @@ public ref struct SpanOwner<T> : IDisposable
     public SpanOwner(MemoryPool<T> pool)
     {
         ArgumentNullException.ThrowIfNull(pool);
+
         var owner = pool.Rent();
         memory = owner.Memory.Span;
         this.owner = owner;
