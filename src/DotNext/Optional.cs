@@ -84,9 +84,7 @@ public static class Optional
         var optional = await task.ConfigureAwait(false);
         return optional.HasValue
             ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
-            : optional.IsNull && RuntimeHelpers.IsNullable<TOutput>()
-                ? new(default)
-                : Optional<TOutput>.None;
+            : new Optional<TOutput>(optional.IsNull);
     }
 
     /// <summary>
@@ -265,6 +263,12 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         this.value = value.value.value;
         kind = value.kind;
+    }
+
+    internal Optional(bool isNull)
+    {
+        value = default;
+        kind = Unsafe.BitCast<bool, byte>(RuntimeHelpers.IsNullable<T>() & isNull);
     }
 
     private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
@@ -568,7 +572,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && RuntimeHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : new Optional<TResult>(IsNull);
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is

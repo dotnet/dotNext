@@ -22,9 +22,9 @@ public sealed class OptionalConverter<T> : JsonConverter<Optional<T>>
                 break;
             default:
                 var typeInfo = options.GetTypeInfo(typeof(T));
-                if (typeInfo is JsonTypeInfo<T?> typed)
+                if (typeInfo is JsonTypeInfo<T?> knownTypeInfo)
                 {
-                    JsonSerializer.Serialize(writer, value.ValueOrDefault, typed);
+                    JsonSerializer.Serialize(writer, value.ValueOrDefault, knownTypeInfo);
                 }
                 else
                 {
@@ -38,12 +38,12 @@ public sealed class OptionalConverter<T> : JsonConverter<Optional<T>>
     /// <inheritdoc />
     public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        JsonTypeInfo typeInfo;
-        return new(
-            reader.TokenType is JsonTokenType.Null ?
-            default
-            : (typeInfo = options.GetTypeInfo(typeof(T))) is JsonTypeInfo<T?>
-            ? JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<T>)typeInfo)
+        if (reader.TokenType is JsonTokenType.Null)
+            return new(isNull: true);
+
+        var typeInfo = options.GetTypeInfo(typeof(T));
+        return new(typeInfo is JsonTypeInfo<T?> knownTypeInfo
+            ? JsonSerializer.Deserialize(ref reader, knownTypeInfo)
             : (T?)JsonSerializer.Deserialize(ref reader, typeInfo));
     }
 }
