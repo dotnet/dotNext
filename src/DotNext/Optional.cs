@@ -478,7 +478,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, returns the value, otherwise throws an exception.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
-    [DisallowNull]
+    [NotNull]
     public T Value
     {
         get
@@ -493,7 +493,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [UnscopedRef]
-    [DisallowNull]
+    [NotNull]
     [JsonIgnore]
     public ref readonly T ValueRef
     {
