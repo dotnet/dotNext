@@ -56,7 +56,7 @@ public static class BlockingOperations
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct ThreadWrapper(Thread thread) : ISupplier<TimeSpan, bool>
     {
-        bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => @thread.Join(timeout);
+        bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => thread.Join(timeout);
 
         void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
             => throw new NotSupportedException();
