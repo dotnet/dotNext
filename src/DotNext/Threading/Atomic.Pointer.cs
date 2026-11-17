@@ -95,7 +95,7 @@ partial class Atomic
             where T : unmanaged
         {
             Ldarg(nameof(location));
-            Ldarg(nameof(value));
+            Push(value);
             Volatile();
             Stind_I();
         }
