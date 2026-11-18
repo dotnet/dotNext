@@ -17,10 +17,9 @@ public static partial class Atomic
     /// <returns>The value at the specified location.</returns>
     [CLSCompliant(false)]
     [MemoryOrdering(MemoryOrdering.Acquire)]
+    [Obsolete("Use Volatile.Read instead.")]
     public static double Read(ref readonly double location)
-        => IsAtomic<double>()
-            ? Volatile.Read(in location)
-            : BitConverter.Int64BitsToDouble(Interlocked.Read(in Unsafe.InToRef<double, long>(in location)));
+        => Volatile.Read(in location);
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
@@ -32,15 +31,7 @@ public static partial class Atomic
     /// <param name="value">The desired value at the specified location.</param>
     [CLSCompliant(false)]
     [MemoryOrdering(MemoryOrdering.Release)]
+    [Obsolete("Use Volatile.Write instead.")]
     public static void Write(ref double location, double value)
-    {
-        if (IsAtomic<double>())
-        {
-            Volatile.Write(ref location, value);
-        }
-        else
-        {
-            Interlocked.Exchange(ref Unsafe.As<double, long>(ref location), BitConverter.DoubleToInt64Bits(value));
-        }
-    }
+        => Volatile.Write(ref location, value);
 }

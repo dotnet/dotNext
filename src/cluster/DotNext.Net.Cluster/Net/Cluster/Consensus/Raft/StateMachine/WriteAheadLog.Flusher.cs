@@ -188,8 +188,8 @@ partial class WriteAheadLog
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
     {
-        get => Atomic.Read(in field);
-        private set => Atomic.Write(ref field, value);
+        get => Volatile.Read(in field);
+        private set => Volatile.Write(ref field, value);
     }
     
     private long Commit(long index)

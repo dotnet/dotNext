@@ -3,6 +3,7 @@
 public sealed class AtomicTests : Test
 {
     [Fact]
+    [Obsolete]
     public static void AtomicULongTest()
     {
         var i = 80UL;
@@ -13,6 +14,7 @@ public sealed class AtomicTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void AtomicLongTest()
     {
         var i = 80L;
@@ -23,6 +25,7 @@ public sealed class AtomicTests : Test
     }
     
     [Fact]
+    [Obsolete]
     public static void AtomicDoubleTest()
     {
         var i = 80D;

@@ -29,12 +29,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => Atomic.Read(in state.Initial);
+    public long InitialCount => Volatile.Read(in state.Initial);
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => Atomic.Read(in state.Current);
+    public long CurrentCount => Volatile.Read(in state.Current);
 
     /// <summary>
     /// Indicates whether this event is set.

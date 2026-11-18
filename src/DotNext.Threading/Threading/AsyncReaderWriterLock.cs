@@ -750,17 +750,16 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         internal void ExitReadLock() => readLocks--;
 
-        internal readonly long ReadLocks => Atomic.Read(in readLocks);
+        internal readonly long ReadLocks => Volatile.Read(in readLocks);
 
-        internal readonly ulong Version => Atomic.Read(in version);
+        internal readonly ulong Version => Volatile.Read(in version);
 
         internal bool IsValidVersionUnsafe(ulong expected) => version == expected;
 
         internal bool IsValidVersion(ulong expected)
         {
-            var currentVer = version;
             var writeLockAcquired = writeLock;
-            Volatile.ReadBarrier();
+            var currentVer = Version;
             
             return currentVer == expected && !writeLockAcquired;
         }

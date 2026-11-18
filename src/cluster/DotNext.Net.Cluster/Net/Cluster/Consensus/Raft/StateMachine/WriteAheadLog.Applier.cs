@@ -55,7 +55,7 @@ partial class WriteAheadLog
     /// </summary>
     public long LastAppliedIndex
     {
-        get => Atomic.Read(in appliedIndex);
+        get => Volatile.Read(in appliedIndex);
         
         private set
         {
