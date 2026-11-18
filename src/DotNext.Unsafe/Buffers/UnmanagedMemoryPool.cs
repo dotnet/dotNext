@@ -30,7 +30,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         const int defaultBufferSize = 32;
         MaxBufferSize = maxBufferSize;
         this.defaultBufferSize = int.Min(defaultBufferSize, maxBufferSize);
-        allocator = Action<IUnmanagedMemory<T>>.NoOp.Rent<T, DraftAllocator<T>>;
+        allocator = Action<IUnmanagedMemory<T>?>.NoOp.Rent<T, DraftAllocator<T>>;
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
             else
             {
                 syncRoot = null;
-                removeMemory = Action<IUnmanagedMemory<T>>.NoOp;
+                removeMemory = Action<IUnmanagedMemory<T>?>.NoOp;
             }
 
             allocator = allocator.Method.CreateDelegate<Func<int, IUnmanagedMemory<T>>>(removeMemory);
