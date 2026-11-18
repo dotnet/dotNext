@@ -9,7 +9,7 @@ internal struct SeqLock
     private nuint version; // even = stable, odd = write in progress
 
     public readonly bool IsWriteLockHeld
-        => (Volatile.Read(in version) & 1U) is 1U;
+        => nuint.IsOddInteger(Volatile.Read(in version));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public nuint EnterWriteLock()
@@ -33,12 +33,12 @@ internal struct SeqLock
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ExitWriteLock(nuint stamp) => Volatile.Write(ref version, stamp + 2U);
-    
+
     private static bool TryEnterWriteLock(ref nuint version, nuint stamp)
-        => (stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp;
+        => nuint.IsEvenInteger(stamp) && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp;
 
     public readonly bool TryOptimisticRead(out nuint stamp)
-        => ((stamp = Volatile.Read(in version)) & 1U) is 0U;
+        => nuint.IsEvenInteger(stamp = Volatile.Read(in version));
 
     public readonly bool Validate(nuint stamp)
     {
