@@ -191,6 +191,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <summary>
     /// Attempts to acquire write lock without blocking.
     /// </summary>
+    /// <remarks>
+    /// This method doesn't set thread ownership for this lock.
+    /// </remarks>
     /// <param name="stamp">The stamp of the read lock.</param>
     /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
@@ -199,7 +202,6 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         TryAcquire(new ProtectedWriteLockManager(ref state, stamp), out var acquired).Dispose();
-        lockOwnerState?.Value = acquired;
         return acquired;
     }
 
@@ -789,9 +791,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         private readonly ref State state = ref state;
 
-        public bool IsLockAllowed => state.IsWriteLockAllowed(stamp);
+        bool ILockManager.IsLockAllowed => state.IsWriteLockAllowed(stamp);
 
-        public void AcquireLock() => state.AcquireWriteLock();
+        void ILockManager.AcquireLock() => state.AcquireWriteLock();
     }
 
     [StructLayout(LayoutKind.Auto)]
