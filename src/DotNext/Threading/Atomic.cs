@@ -27,7 +27,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     public readonly bool IsWriteLockHeld
     {
         [MemoryOrdering(MemoryOrdering.Acquire)]
-        get => (Volatile.Read(in version) & 1U) is 1U;
+        get => seqLock.IsWriteLockHeld;
     }
     
     /// <summary>
@@ -78,9 +78,9 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Swap(ref Atomic<T> other)
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         other.Swap(ref value);
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -90,9 +90,9 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Swap(ref T other)
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Swap(ref value, ref other);
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -102,9 +102,9 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.Release)]
     public void Write(in T newValue)
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Copy(in newValue, out value);
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -263,10 +263,10 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Exchange(in T update, out T previous)
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Copy(in value, out previous);
         RuntimeHelpers.Copy(in update, out value);
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         try
         {
             // custom updater may throw exception
@@ -289,7 +289,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         }
         finally
         {
-            ExitWriteLock(stamp);
+            seqLock.ExitWriteLock(stamp);
         }
     }
 
@@ -305,7 +305,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     {
         ArgumentNullException.ThrowIfNull(updater);
 
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Copy(in value, out result);
         try
         {
@@ -314,7 +314,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         }
         finally
         {
-            ExitWriteLock(stamp);
+            seqLock.ExitWriteLock(stamp);
         }
     }
 
@@ -334,7 +334,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         try
         {
             // custom accumulator may throw exception
@@ -343,7 +343,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         }
         finally
         {
-            ExitWriteLock(stamp);
+            seqLock.ExitWriteLock(stamp);
         }
     }
 
@@ -363,7 +363,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     {
         ArgumentNullException.ThrowIfNull(accumulator);
 
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Copy(in value, out result);
         try
         {
@@ -372,7 +372,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         }
         finally
         {
-            ExitWriteLock(stamp);
+            seqLock.ExitWriteLock(stamp);
         }
     }
 
@@ -403,10 +403,10 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Clear(out T previousValue)
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         RuntimeHelpers.Copy(in value, out previousValue);
         value = default;
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <summary>
@@ -415,9 +415,9 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public void Clear()
     {
-        var stamp = EnterWriteLock();
+        var stamp = seqLock.EnterWriteLock();
         value = default;
-        ExitWriteLock(stamp);
+        seqLock.ExitWriteLock(stamp);
     }
 
     /// <inheritdoc/>

@@ -27,7 +27,7 @@ partial struct Atomic<T>
         internal WriteLockScope(ref Atomic<T> atomic)
         {
             this.atomic = ref atomic;
-            stamp = atomic.EnterWriteLock();
+            stamp = atomic.seqLock.EnterWriteLock();
         }
 
         /// <summary>
@@ -39,6 +39,6 @@ partial struct Atomic<T>
         /// Releases write lock.
         /// </summary>
         [MemoryOrdering(MemoryOrdering.Release)]
-        public void Dispose() => atomic.ExitWriteLock(stamp);
+        public void Dispose() => atomic.seqLock.ExitWriteLock(stamp);
     }
 }
