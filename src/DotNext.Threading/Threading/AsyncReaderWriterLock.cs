@@ -67,22 +67,18 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <summary>
     /// Gets a value that indicates whether the write lock taken.
     /// </summary>
-    public bool IsWriteLockHeld => state.WriteLock;
+    public bool IsWriteLockHeld => state.IsWriteLockHeld;
 
     /// <summary>
     /// Returns a stamp that can be validated later.
     /// </summary>
-    /// <returns>Optimistic read stamp. May be invalid.</returns>
+    /// <returns>Optimistic read stamp.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public LockStamp TryOptimisticRead()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        // Ordering of version and lock state must be respected:
-        // Write lock acquisition changes the state to Acquired and then increments the version.
-        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positives.
-        var stamp = new LockStamp(in state);
-        return state.WriteLock ? default : stamp;
+        return state.Stamp;
     }
 
     /// <summary>
@@ -90,7 +86,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public bool Validate(in LockStamp stamp) => stamp.IsInitialized && state.IsValidVersion(stamp.Version);
+    public bool Validate(LockStamp stamp) => state.IsValid(stamp);
 
     /// <summary>
     /// Tries to obtain reader lock synchronously without blocking caller thread.
@@ -198,22 +194,12 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <param name="stamp">The stamp of the read lock.</param>
     /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryEnterWriteLock(in LockStamp stamp)
+    public bool TryEnterWriteLock(LockStamp stamp)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        bool acquired;
-        if (stamp.IsInitialized)
-        {
-            TryAcquire(new ProtectedWriteLockManager(ref state, stamp.Version), out acquired).Dispose();
-        }
-        else
-        {
-            acquired = false;
-        }
-
+        TryAcquire(new ProtectedWriteLockManager(ref state, stamp), out var acquired).Dispose();
         lockOwnerState?.Value = acquired;
-
         return acquired;
     }
 
@@ -343,7 +329,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         state.ExitReadLock();
 
         DrainWaitQueue(ref queue);
-        var acquired = state.IsWriteLockAllowed;
+        var acquired = state.IsWriteLockAllowed();
         if (acquired)
         {
             state.AcquireWriteLock();
@@ -557,7 +543,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         var queue = CaptureWaitQueue();
         try
         {
-            if (state.IsWriteLockAllowed)
+            if (state.IsWriteLockAllowed())
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
@@ -591,7 +577,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         var queue = CaptureWaitQueue();
         try
         {
-            if (state.IsWriteLockAllowed)
+            if (state.IsWriteLockAllowed())
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.DowngradeFromWriteLock();
@@ -664,7 +650,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
             var queue = CaptureWaitQueue();
             try
             {
-                if (!state.WriteLock)
+                if (!state.IsWriteLockHeld)
                     return ValueTask.FromException(new SynchronizationLockException(ExceptionMessages.NotInLock));
 
                 if (IsLockHeldByCurrentThread)
@@ -689,7 +675,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         return new(DisposedTask);
     }
 
-    private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
+    private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed() && IsEmptyQueue;
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -714,25 +700,26 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     // describes internal state of reader/writer lock
     [StructLayout(LayoutKind.Auto)]
     [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
-    internal struct State
+    internal struct State()
     {
-        private ulong version;  // version of write lock
+        private ulong version = 2UL; // even = stable, odd = write in progress
 
         // number of acquired read locks
         private long readLocks; // volatile
-        private bool writeLock;
 
-        internal readonly bool WriteLock => Volatile.Read(in writeLock);
+        internal readonly bool IsWriteLockHeld => ulong.IsOddInteger(Version);
 
         internal void DowngradeFromWriteLock()
         {
-            writeLock = false;
+            version++;
+
+            Debug.Assert(ulong.IsEvenInteger(version));
             readLocks = 1L;
         }
 
         internal void ExitLock()
         {
-            if (writeLock)
+            if (ulong.IsOddInteger(version))
             {
                 ExitWriteLock();
             }
@@ -744,7 +731,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         private void ExitWriteLock()
         {
-            writeLock = false;
+            version++;
+
+            Debug.Assert(ulong.IsEvenInteger(version));
             readLocks = 0L;
         }
 
@@ -752,30 +741,32 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         internal readonly long ReadLocks => Volatile.Read(in readLocks);
 
-        internal readonly ulong Version => Volatile.Read(in version);
+        private readonly ulong Version => Volatile.Read(in version);
 
-        internal bool IsValidVersionUnsafe(ulong expected) => version == expected;
+        internal readonly LockStamp Stamp => new(Version & ~1UL);
 
-        internal bool IsValidVersion(ulong expected)
+        internal readonly bool IsValid(LockStamp stamp)
         {
-            var writeLockAcquired = writeLock;
-            var currentVer = Version;
-            
-            return currentVer == expected && !writeLockAcquired;
+            Volatile.ReadBarrier();
+            return stamp.Version == version;
         }
 
-        internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
+        internal readonly bool IsWriteLockAllowed() => IsReadLockAllowed && HasNoReadLocks;
+
+        internal readonly bool IsWriteLockAllowed(LockStamp stamp)
+            => stamp.Version == version && IsWriteLockAllowed();
 
         internal readonly bool HasNoReadLocks => readLocks is 0L;
 
         internal void AcquireWriteLock()
         {
             readLocks = 0L;
-            writeLock = true;
             version++;
+
+            Debug.Assert(ulong.IsOddInteger(version));
         }
 
-        internal readonly bool IsReadLockAllowed => !writeLock;
+        internal readonly bool IsReadLockAllowed => ulong.IsEvenInteger(version);
 
         internal void AcquireReadLock() => readLocks++;
     }
@@ -794,11 +785,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ProtectedWriteLockManager(ref State state, ulong expectedVersion) : ILockManager
+    private readonly ref struct ProtectedWriteLockManager(ref State state, LockStamp stamp) : ILockManager
     {
         private readonly ref State state = ref state;
 
-        public bool IsLockAllowed => state.IsValidVersionUnsafe(expectedVersion) && state.IsWriteLockAllowed;
+        public bool IsLockAllowed => state.IsWriteLockAllowed(stamp);
 
         public void AcquireLock() => state.AcquireWriteLock();
     }
@@ -809,7 +800,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         private readonly ref State state = ref state;
 
         bool ILockManager.IsLockAllowed
-            => state.IsWriteLockAllowed;
+            => state.IsWriteLockAllowed();
 
         void ILockManager.AcquireLock() => state.AcquireWriteLock();
 
