@@ -29,7 +29,7 @@ partial class Atomic
         }
         else
         {
-            Interlocked.Exchange(ref location, value);
+            Interlocked.Exchange(ref Unsafe.As<TEnum, long>(ref location), Unsafe.BitCast<TEnum, long>(value));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -58,7 +58,7 @@ partial class Atomic
     {
         return IsAtomic<TEnum>()
             ? VolatileRead(in location)
-            : Unsafe.BitCast<ulong, TEnum>(Interlocked.Read(in Unsafe.InToRef<TEnum, ulong>(in location)));
+            : Unsafe.BitCast<long, TEnum>(Interlocked.Read(in Unsafe.InToRef<TEnum, long>(in location)));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static TEnum VolatileRead(ref readonly TEnum location)
