@@ -297,6 +297,40 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task ObservationAfterInstantiation()
+    {
+        var ttl = TimeSpan.FromSeconds(1);
+        var abandoned = Guid.NewGuid();
+        using var provider = new TestLeaseProvider(ttl);
+        provider.Storage.State = new()
+        {
+            Identity = new() { Version = 1UL },
+            CreatedAt = DateTimeOffset.UtcNow,
+            OwnerId = abandoned,
+        };
+
+        True(await provider.ObserveAsync(TestToken));
+
+        // the lease is tracked since the observation, not since the first acquisition attempt
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+        False(await provider.ObserveAsync(TestToken));
+
+        var owner = Guid.NewGuid();
+        NotNull(await provider.TryAcquireAsync(owner, TestToken));
+        True(await provider.ObserveAsync(TestToken));
+
+        NotNull(await provider.ReleaseAsync(owner, TestToken));
+        False(await provider.ObserveAsync(TestToken));
+    }
+
+    [Fact]
+    public static async Task ObserveEmptyStorage()
+    {
+        using var provider = new TestLeaseProvider(DefaultTimeout);
+        False(await provider.ObserveAsync(TestToken));
+    }
+
+    [Fact]
     public static async Task ClockSkewBetweenProviders()
     {
         var ttl = TimeSpan.FromSeconds(2);

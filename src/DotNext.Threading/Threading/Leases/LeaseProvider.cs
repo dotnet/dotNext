@@ -16,7 +16,8 @@ using Diagnostics;
 /// Each instance tracks the lease expiration using its own monotonic clock, starting from the moment it observes
 /// a particular version of the lease. Thus, the wall clocks of the instances sharing the same storage don't need
 /// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="TimeToLive"/>
-/// before taking over the lease that was not released explicitly.
+/// before taking over the lease that was not released explicitly. Call <see cref="ObserveAsync(CancellationToken)"/>
+/// immediately after the instantiation to start tracking the expiration as early as possible.
 /// </para>
 /// <para>
 /// The lease is held on behalf of the owner identified by <see cref="Guid"/>. The owner must be unique
@@ -487,6 +488,43 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<LeaseIdentity> UnsafeReleaseAsync(CancellationToken token = default)
         => UnsafeReleaseAsync(NoOpUpdater.Instance, token);
+
+    /// <summary>
+    /// Starts tracking the expiration of the lease.
+    /// </summary>
+    /// <remarks>
+    /// The expiration of the lease is tracked from the moment when this instance observes the particular version
+    /// of the lease for the first time. This method can be called immediately after the instantiation of the provider
+    /// to reduce the time needed to take over the lease that was not released explicitly.
+    /// </remarks>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>
+    /// <see langword="true"/> if the lease is alive from the perspective of this instance;
+    /// <see langword="false"/> if it's expired, released, or never acquired.
+    /// The first observation of the lease that was not released explicitly always returns <see langword="true"/>.
+    /// </returns>
+    /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async ValueTask<bool> ObserveAsync(CancellationToken token = default)
+    {
+        var cts = cancellationTokens.Combine(token, LifetimeToken);
+        try
+        {
+            return !IsExpired(await GetStateAsync(cts.Token).ConfigureAwait(false), out _);
+        }
+        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        {
+            throw CreateException();
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
+        finally
+        {
+            await cts.DisposeAsync().ConfigureAwait(false);
+        }
+    }
 
     /// <summary>
     /// Loads the state of a lease from the underlying storage.
