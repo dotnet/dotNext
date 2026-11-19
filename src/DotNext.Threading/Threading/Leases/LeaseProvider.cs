@@ -78,7 +78,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-            if (!condition.Invoke(in state, IsExpired(in state, out _)))
+            if (!condition.Invoke(in state, GetRemainingTime(in state) <= TimeSpan.Zero))
                 return null;
 
             var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
@@ -164,7 +164,8 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-                if (IsExpired(in state, out var remainingTime) || state.IsOwnedBy(owner))
+                var remainingTime = GetRemainingTime(in state);
+                if (remainingTime <= TimeSpan.Zero || state.IsOwnedBy(owner))
                 {
                     var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
 
@@ -510,7 +511,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
-            return !IsExpired(await GetStateAsync(cts.Token).ConfigureAwait(false), out _);
+            return GetRemainingTime(await GetStateAsync(cts.Token).ConfigureAwait(false)) > TimeSpan.Zero;
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
@@ -613,29 +614,32 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             => owner != Guid.Empty && OwnerId == owner && !IsReleased;
     }
 
-    private bool IsExpired(in State state, out TimeSpan remaining)
+    private TimeSpan GetRemainingTime(in State state)
     {
+        TimeSpan remainingTime;
         if (state.IsReleased)
         {
-            remaining = TimeSpan.Zero;
-            return true;
+            remainingTime = TimeSpan.Zero;
         }
-
-        var observationCopy = observation.Value;
-        if (observationCopy.Identity != state.Identity)
+        else
         {
-            // Don't overwrite a concurrent observation. If it's of the same version, reuse it: the timestamp
-            // of any observation never precedes the write of the observed version. Otherwise, use the local one.
-            var newObservation = new Observation(state.Identity, provider);
-            if (observation.CompareExchange(in newObservation, in observationCopy, out observationCopy)
-                || observationCopy.Identity != state.Identity)
+            var observationCopy = observation.Value;
+            if (observationCopy.Identity != state.Identity)
             {
-                observationCopy = newObservation;
+                // Don't overwrite a concurrent observation. If it's of the same version, reuse it: the timestamp
+                // of any observation never precedes the write of the observed version. Otherwise, use the local one.
+                var newObservation = new Observation(state.Identity, provider);
+                if (observation.CompareExchange(in newObservation, in observationCopy, out observationCopy)
+                    || observationCopy.Identity != state.Identity)
+                {
+                    observationCopy = newObservation;
+                }
             }
+
+            remainingTime = TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
         }
 
-        remaining = TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
-        return remaining <= TimeSpan.Zero;
+        return remainingTime;
     }
 
     /// <summary>
