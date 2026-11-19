@@ -40,6 +40,7 @@ metadata:
 - Consider `AsyncStateTracker` (`DotNext.Threading`) to track object changes asynchronously. It can be used to implement `System.Collections.Generic.IAsyncEnumerable<T>` interface to supply changed versions of the object. The producer calls `TryAdvance()` on each change and `TryComplete()` at the end. The consumer takes `CurrentState` and awaits `WaitNextAsync(state, token)`. That returns **false** once the tracker is completed. After it returns **true**, read the resource and take `CurrentState` again.
 - Consider `LeaseConsumer` and `LeaseProvider<TMetadata>` (`DotNext.Threading.Leases`) abstract types for client-side and server-side distributed leases accordingly
   - `LeaseProvider<TMetadata>` needs `GetStateAsync` and `TryUpdateStateAsync` implemented over the shared storage (DB, blob, etc.).
+  - `LeaseProvider<TMetadata>` instances don't need synchronized wall clocks: each one measures expiration locally from when it first observes a lease version. A new instance waits a full TTL before taking over a lease that wasn't released, so release leases explicitly on graceful shutdown.
   - `LeaseConsumer` needs `TryAcquireCoreAsync`, `TryRenewCoreAsync` and `ReleaseCoreAsync`, usually as calls to the provider.
 - Object pooling can be organized with `DotNext.Collections.Concurrent.BoundedObjectPool<T>` instead of a custom pool implementation
   - `TryGet()` returns null when the pool is empty, so the caller creates the object itself.

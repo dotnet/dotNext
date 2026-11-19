@@ -195,15 +195,69 @@ public sealed class LeaseTests : Test
     public static async Task AcquireWithCreationTimeInFuture()
     {
         using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
-        provider.CurrentState = new()
+        provider.Storage.State = new()
         {
             Identity = new() { Version = 1UL },
             CreatedAt = DateTimeOffset.UtcNow + TimeSpan.FromHours(1), // clock skew
         };
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(TestToken);
-        cts.CancelAfter(TimeSpan.FromMilliseconds(500));
-        await ThrowsAnyAsync<OperationCanceledException>(provider.AcquireAsync(cts.Token).AsTask);
+        // the expiration doesn't depend on the wall clock
+        await provider.AcquireAsync(TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
+    }
+
+    [Fact]
+    public static async Task NewProviderWaitsForUnreleasedLease()
+    {
+        var ttl = TimeSpan.FromSeconds(1);
+        using var provider = new TestLeaseProvider(ttl);
+        provider.Storage.State = new()
+        {
+            Identity = new() { Version = 1UL },
+            CreatedAt = DateTimeOffset.UtcNow - TimeSpan.FromHours(1), // expired according to the wall clock
+        };
+
+        Null(await provider.TryAcquireAsync(TestToken));
+
+        await Task.Delay(ttl, TestToken);
+        NotNull(await provider.TryAcquireAsync(TestToken));
+    }
+
+    [Fact]
+    public static async Task ClockSkewBetweenProviders()
+    {
+        var ttl = TimeSpan.FromSeconds(2);
+        using var provider1 = new TestLeaseProvider(ttl);
+        using var provider2 = new TestLeaseProvider(ttl, provider1.Storage, new SkewedTimeProvider(TimeSpan.FromHours(1)));
+
+        var result = NotNull(await provider1.TryAcquireAsync(TestToken));
+
+        // the wall clock of the second provider is ahead, but the lease is still owned
+        Null(await provider2.TryAcquireAsync(TestToken));
+        Null(await provider2.TryAcquireAsync(TestToken));
+
+        // renewal resets the observation of the second provider
+        await Task.Delay(ttl / 2, TestToken);
+        result = NotNull(await provider1.TryRenewAsync(result.State.Identity, reacquire: false, TestToken));
+        await Task.Delay(ttl / 2 + TimeSpan.FromMilliseconds(200), TestToken);
+        Null(await provider2.TryAcquireAsync(TestToken));
+
+        // released lease can be acquired immediately
+        NotNull(await provider1.ReleaseAsync(result.State.Identity, TestToken));
+        NotNull(await provider2.TryAcquireAsync(TestToken));
+    }
+
+    [Fact]
+    public static async Task ProviderTakesOverAbandonedLease()
+    {
+        var ttl = TimeSpan.FromMilliseconds(500);
+        using var provider1 = new TestLeaseProvider(ttl);
+        using var provider2 = new TestLeaseProvider(ttl, provider1.Storage);
+
+        NotNull(await provider1.TryAcquireAsync(TestToken));
+        Null(await provider2.TryAcquireAsync(TestToken));
+
+        await provider2.AcquireAsync(TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
+        Null(await provider1.TryAcquireAsync(TestToken));
     }
 
     [Fact]
@@ -257,58 +311,66 @@ public sealed class LeaseTests : Test
         True(consumer.Token.IsCancellationRequested);
     }
 
-    private sealed class TestLeaseProvider(TimeSpan ttl) : LeaseProvider<int>(ttl)
+    private sealed class SkewedTimeProvider(TimeSpan offset) : TimeProvider
     {
-        private readonly AsyncReaderWriterLock syncRoot = new();
-        private State currentState;
+        public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + offset;
+    }
+
+    private sealed class LeaseStorage
+    {
+        private readonly System.Threading.Lock syncRoot = new();
+        private LeaseProvider<int>.State state;
+
+        internal LeaseProvider<int>.State State
+        {
+            get
+            {
+                lock (syncRoot)
+                {
+                    return state;
+                }
+            }
+
+            set
+            {
+                lock (syncRoot)
+                {
+                    state = value;
+                }
+            }
+        }
+
+        internal bool TryUpdate(in LeaseProvider<int>.State newState)
+        {
+            lock (syncRoot)
+            {
+                if (state.Identity << newState.Identity)
+                {
+                    state = newState;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    private sealed class TestLeaseProvider(TimeSpan ttl, LeaseStorage storage = null, TimeProvider provider = null) : LeaseProvider<int>(ttl, provider)
+    {
+        internal LeaseStorage Storage { get; } = storage ?? new();
 
         internal CancellationToken Token => LifetimeToken;
 
-        internal State CurrentState
-        {
-            set => currentState = value;
-        }
-
         protected override async ValueTask<State> GetStateAsync(CancellationToken token)
         {
-            await syncRoot.EnterReadLockAsync(token).ConfigureAwait(false);
-            try
-            {
-                return currentState;
-            }
-            finally
-            {
-                syncRoot.Release();
-            }
+            await Task.Yield();
+            return Storage.State;
         }
 
         protected override async ValueTask<bool> TryUpdateStateAsync(State state, CancellationToken token)
         {
-            bool result;
-            await syncRoot.EnterWriteLockAsync(token).ConfigureAwait(false);
-            try
-            {
-                if (result = currentState.Identity << state.Identity)
-                {
-                    currentState = state;
-                }
-            }
-            finally
-            {
-                syncRoot.Release();
-            }
-
-            return result;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                syncRoot.Dispose();
-            }
-
-            base.Dispose(disposing);
+            await Task.Yield();
+            return Storage.TryUpdate(in state);
         }
     }
 

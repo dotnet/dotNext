@@ -12,6 +12,12 @@ using Diagnostics;
 /// </summary>
 /// <remarks>
 /// An instance of this type must support concurrent calls.
+/// <para>
+/// Each instance tracks the lease expiration using its own monotonic clock, starting from the moment it observes
+/// a particular version of the lease. Thus, the wall clocks of the instances sharing the same storage don't need
+/// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="TimeToLive"/>
+/// before taking over the lease that was not released explicitly.
+/// </para>
 /// </remarks>
 /// <typeparam name="TMetadata">The type of metadata associated with a lease.</typeparam>
 /// <seealso cref="LeaseConsumer"/>
@@ -22,6 +28,9 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed using DestroyLease() method")]
     private volatile CancellationTokenSource? lifetimeTokenSource;
+
+    // the last observed version of the lease and the local time of its first observation
+    private Atomic<Observation> observation;
 
     /// <summary>
     /// Initializes a new instance of lease provider.
@@ -63,7 +72,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-            if (!condition.Invoke(in state, provider, TimeToLive, out var remainingTime))
+            if (!condition.Invoke(in state, IsExpired(in state, out _)))
                 return null;
 
             var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
@@ -80,7 +89,8 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                 return null;
 
-            remainingTime = TimeToLive - ts.GetElapsedTime(provider);
+            observation.Value = new(state.Identity, ts);
+            var remainingTime = TimeToLive - ts.GetElapsedTime(provider);
             return remainingTime > TimeSpan.Zero
                 ? new AcquisitionResult(in state, remainingTime, provider)
                 : null;
@@ -133,7 +143,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-                if (state.IsExpired(provider, TimeToLive, out var remainingTime))
+                if (IsExpired(in state, out var remainingTime))
                 {
                     var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
 
@@ -149,6 +159,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                         continue;
 
+                    observation.Value = new(state.Identity, ts);
                     remainingTime = TimeToLive - ts.GetElapsedTime(provider);
 
                     if (remainingTime <= TimeSpan.Zero)
@@ -157,8 +168,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     return new AcquisitionResult(in state, remainingTime, provider);
                 }
 
-                // remaining time can be greater than TTL if CreatedAt is in the future due to the clock skew
-                await Task.Delay(remainingTime < TimeToLive ? remainingTime : TimeToLive, provider, cts.Token).ConfigureAwait(false);
+                await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
@@ -238,7 +248,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-            if (state.IsExpired(provider, TimeToLive, out _) || state.Identity != identity)
+            if (state.Identity != identity || IsExpired(in state, out _))
                 return null;
 
             state = new()
@@ -510,10 +520,33 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         /// <summary>
         /// A timestamp of when this state was created.
         /// </summary>
+        /// <remarks>
+        /// The value is informational and not used for expiration tracking, except the default value
+        /// that indicates the released lease.
+        /// </remarks>
         public required DateTimeOffset CreatedAt { get; init; }
 
-        internal bool IsExpired(TimeProvider provider, TimeSpan ttl, out TimeSpan remaining)
-            => (remaining = ttl - (provider.GetUtcNow() - CreatedAt)) <= TimeSpan.Zero;
+        internal bool IsReleased => Identity.Version is LeaseIdentity.InitialVersion || CreatedAt == default;
+    }
+
+    private bool IsExpired(in State state, out TimeSpan remaining)
+    {
+        if (state.IsReleased)
+        {
+            remaining = TimeSpan.Zero;
+            return true;
+        }
+
+        var observationCopy = observation.Value;
+        if (observationCopy.IsEmpty || observationCopy.Identity != state.Identity)
+        {
+            // A concurrent observation can be overwritten, but the timestamp of any observation
+            // never precedes the write of the observed version. Thus, the expiration can only be delayed.
+            observation.Value = observationCopy = new(state.Identity, provider);
+        }
+
+        remaining = TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
+        return remaining <= TimeSpan.Zero;
     }
 
     /// <summary>
