@@ -8,19 +8,14 @@ using Patterns;
 public partial class LeaseProvider<TMetadata>
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Observation(in LeaseIdentity identity, Timestamp timestamp)
+    private readonly record struct Observation(in LeaseIdentity Identity, Timestamp Timestamp)
     {
         public Observation(in LeaseIdentity identity, TimeProvider provider)
             : this(in identity, new Timestamp(provider))
         {
         }
-
-        public readonly LeaseIdentity Identity = identity;
-        public readonly Timestamp Timestamp = timestamp;
-
-        public bool IsEmpty => Timestamp.IsEmpty;
     }
-    
+
     private interface ITransitionCondition
     {
         bool Invoke(in State state, bool isExpired);

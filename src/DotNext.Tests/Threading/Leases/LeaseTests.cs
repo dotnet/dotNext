@@ -218,7 +218,8 @@ public sealed class LeaseTests : Test
 
         Null(await provider.TryAcquireAsync(TestToken));
 
-        await Task.Delay(ttl, TestToken);
+        // timer resolution is coarser than the monotonic clock used by the provider
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
         NotNull(await provider.TryAcquireAsync(TestToken));
     }
 

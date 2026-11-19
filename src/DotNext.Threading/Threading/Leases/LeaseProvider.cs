@@ -538,11 +538,16 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
 
         var observationCopy = observation.Value;
-        if (observationCopy.IsEmpty || observationCopy.Identity != state.Identity)
+        if (observationCopy.Identity != state.Identity)
         {
-            // A concurrent observation can be overwritten, but the timestamp of any observation
-            // never precedes the write of the observed version. Thus, the expiration can only be delayed.
-            observation.Value = observationCopy = new(state.Identity, provider);
+            // Don't overwrite a concurrent observation. If it's of the same version, reuse it: the timestamp
+            // of any observation never precedes the write of the observed version. Otherwise, use the local one.
+            var newObservation = new Observation(state.Identity, provider);
+            if (observation.CompareExchange(in newObservation, in observationCopy, out observationCopy)
+                || observationCopy.Identity != state.Identity)
+            {
+                observationCopy = newObservation;
+            }
         }
 
         remaining = TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
