@@ -32,7 +32,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private readonly TimeProvider provider;
     private readonly CancellationTokenMultiplexer cancellationTokens;
 
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed using DestroyLease() method")]
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed using Terminate() method")]
     private volatile CancellationTokenSource? lifetimeTokenSource;
 
     // the last observed version of the lease and the local time of its first observation
@@ -551,22 +551,27 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <returns><see langword="true"/> if update is performed successfully; <see langword="false"/> is compare-and-set failed.</returns>
     protected abstract ValueTask<bool> TryUpdateStateAsync(State state, CancellationToken token);
 
+    private void Terminate()
+    {
+        if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
+        {
+            try
+            {
+                cts.Cancel(throwOnFirstException: false);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+        }
+    }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
-            {
-                try
-                {
-                    cts.Cancel(throwOnFirstException: false);
-                }
-                finally
-                {
-                    cts.Dispose();
-                }
-            }
+            Terminate();
         }
 
         base.Dispose(disposing);
