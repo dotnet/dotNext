@@ -14,6 +14,46 @@ public sealed class AtomicContainerTests : Test
     }
 
     [Fact]
+    public static void CompareExchangeAliasedExpected()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 43M;
+        False(container.CompareExchange(100M, in value, out value));
+        Equal(10M, value);
+        Equal(10M, container.Value);
+    }
+
+    [Fact]
+    public static void CompareExchangeAliasedUpdate()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 20M;
+        True(container.CompareExchange(in value, 10M, out value));
+        Equal(10M, value);
+        Equal(20M, container.Value);
+    }
+
+    [Fact]
+    public static void ExchangeAliased()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 20M;
+        container.Exchange(in value, out value);
+        Equal(10M, value);
+        Equal(20M, container.Value);
+    }
+
+    [Fact]
+    public static void GetAndAccumulateAliased()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 5M;
+        container.GetAndAccumulate(in value, static (ref current, in x) => current += x, out value);
+        Equal(10M, value);
+        Equal(15M, container.Value);
+    }
+
+    [Fact]
     public static void AtomicExchange()
     {
         var container = new Atomic<Guid>();

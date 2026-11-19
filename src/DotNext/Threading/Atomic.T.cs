@@ -36,12 +36,13 @@ partial struct Atomic<T>
         for (var spinner = new SpinWait();; spinner.SpinOnce())
         {
             var stamp = Read(ref spinner, out var current);
-            RuntimeHelpers.Copy(in current, out result);
-            if (!comparer.Equals(in current, in expected))
-                return false;
+            var success = comparer.Equals(in current, in expected);
+            if (success && !TryWrite(stamp, in update))
+                continue;
 
-            if (TryWrite(stamp, in update))
-                return true;
+            // result can alias update or expected, so it must be written last
+            RuntimeHelpers.Copy(in current, out result);
+            return success;
         }
     }
 

@@ -264,9 +264,12 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
     public void Exchange(in T update, out T previous)
     {
         var stamp = seqLock.EnterWriteLock();
-        RuntimeHelpers.Copy(in value, out previous);
+        RuntimeHelpers.Copy(in value, out var previousCopy);
         RuntimeHelpers.Copy(in update, out value);
         seqLock.ExitWriteLock(stamp);
+
+        // previous can alias update, so it must be written last
+        RuntimeHelpers.Copy(in previousCopy, out previous);
     }
 
     /// <summary>
@@ -364,7 +367,7 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         ArgumentNullException.ThrowIfNull(accumulator);
 
         var stamp = seqLock.EnterWriteLock();
-        RuntimeHelpers.Copy(in value, out result);
+        RuntimeHelpers.Copy(in value, out var previousCopy);
         try
         {
             // custom accumulator may throw exception
@@ -374,6 +377,9 @@ public partial struct Atomic<T> : IAtomic, IStrongBox
         {
             seqLock.ExitWriteLock(stamp);
         }
+
+        // result can alias x, so it must be written last
+        RuntimeHelpers.Copy(in previousCopy, out result);
     }
 
     /// <summary>
