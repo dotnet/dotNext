@@ -59,30 +59,37 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 11-16-2026
+Release Date: 11-20-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.12.2">DotNext 6.12.2</a>
-* `Variant` data type becomes more usable for serialization frameworks where AOT-compatible fast reflection is needed: `TryCopyTo` and `TrySetValue` methods are introduced.
+<a href="https://www.nuget.org/packages/dotnext/6.13.0">DotNext 6.13.0</a>
+* Introduced `Atomic.Read` and `Atomic.Write` for arbitrary enum types
+* Fixed memory aliasing bug in `Atomic<T>` class
+* Deprecation of `Atomic.Read` for **long**, **ulong**, and **double** data types
+* Fixed nullability attributes in `Optional<T>` class
+* Various performance improvements of `Optional<T>` implementation
+* `SpanOwner<T>` removes allocation when passed [MemoryPool&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1) is [shared pool](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1.shared)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.12.2">DotNext.Metaprogramming 6.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.13.0">DotNext.Metaprogramming 6.13.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.12.2">DotNext.Unsafe 6.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.13.0">DotNext.Unsafe 6.13.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.12.2">DotNext.Threading 6.12.2</a>
-* Merged [316](https://github.com/dotnet/dotNext/pull/316)
+<a href="https://www.nuget.org/packages/dotnext.threading/6.13.0">DotNext.Threading 6.13.0</a>
+* Performance improvements of optimistic read lock in `AsyncReaderWriterLock`
+* Fixed correctness of `LeaseConsumer` and `LeaseProvider` when implementing a distributed lease
+* Introduced `LeaseProvider.ObserveAsync` that allows to observe the lease state without waiting for the real request for renewal
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.12.2">DotNext.IO 6.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.io/6.13.0">DotNext.IO 6.13.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.12.2">DotNext.Net.Cluster 6.12.2</a>
-* Partially fixed [315](https://github.com/dotnet/dotNext/issues/315)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.13.0">DotNext.Net.Cluster 6.13.0</a>
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.2">DotNext.AspNetCore.Cluster 6.12.2</a>
-* Partially fixed [315](https://github.com/dotnet/dotNext/issues/315)
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.12.2">DotNext.MaintenanceServices 1.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.13.0">DotNext.MaintenanceServices 1.13.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
