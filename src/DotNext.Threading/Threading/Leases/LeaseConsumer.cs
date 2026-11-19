@@ -72,7 +72,25 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <summary>
     /// Gets the token bounded to the lease lifetime.
     /// </summary>
-    public CancellationToken Token => source?.Token ?? new(canceled: true);
+    public CancellationToken Token
+    {
+        get
+        {
+            if (source is { } sourceCopy)
+            {
+                try
+                {
+                    return sourceCopy.Token;
+                }
+                catch (ObjectDisposedException)
+                {
+                    // the source is canceled before disposal, concurrently with the current call
+                }
+            }
+
+            return new(canceled: true);
+        }
+    }
     
     /// <summary>
     /// Gets lease expiration timeout.
@@ -85,9 +103,9 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <remarks>The returned value can be used as a fencing token.</remarks>
     public ref readonly LeaseIdentity LeaseId => ref identity;
 
-    private ValueTask CancelAndStopTimerAsync()
+    private void CancelSource()
     {
-        // Cancel existing source. There is a potential concurrency with LeaseExpired
+        // There is a potential concurrency with LeaseExpired
         if (Interlocked.Exchange(ref source, null) is { } sourceCopy)
         {
             try
@@ -99,6 +117,11 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
                 sourceCopy.Dispose();
             }
         }
+    }
+
+    private ValueTask CancelAndStopTimerAsync()
+    {
+        CancelSource();
 
         // ensure that the timer has stopped
         return timer.DisposeAsync();
@@ -190,7 +213,11 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         {
             do
             {
-                await Task.Delay(Expiration.Value / 2, timerToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+                var delay = Expiration.TryGetRemainingTime(provider, out var remainingTime)
+                    ? remainingTime / 2
+                    : TimeSpan.Zero;
+
+                await Task.Delay(delay, provider, timerToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
             } while (!task.IsCompleted && await TryRenewAsync(token).ConfigureAwait(false));
         }
         catch (Exception e)
@@ -336,7 +363,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     {
         if (disposing)
         {
-            Interlocked.Exchange(ref source, null)?.Dispose();
+            CancelSource();
             timer.Dispose();
         }
 
@@ -344,11 +371,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <inheritdoc/>
-    protected override ValueTask DisposeAsyncCore()
-    {
-        Interlocked.Exchange(ref source, null)?.Dispose();
-        return timer.DisposeAsync();
-    }
+    protected override ValueTask DisposeAsyncCore() => CancelAndStopTimerAsync();
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();

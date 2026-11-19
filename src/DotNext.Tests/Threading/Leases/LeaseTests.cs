@@ -1,3 +1,4 @@
+using DotNext.Diagnostics;
 
 namespace DotNext.Threading.Leases;
 
@@ -176,12 +177,97 @@ public sealed class LeaseTests : Test
         True(token.IsCancellationRequested);
     }
 
+    [Fact]
+    public static async Task AcquireWaitsForRemainingTime()
+    {
+        var ttl = TimeSpan.FromSeconds(3);
+        using var provider = new TestLeaseProvider(ttl);
+        await provider.AcquireAsync(TestToken);
+        await Task.Delay(TimeSpan.FromSeconds(2.5), TestToken);
+
+        // the lease expires in ~0.5 sec, so the acquisition must not wait for the elapsed time (~2.5 sec)
+        var ts = new Timestamp();
+        await provider.AcquireAsync(TestToken);
+        True(ts.Elapsed < TimeSpan.FromSeconds(2));
+    }
+
+    [Fact]
+    public static async Task AcquireWithCreationTimeInFuture()
+    {
+        using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
+        provider.CurrentState = new()
+        {
+            Identity = new() { Version = 1UL },
+            CreatedAt = DateTimeOffset.UtcNow + TimeSpan.FromHours(1), // clock skew
+        };
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(TestToken);
+        cts.CancelAfter(TimeSpan.FromMilliseconds(500));
+        await ThrowsAnyAsync<OperationCanceledException>(provider.AcquireAsync(cts.Token).AsTask);
+    }
+
+    [Fact]
+    public static async Task ExpirationIncludesUpdaterDuration()
+    {
+        var ttl = TimeSpan.FromSeconds(5);
+        using var provider = new TestLeaseProvider(ttl);
+        var result = NotNull(await provider.TryAcquireAsync(0, SlowUpdater, TestToken));
+
+        True(result.Expiration.TryGetRemainingTime(out var reported));
+        var actual = ttl - (DateTimeOffset.UtcNow - result.State.CreatedAt);
+        True(reported <= actual + TimeSpan.FromMilliseconds(50), $"Reported: {reported}, actual: {actual}");
+
+        static async ValueTask<int> SlowUpdater(int arg, int metadata, CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+            return metadata + 1;
+        }
+    }
+
+    [Fact]
+    public static async Task WorkerStartedLate()
+    {
+        using var provider = new TestLeaseProvider(TimeSpan.FromSeconds(2));
+        await using var consumer = new TestLeaseConsumer(provider);
+        True(await consumer.TryAcquireAsync(TestToken));
+
+        // 70% of the lease is consumed, renewal must be scheduled using the remaining time
+        await Task.Delay(TimeSpan.FromSeconds(1.4), TestToken);
+        Equal(42, await consumer.ExecuteAsync(Worker, TestToken));
+
+        static async Task<int> Worker(CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2), token);
+            return 42;
+        }
+    }
+
+    [Fact]
+    public static async Task DisposeCancelsLeaseToken()
+    {
+        using var provider = new TestLeaseProvider(DefaultTimeout);
+        var consumer = new TestLeaseConsumer(provider);
+        True(await consumer.TryAcquireAsync(TestToken));
+
+        var token = consumer.Token;
+        False(token.IsCancellationRequested);
+
+        await consumer.DisposeAsync();
+        True(token.IsCancellationRequested);
+        True(consumer.Token.IsCancellationRequested);
+    }
+
     private sealed class TestLeaseProvider(TimeSpan ttl) : LeaseProvider<int>(ttl)
     {
         private readonly AsyncReaderWriterLock syncRoot = new();
         private State currentState;
 
         internal CancellationToken Token => LifetimeToken;
+
+        internal State CurrentState
+        {
+            set => currentState = value;
+        }
 
         protected override async ValueTask<State> GetStateAsync(CancellationToken token)
         {

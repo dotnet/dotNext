@@ -66,14 +66,17 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             if (!condition.Invoke(in state, provider, TimeToLive, out var remainingTime))
                 return null;
 
+            var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
+
+            // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
+            var ts = new Timestamp(provider);
             state = new()
             {
                 CreatedAt = provider.GetUtcNow(),
                 Identity = state.Identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
+                Metadata = metadata,
             };
 
-            var ts = new Timestamp(provider);
             if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                 return null;
 
@@ -132,14 +135,17 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
                 if (state.IsExpired(provider, TimeToLive, out var remainingTime))
                 {
+                    var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
+
+                    // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
+                    var ts = new Timestamp(provider);
                     state = new()
                     {
                         CreatedAt = provider.GetUtcNow(),
                         Identity = state.Identity.BumpVersion(),
-                        Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
+                        Metadata = metadata,
                     };
 
-                    var ts = new Timestamp(provider);
                     if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                         continue;
 
@@ -151,7 +157,8 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     return new AcquisitionResult(in state, remainingTime, provider);
                 }
 
-                await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
+                // remaining time can be greater than TTL if CreatedAt is in the future due to the clock skew
+                await Task.Delay(remainingTime < TimeToLive ? remainingTime : TimeToLive, provider, cts.Token).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
@@ -506,7 +513,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         public required DateTimeOffset CreatedAt { get; init; }
 
         internal bool IsExpired(TimeProvider provider, TimeSpan ttl, out TimeSpan remaining)
-            => (remaining = provider.GetUtcNow() - CreatedAt) >= ttl;
+            => (remaining = ttl - (provider.GetUtcNow() - CreatedAt)) <= TimeSpan.Zero;
     }
 
     /// <summary>
