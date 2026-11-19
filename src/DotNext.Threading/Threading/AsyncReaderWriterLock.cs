@@ -69,12 +69,17 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     public bool IsWriteLockHeld => state.IsWriteLockHeld;
 
+    /// <inheritdoc cref="OptimisticRead()"/>
+    [Obsolete("Use OptimisticRead() instead.")]
+    public LockStamp TryOptimisticRead()
+        => OptimisticRead();
+
     /// <summary>
     /// Returns a stamp that can be validated later.
     /// </summary>
     /// <returns>Optimistic read stamp.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public LockStamp TryOptimisticRead()
+    public LockStamp OptimisticRead()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -86,7 +91,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public bool Validate(LockStamp stamp) => state.IsValid(stamp);
+    public bool Validate(LockStamp stamp) => state.Validate(stamp);
 
     /// <summary>
     /// Tries to obtain reader lock synchronously without blocking caller thread.
@@ -604,7 +609,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <br/>
     /// The caller must restore the invariants of the protected state before calling this method, because
     /// other callers can observe and modify that state while the lock is yielded. Reacquisition of the write lock
-    /// invalidates the stamps returned by <see cref="TryOptimisticRead"/>.
+    /// invalidates the stamps returned by <see cref="OptimisticRead()"/>.
     /// <br/>
     /// If reacquisition is canceled or interrupted, the method throws an exception, and the lock is no longer
     /// held by the caller. In this case, the caller must not call <see cref="Release"/>: the lock might be already
@@ -747,7 +752,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         internal readonly LockStamp Stamp => new(Version & ~1UL);
 
-        internal readonly bool IsValid(LockStamp stamp)
+        internal readonly bool Validate(LockStamp stamp)
         {
             Volatile.ReadBarrier();
             return stamp.Version == version;

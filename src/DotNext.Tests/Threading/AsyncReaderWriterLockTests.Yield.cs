@@ -51,7 +51,7 @@ partial class AsyncReaderWriterLockTests
         Equal(2L, l.CurrentReadCount);
         False(yielder.IsCompleted);
 
-        var stamp = l.TryOptimisticRead();
+        var stamp = l.OptimisticRead();
         True(l.Validate(stamp));
 
         l.Release(); // released by reader1

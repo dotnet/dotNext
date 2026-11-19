@@ -74,13 +74,13 @@ public sealed partial class AsyncReaderWriterLockTests : Test
     public static void OptimisticRead()
     {
         using var rwLock = new AsyncReaderWriterLock();
-        var stamp = rwLock.TryOptimisticRead();
+        var stamp = rwLock.OptimisticRead();
         True(rwLock.Validate(stamp));
         True(rwLock.TryEnterReadLock());
         Equal(1, rwLock.CurrentReadCount);
         True(rwLock.Validate(stamp));
         rwLock.Release();
-        Equal(stamp, rwLock.TryOptimisticRead());
+        Equal(stamp, rwLock.OptimisticRead());
         True(rwLock.TryEnterWriteLock(stamp));
         False(rwLock.IsReadLockHeld);
         True(rwLock.IsWriteLockHeld);
