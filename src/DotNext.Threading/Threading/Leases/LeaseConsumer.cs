@@ -131,11 +131,12 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Tries to acquire the lease.
     /// </summary>
     /// <remarks>
-    /// This method cancels <see cref="Token"/> immediately. If the method returns <see langword="true"/>, the token
-    /// can be used to perform async operation bounded to the lease lifetime.
+    /// If the lease is acquired, the previously obtained <see cref="Token"/> is canceled and the new token is issued.
+    /// It can be used to perform async operation bounded to the lease lifetime. If the provider rejects
+    /// the request, the state of the currently held lease remains unchanged.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The expiration timeout; otherwise, <see cref="Timeout.Expired"/>.</returns>
+    /// <returns><see langword="true"/> if the lease is acquired successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<bool> TryAcquireAsync(CancellationToken token = default)
@@ -275,7 +276,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Tries to renew a lease.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// /// <returns>The expiration timeout; otherwise, <see cref="Timeout.Expired"/>.</returns>
+    /// <returns><see langword="true"/> if the lease is renewed successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
@@ -328,7 +329,6 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <returns><see langword="true"/> if lease canceled successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
     /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
     public async ValueTask<bool> ReleaseAsync(CancellationToken token = default)
     {
