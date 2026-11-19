@@ -6,46 +6,116 @@ namespace DotNext.Threading.Leases;
 public sealed class LeaseTests : Test
 {
     [Fact]
-    public static async Task AcquireOrRenewInitialState()
+    public static async Task InitialState()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
         Equal(DefaultTimeout, provider.TimeToLive);
-        Null(await provider.TryRenewAsync(default, true, TestToken));
-        Null(await provider.TryRenewAsync(default, false, TestToken));
-        Null(await provider.ReleaseAsync(default, TestToken));
 
-        var result = NotNull(await provider.TryAcquireOrRenewAsync(default, TestToken));
+        var owner = Guid.NewGuid();
+        Null(await provider.TryRenewAsync(owner, true, TestToken));
+        Null(await provider.TryRenewAsync(owner, false, TestToken));
+        Null(await provider.ReleaseAsync(owner, TestToken));
+
+        var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
         True(result.State.Identity >> default(LeaseIdentity));
+        Equal(owner, result.State.OwnerId);
     }
 
     [Fact]
     public static async Task AcquireRelease()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = NotNull(await provider.TryAcquireAsync(TestToken));
-        NotNull(await provider.ReleaseAsync(result.State.Identity, TestToken));
+        var owner = Guid.NewGuid();
+        NotNull(await provider.TryAcquireAsync(owner, TestToken));
+        NotNull(await provider.ReleaseAsync(owner, TestToken));
 
-        await provider.AcquireAsync(TestToken);
-        Null(await provider.TryAcquireAsync(TestToken));
+        await provider.AcquireAsync(owner, TestToken);
+        Null(await provider.TryAcquireAsync(Guid.NewGuid(), TestToken));
         NotNull(await provider.UnsafeTryReleaseAsync(TestToken));
     }
 
     [Fact]
-    public static async Task RenewOrAcquire()
+    public static async Task AcquisitionRenewsOwnedLease()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = NotNull(await provider.TryAcquireOrRenewAsync(default, TestToken));
-        var result2 = NotNull(await provider.TryAcquireOrRenewAsync(result.State.Identity, TestToken));
+        var owner = Guid.NewGuid();
+
+        // the response is lost
+        var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
+
+        var result2 = NotNull(await provider.TryAcquireAsync(owner, TestToken));
         True(result.State.Identity << result2.State.Identity);
+
+        var result3 = await provider.AcquireAsync(owner, TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
+        True(result2.State.Identity << result3.State.Identity);
+
+        Null(await provider.TryAcquireAsync(Guid.NewGuid(), TestToken));
     }
 
     [Fact]
     public static async Task RenewAfterRelease()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = await provider.AcquireAsync(TestToken);
+        var owner = Guid.NewGuid();
+        await provider.AcquireAsync(owner, TestToken);
         await provider.UnsafeReleaseAsync(TestToken);
-        Null(await provider.TryRenewAsync(result.State.Identity, reacquire: false, TestToken));
+        Null(await provider.TryRenewAsync(owner, reacquire: false, TestToken));
+        Null(await provider.TryRenewAsync(owner, reacquire: true, TestToken));
+        Null(await provider.ReleaseAsync(owner, TestToken));
+    }
+
+    [Fact]
+    public static async Task RetryRenewal()
+    {
+        using var provider1 = new TestLeaseProvider(DefaultTimeout);
+        using var provider2 = new TestLeaseProvider(DefaultTimeout, provider1.Storage);
+        var owner = Guid.NewGuid();
+
+        NotNull(await provider1.TryAcquireAsync(owner, TestToken));
+
+        // the response is lost
+        NotNull(await provider1.TryRenewAsync(owner, reacquire: false, TestToken));
+        NotNull(await provider1.TryRenewAsync(owner, reacquire: false, TestToken));
+
+        // the provider that never observed the lease
+        NotNull(await provider2.TryRenewAsync(owner, reacquire: false, TestToken));
+
+        var anotherOwner = Guid.NewGuid();
+        Null(await provider2.TryRenewAsync(anotherOwner, reacquire: true, TestToken));
+        Null(await provider2.ReleaseAsync(anotherOwner, TestToken));
+    }
+
+    [Fact]
+    public static async Task RenewAndReleaseExpiredLease()
+    {
+        var ttl = TimeSpan.FromMilliseconds(200);
+        using var provider = new TestLeaseProvider(ttl);
+        var owner = Guid.NewGuid();
+
+        NotNull(await provider.TryAcquireAsync(owner, TestToken));
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+
+        Null(await provider.TryRenewAsync(owner, reacquire: false, TestToken));
+        NotNull(await provider.TryRenewAsync(owner, reacquire: true, TestToken));
+
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+        NotNull(await provider.ReleaseAsync(owner, TestToken));
+        Null(await provider.ReleaseAsync(owner, TestToken));
+
+        // released lease can be acquired immediately
+        NotNull(await provider.TryAcquireAsync(Guid.NewGuid(), TestToken));
+    }
+
+    [Fact]
+    public static async Task EmptyOwner()
+    {
+        using var provider = new TestLeaseProvider(DefaultTimeout);
+
+        await ThrowsAsync<ArgumentException>(provider.TryAcquireAsync(Guid.Empty, TestToken).AsTask);
+        await ThrowsAsync<ArgumentException>(provider.AcquireAsync(Guid.Empty, TestToken).AsTask);
+        await ThrowsAsync<ArgumentException>(provider.TryRenewAsync(Guid.Empty, reacquire: true, TestToken).AsTask);
+        await ThrowsAsync<ArgumentException>(provider.ReleaseAsync(Guid.Empty, TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.TryAcquireAsync<int>(Guid.NewGuid(), 0, null, TestToken).AsTask);
     }
 
     [Fact]
@@ -61,8 +131,8 @@ public sealed class LeaseTests : Test
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
 
-        var acquisition1 = Task.Run(async () => await provider.TryAcquireAsync(TestToken), TestToken);
-        var acquisition2 = Task.Run(async () => await provider.TryAcquireAsync(TestToken), TestToken);
+        var acquisition1 = Task.Run(async () => await provider.TryAcquireAsync(Guid.NewGuid(), TestToken), TestToken);
+        var acquisition2 = Task.Run(async () => await provider.TryAcquireAsync(Guid.NewGuid(), TestToken), TestToken);
 
         var tasks = await Task.WhenAll(acquisition1, acquisition2);
 
@@ -98,7 +168,7 @@ public sealed class LeaseTests : Test
         False(consumer.Expiration.IsExpired);
 
         await consumer.Token.WaitAsync();
-        await Task.Delay(provider.TimeToLive, TestToken);
+        await provider.UnsafeReleaseAsync(TestToken);
 
         False(await consumer.ReleaseAsync(TestToken));
     }
@@ -167,8 +237,8 @@ public sealed class LeaseTests : Test
         CancellationToken token;
         using (var provider = new TestLeaseProvider(DefaultTimeout))
         {
-            await provider.AcquireAsync(TestToken);
-            task = provider.AcquireAsync(TestToken).AsTask();
+            await provider.AcquireAsync(Guid.NewGuid(), TestToken);
+            task = provider.AcquireAsync(Guid.NewGuid(), TestToken).AsTask();
             False(task.IsCompleted);
             token = provider.Token;
         }
@@ -182,12 +252,12 @@ public sealed class LeaseTests : Test
     {
         var ttl = TimeSpan.FromSeconds(3);
         using var provider = new TestLeaseProvider(ttl);
-        await provider.AcquireAsync(TestToken);
+        await provider.AcquireAsync(Guid.NewGuid(), TestToken);
         await Task.Delay(TimeSpan.FromSeconds(2.5), TestToken);
 
         // the lease expires in ~0.5 sec, so the acquisition must not wait for the elapsed time (~2.5 sec)
         var ts = new Timestamp();
-        await provider.AcquireAsync(TestToken);
+        await provider.AcquireAsync(Guid.NewGuid(), TestToken);
         True(ts.Elapsed < TimeSpan.FromSeconds(2));
     }
 
@@ -199,10 +269,11 @@ public sealed class LeaseTests : Test
         {
             Identity = new() { Version = 1UL },
             CreatedAt = DateTimeOffset.UtcNow + TimeSpan.FromHours(1), // clock skew
+            OwnerId = Guid.NewGuid(),
         };
 
         // the expiration doesn't depend on the wall clock
-        await provider.AcquireAsync(TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
+        await provider.AcquireAsync(Guid.NewGuid(), TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
     }
 
     [Fact]
@@ -214,13 +285,15 @@ public sealed class LeaseTests : Test
         {
             Identity = new() { Version = 1UL },
             CreatedAt = DateTimeOffset.UtcNow - TimeSpan.FromHours(1), // expired according to the wall clock
+            OwnerId = Guid.NewGuid(),
         };
 
-        Null(await provider.TryAcquireAsync(TestToken));
+        var owner = Guid.NewGuid();
+        Null(await provider.TryAcquireAsync(owner, TestToken));
 
         // timer resolution is coarser than the monotonic clock used by the provider
         await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
-        NotNull(await provider.TryAcquireAsync(TestToken));
+        NotNull(await provider.TryAcquireAsync(owner, TestToken));
     }
 
     [Fact]
@@ -229,22 +302,23 @@ public sealed class LeaseTests : Test
         var ttl = TimeSpan.FromSeconds(2);
         using var provider1 = new TestLeaseProvider(ttl);
         using var provider2 = new TestLeaseProvider(ttl, provider1.Storage, new SkewedTimeProvider(TimeSpan.FromHours(1)));
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
 
-        var result = NotNull(await provider1.TryAcquireAsync(TestToken));
+        NotNull(await provider1.TryAcquireAsync(owner1, TestToken));
 
         // the wall clock of the second provider is ahead, but the lease is still owned
-        Null(await provider2.TryAcquireAsync(TestToken));
-        Null(await provider2.TryAcquireAsync(TestToken));
+        Null(await provider2.TryAcquireAsync(owner2, TestToken));
+        Null(await provider2.TryAcquireAsync(owner2, TestToken));
 
         // renewal resets the observation of the second provider
         await Task.Delay(ttl / 2, TestToken);
-        result = NotNull(await provider1.TryRenewAsync(result.State.Identity, reacquire: false, TestToken));
+        NotNull(await provider1.TryRenewAsync(owner1, reacquire: false, TestToken));
         await Task.Delay(ttl / 2 + TimeSpan.FromMilliseconds(200), TestToken);
-        Null(await provider2.TryAcquireAsync(TestToken));
+        Null(await provider2.TryAcquireAsync(owner2, TestToken));
 
         // released lease can be acquired immediately
-        NotNull(await provider1.ReleaseAsync(result.State.Identity, TestToken));
-        NotNull(await provider2.TryAcquireAsync(TestToken));
+        NotNull(await provider1.ReleaseAsync(owner1, TestToken));
+        NotNull(await provider2.TryAcquireAsync(owner2, TestToken));
     }
 
     [Fact]
@@ -253,12 +327,14 @@ public sealed class LeaseTests : Test
         var ttl = TimeSpan.FromMilliseconds(500);
         using var provider1 = new TestLeaseProvider(ttl);
         using var provider2 = new TestLeaseProvider(ttl, provider1.Storage);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
 
-        NotNull(await provider1.TryAcquireAsync(TestToken));
-        Null(await provider2.TryAcquireAsync(TestToken));
+        NotNull(await provider1.TryAcquireAsync(owner1, TestToken));
+        Null(await provider2.TryAcquireAsync(owner2, TestToken));
 
-        await provider2.AcquireAsync(TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
-        Null(await provider1.TryAcquireAsync(TestToken));
+        await provider2.AcquireAsync(owner2, TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
+        Null(await provider1.TryAcquireAsync(owner1, TestToken));
+        Null(await provider1.TryRenewAsync(owner1, reacquire: true, TestToken));
     }
 
     [Fact]
@@ -266,7 +342,7 @@ public sealed class LeaseTests : Test
     {
         var ttl = TimeSpan.FromSeconds(5);
         using var provider = new TestLeaseProvider(ttl);
-        var result = NotNull(await provider.TryAcquireAsync(0, SlowUpdater, TestToken));
+        var result = NotNull(await provider.TryAcquireAsync(Guid.NewGuid(), 0, SlowUpdater, TestToken));
 
         True(result.Expiration.TryGetRemainingTime(out var reported));
         var actual = ttl - (DateTimeOffset.UtcNow - result.State.CreatedAt);
@@ -377,9 +453,11 @@ public sealed class LeaseTests : Test
 
     private sealed class TestLeaseConsumer(TestLeaseProvider provider) : LeaseConsumer
     {
+        private readonly Guid owner = Guid.NewGuid();
+
         protected override async ValueTask<AcquisitionResult?> TryAcquireCoreAsync(CancellationToken token = default)
         {
-            return await provider.TryAcquireAsync(token) is { } result
+            return await provider.TryAcquireAsync(owner, token) is { } result
                 ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
@@ -387,14 +465,14 @@ public sealed class LeaseTests : Test
         protected override async ValueTask<AcquisitionResult?> TryRenewCoreAsync(LeaseIdentity identity,
             CancellationToken token)
         {
-            return await provider.TryRenewAsync(identity, reacquire: false, token) is { } result
+            return await provider.TryRenewAsync(owner, reacquire: false, token) is { } result
                 ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
         protected override ValueTask<LeaseIdentity?> ReleaseCoreAsync(LeaseIdentity identity,
             CancellationToken token)
-            => provider.ReleaseAsync(identity, token);
+            => provider.ReleaseAsync(owner, token);
 
         protected override ValueTask DisposeAsyncCore()
         {

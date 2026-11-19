@@ -265,7 +265,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryAcquireAsync(CancellationToken)"/> across the application boundaries.
+    /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryAcquireAsync(Guid, CancellationToken)"/> across the application boundaries.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
@@ -310,8 +310,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryRenewAsync(LeaseIdentity, bool, CancellationToken)"/> or
-    /// <see cref="LeaseProvider{TMetadata}.TryAcquireOrRenewAsync(LeaseIdentity, CancellationToken)"/> across the application boundaries.
+    /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryRenewAsync(Guid, bool, CancellationToken)"/> across the application boundaries.
     /// </summary>
     /// <param name="identity">The identity of the lease to renew.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -349,7 +348,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Performs a call to <see cref="LeaseProvider{TMetadata}.ReleaseAsync(LeaseIdentity, CancellationToken)"/> across
+    /// Performs a call to <see cref="LeaseProvider{TMetadata}.ReleaseAsync(Guid, CancellationToken)"/> across
     /// the application boundaries.
     /// </summary>
     /// <param name="identity">The identity of the lease to renew.</param>

@@ -21,31 +21,18 @@ public partial class LeaseProvider<TMetadata>
         bool Invoke(in State state, bool isExpired);
     }
 
-    private sealed class AcquisitionCondition : ITransitionCondition, ISingleton<AcquisitionCondition>
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct AcquisitionCondition(Guid owner) : ITransitionCondition
     {
-        public static AcquisitionCondition Instance { get; } = new();
-
-        private AcquisitionCondition()
-        {
-        }
-
-        bool ITransitionCondition.Invoke(in State state, bool isExpired) => isExpired;
+        bool ITransitionCondition.Invoke(in State state, bool isExpired)
+            => isExpired || state.IsOwnedBy(owner);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct RenewalCondition(LeaseIdentity identity, bool reacquire) : ITransitionCondition
+    private readonly struct RenewalCondition(Guid owner, bool reacquire) : ITransitionCondition
     {
         bool ITransitionCondition.Invoke(in State state, bool isExpired)
-            => identity.Version is not LeaseIdentity.InitialVersion
-               && state.Identity == identity
-               && (reacquire || !isExpired);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct AcquisitionOrRenewalCondition(LeaseIdentity identity) : ITransitionCondition
-    {
-        bool ITransitionCondition.Invoke(in State state, bool isExpired)
-            => state.Identity == identity || isExpired;
+            => state.IsOwnedBy(owner) && (reacquire || !isExpired);
     }
 
     [StructLayout(LayoutKind.Auto)]
