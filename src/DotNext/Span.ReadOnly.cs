@@ -242,12 +242,17 @@ partial class Span
         /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
         public Optional<T> FirstOrNone(Predicate<T>? filter = null)
         {
-            filter ??= Predicate<T>.Constant(true);
-        
-            foreach (var item in span)
+            if (filter is not null)
             {
-                if (filter(item))
-                    return item;
+                foreach (var item in span)
+                {
+                    if (filter(item))
+                        return item;
+                }
+            }
+            else if (span.Length > 0)
+            {
+                return MemoryMarshal.GetReference(span);
             }
 
             return Optional<T>.None;
