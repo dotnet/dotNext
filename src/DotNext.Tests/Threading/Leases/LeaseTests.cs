@@ -17,7 +17,7 @@ public sealed class LeaseTests : Test
         Null(await provider.ReleaseAsync(owner, TestToken));
 
         var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
-        True(result.State.Identity >> default(LeaseIdentity));
+        True(result.State.Identity.Version > default(LeaseIdentity).Version);
         Equal(owner, result.State.OwnerId);
     }
 
@@ -44,10 +44,10 @@ public sealed class LeaseTests : Test
         var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
 
         var result2 = NotNull(await provider.TryAcquireAsync(owner, TestToken));
-        True(result.State.Identity << result2.State.Identity);
+        True(result.State.Identity.Version < result2.State.Identity.Version);
 
         var result3 = await provider.AcquireAsync(owner, TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
-        True(result2.State.Identity << result3.State.Identity);
+        True(result2.State.Identity.Version < result3.State.Identity.Version);
 
         Null(await provider.TryAcquireAsync(Guid.NewGuid(), TestToken));
     }
@@ -116,14 +116,6 @@ public sealed class LeaseTests : Test
         await ThrowsAsync<ArgumentException>(provider.TryRenewAsync(Guid.Empty, reacquire: true, TestToken).AsTask);
         await ThrowsAsync<ArgumentException>(provider.ReleaseAsync(Guid.Empty, TestToken).AsTask);
         await ThrowsAsync<ArgumentNullException>(provider.TryAcquireAsync<int>(Guid.NewGuid(), 0, null, TestToken).AsTask);
-    }
-
-    [Fact]
-    public static void Precedence()
-    {
-        True(default(LeaseIdentity) << new LeaseIdentity { Version = 1UL });
-        False(default(LeaseIdentity) >> new LeaseIdentity { Version = 1UL });
-        False(default(LeaseIdentity) << new LeaseIdentity { Version = 2UL });
     }
 
     [Fact]
@@ -455,7 +447,7 @@ public sealed class LeaseTests : Test
         {
             lock (syncRoot)
             {
-                if (state.Identity << newState.Identity)
+                if (state.Identity.Version < newState.Identity.Version)
                 {
                     state = newState;
                     return true;
