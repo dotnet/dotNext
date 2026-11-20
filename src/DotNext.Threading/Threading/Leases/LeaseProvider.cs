@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Leases;
@@ -354,11 +355,15 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             ? ValueTask.FromException<LeaseIdentity?>(e)
             : ReleaseAsync(owner, NoOpUpdater.Instance, token);
 
-    private static ArgumentException? CheckArguments(Guid owner)
-        => owner == Guid.Empty ? new(ExceptionMessages.EmptyLeaseOwner, nameof(owner)) : null;
+    private static ArgumentException? CheckArguments(Guid owner, [CallerArgumentExpression(nameof(owner))] string paramName = "")
+        => owner == Guid.Empty ? new(ExceptionMessages.EmptyLeaseOwner, paramName) : null;
 
-    private static ArgumentException? CheckArguments(Guid owner, Delegate? updater)
-        => CheckArguments(owner) ?? (updater is null ? new ArgumentNullException(nameof(updater)) : null);
+    private static ArgumentException? CheckArguments(Guid owner, Delegate? updater,
+        [CallerArgumentExpression(nameof(owner))]
+        string ownerParamName = "",
+        [CallerArgumentExpression(nameof(updater))]
+        string updaterParamName = "")
+        => CheckArguments(owner) ?? (updater is null ? new ArgumentNullException(updaterParamName) : null);
 
     private async ValueTask<LeaseIdentity?> UnsafeTryReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
