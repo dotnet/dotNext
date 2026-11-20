@@ -448,29 +448,23 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 
 file static class ValueReference
 {
-    // TODO: Replace with public counterpart in future
-    private static readonly Func<object, nuint>? GetRawObjectDataSize;
-
-    [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(RuntimeHelpers))]
-    static ValueReference()
-    {
-        const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static;
-        GetRawObjectDataSize = typeof(RuntimeHelpers)
-            .GetMethod(nameof(GetRawObjectDataSize), flags, [typeof(object)])
-            ?.CreateDelegate<Func<object, nuint>>();
-    }
-
     internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
         ref var rawData = ref Unsafe.GetRawData(owner);
         var offset = Unsafe.ByteOffset(in rawData, in Unsafe.InToRef<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
-        if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
+        if (owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(null, owner))
             throw new ArgumentOutOfRangeException(paramName);
 
         return offset;
     }
+
+    // TODO: Replace with public counterpart in future
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "GetRawObjectDataSize")]
+    private static extern nuint GetRawObjectDataSize(
+        [UnsafeAccessorType("System.Runtime.CompilerServices.RuntimeHelpers, System.Private.CoreLib")] object? instance,
+        object obj);
 
     internal static ref T GetObjectData<T>(object owner, nint offset)
     {
