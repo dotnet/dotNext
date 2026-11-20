@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
@@ -79,6 +80,10 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         {
             if (source is { } sourceCopy)
             {
+                // skip the disposal check: the source is always canceled before disposal
+                if (CancellationToken.CanBeInlined)
+                    return Unsafe.BitCast<ValueTuple<CancellationTokenSource>, CancellationToken>(new(sourceCopy));
+
                 try
                 {
                     return sourceCopy.Token;
