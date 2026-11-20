@@ -488,16 +488,14 @@ public sealed class LeaseTests : Test
                 : null;
         }
 
-        protected override async ValueTask<AcquisitionResult?> TryRenewCoreAsync(LeaseIdentity identity,
-            CancellationToken token)
+        protected override async ValueTask<AcquisitionResult?> TryRenewCoreAsync(CancellationToken token)
         {
             return await provider.TryRenewAsync(owner, reacquire: false, token) is { } result
                 ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
-        protected override ValueTask<LeaseIdentity?> ReleaseCoreAsync(LeaseIdentity identity,
-            CancellationToken token)
+        protected override ValueTask<LeaseIdentity?> ReleaseCoreAsync(CancellationToken token)
             => provider.ReleaseAsync(owner, token);
 
         protected override ValueTask DisposeAsyncCore()

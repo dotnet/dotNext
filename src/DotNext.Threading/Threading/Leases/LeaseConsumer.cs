@@ -288,7 +288,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             throw new InvalidOperationException();
 
         var ts = new Timestamp(provider);
-        if (await TryRenewCoreAsync(identity, token).ConfigureAwait(false) is { } response)
+        if (await TryRenewCoreAsync(token).ConfigureAwait(false) is { } response)
         {
             identity = response.Identity;
 
@@ -312,11 +312,10 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <summary>
     /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryRenewAsync(Guid, bool, CancellationToken)"/> across the application boundaries.
     /// </summary>
-    /// <param name="identity">The identity of the lease to renew.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<AcquisitionResult?> TryRenewCoreAsync(LeaseIdentity identity, CancellationToken token);
+    protected abstract ValueTask<AcquisitionResult?> TryRenewCoreAsync(CancellationToken token);
 
     /// <summary>
     /// Releases a lease.
@@ -338,7 +337,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
 
         await CancelAndStopTimerAsync().ConfigureAwait(false);
         timeout = Timeout.Expired;
-        if (await ReleaseCoreAsync(this.identity, token).ConfigureAwait(false) is { } identity)
+        if (await ReleaseCoreAsync(token).ConfigureAwait(false) is { } identity)
         {
             this.identity = identity;
             return true;
@@ -351,11 +350,10 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Performs a call to <see cref="LeaseProvider{TMetadata}.ReleaseAsync(Guid, CancellationToken)"/> across
     /// the application boundaries.
     /// </summary>
-    /// <param name="identity">The identity of the lease to renew.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<LeaseIdentity?> ReleaseCoreAsync(LeaseIdentity identity, CancellationToken token);
+    protected abstract ValueTask<LeaseIdentity?> ReleaseCoreAsync(CancellationToken token);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
