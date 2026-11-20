@@ -164,8 +164,7 @@ public partial class AsyncParkingLot : Disposable
         lock (queue.Lock)
         {
             var stateCopy = state;
-
-            // lock was freed, go back to the fast path
+            
             if (!(isDisposed = IsDisposingOrDisposed)
                 && stateCopy is not State.Free
                 && Interlocked.CompareExchange(ref state, State.LockedWithWaiters, stateCopy) == stateCopy)
@@ -176,6 +175,7 @@ public partial class AsyncParkingLot : Disposable
             }
             else
             {
+                // lock was freed, go back to the fast path
                 node = null;
             }
         }
