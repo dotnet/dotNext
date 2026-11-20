@@ -17,7 +17,7 @@ public sealed class LeaseTests : Test
         Null(await provider.ReleaseAsync(owner, TestToken));
 
         var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
-        True(result.State.Identity.Version > default(LeaseIdentity).Version);
+        True(result.State.Version > 0L);
         Equal(owner, result.State.OwnerId);
     }
 
@@ -44,10 +44,10 @@ public sealed class LeaseTests : Test
         var result = NotNull(await provider.TryAcquireAsync(owner, TestToken));
 
         var result2 = NotNull(await provider.TryAcquireAsync(owner, TestToken));
-        True(result.State.Identity.Version < result2.State.Identity.Version);
+        True(result.State.Version < result2.State.Version);
 
         var result3 = await provider.AcquireAsync(owner, TestToken).AsTask().WaitAsync(DefaultTimeout, TestToken);
-        True(result2.State.Identity.Version < result3.State.Identity.Version);
+        True(result2.State.Version < result3.State.Version);
 
         Null(await provider.TryAcquireAsync(Guid.NewGuid(), TestToken));
     }
@@ -107,6 +107,20 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task VersionContinuesFromStorageSequence()
+    {
+        using var provider = new TestLeaseProvider(DefaultTimeout);
+
+        // the storage creates the lease with the version from the global sequence
+        provider.Storage.State = new() { Version = 100L, CreatedAt = default, OwnerId = Guid.Empty };
+
+        var owner = Guid.NewGuid();
+        Equal(101L, NotNull(await provider.TryAcquireAsync(owner, TestToken)).State.Version);
+        Equal(102L, NotNull(await provider.TryRenewAsync(owner, reacquire: false, TestToken)).State.Version);
+        Equal(103L, await provider.ReleaseAsync(owner, TestToken));
+    }
+
+    [Fact]
     public static async Task EmptyOwner()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
@@ -155,7 +169,7 @@ public sealed class LeaseTests : Test
         True(consumer.Expiration.IsExpired);
 
         True(await consumer.TryAcquireAsync(TestToken));
-        Equal(1UL, consumer.LeaseId.Version);
+        Equal(1L, consumer.Version);
         False(consumer.Token.IsCancellationRequested);
         False(consumer.Expiration.IsExpired);
 
@@ -259,7 +273,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
         provider.Storage.State = new()
         {
-            Identity = new() { Version = 1UL },
+            Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow + TimeSpan.FromHours(1), // clock skew
             OwnerId = Guid.NewGuid(),
         };
@@ -275,7 +289,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(ttl);
         provider.Storage.State = new()
         {
-            Identity = new() { Version = 1UL },
+            Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow - TimeSpan.FromHours(1), // expired according to the wall clock
             OwnerId = Guid.NewGuid(),
         };
@@ -296,7 +310,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(ttl);
         provider.Storage.State = new()
         {
-            Identity = new() { Version = 1UL },
+            Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow,
             OwnerId = abandoned,
         };
@@ -400,6 +414,23 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task WorkerNotStartedWithoutLease()
+    {
+        using var provider = new TestLeaseProvider(DefaultTimeout);
+        await using var consumer = new TestLeaseConsumer(provider);
+
+        var started = false;
+        await ThrowsAsync<TimeoutException>(() => consumer.ExecuteAsync(Worker, TestToken));
+        False(started);
+
+        Task<int> Worker(CancellationToken token)
+        {
+            started = true;
+            return Task.FromResult(42);
+        }
+    }
+
+    [Fact]
     public static async Task DisposeCancelsLeaseToken()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
@@ -447,7 +478,7 @@ public sealed class LeaseTests : Test
         {
             lock (syncRoot)
             {
-                if (state.Identity.Version < newState.Identity.Version)
+                if (state.Version + 1L == newState.Version)
                 {
                     state = newState;
                     return true;
@@ -484,18 +515,18 @@ public sealed class LeaseTests : Test
         protected override async ValueTask<AcquisitionResult?> TryAcquireCoreAsync(CancellationToken token = default)
         {
             return await provider.TryAcquireAsync(owner, token) is { } result
-                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
+                ? new AcquisitionResult { Version = result.State.Version, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
         protected override async ValueTask<AcquisitionResult?> TryRenewCoreAsync(CancellationToken token)
         {
             return await provider.TryRenewAsync(owner, reacquire: false, token) is { } result
-                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
+                ? new AcquisitionResult { Version = result.State.Version, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
-        protected override ValueTask<LeaseIdentity?> ReleaseCoreAsync(CancellationToken token)
+        protected override ValueTask<long?> ReleaseCoreAsync(CancellationToken token)
             => provider.ReleaseAsync(owner, token);
 
         protected override ValueTask DisposeAsyncCore()

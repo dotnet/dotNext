@@ -8,10 +8,10 @@ using Patterns;
 public partial class LeaseProvider<TMetadata>
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly record struct Observation(in LeaseIdentity Identity, Timestamp Timestamp)
+    private readonly record struct Observation(long Version, Timestamp Timestamp)
     {
-        public Observation(in LeaseIdentity identity, TimeProvider provider)
-            : this(in identity, new Timestamp(provider))
+        public Observation(long version, TimeProvider provider)
+            : this(version, new Timestamp(provider))
         {
         }
     }

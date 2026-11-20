@@ -15,12 +15,13 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     private readonly double clockDriftBound;
     private readonly TimeProvider provider;
     private readonly TimerCallback callback;
-    private LeaseIdentity identity;
+    private long version;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
     private volatile CancellationTokenSource? source;
     private ITimer timer;
     private Timeout timeout;
+    private bool acquired;
 
     /// <summary>
     /// Initializes a new lease consumer.
@@ -100,10 +101,13 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <summary>
     /// Gets the lease version.
     /// </summary>
-    /// <remarks>The returned value can be used as a fencing token.</remarks>
-    public ref readonly LeaseIdentity LeaseId => ref identity;
+    /// <remarks>
+    /// The returned value can be used as a fencing token. The property can be read concurrently with the renewal of the lease.
+    /// </remarks>
+    /// <value>The version of the lease. The value is meaningful only after the lease has been acquired.</value>
+    public long Version => Volatile.Read(in version);
 
-    private void CancelSource()
+    private void Terminate()
     {
         // There is a potential concurrency with LeaseExpired
         if (Interlocked.Exchange(ref source, null) is { } sourceCopy)
@@ -119,9 +123,9 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         }
     }
 
-    private ValueTask CancelAndStopTimerAsync()
+    private ValueTask TerminateAsync()
     {
-        CancelSource();
+        Terminate();
 
         // ensure that the timer has stopped
         return timer.DisposeAsync();
@@ -146,8 +150,9 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         var ts = new Timestamp(provider);
         if (await TryAcquireCoreAsync(token).ConfigureAwait(false) is { } response)
         {
-            identity = response.Identity;
-            await CancelAndStopTimerAsync().ConfigureAwait(false);
+            acquired = true;
+            Volatile.Write(ref version, response.Version);
+            await TerminateAsync().ConfigureAwait(false);
 
             timeout = new(AdjustTimeToLive(response.TimeToLive), ts);
             if (timeout.TryGetRemainingTime(provider, out var remainingTime))
@@ -258,10 +263,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         CancellationToken token)
     {
         cts = CancellationToken.Combine(ref token, leaseToken = Token);
-        return Fork(worker, token);
-
-        static Task<TResult> Fork(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
-            => Task.Run(() => function(token), token);
+        return token.IsCancellationRequested ? Task.FromCanceled<TResult>(token) : Task.Run(worker, token);
     }
 
     /// <summary>
@@ -279,18 +281,18 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <returns><see langword="true"/> if the lease is renewed successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
+    /// <exception cref="InvalidOperationException">This consumer never took the lease, or it has been released.</exception>
     public async ValueTask<bool> TryRenewAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        if (identity.Version is LeaseIdentity.InitialVersion)
+        if (!acquired)
             throw new InvalidOperationException();
 
         var ts = new Timestamp(provider);
         if (await TryRenewCoreAsync(token).ConfigureAwait(false) is { } response)
         {
-            identity = response.Identity;
+            Volatile.Write(ref version, response.Version);
 
             // ensure that the timer has been stopped
             await timer.DisposeAsync().ConfigureAwait(false);
@@ -305,7 +307,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             }
         }
 
-        await CancelAndStopTimerAsync().ConfigureAwait(false);
+        await TerminateAsync().ConfigureAwait(false);
         return false;
     }
 
@@ -327,19 +329,20 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <returns><see langword="true"/> if lease canceled successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
+    /// <exception cref="InvalidOperationException">This consumer never took the lease, or it has been released.</exception>
     public async ValueTask<bool> ReleaseAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        if (this.identity.Version is LeaseIdentity.InitialVersion)
+        if (!acquired)
             throw new InvalidOperationException();
 
-        await CancelAndStopTimerAsync().ConfigureAwait(false);
+        await TerminateAsync().ConfigureAwait(false);
         timeout = Timeout.Expired;
-        if (await ReleaseCoreAsync(token).ConfigureAwait(false) is { } identity)
+        if (await ReleaseCoreAsync(token).ConfigureAwait(false) is { } releasedVersion)
         {
-            this.identity = identity;
+            Volatile.Write(ref version, releasedVersion);
+            acquired = false;
             return true;
         }
 
@@ -353,14 +356,14 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<LeaseIdentity?> ReleaseCoreAsync(CancellationToken token);
+    protected abstract ValueTask<long?> ReleaseCoreAsync(CancellationToken token);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            CancelSource();
+            Terminate();
             timer.Dispose();
         }
 
@@ -368,7 +371,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <inheritdoc/>
-    protected override ValueTask DisposeAsyncCore() => CancelAndStopTimerAsync();
+    protected override ValueTask DisposeAsyncCore() => TerminateAsync();
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
@@ -380,9 +383,9 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     protected readonly struct AcquisitionResult
     {
         /// <summary>
-        /// Gets or sets the identity of the lease.
+        /// Gets or sets the version of the lease.
         /// </summary>
-        public required LeaseIdentity Identity { get; init; }
+        public required long Version { get; init; }
 
         /// <summary>
         /// Gets or sets lease expiration time returned by the provider.
