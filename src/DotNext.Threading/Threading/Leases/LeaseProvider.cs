@@ -613,7 +613,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         /// </remarks>
         public required Guid OwnerId { get; init; }
 
-        internal bool IsReleased => Identity.Version is LeaseIdentity.InitialVersion || CreatedAt == default;
+        internal bool IsReleased => CreatedAt == default;
 
         internal bool IsOwnedBy(Guid owner)
             => owner != Guid.Empty && OwnerId == owner && !IsReleased;
