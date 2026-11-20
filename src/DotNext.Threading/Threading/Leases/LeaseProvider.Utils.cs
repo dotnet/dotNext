@@ -2,20 +2,10 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Leases;
 
-using Diagnostics;
 using Patterns;
 
 public partial class LeaseProvider<TMetadata>
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly record struct Observation(long Version, Timestamp Timestamp)
-    {
-        public Observation(long version, TimeProvider provider)
-            : this(version, new Timestamp(provider))
-        {
-        }
-    }
-
     private interface ITransitionCondition
     {
         bool Invoke(in State state, bool isExpired);

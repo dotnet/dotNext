@@ -9,7 +9,7 @@ public sealed class LeaseTests : Test
     public static async Task InitialState()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        Equal(DefaultTimeout, provider.TimeToLive);
+        Equal(DefaultTimeout, provider.Storage.State.TimeToLive);
 
         var owner = Guid.NewGuid();
         Null(await provider.TryRenewAsync(owner, true, TestToken));
@@ -112,7 +112,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(DefaultTimeout);
 
         // the storage creates the lease with the version from the global sequence
-        provider.Storage.State = new() { Version = 100L, CreatedAt = default, OwnerId = Guid.Empty };
+        provider.Storage.State = new() { Version = 100L, CreatedAt = default, OwnerId = Guid.Empty, TimeToLive = DefaultTimeout };
 
         var owner = Guid.NewGuid();
         Equal(101L, NotNull(await provider.TryAcquireAsync(owner, TestToken)).State.Version);
@@ -270,9 +270,11 @@ public sealed class LeaseTests : Test
     [Fact]
     public static async Task AcquireWithCreationTimeInFuture()
     {
-        using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
+        var ttl = TimeSpan.FromMilliseconds(100);
+        using var provider = new TestLeaseProvider(ttl);
         provider.Storage.State = new()
         {
+            TimeToLive = ttl,
             Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow + TimeSpan.FromHours(1), // clock skew
             OwnerId = Guid.NewGuid(),
@@ -289,6 +291,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(ttl);
         provider.Storage.State = new()
         {
+            TimeToLive = ttl,
             Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow - TimeSpan.FromHours(1), // expired according to the wall clock
             OwnerId = Guid.NewGuid(),
@@ -310,6 +313,7 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(ttl);
         provider.Storage.State = new()
         {
+            TimeToLive = ttl,
             Version = 1L,
             CreatedAt = DateTimeOffset.UtcNow,
             OwnerId = abandoned,
@@ -450,10 +454,18 @@ public sealed class LeaseTests : Test
         public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + offset;
     }
 
-    private sealed class LeaseStorage
+    private sealed class LeaseStorage(TimeSpan ttl)
     {
         private readonly System.Threading.Lock syncRoot = new();
-        private LeaseProvider<int>.State state;
+
+        // the storage creates the lease with the configured time-to-live
+        private LeaseProvider<int>.State state = new()
+        {
+            Version = 0L,
+            CreatedAt = default,
+            OwnerId = Guid.Empty,
+            TimeToLive = ttl,
+        };
 
         internal LeaseProvider<int>.State State
         {
@@ -489,9 +501,9 @@ public sealed class LeaseTests : Test
         }
     }
 
-    private sealed class TestLeaseProvider(TimeSpan ttl, LeaseStorage storage = null, TimeProvider provider = null) : LeaseProvider<int>(ttl, provider)
+    private sealed class TestLeaseProvider(TimeSpan ttl, LeaseStorage storage = null, TimeProvider provider = null) : LeaseProvider<int>(provider)
     {
-        internal LeaseStorage Storage { get; } = storage ?? new();
+        internal LeaseStorage Storage { get; } = storage ?? new(ttl);
 
         internal CancellationToken Token => LifetimeToken;
 

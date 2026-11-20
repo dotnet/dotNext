@@ -16,7 +16,7 @@ using Diagnostics;
 /// <para>
 /// Each instance tracks the lease expiration using its own monotonic clock, starting from the moment it observes
 /// a particular version of the lease. Thus, the wall clocks of the instances sharing the same storage don't need
-/// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="TimeToLive"/>
+/// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="State.TimeToLive"/>
 /// before taking over the lease that was not released explicitly. Call <see cref="ObserveAsync(CancellationToken)"/>
 /// immediately after the instantiation to start tracking the expiration as early as possible.
 /// </para>
@@ -42,16 +42,10 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <summary>
     /// Initializes a new instance of lease provider.
     /// </summary>
-    /// <param name="ttl">The lease expiration timeout.</param>
     /// <param name="provider">The time provider.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="ttl"/> is not positive or greater than <see cref="Timeout.MaxTimeoutParameterTicks"/>.</exception>
-    protected LeaseProvider(TimeSpan ttl, TimeProvider? provider = null)
+    protected LeaseProvider(TimeProvider? provider = null)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(ttl, TimeSpan.Zero);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(ttl.Ticks, Timeout.MaxTimeoutParameterTicks, nameof(ttl));
-
         this.provider = provider ?? TimeProvider.System;
-        TimeToLive = ttl;
         lifetimeTokenSource = new();
         LifetimeToken = lifetimeTokenSource.Token;
         cancellationTokens = new() { MaximumRetained = 100 };
@@ -64,11 +58,6 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// A call to <see cref="Dispose(bool)"/> cancels the token.
     /// </remarks>
     protected CancellationToken LifetimeToken { get; } // cached to avoid ObjectDisposedException
-
-    /// <summary>
-    /// Gets a lease time-to-live.
-    /// </summary>
-    public TimeSpan TimeToLive { get; }
 
     private async ValueTask<AcquisitionResult?> TryChangeStateAsync<TCondition, TUpdater>(TCondition condition, TUpdater updater, Guid owner, CancellationToken token)
         where TCondition : ITransitionCondition
@@ -86,7 +75,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
             // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
             var ts = new Timestamp(provider);
-            state = new()
+            state = state with
             {
                 CreatedAt = provider.GetUtcNow(),
                 Version = state.Version + 1L,
@@ -98,7 +87,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 return null;
 
             observation.Value = new(state.Version, ts);
-            var remainingTime = TimeToLive - ts.GetElapsedTime(provider);
+            var remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
             return remainingTime > TimeSpan.Zero
                 ? new AcquisitionResult(in state, remainingTime, provider)
                 : null;
@@ -172,7 +161,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
                     // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
                     var ts = new Timestamp(provider);
-                    state = new()
+                    state = state with
                     {
                         CreatedAt = provider.GetUtcNow(),
                         Version = state.Version + 1L,
@@ -184,7 +173,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                         continue;
 
                     observation.Value = new(state.Version, ts);
-                    remainingTime = TimeToLive - ts.GetElapsedTime(provider);
+                    remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
 
                     if (remainingTime <= TimeSpan.Zero)
                         continue;
@@ -293,7 +282,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             if (!state.IsOwnedBy(owner))
                 return null;
 
-            state = new()
+            state = state with
             {
                 CreatedAt = default,
                 Version = state.Version + 1L,
@@ -373,7 +362,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         {
             var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-            state = new()
+            state = state with
             {
                 CreatedAt = default,
                 Version = state.Version + 1L,
@@ -440,7 +429,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
-                state = new()
+                state = state with
                 {
                     CreatedAt = default,
                     Version = state.Version + 1L,
@@ -627,6 +616,33 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         /// </remarks>
         public required Guid OwnerId { get; init; }
 
+        /// <summary>
+        /// Gets or sets lease duration.
+        /// </summary>
+        /// <remarks>
+        /// The value is provided by the underlying storage, so all the providers sharing the same storage
+        /// agree on the lease duration. It must be set even if there is no state in the underlying storage.
+        /// <para>
+        /// The underlying storage must not decrease the value while the lease is acquired, because the current owner
+        /// relies on the duration it received on acquisition or renewal, while the other providers apply
+        /// the decreased value immediately, and take over the lease before the owner considers it expired.
+        /// The value can be decreased only when the lease is released. Increasing the value is always safe.
+        /// </para>
+        /// </remarks>
+        /// <value>The positive lease duration.</value>
+        /// <exception cref="ArgumentOutOfRangeException">The value is not positive or greater than <see cref="Timeout.MaxTimeoutParameterTicks"/>.</exception>
+        public required TimeSpan TimeToLive
+        {
+            get;
+            init
+            {
+                ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(value, TimeSpan.Zero);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value.Ticks, Timeout.MaxTimeoutParameterTicks, nameof(value));
+
+                field = value;
+            }
+        }
+
         internal bool IsReleased => CreatedAt == default;
 
         internal bool IsOwnedBy(Guid owner)
@@ -655,7 +671,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 }
             }
 
-            remainingTime = TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
+            remainingTime = state.TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
         }
 
         return remainingTime;
