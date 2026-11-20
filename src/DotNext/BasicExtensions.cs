@@ -191,7 +191,7 @@ public static class BasicExtensions
                 // This check can be eliminated because typically the location points to the field in the class
                 // and that field is already statically checked for null
                 if (Unsafe.IsNullRef(in location))
-                    throw new ArgumentNullException(nameof(location));
+                    ArgumentNullException.Throw(nameof(location));
             }
         }
     }

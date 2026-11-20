@@ -48,7 +48,8 @@ public static partial class Collection
             switch (collection)
             {
                 case null:
-                    throw new ArgumentNullException(nameof(collection));
+                    ArgumentNullException.Throw(nameof(collection));
+                    break;
                 case List<T> list:
                     list.AddRange(items);
                     break;

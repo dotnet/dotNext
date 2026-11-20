@@ -432,7 +432,8 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         switch (obj)
         {
             case null:
-                throw new ArgumentNullException(nameof(obj));
+                ArgumentNullException.Throw(nameof(obj));
+                break;
             case IContainer container:
                 obj = container.Source;
                 break;
