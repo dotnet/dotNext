@@ -224,7 +224,7 @@ file static class BufferExtensions
             [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "BulkMoveWithWriteBarrier")]
             static extern void CopyWithGcBarrier(
                 [UnsafeAccessorType("System.Buffer, System.Private.CoreLib")]
-                object? buffer,
+                object? instance,
                 ref byte destination, ref readonly byte source, nuint byteCount);
         }
 
@@ -245,7 +245,7 @@ file static class BufferExtensions
             [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ClearWithReferences")]
             static extern void ClearWithGcBarrier(
                 [UnsafeAccessorType("System.SpanHelpers, System.Private.CoreLib")]
-                object? helpers,
+                object? instance,
                 ref nint ip, nuint pointerSizeLength);
         }
     }
