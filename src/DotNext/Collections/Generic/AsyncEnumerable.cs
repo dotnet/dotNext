@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 
 namespace DotNext.Collections.Generic;
 
 using Runtime.CompilerServices;
+using Runtime.ExceptionServices;
 
 /// <summary>
 /// Provides extension methods for <see cref="IAsyncEnumerable{T}"/> interface.
@@ -201,7 +201,7 @@ file sealed class ThrowingEnumerator<T>(Exception exception) : IAsyncEnumerator<
     {
         get
         {
-            ExceptionDispatchInfo.Throw(exception);
+            exception.Throw(replaceStackTrace: false);
             return default;
         }
     }
