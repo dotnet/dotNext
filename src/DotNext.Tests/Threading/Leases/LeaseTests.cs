@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using DotNext.Diagnostics;
 
 namespace DotNext.Threading.Leases;
@@ -449,6 +450,86 @@ public sealed class LeaseTests : Test
         True(consumer.Token.IsCancellationRequested);
     }
 
+    [Fact]
+    public static async Task KeyedLeasesAreIndependent()
+    {
+        using var provider = new TestKeyedLeaseProvider(DefaultTimeout);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
+
+        NotNull(await provider.TryAcquireAsync("a", owner1, TestToken));
+        NotNull(await provider.TryAcquireAsync("b", owner2, TestToken));
+        Null(await provider.TryAcquireAsync("a", owner2, TestToken));
+        Null(await provider.TryRenewAsync("b", owner1, reacquire: true, TestToken));
+
+        NotNull(await provider.ReleaseAsync("a", owner1, TestToken));
+        NotNull(await provider.TryAcquireAsync("a", owner2, TestToken));
+        NotNull(await provider.TryRenewAsync("b", owner2, reacquire: false, TestToken));
+    }
+
+    [Fact]
+    public static async Task KeyedLeaseExpiration()
+    {
+        var ttl = TimeSpan.FromMilliseconds(200);
+        using var provider1 = new TestKeyedLeaseProvider(ttl);
+        using var provider2 = new TestKeyedLeaseProvider(ttl, provider1.Storages);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
+
+        NotNull(await provider1.TryAcquireAsync("a", owner1, TestToken));
+        True(await provider2.ObserveAsync("a", TestToken));
+        False(await provider2.ObserveAsync("b", TestToken));
+        Null(await provider2.TryAcquireAsync("a", owner2, TestToken));
+
+        // timer resolution is coarser than the monotonic clock used by the provider
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+        False(await provider2.ObserveAsync("a", TestToken));
+        NotNull(await provider2.TryAcquireAsync("a", owner2, TestToken));
+        Null(await provider1.TryRenewAsync("a", owner1, reacquire: true, TestToken));
+    }
+
+    [Fact]
+    public static async Task KeyedUnsafeRelease()
+    {
+        using var provider = new TestKeyedLeaseProvider(DefaultTimeout);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
+
+        Equal(1L, (await provider.AcquireAsync("a", owner1, TestToken)).State.Version);
+        Equal(2L, await provider.UnsafeReleaseAsync("a", TestToken));
+
+        // released lease can be acquired immediately
+        Equal(3L, NotNull(await provider.TryAcquireAsync("a", owner2, TestToken)).State.Version);
+        Equal(4L, await provider.UnsafeTryReleaseAsync("a", TestToken));
+        Null(await provider.ReleaseAsync("a", owner2, TestToken));
+    }
+
+    [Fact]
+    public static async Task KeyedDisposeCancelsAcquisition()
+    {
+        var provider = new TestKeyedLeaseProvider(DefaultTimeout);
+        await provider.AcquireAsync("a", Guid.NewGuid(), TestToken);
+
+        var acquisition = provider.AcquireAsync("a", Guid.NewGuid(), TestToken).AsTask();
+        False(acquisition.IsCompleted);
+
+        provider.Dispose();
+        await ThrowsAsync<ObjectDisposedException>(() => acquisition);
+    }
+
+    [Fact]
+    public static async Task KeyedInvalidArguments()
+    {
+        using var provider = new TestKeyedLeaseProvider(DefaultTimeout);
+
+        await ThrowsAsync<ArgumentNullException>(provider.TryAcquireAsync(null, Guid.NewGuid(), TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.AcquireAsync(null, Guid.NewGuid(), TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.TryRenewAsync(null, Guid.NewGuid(), reacquire: true, TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.ReleaseAsync(null, Guid.NewGuid(), TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.UnsafeTryReleaseAsync(null, TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.UnsafeReleaseAsync(null, TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.ObserveAsync(null, TestToken).AsTask);
+        await ThrowsAsync<ArgumentException>(provider.TryAcquireAsync("a", Guid.Empty, TestToken).AsTask);
+        await ThrowsAsync<ArgumentNullException>(provider.TryAcquireAsync("a", Guid.NewGuid(), 0, null!, TestToken).AsTask);
+    }
+
     private sealed class SkewedTimeProvider(TimeSpan offset) : TimeProvider
     {
         public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + offset;
@@ -459,7 +540,7 @@ public sealed class LeaseTests : Test
         private readonly System.Threading.Lock syncRoot = new();
 
         // the storage creates the lease with the configured time-to-live
-        private LeaseProvider<int>.State state = new()
+        private LeaseState<int> state = new()
         {
             Version = 0L,
             CreatedAt = default,
@@ -467,7 +548,7 @@ public sealed class LeaseTests : Test
             TimeToLive = ttl,
         };
 
-        internal LeaseProvider<int>.State State
+        internal LeaseState<int> State
         {
             get
             {
@@ -486,7 +567,7 @@ public sealed class LeaseTests : Test
             }
         }
 
-        internal bool TryUpdate(in LeaseProvider<int>.State newState)
+        internal bool TryUpdate(in LeaseState<int> newState)
         {
             lock (syncRoot)
             {
@@ -507,16 +588,35 @@ public sealed class LeaseTests : Test
 
         internal CancellationToken Token => LifetimeToken;
 
-        protected override async ValueTask<State> GetStateAsync(CancellationToken token)
+        protected override async ValueTask<LeaseState<int>> GetStateAsync(CancellationToken token)
         {
             await Task.Yield();
             return Storage.State;
         }
 
-        protected override async ValueTask<bool> TryUpdateStateAsync(State state, CancellationToken token)
+        protected override async ValueTask<bool> TryUpdateStateAsync(LeaseState<int> state, CancellationToken token)
         {
             await Task.Yield();
             return Storage.TryUpdate(in state);
+        }
+    }
+
+    private sealed class TestKeyedLeaseProvider(TimeSpan ttl, ConcurrentDictionary<string, LeaseStorage> storages = null) : LeaseProvider<string, int>
+    {
+        internal ConcurrentDictionary<string, LeaseStorage> Storages { get; } = storages ?? new();
+
+        private LeaseStorage GetStorage(string leaseId) => Storages.GetOrAdd(leaseId, _ => new(ttl));
+
+        protected override async ValueTask<LeaseState<int>> GetStateAsync(string leaseId, CancellationToken token)
+        {
+            await Task.Yield();
+            return GetStorage(leaseId).State;
+        }
+
+        protected override async ValueTask<bool> TryUpdateStateAsync(string leaseId, LeaseState<int> state, CancellationToken token)
+        {
+            await Task.Yield();
+            return GetStorage(leaseId).TryUpdate(in state);
         }
     }
 

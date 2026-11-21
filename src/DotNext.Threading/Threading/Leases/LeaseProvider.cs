@@ -1,12 +1,4 @@
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 namespace DotNext.Threading.Leases;
-
-using Diagnostics;
 
 /// <summary>
 /// Represents provider side of a lease in a distributed environment.
@@ -16,7 +8,7 @@ using Diagnostics;
 /// <para>
 /// Each instance tracks the lease expiration using its own monotonic clock, starting from the moment it observes
 /// a particular version of the lease. Thus, the wall clocks of the instances sharing the same storage don't need
-/// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="State.TimeToLive"/>
+/// to be synchronized. As a consequence, a newly created instance waits for the full <see cref="LeaseState{TMetadata}.TimeToLive"/>
 /// before taking over the lease that was not released explicitly. Call <see cref="ObserveAsync(CancellationToken)"/>
 /// immediately after the instantiation to start tracking the expiration as early as possible.
 /// </para>
@@ -28,15 +20,10 @@ using Diagnostics;
 /// </remarks>
 /// <typeparam name="TMetadata">The type of metadata associated with a lease.</typeparam>
 /// <seealso cref="LeaseConsumer"/>
-public abstract partial class LeaseProvider<TMetadata> : Disposable
+/// <seealso cref="LeaseProvider{TKey, TMetadata}"/>
+public abstract class LeaseProvider<TMetadata> : Disposable, LeaseEngine<TMetadata>.ILeaseStorage
 {
-    private readonly TimeProvider provider;
-    private readonly CancellationTokenMultiplexer cancellationTokens;
-
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed using Terminate() method")]
-    private volatile CancellationTokenSource? lifetimeTokenSource;
-
-    // the last observed version of the lease and the local time of its first observation
+    private readonly LeaseEngine<TMetadata> engine;
     private Atomic<Observation> observation;
 
     /// <summary>
@@ -44,12 +31,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// </summary>
     /// <param name="provider">The time provider.</param>
     protected LeaseProvider(TimeProvider? provider = null)
-    {
-        this.provider = provider ?? TimeProvider.System;
-        lifetimeTokenSource = new();
-        LifetimeToken = lifetimeTokenSource.Token;
-        cancellationTokens = new() { MaximumRetained = 100 };
-    }
+        => engine = new(provider);
 
     /// <summary>
     /// A token that represents state of this object.
@@ -57,63 +39,16 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <remarks>
     /// A call to <see cref="Dispose(bool)"/> cancels the token.
     /// </remarks>
-    protected CancellationToken LifetimeToken { get; } // cached to avoid ObjectDisposedException
-
-    private async ValueTask<AcquisitionResult?> TryChangeStateAsync<TCondition, TUpdater>(TCondition condition, TUpdater updater, Guid owner, CancellationToken token)
-        where TCondition : ITransitionCondition
-        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
-
-            if (!condition.Invoke(in state, GetRemainingTime(in state) <= TimeSpan.Zero))
-                return null;
-
-            var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
-
-            // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
-            var ts = new Timestamp(provider);
-            state = state with
-            {
-                CreatedAt = provider.GetUtcNow(),
-                Version = state.Version + 1L,
-                Metadata = metadata,
-                OwnerId = owner,
-            };
-
-            if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
-                return null;
-
-            observation.Value = new(state.Version, ts);
-            var remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
-            return remainingTime > TimeSpan.Zero
-                ? new AcquisitionResult(in state, remainingTime, provider)
-                : null;
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+    protected CancellationToken LifetimeToken => engine.LifetimeToken;
 
     /// <summary>
     /// Tries to acquire the lease.
     /// </summary>
     /// <remarks>
-    /// If the lease is already held by <paramref name="owner"/>, it is renewed.
+    /// If the lease is already held by <paramref name="ownerId"/>, it is renewed.
     /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to the metadata updater.</typeparam>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -121,91 +56,38 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult?> TryAcquireAsync<TArg>(Guid owner, TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => CheckArguments(owner, updater) is { } e
-            ? ValueTask.FromException<AcquisitionResult?>(e)
-            : TryChangeStateAsync(new AcquisitionCondition(owner), new Updater<TArg>(arg, updater), owner, token);
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>?> TryAcquireAsync<TArg>(Guid ownerId, TArg arg,
+        Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId, updater) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>?>(e)
+            : engine.TryAcquireAsync(this, ownerId, arg, updater, token);
 
     /// <summary>
     /// Tries to acquire the lease.
     /// </summary>
     /// <remarks>
-    /// If the lease is already held by <paramref name="owner"/>, it is renewed.
+    /// If the lease is already held by <paramref name="ownerId"/>, it is renewed.
     /// </remarks>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The acquisition result; or <see langword="null"/> if the lease is taken by another owner.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult?> TryAcquireAsync(Guid owner, CancellationToken token = default)
-        => CheckArguments(owner) is { } e
-            ? ValueTask.FromException<AcquisitionResult?>(e)
-            : TryChangeStateAsync(new AcquisitionCondition(owner), NoOpUpdater.Instance, owner, token);
-
-    private async ValueTask<AcquisitionResult> AcquireAsync<TUpdater>(Guid owner, TUpdater updater, CancellationToken token)
-        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            while (true)
-            {
-                var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
-
-                var remainingTime = GetRemainingTime(in state);
-                if (remainingTime <= TimeSpan.Zero || state.IsOwnedBy(owner))
-                {
-                    var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
-
-                    // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
-                    var ts = new Timestamp(provider);
-                    state = state with
-                    {
-                        CreatedAt = provider.GetUtcNow(),
-                        Version = state.Version + 1L,
-                        Metadata = metadata,
-                        OwnerId = owner,
-                    };
-
-                    if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
-                        continue;
-
-                    observation.Value = new(state.Version, ts);
-                    remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
-
-                    if (remainingTime <= TimeSpan.Zero)
-                        continue;
-
-                    return new AcquisitionResult(in state, remainingTime, provider);
-                }
-
-                await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
-            }
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>?> TryAcquireAsync(Guid ownerId, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>?>(e)
+            : engine.TryAcquireAsync(this, ownerId, token);
 
     /// <summary>
     /// Acquires the lease.
     /// </summary>
     /// <remarks>
-    /// If the lease is already held by <paramref name="owner"/>, it is renewed.
+    /// If the lease is already held by <paramref name="ownerId"/>, it is renewed.
     /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to the metadata updater.</typeparam>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -213,34 +95,35 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult> AcquireAsync<TArg>(Guid owner, TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => CheckArguments(owner, updater) is { } e
-            ? ValueTask.FromException<AcquisitionResult>(e)
-            : AcquireAsync(owner, new Updater<TArg>(arg, updater), token);
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>> AcquireAsync<TArg>(Guid ownerId, TArg arg,
+        Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId, updater) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>>(e)
+            : engine.AcquireAsync(this, ownerId, arg, updater, token);
 
     /// <summary>
     /// Acquires the lease.
     /// </summary>
     /// <remarks>
-    /// If the lease is already held by <paramref name="owner"/>, it is renewed.
+    /// If the lease is already held by <paramref name="ownerId"/>, it is renewed.
     /// </remarks>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The status of the operation.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult> AcquireAsync(Guid owner, CancellationToken token = default)
-        => CheckArguments(owner) is { } e
-            ? ValueTask.FromException<AcquisitionResult>(e)
-            : AcquireAsync(owner, NoOpUpdater.Instance, token);
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>> AcquireAsync(Guid ownerId, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>>(e)
+            : engine.AcquireAsync(this, ownerId, token);
 
     /// <summary>
     /// Tries to renew the lease.
     /// </summary>
     /// <typeparam name="TArg">The type of the argument to be passed to the metadata updater.</typeparam>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="reacquire"><see langword="true"/> to acquire the lease on renewal if it is expired.</param>
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
@@ -249,62 +132,27 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult?> TryRenewAsync<TArg>(Guid owner, bool reacquire, TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => CheckArguments(owner, updater) is { } e
-            ? ValueTask.FromException<AcquisitionResult?>(e)
-            : TryChangeStateAsync(new RenewalCondition(owner, reacquire), new Updater<TArg>(arg, updater), owner, token);
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>?> TryRenewAsync<TArg>(Guid ownerId, bool reacquire, TArg arg,
+        Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId, updater) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>?>(e)
+            : engine.TryRenewAsync(this, ownerId, reacquire, arg, updater, token);
 
     /// <summary>
     /// Tries to renew the lease.
     /// </summary>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="reacquire"><see langword="true"/> to acquire the lease on renewal if it is expired.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The status of the operation; or <see langword="null"/> if the lease is taken by another owner, released, or expired.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<AcquisitionResult?> TryRenewAsync(Guid owner, bool reacquire, CancellationToken token = default)
-        => CheckArguments(owner) is { } e
-            ? ValueTask.FromException<AcquisitionResult?>(e)
-            : TryChangeStateAsync(new RenewalCondition(owner, reacquire), NoOpUpdater.Instance, owner, token);
-
-    private async ValueTask<long?> ReleaseAsync<TUpdater>(Guid owner, TUpdater updater, CancellationToken token)
-        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
-
-            // the expired lease can be released, because it's not taken by another owner
-            if (!state.IsOwnedBy(owner))
-                return null;
-
-            state = state with
-            {
-                CreatedAt = default,
-                Version = state.Version + 1L,
-                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
-                OwnerId = Guid.Empty,
-            };
-
-            return await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false) ? state.Version : null;
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<LeaseAcquisitionResult<TMetadata>?> TryRenewAsync(Guid ownerId, bool reacquire, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId) is { } e
+            ? ValueTask.FromException<LeaseAcquisitionResult<TMetadata>?>(e)
+            : engine.TryRenewAsync(this, ownerId, reacquire, token);
 
     /// <summary>
     /// Releases the lease.
@@ -313,7 +161,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// The expired lease can be released as well if it is not taken by another owner.
     /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to the metadata updater.</typeparam>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -321,11 +169,12 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<long?> ReleaseAsync<TArg>(Guid owner, TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => CheckArguments(owner, updater) is { } e
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<long?> ReleaseAsync<TArg>(Guid ownerId, TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater,
+        CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId, updater) is { } e
             ? ValueTask.FromException<long?>(e)
-            : ReleaseAsync(owner, new Updater<TArg>(arg, updater), token);
+            : engine.TryReleaseAsync(this, ownerId, arg, updater, token);
 
     /// <summary>
     /// Releases the lease.
@@ -333,58 +182,16 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <remarks>
     /// The expired lease can be released as well if it is not taken by another owner.
     /// </remarks>
-    /// <param name="owner">The unique identifier of the lease owner.</param>
+    /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The version of the released lease; or <see langword="null"/> if the lease is taken by another owner or already released.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentException"><paramref name="owner"/> is <see cref="Guid.Empty"/>.</exception>
-    public ValueTask<long?> ReleaseAsync(Guid owner, CancellationToken token = default)
-        => CheckArguments(owner) is { } e
+    /// <exception cref="ArgumentException"><paramref name="ownerId"/> is <see cref="Guid.Empty"/>.</exception>
+    public ValueTask<long?> ReleaseAsync(Guid ownerId, CancellationToken token = default)
+        => LeaseEngine.CheckArguments(ownerId) is { } e
             ? ValueTask.FromException<long?>(e)
-            : ReleaseAsync(owner, NoOpUpdater.Instance, token);
-
-    private static ArgumentException? CheckArguments(Guid owner, [CallerArgumentExpression(nameof(owner))] string paramName = "")
-        => owner == Guid.Empty ? new(ExceptionMessages.EmptyLeaseOwner, paramName) : null;
-
-    private static ArgumentException? CheckArguments(Guid owner, Delegate? updater,
-        [CallerArgumentExpression(nameof(owner))]
-        string ownerParamName = "",
-        [CallerArgumentExpression(nameof(updater))]
-        string updaterParamName = "")
-        => CheckArguments(owner) ?? (updater is null ? new ArgumentNullException(updaterParamName) : null);
-
-    private async ValueTask<long?> UnsafeTryReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
-        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
-
-            state = state with
-            {
-                CreatedAt = default,
-                Version = state.Version + 1L,
-                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
-                OwnerId = Guid.Empty,
-            };
-
-            return await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false) ? state.Version : null;
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts,LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+            : engine.TryReleaseAsync(this, ownerId, token);
 
     /// <summary>
     /// Tries to release the lease ungracefully.
@@ -401,8 +208,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    public ValueTask<long?> UnsafeTryReleaseAsync<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => updater is not null ? UnsafeTryReleaseAsync(new Updater<TArg>(arg, updater), token) : ValueTask.FromException<long?>(new ArgumentNullException(nameof(updater)));
+    public ValueTask<long?> UnsafeTryReleaseAsync<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater,
+        CancellationToken token = default)
+        => updater is not null
+            ? engine.TryReleaseAsync(this, Guid.Empty, arg, updater, token)
+            : ValueTask.FromException<long?>(new ArgumentNullException(nameof(updater)));
 
     /// <summary>
     /// Tries to release the lease ungracefully.
@@ -416,43 +226,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<long?> UnsafeTryReleaseAsync(CancellationToken token = default)
-        => UnsafeTryReleaseAsync(NoOpUpdater.Instance, token);
-
-    private async ValueTask<long> UnsafeReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
-        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            State state;
-            do
-            {
-                state = await GetStateAsync(cts.Token).ConfigureAwait(false);
-
-                state = state with
-                {
-                    CreatedAt = default,
-                    Version = state.Version + 1L,
-                    Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
-                    OwnerId = Guid.Empty,
-                };
-            } while (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false));
-
-            return state.Version;
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+        => engine.TryReleaseAsync(this, Guid.Empty, token);
 
     /// <summary>
     /// Releases the lease ungracefully.
@@ -465,11 +239,15 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The version of the released lease.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-    public ValueTask<long> UnsafeReleaseAsync<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => updater is not null ? UnsafeReleaseAsync(new Updater<TArg>(arg, updater), token) : ValueTask.FromException<long>(new ArgumentNullException(nameof(updater)));
+    public ValueTask<long> UnsafeReleaseAsync<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater,
+        CancellationToken token = default)
+        => updater is not null
+            ? engine.UnsafeReleaseAsync(this, arg, updater, token)
+            : ValueTask.FromException<long>(new ArgumentNullException(nameof(updater)));
 
     /// <summary>
     /// Releases the lease ungracefully.
@@ -479,10 +257,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// and get a new lease while the existing owner thinks that the lease is exclusively owned.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The version of the released lease.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<long> UnsafeReleaseAsync(CancellationToken token = default)
-        => UnsafeReleaseAsync(NoOpUpdater.Instance, token);
+        => engine.UnsafeReleaseAsync(this, token);
 
     /// <summary>
     /// Starts tracking the expiration of the lease.
@@ -501,25 +280,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<bool> ObserveAsync(CancellationToken token = default)
-    {
-        var cts = cancellationTokens.Combine(token, LifetimeToken);
-        try
-        {
-            return GetRemainingTime(await GetStateAsync(cts.Token).ConfigureAwait(false)) > TimeSpan.Zero;
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw CreateException();
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
-        {
-            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
-        }
-        finally
-        {
-            await cts.DisposeAsync().ConfigureAwait(false);
-        }
-    }
+        => (await engine.ObserveAsync(this, token).ConfigureAwait(false)).IsAlive;
 
     /// <summary>
     /// Loads the state of a lease from the underlying storage.
@@ -530,187 +291,62 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The state restored from the underlying storage.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<State> GetStateAsync(CancellationToken token);
+    protected abstract ValueTask<LeaseState<TMetadata>> GetStateAsync(CancellationToken token);
 
     /// <summary>
     /// Attempts to update the state in the underlying storage using compare-and-set semantics.
     /// </summary>
     /// <remarks>
     /// The operation must use compare-and-set semantics in the following way: save <paramref name="state"/>
-    /// only if <see cref="State.Version"/> of the currently stored state is equal to the version of <paramref name="state"/> - 1.
+    /// only if <see cref="LeaseState{TMetadata}.Version"/> of the currently stored state is equal to the version of <paramref name="state"/> - 1.
     /// If the lease doesn't exist in the storage, save <paramref name="state"/> only if the lease is still absent.
     /// Note that the method can be called concurrently.
     /// </remarks>
     /// <param name="state">The state to be stored in the underlying storage.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if update is performed successfully; <see langword="false"/> is compare-and-set failed.</returns>
-    protected abstract ValueTask<bool> TryUpdateStateAsync(State state, CancellationToken token);
+    protected abstract ValueTask<bool> TryUpdateStateAsync(LeaseState<TMetadata> state, CancellationToken token);
+    
+    ValueTask<LeaseState<TMetadata>> LeaseEngine<TMetadata>.ILeaseStorage.GetStateAsync(CancellationToken token)
+        => GetStateAsync(token);
 
-    private void Terminate()
+    ValueTask<bool> LeaseEngine<TMetadata>.ILeaseStorage.TryUpdateStateAsync(LeaseState<TMetadata> state, CancellationToken token)
+        => TryUpdateStateAsync(state, token);
+
+    Observation LeaseEngine<TMetadata>.ILeaseStorage.Observation
     {
-        if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
+        set => observation.Write(in value);
+    }
+
+    TimeSpan LeaseEngine<TMetadata>.ILeaseStorage.GetRemainingTime(in LeaseState<TMetadata> state, TimeProvider timeProvider)
+    {
+        if (state.IsReleased)
+            return TimeSpan.Zero;
+        
+        var observationCopy = observation.Value;
+        if (observationCopy.Version != state.Version)
         {
-            try
+            var newObservation = new Observation(state.Version, timeProvider);
+            if (observation.CompareExchange(in newObservation, in observationCopy, out observationCopy)
+                || observationCopy.Version != state.Version)
             {
-                cts.Cancel(throwOnFirstException: false);
-            }
-            finally
-            {
-                cts.Dispose();
+                observationCopy = newObservation;
             }
         }
+
+        return observationCopy.GetRemainingTime(state.TimeToLive, timeProvider);
     }
+
+    string LeaseEngine<TMetadata>.ILeaseStorage.Name => GetType().Name;
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            Terminate();
+            engine.Dispose();
         }
 
         base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Represents a state of the lease.
-    /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct State
-    {
-        /// <summary>
-        /// The metadata associated with the lease.
-        /// </summary>
-        public TMetadata Metadata { get; init; }
-
-        /// <summary>
-        /// A version of the lease.
-        /// </summary>
-        /// <remarks>
-        /// The version is incremented on every change of the state and never decreases, so it can be used
-        /// as a fencing token.
-        /// <para>
-        /// The underlying storage must create a lease (including the re-creation after deletion) with the version
-        /// taken from the global non-negative sequence number that never decreases, e.g., a database sequence.
-        /// Otherwise, the re-created lease can reuse the versions of the deleted one, which breaks the expiration tracking,
-        /// the compare-and-set semantics of <see cref="TryUpdateStateAsync(State, CancellationToken)"/> and fencing.
-        /// If there is no state in the underlying storage, return the released state with such version.
-        /// </para>
-        /// </remarks>
-        public required long Version { get; init; }
-
-        /// <summary>
-        /// A timestamp of when this state was created.
-        /// </summary>
-        /// <remarks>
-        /// The value is informational and not used for expiration tracking, except the default value
-        /// that indicates the released lease.
-        /// </remarks>
-        public required DateTimeOffset CreatedAt { get; init; }
-
-        /// <summary>
-        /// The unique identifier of the lease owner.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="Guid.Empty"/> if the lease is released or there is no state in the underlying persistent storage.
-        /// </remarks>
-        public required Guid OwnerId { get; init; }
-
-        /// <summary>
-        /// Gets or sets lease duration.
-        /// </summary>
-        /// <remarks>
-        /// The value is provided by the underlying storage, so all the providers sharing the same storage
-        /// agree on the lease duration. It must be set even if there is no state in the underlying storage.
-        /// <para>
-        /// The underlying storage must not decrease the value while the lease is acquired, because the current owner
-        /// relies on the duration it received on acquisition or renewal, while the other providers apply
-        /// the decreased value immediately, and take over the lease before the owner considers it expired.
-        /// The value can be decreased only when the lease is released. Increasing the value is always safe.
-        /// </para>
-        /// </remarks>
-        /// <value>The positive lease duration.</value>
-        /// <exception cref="ArgumentOutOfRangeException">The value is not positive or greater than <see cref="Timeout.MaxTimeoutParameterTicks"/>.</exception>
-        public required TimeSpan TimeToLive
-        {
-            get;
-            init
-            {
-                ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(value, TimeSpan.Zero);
-                ArgumentOutOfRangeException.ThrowIfGreaterThan(value.Ticks, Timeout.MaxTimeoutParameterTicks, nameof(value));
-
-                field = value;
-            }
-        }
-
-        internal bool IsReleased => CreatedAt == default;
-
-        internal bool IsOwnedBy(Guid owner)
-            => owner != Guid.Empty && OwnerId == owner && !IsReleased;
-    }
-
-    private TimeSpan GetRemainingTime(in State state)
-    {
-        TimeSpan remainingTime;
-        if (state.IsReleased)
-        {
-            remainingTime = TimeSpan.Zero;
-        }
-        else
-        {
-            var observationCopy = observation.Value;
-            if (observationCopy.Version != state.Version)
-            {
-                // Don't overwrite a concurrent observation. If it's of the same version, reuse it: the timestamp
-                // of any observation never precedes the write of the observed version. Otherwise, use the local one.
-                var newObservation = new Observation(state.Version, provider);
-                if (observation.CompareExchange(in newObservation, in observationCopy, out observationCopy)
-                    || observationCopy.Version != state.Version)
-                {
-                    observationCopy = newObservation;
-                }
-            }
-
-            remainingTime = state.TimeToLive - observationCopy.Timestamp.GetElapsedTime(provider);
-        }
-
-        return remainingTime;
-    }
-
-    /// <summary>
-    /// Represents a result of lease acquisition operation.
-    /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct AcquisitionResult
-    {
-        /// <summary>
-        /// A version of the lease.
-        /// </summary>
-        public readonly State State;
-
-        /// <summary>
-        /// The expiration timeout.
-        /// </summary>
-        public readonly Timeout Expiration;
-
-        internal AcquisitionResult(in State state, TimeSpan ttl, TimeProvider provider)
-        {
-            Debug.Assert(ttl > TimeSpan.Zero);
-
-            State = state;
-            Expiration = new(ttl, provider);
-        }
-
-        /// <summary>
-        /// Deconstructs the result.
-        /// </summary>
-        /// <param name="state">Same as <see cref="AcquisitionResult.State"/>.</param>
-        /// <param name="lifetime">Same as <paramref name="lifetime"/>.</param>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Deconstruct(out State state, out Timeout lifetime)
-        {
-            state = State;
-            lifetime = Expiration;
-        }
     }
 }
