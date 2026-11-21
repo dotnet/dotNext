@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Leases;
 
+using Diagnostics;
+
 /// <summary>
 /// Represents a state of the lease.
 /// </summary>
@@ -20,8 +22,9 @@ public readonly struct LeaseState<TMetadata>
     /// A version of the lease.
     /// </summary>
     /// <remarks>
-    /// The version is incremented on every change of the state and never decreases, so it can be used
-    /// as a fencing token.
+    /// The version never decreases, so it can be used as a fencing token. It is incremented on acquisition and release
+    /// of the lease. If the underlying storage supports <see cref="RenewalStamp"/>, the renewal of the lease
+    /// by the same owner doesn't change the version. Otherwise, the version is incremented on renewal as well.
     /// <para>
     /// The underlying storage must create a lease (including the re-creation after deletion) with the version
     /// taken from the global non-negative sequence number that never decreases, e.g., a database sequence.
@@ -76,8 +79,41 @@ public readonly struct LeaseState<TMetadata>
         }
     }
 
+    /// <summary>
+    /// Gets or sets the stamp of the latest renewal of the lease.
+    /// </summary>
+    /// <remarks>
+    /// The stamp allows renewing the lease without incrementing <see cref="Version"/>, so the fencing token
+    /// remains the same while the lease is held by the same owner, and the renewal doesn't need to be durable.
+    /// The value is opaque, it is compared only for equality and must not be interpreted.
+    /// <para>
+    /// <see cref="Guid.Empty"/> means that the underlying storage doesn't support renewal stamps.
+    /// In that case, every renewal increments <see cref="Version"/>.
+    /// </para>
+    /// <para>
+    /// If the underlying storage supports renewal stamps, it must return the stamp of the current state,
+    /// including the released state and the state of the lease that doesn't exist, and never <see cref="Guid.Empty"/>.
+    /// The compare-and-set operation must check the stamp in addition to <see cref="Version"/>, and store
+    /// the stamp of the new state on success. The stamp can be kept in memory only:
+    /// if it's lost, e.g., on restart, the storage must generate a new one using <see cref="Guid.NewGuid"/>.
+    /// The storage must never return the stamp again after it has been replaced or lost,
+    /// otherwise the providers can consider the lease expired while it's still held.
+    /// </para>
+    /// </remarks>
+    public Guid RenewalStamp { get; init; }
+
     internal bool IsReleased => CreatedAt == default;
 
     internal bool IsOwnedBy(Guid owner)
         => owner != Guid.Empty && OwnerId == owner && !IsReleased;
+
+    internal Observation ObserveAt(Timestamp ts) => new(Version, RenewalStamp, ts);
+
+    internal Observation ObserveNow(TimeProvider provider) => new(Version, RenewalStamp, provider);
+
+    internal bool IsObservedBy(in Observation observation)
+        => Version == observation.Version && RenewalStamp == observation.RenewalStamp;
+
+    // the storage that doesn't support renewal stamps keeps Guid.Empty
+    internal Guid NewRenewalStamp() => RenewalStamp == Guid.Empty ? Guid.Empty : Guid.NewGuid();
 }

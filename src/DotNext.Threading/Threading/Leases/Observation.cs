@@ -7,10 +7,10 @@ using Diagnostics;
 // The version of the lease and the local time of its first observation.
 // Losing the observation is safe: the next observation starts later, so the lease expires later.
 [StructLayout(LayoutKind.Auto)]
-internal readonly record struct Observation(long Version, Timestamp Timestamp)
+internal readonly record struct Observation(long Version, Guid RenewalStamp, Timestamp Timestamp)
 {
-    public Observation(long version, TimeProvider provider)
-        : this(version, new Timestamp(provider))
+    public Observation(long version, Guid renewalStamp, TimeProvider provider)
+        : this(version, renewalStamp, new Timestamp(provider))
     {
     }
 

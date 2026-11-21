@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Diagnostics;
 
 namespace DotNext.Threading.Leases;
 
@@ -13,6 +12,8 @@ partial class LeaseEngine<TMetadata>
         bool Invoke(in LeaseState<TMetadata> state, bool isExpired);
         
         Guid OwnerId { get; }
+        
+        static abstract bool RequiresVersionBump { get; }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -22,6 +23,8 @@ partial class LeaseEngine<TMetadata>
             => isExpired || state.IsOwnedBy(ownerId);
 
         Guid ITransitionCondition.OwnerId => ownerId;
+        
+        static bool ITransitionCondition.RequiresVersionBump => true;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -31,6 +34,8 @@ partial class LeaseEngine<TMetadata>
             => state.IsOwnedBy(ownerId) && (reacquire || !isExpired);
         
         Guid ITransitionCondition.OwnerId => ownerId;
+        
+        static bool ITransitionCondition.RequiresVersionBump => false;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -57,14 +62,14 @@ partial class LeaseEngine<TMetadata>
     {
         ValueTask<LeaseState<TMetadata>> GetStateAsync(CancellationToken token);
 
-        ValueTask<bool> TryUpdateStateAsync(LeaseState<TMetadata> state, CancellationToken token);
+        ValueTask<bool> TryUpdateStateAsync(LeaseState<TMetadata> expected, LeaseState<TMetadata> update, CancellationToken token);
         
         // Records the observation of the version written by this provider
         Observation Observation { set; }
 
         // Returns zero for the released lease; otherwise, the remaining time since the first observation of the version.
-        // A concurrent observation must not be overwritten. If it's of the same version, reuse it: the timestamp
-        // of any observation never precedes the write of the observed version. Otherwise, use the local one.
+        // A concurrent observation must not be overwritten. If it has the same version and stamp, reuse it: the timestamp
+        // of any observation never precedes the write of the observed version and stamp. Otherwise, use the local one.
         TimeSpan GetRemainingTime(in LeaseState<TMetadata> state, TimeProvider provider);
     
         /// <summary>

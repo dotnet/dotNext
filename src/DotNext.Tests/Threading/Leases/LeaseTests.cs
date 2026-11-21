@@ -122,6 +122,56 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task RenewalStampKeepsVersion()
+    {
+        var storage = new LeaseStorage(DefaultTimeout, supportsRenewalStamp: true);
+        using var provider = new TestLeaseProvider(DefaultTimeout, storage);
+        var owner = Guid.NewGuid();
+
+        var acquired = NotNull(await provider.TryAcquireAsync(owner, TestToken)).State;
+        Equal(1L, acquired.Version);
+        NotEqual(Guid.Empty, acquired.RenewalStamp);
+
+        // renewal changes the stamp only, so the fencing token remains the same
+        var renewed = NotNull(await provider.TryRenewAsync(owner, reacquire: false, TestToken)).State;
+        Equal(1L, renewed.Version);
+        NotEqual(acquired.RenewalStamp, renewed.RenewalStamp);
+        Equal(renewed.RenewalStamp, storage.State.RenewalStamp);
+
+        // acquisition always increments the version
+        Equal(2L, NotNull(await provider.TryAcquireAsync(owner, TestToken)).State.Version);
+        Equal(3L, await provider.ReleaseAsync(owner, TestToken));
+        NotEqual(Guid.Empty, storage.State.RenewalStamp);
+    }
+
+    [Fact]
+    public static async Task RenewalStampExtendsLease()
+    {
+        var ttl = TimeSpan.FromMilliseconds(500);
+        var storage = new LeaseStorage(ttl, supportsRenewalStamp: true);
+        using var provider1 = new TestLeaseProvider(ttl, storage);
+        using var provider2 = new TestLeaseProvider(ttl, storage);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
+
+        NotNull(await provider1.TryAcquireAsync(owner1, TestToken));
+        True(await provider2.ObserveAsync(TestToken));
+
+        // the renewals keep the version, but the other provider must see them
+        for (var i = 0; i < 5; i++)
+        {
+            await Task.Delay(ttl / 3, TestToken);
+            Equal(1L, NotNull(await provider1.TryRenewAsync(owner1, reacquire: false, TestToken)).State.Version);
+            True(await provider2.ObserveAsync(TestToken));
+        }
+
+        Null(await provider2.TryAcquireAsync(owner2, TestToken));
+
+        // timer resolution is coarser than the monotonic clock used by the provider
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+        Equal(2L, NotNull(await provider2.TryAcquireAsync(owner2, TestToken)).State.Version);
+    }
+
+    [Fact]
     public static async Task EmptyOwner()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
@@ -535,7 +585,7 @@ public sealed class LeaseTests : Test
         public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + offset;
     }
 
-    private sealed class LeaseStorage(TimeSpan ttl)
+    private sealed class LeaseStorage(TimeSpan ttl, bool supportsRenewalStamp = false)
     {
         private readonly System.Threading.Lock syncRoot = new();
 
@@ -546,6 +596,7 @@ public sealed class LeaseTests : Test
             CreatedAt = default,
             OwnerId = Guid.Empty,
             TimeToLive = ttl,
+            RenewalStamp = supportsRenewalStamp ? Guid.NewGuid() : Guid.Empty,
         };
 
         internal LeaseState<int> State
@@ -567,12 +618,13 @@ public sealed class LeaseTests : Test
             }
         }
 
-        internal bool TryUpdate(in LeaseState<int> newState)
+        internal bool TryUpdate(in LeaseState<int> expected, in LeaseState<int> newState)
         {
             lock (syncRoot)
             {
-                if (state.Version + 1L == newState.Version)
+                if (state.Version == expected.Version && state.RenewalStamp == expected.RenewalStamp)
                 {
+                    Assert.Equal(supportsRenewalStamp, newState.RenewalStamp != Guid.Empty);
                     state = newState;
                     return true;
                 }
@@ -594,10 +646,10 @@ public sealed class LeaseTests : Test
             return Storage.State;
         }
 
-        protected override async ValueTask<bool> TryUpdateStateAsync(LeaseState<int> state, CancellationToken token)
+        protected override async ValueTask<bool> TryUpdateStateAsync(LeaseState<int> expected, LeaseState<int> update, CancellationToken token)
         {
             await Task.Yield();
-            return Storage.TryUpdate(in state);
+            return Storage.TryUpdate(in expected, in update);
         }
     }
 
@@ -613,10 +665,11 @@ public sealed class LeaseTests : Test
             return GetStorage(leaseId).State;
         }
 
-        protected override async ValueTask<bool> TryUpdateStateAsync(string leaseId, LeaseState<int> state, CancellationToken token)
+        protected override async ValueTask<bool> TryUpdateStateAsync(string leaseId, LeaseState<int> expected, LeaseState<int> update,
+            CancellationToken token)
         {
             await Task.Yield();
-            return GetStorage(leaseId).TryUpdate(in state);
+            return GetStorage(leaseId).TryUpdate(in expected, in update);
         }
     }
 

@@ -65,30 +65,33 @@ internal sealed partial class LeaseEngine<TMetadata> : IDisposable
         var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
-            var state = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
+            var currentState = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
 
-            if (!condition.Invoke(in state, storage.GetRemainingTime(in state, provider) <= TimeSpan.Zero))
+            if (!condition.Invoke(in currentState, storage.GetRemainingTime(in currentState, provider) <= TimeSpan.Zero))
                 return null;
-
-            var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
+            
+            var metadata = await updater.Invoke(currentState.Metadata, cts.Token).ConfigureAwait(false);
 
             // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
             var ts = new Timestamp(provider);
-            state = state with
+            var newState = currentState with
             {
+                Version = TCondition.RequiresVersionBump || currentState.RenewalStamp == Guid.Empty
+                    ? currentState.Version + 1L
+                    : currentState.Version,
                 CreatedAt = provider.GetUtcNow(),
-                Version = state.Version + 1L,
                 Metadata = metadata,
                 OwnerId = condition.OwnerId,
+                RenewalStamp = currentState.NewRenewalStamp(),
             };
 
-            if (!await storage.TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
+            if (!await storage.TryUpdateStateAsync(currentState, newState, cts.Token).ConfigureAwait(false))
                 return null;
 
-            storage.Observation = new(state.Version, ts);
-            var remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
+            storage.Observation = newState.ObserveAt(ts);
+            var remainingTime = newState.TimeToLive - ts.GetElapsedTime(provider);
             return remainingTime > TimeSpan.Zero
-                ? new LeaseAcquisitionResult<TMetadata>(in state, remainingTime, provider)
+                ? new LeaseAcquisitionResult<TMetadata>(in newState, remainingTime, provider)
                 : null;
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
@@ -124,33 +127,34 @@ internal sealed partial class LeaseEngine<TMetadata> : IDisposable
         {
             while (true)
             {
-                var state = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
+                var currentState = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
 
-                var remainingTime = storage.GetRemainingTime(in state, provider);
-                if (remainingTime <= TimeSpan.Zero || state.IsOwnedBy(ownerId))
+                var remainingTime = storage.GetRemainingTime(in currentState, provider);
+                if (remainingTime <= TimeSpan.Zero || currentState.IsOwnedBy(ownerId))
                 {
-                    var metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false);
+                    var metadata = await updater.Invoke(currentState.Metadata, cts.Token).ConfigureAwait(false);
 
                     // the timestamp must precede CreatedAt, so the reported remaining time never exceeds the stored one
                     var ts = new Timestamp(provider);
-                    state = state with
+                    var newState = currentState with
                     {
                         CreatedAt = provider.GetUtcNow(),
-                        Version = state.Version + 1L,
+                        Version = currentState.Version + 1L,
                         Metadata = metadata,
                         OwnerId = ownerId,
+                        RenewalStamp = currentState.NewRenewalStamp(),
                     };
 
-                    if (!await storage.TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
+                    if (!await storage.TryUpdateStateAsync(currentState, newState, cts.Token).ConfigureAwait(false))
                         continue;
 
-                    storage.Observation = new(state.Version, ts);
-                    remainingTime = state.TimeToLive - ts.GetElapsedTime(provider);
+                    storage.Observation = newState.ObserveAt(ts);
+                    remainingTime = newState.TimeToLive - ts.GetElapsedTime(provider);
 
                     if (remainingTime <= TimeSpan.Zero)
                         continue;
 
-                    return new LeaseAcquisitionResult<TMetadata>(in state, remainingTime, provider);
+                    return new LeaseAcquisitionResult<TMetadata>(in newState, remainingTime, provider);
                 }
 
                 await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
@@ -187,21 +191,24 @@ internal sealed partial class LeaseEngine<TMetadata> : IDisposable
         var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
-            var state = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
+            var currentState = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
 
             // the expired lease can be released, because it's not taken by another owner
-            if (ownerId != Guid.Empty && !state.IsOwnedBy(ownerId))
+            if (ownerId != Guid.Empty && !currentState.IsOwnedBy(ownerId))
                 return null;
 
-            state = state with
+            var newState = currentState with
             {
                 CreatedAt = default,
-                Version = state.Version + 1L,
-                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
+                Version = currentState.Version + 1L,
+                Metadata = await updater.Invoke(currentState.Metadata, cts.Token).ConfigureAwait(false),
                 OwnerId = Guid.Empty,
+                RenewalStamp = currentState.NewRenewalStamp(),
             };
 
-            return await storage.TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false) ? state.Version : null;
+            return await storage.TryUpdateStateAsync(currentState, newState, cts.Token).ConfigureAwait(false)
+                ? newState.Version
+                : null;
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
@@ -233,21 +240,22 @@ internal sealed partial class LeaseEngine<TMetadata> : IDisposable
         var cts = cancellationTokens.Combine(token, LifetimeToken);
         try
         {
-            LeaseState<TMetadata> state;
+            LeaseState<TMetadata> currentState, newState;
             do
             {
-                state = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
+                currentState = await storage.GetStateAsync(cts.Token).ConfigureAwait(false);
 
-                state = state with
+                newState = currentState with
                 {
                     CreatedAt = default,
-                    Version = state.Version + 1L,
-                    Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
+                    Version = currentState.Version + 1L,
+                    Metadata = await updater.Invoke(currentState.Metadata, cts.Token).ConfigureAwait(false),
                     OwnerId = Guid.Empty,
+                    RenewalStamp = currentState.NewRenewalStamp(),
                 };
-            } while (!await storage.TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false));
+            } while (!await storage.TryUpdateStateAsync(currentState, newState, cts.Token).ConfigureAwait(false));
 
-            return state.Version;
+            return newState.Version;
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {

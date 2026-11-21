@@ -431,16 +431,20 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
     /// Attempts to update the state in the underlying storage using compare-and-set semantics.
     /// </summary>
     /// <remarks>
-    /// The operation must use compare-and-set semantics in the following way: save <paramref name="state"/>
-    /// only if <see cref="LeaseState{TMetadata}.Version"/> of the currently stored state is equal to the version of <paramref name="state"/> - 1.
-    /// If the lease doesn't exist in the storage, save <paramref name="state"/> only if the lease is still absent.
+    /// The operation must use compare-and-set semantics in the following way: save <paramref name="update"/>
+    /// only if <see cref="LeaseState{TMetadata}.Version"/> and <see cref="LeaseState{TMetadata}.RenewalStamp"/>
+    /// of the currently stored state are equal to the corresponding properties of <paramref name="expected"/>.
+    /// Other properties must not be compared.
+    /// If the lease doesn't exist in the storage, save <paramref name="update"/> only if the lease is still absent.
     /// Note that the method can be called concurrently.
     /// </remarks>
     /// <param name="leaseId">The identifier of the lease.</param>
-    /// <param name="state">The state to be stored in the underlying storage.</param>
+    /// <param name="expected">The state previously returned by <see cref="GetStateAsync(TKey, CancellationToken)"/>.</param>
+    /// <param name="update">The state to be stored in the underlying storage.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if update is performed successfully; <see langword="false"/> is compare-and-set failed.</returns>
-    protected abstract ValueTask<bool> TryUpdateStateAsync(TKey leaseId, LeaseState<TMetadata> state, CancellationToken token);
+    protected abstract ValueTask<bool> TryUpdateStateAsync(TKey leaseId, LeaseState<TMetadata> expected, LeaseState<TMetadata> update,
+        CancellationToken token);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -460,8 +464,9 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
         ValueTask<LeaseState<TMetadata>> LeaseEngine<TMetadata>.ILeaseStorage.GetStateAsync(CancellationToken token)
             => provider.GetStateAsync(leaseId, token);
 
-        ValueTask<bool> LeaseEngine<TMetadata>.ILeaseStorage.TryUpdateStateAsync(LeaseState<TMetadata> state, CancellationToken token)
-            => provider.TryUpdateStateAsync(leaseId, state, token);
+        ValueTask<bool> LeaseEngine<TMetadata>.ILeaseStorage.TryUpdateStateAsync(LeaseState<TMetadata> expected,
+            LeaseState<TMetadata> update, CancellationToken token)
+            => provider.TryUpdateStateAsync(leaseId, expected, update, token);
 
         Observation LeaseEngine<TMetadata>.ILeaseStorage.Observation
         {
@@ -482,15 +487,15 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
                 return TimeSpan.Zero;
 
             var exists = TryGetValue(leaseId, out var observation);
-            if (!exists || observation.Version != state.Version)
+            if (!exists || !state.IsObservedBy(in observation))
             {
                 // emulates compare-and-exchange
-                var newObservation = new Observation(state.Version, provider);
+                var newObservation = state.ObserveNow(provider);
                 if ((exists
                         ? TryUpdate(leaseId, newObservation, observation)
                         : TryAdd(leaseId, newObservation))
                     || !TryGetValue(leaseId, out observation)
-                    || observation.Version != state.Version)
+                    || !state.IsObservedBy(in observation))
                 {
                     observation = newObservation;
                 }
