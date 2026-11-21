@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime.ExceptionServices;
+
 /// <summary>
 /// Represents simple memory reader backed by <see cref="ReadOnlySpan{T}"/>.
 /// </summary>

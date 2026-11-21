@@ -6,6 +6,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using Runtime.ExceptionServices;
 
 /// <summary>
 /// Provides access to user data associated with the object.

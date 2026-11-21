@@ -27,4 +27,19 @@ public static class ExceptionExtensions
 
         ExceptionDispatchInfo.Throw(source);
     }
+
+    /// <summary>
+    /// Extends the exception type.
+    /// </summary>
+    /// <typeparam name="TException">The type of the exception.</typeparam>
+    extension<TException>(TException)
+        where TException : Exception, new()
+    {
+        /// <summary>
+        /// Throws <typeparamref name="TException"/>.
+        /// </summary>
+        [DoesNotReturn]
+        [StackTraceHidden]
+        public static void Throw() => throw new TException();
+    }
 }

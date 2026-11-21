@@ -2,6 +2,8 @@ using System.Buffers;
 
 namespace DotNext.Runtime.InteropServices;
 
+using ExceptionServices;
+
 partial struct Pointer<T> : IPinnable
 {
     /// <inheritdoc />

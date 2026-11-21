@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime;
 
 using CompilerServices;
+using ExceptionServices;
 using Reflection;
 
 /// <summary>

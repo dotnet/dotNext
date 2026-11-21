@@ -6,6 +6,7 @@ namespace DotNext.Runtime;
 
 using CompilerServices;
 using Reflection;
+using ExceptionServices;
 
 partial struct Variant
 {

@@ -8,6 +8,7 @@ using Pointer = System.Reflection.Pointer;
 namespace DotNext.Runtime.InteropServices;
 
 using CompilerServices;
+using ExceptionServices;
 
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.

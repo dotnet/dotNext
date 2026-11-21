@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices;
 
+using ExceptionServices;
+
 partial struct Pointer<T> :
     IComparisonOperators<Pointer<T>, Pointer<T>, bool>,
     IAdditionOperators<Pointer<T>, int, Pointer<T>>,
