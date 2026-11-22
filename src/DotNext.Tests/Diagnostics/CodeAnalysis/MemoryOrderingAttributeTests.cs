@@ -10,4 +10,11 @@ public sealed class MemoryOrderingAttributeTests : Test
             Equal(ordering, new MemoryOrderingAttribute(ordering).Ordering);
         }
     }
+
+    [Fact]
+    public static void CheckDefaultAttribute()
+    {
+        True(new MemoryOrderingAttribute(MemoryOrdering.Unknown).IsDefaultAttribute());
+        False(new MemoryOrderingAttribute(MemoryOrdering.Acquire).IsDefaultAttribute());
+    }
 }

@@ -6,6 +6,7 @@ namespace DotNext.Threading;
 
 using Diagnostics.CodeAnalysis;
 using Runtime.ExceptionServices;
+using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
 
 /// <summary>
 /// Implements epoch-based reclamation.

@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Diagnostics;
 
 using CodeAnalysis;
-using Threading;
 
 /// <summary>
 /// Represents timestamp.
@@ -283,7 +282,7 @@ public readonly record struct Timestamp :
     /// <returns>The value at the specified location.</returns>
     [MemoryOrdering(MemoryOrdering.Acquire)]
     public static Timestamp VolatileRead(ref readonly Timestamp location)
-        => new(Atomic.Read(in location.ticks));
+        => new(Volatile.Read(in location.ticks));
 
     /// <summary>
     /// Writes the timestamp and prevents the processor from reordering memory operations.
@@ -292,7 +291,7 @@ public readonly record struct Timestamp :
     /// <param name="newValue">The value to write.</param>
     [MemoryOrdering(MemoryOrdering.Release)]
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
-        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
+        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
     /// <summary>
     /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
@@ -309,7 +308,7 @@ public readonly record struct Timestamp :
     /// <param name="provider">Time provider.</param>
     [MemoryOrdering(MemoryOrdering.Release)]
     public static void Refresh(ref Timestamp location, TimeProvider provider)
-        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), GetCurrentTicks(provider));
+        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), GetCurrentTicks(provider));
 
     /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
     [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]

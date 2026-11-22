@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -18,41 +16,32 @@ public static class TaskType
 {
     private static class Cache<T>
     {
-        internal static readonly Func<Task<T>, T> ResultGetter;
+        internal static readonly Func<Task<T>, T> ResultGetter = ResultGetterMethod
+            .CreateDelegate<Task<T>, Func<Task<T>, T>>()!;
 
-        static Cache()
+        private static RuntimeMethodHandle ResultGetterMethod
         {
-            Ldtoken(PropertyGet(Type<Task<T>>(), nameof(Task<>.Result)));
-            Pop(out RuntimeMethodHandle getterHandle);
-            
-            Ldtoken<Task<T>>();
-            Pop(out RuntimeTypeHandle taskHandle);
-
-            var getterInfo = MethodBase.GetMethodFromHandle(getterHandle, taskHandle) as MethodInfo;
-            Debug.Assert(getterInfo is not null);
-
-            ResultGetter = getterInfo.CreateDelegate<Func<Task<T>, T>>();
+            get
+            {
+                Ldtoken(PropertyGet(Type<Task<T>>(), nameof(Task<>.Result)));
+                return Return<RuntimeMethodHandle>();
+            }
         }
     }
 
-    internal static readonly Type CompletedTaskType;
-    private static readonly Func<Task, bool> CompletedSuccessfullyGetter;
+    private static readonly Func<Task, bool> CompletedSuccessfullyGetter = CompletedSuccessfullyGetterMethod
+        .CreateDelegate<Task, Func<Task, bool>>()!;
 
-    static TaskType()
+    private static RuntimeMethodHandle CompletedSuccessfullyGetterMethod
     {
-        CompletedTaskType = Task.CompletedTask.GetType();
-
-        Ldtoken(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
-        Pop(out RuntimeMethodHandle getterHandle);
-
-        Ldtoken<Task>();
-        Pop(out RuntimeTypeHandle taskHandle);
-
-        var getterInfo = MethodBase.GetMethodFromHandle(getterHandle, taskHandle) as MethodInfo;
-        Debug.Assert(getterInfo is not null);
-
-        CompletedSuccessfullyGetter = getterInfo.CreateDelegate<Func<Task, bool>>();
+        get
+        {
+            Ldtoken(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
+            return Return<RuntimeMethodHandle>();
+        }
     }
+
+    internal static Type CompletedTaskType => Task.CompletedTask.GetType();
 
     /// <summary>
     /// Returns task type for the specified result type.

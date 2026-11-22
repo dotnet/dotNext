@@ -236,10 +236,10 @@ public sealed class OptionalTest : Test
     [Fact]
     public static void GettingReference()
     {
-        var optional = Optional<int>.None;
-        Throws<InvalidOperationException>(() => optional.GetReference<InvalidOperationException>());
-        Throws<InvalidOperationException>(() => optional.ValueRef);
-        optional = 23;
+        Throws<InvalidOperationException>(static () => Optional<int>.None.GetReference<InvalidOperationException>());
+        Throws<InvalidOperationException>(static () => Optional<int>.None.ValueRef);
+        
+        Optional<int> optional = 23;
         Equal(23, optional.GetReference<InvalidOperationException>());
         Equal(23, optional.GetReference(static () => new InvalidOperationException()));
         Equal(23, optional.ValueRef);
@@ -273,15 +273,15 @@ public sealed class OptionalTest : Test
     public static void Flatten()
     {
         Optional<Optional<string>> input = default;
-        Optional<string> output = input.Flatten();
+        Optional<string> output = input.Unwrap();
         True(output.IsUndefined);
 
         input = new(null);
-        output = input.Flatten();
+        output = input.Unwrap();
         True(output.IsNull);
 
         input = new(string.Empty);
-        output = input.Flatten();
+        output = input.Unwrap();
         True(output.HasValue);
     }
 
@@ -367,8 +367,8 @@ public sealed class OptionalTest : Test
     [Fact]
     public static async Task FlattenTask()
     {
-        await ThrowsAsync<InvalidOperationException>(static () => Task.FromResult(Optional.None<int>()).Flatten());
-        Equal(42, await Task.FromResult(Optional.Some(42)).Flatten());
+        await ThrowsAsync<InvalidOperationException>(static () => Task.FromResult(Optional.None<int>()).Unwrap());
+        Equal(42, await Task.FromResult(Optional.Some(42)).Unwrap());
     }
 
     [Fact]

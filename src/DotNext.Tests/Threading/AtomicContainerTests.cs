@@ -2,8 +2,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
-
 public sealed class AtomicContainerTests : Test
 {
     [Fact]
@@ -13,6 +11,46 @@ public sealed class AtomicContainerTests : Test
         var value = Guid.NewGuid();
         container.Value = value;
         Equal(value, container.Value);
+    }
+
+    [Fact]
+    public static void CompareExchangeAliasedExpected()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 43M;
+        False(container.CompareExchange(100M, in value, out value));
+        Equal(10M, value);
+        Equal(10M, container.Value);
+    }
+
+    [Fact]
+    public static void CompareExchangeAliasedUpdate()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 20M;
+        True(container.CompareExchange(in value, 10M, out value));
+        Equal(10M, value);
+        Equal(20M, container.Value);
+    }
+
+    [Fact]
+    public static void ExchangeAliased()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 20M;
+        container.Exchange(in value, out value);
+        Equal(10M, value);
+        Equal(20M, container.Value);
+    }
+
+    [Fact]
+    public static void GetAndAccumulateAliased()
+    {
+        var container = new Atomic<decimal> { Value = 10M };
+        var value = 5M;
+        container.GetAndAccumulate(in value, static (ref current, in x) => current += x, out value);
+        Equal(10M, value);
+        Equal(15M, container.Value);
     }
 
     [Fact]
@@ -160,15 +198,15 @@ public sealed class AtomicContainerTests : Test
         Equal(20L, atomic.Read<long, YReference>());
     }
 
-    private struct XReference : IFieldReference<Point, long>
+    private struct XReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<Point, long>.GetReference(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetReference(in Point value)
             => ref value.X;
     }
     
-    private struct YReference : IFieldReference<Point, long>
+    private struct YReference : Atomic<Point>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<Point, long>.GetReference(in Point value)
+        static ref readonly long Atomic<Point>.IFieldReference<long>.GetReference(in Point value)
             => ref value.Y;
     }
 }

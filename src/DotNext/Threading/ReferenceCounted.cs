@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Runtime.ExceptionServices;
+
 /// <summary>
 /// Represents consumer part of the resource which lifetime is managed by the reference counter in thread-safe manner.
 /// </summary>

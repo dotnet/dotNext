@@ -93,10 +93,10 @@ public partial class CommandInterpreter : Disposable
                         {
                             switch (mapping.InterfaceMethods[i].Name)
                             {
-                                case "get_Id" when mapping.TargetMethods[i].Invoke(obj: null, parameters: null) is int value:
+                                case $"get_{nameof(ICommand<>.Id)}" when mapping.TargetMethods[i].Invoke(obj: null, parameters: null) is int value:
                                     commandId = value;
                                     break;
-                                case "get_IsSnapshot" when mapping.TargetMethods[i].Invoke(obj: null, parameters: null) is bool value:
+                                case $"get_{nameof(ICommand<>.IsSnapshot)}" when mapping.TargetMethods[i].Invoke(obj: null, parameters: null) is bool value:
                                     isSnapshotHandler = value;
                                     break;
                             }

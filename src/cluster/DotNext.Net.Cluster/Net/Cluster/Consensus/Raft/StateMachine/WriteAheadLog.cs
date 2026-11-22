@@ -196,8 +196,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Atomic.Read(in field);
-        private set => Atomic.Write(ref field, value);
+        get => Volatile.Read(in field);
+        private set => Volatile.Write(ref field, value);
     }
 
     private async ValueTask<long> AppendUnbufferedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -456,7 +456,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         }
 
         LastEntryIndex = index;
-        Atomic.Write(ref lastWrittenIndex, index);
+        Volatile.Write(ref lastWrittenIndex, index);
         AppendRateMeter.Add(1L, measurementTags);
         BytesWrittenMeter.Record(length + LogEntryMetadata.Size, measurementTags);
     }

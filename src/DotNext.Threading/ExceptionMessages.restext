@@ -7,6 +7,7 @@ InvalidSourceState=The object is in invalid state
 InvalidSourceToken=The token of the task is invalid
 AsyncTaskInterrupted=Asynchronous task has been interrupted
 LeaseExpired=Lease expired
+EmptyLeaseOwner=The lease owner must not be empty
 ConcurrencyLimitReached=The maximum number of suspended callers is reached
 UnsupportedAltCacheView=The alternative lookup is not supported for the given type
 LockAcquiredSynchronously=The operation is not supported if the lock was acquired synchronously

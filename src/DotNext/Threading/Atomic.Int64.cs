@@ -13,8 +13,9 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <returns>The value at the specified location.</returns>
     [MemoryOrdering(MemoryOrdering.Acquire)]
+    [Obsolete("Use Volatile.Read instead.")]
     public static long Read(ref readonly long location)
-        => IsAtomic<long>() ? Volatile.Read(in location) : Interlocked.Read(in location);
+        => Volatile.Read(in location);
 
     /// <summary>
     /// Writes atomically the value at the specified location in the memory.
@@ -25,15 +26,7 @@ public static partial class Atomic
     /// <param name="location">The location of the value.</param>
     /// <param name="value">The desired value at the specified location.</param>
     [MemoryOrdering(MemoryOrdering.Release)]
+    [Obsolete("Use Volatile.Write instead.")]
     public static void Write(ref long location, long value)
-    {
-        if (IsAtomic<long>())
-        {
-            Volatile.Write(ref location, value);
-        }
-        else
-        {
-            Interlocked.Exchange(ref location, value);
-        }
-    }
+        => Volatile.Write(ref location, value);
 }

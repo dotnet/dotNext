@@ -40,7 +40,7 @@ partial class WriteAheadLog
 
     private void RemoveSquashedPages(long toIndex)
     {
-        var lastWrittenIndexCopy = Atomic.Read(in lastWrittenIndex);
+        var lastWrittenIndexCopy = Volatile.Read(in lastWrittenIndex);
         
         long removedBytes;
         LogEntryMetadata metadata;

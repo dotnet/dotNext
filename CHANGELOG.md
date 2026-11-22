@@ -1,6 +1,38 @@
 Release Notes
 ====
 
+# 11-22-2026
+<a href="https://www.nuget.org/packages/dotnext/6.13.0">DotNext 6.13.0</a>
+* Introduced `Atomic.Read` and `Atomic.Write` for arbitrary enum types
+* Fixed memory aliasing bug in `Atomic<T>` class
+* Deprecation of `Atomic.Read` for **long**, **ulong**, and **double** data types
+* Fixed nullability attributes in `Optional<T>` class
+* Various performance improvements of `Optional<T>` implementation
+* `SpanOwner<T>` removes allocation when passed [MemoryPool&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1) is [shared pool](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1.shared)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.13.0">DotNext.Metaprogramming 6.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.13.0">DotNext.Unsafe 6.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.13.0">DotNext.Threading 6.13.0</a>
+* Performance improvements of optimistic read lock in `AsyncReaderWriterLock`
+* Fixed correctness of `LeaseConsumer` and `LeaseProvider` when implementing a distributed lease. Changes are backward incompatible.
+* Introduced `LeaseProvider.ObserveAsync` that allows to observe the lease state without waiting for the real request for renewal
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.13.0">DotNext.IO 6.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.13.0">DotNext.Net.Cluster 6.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.13.0">DotNext.AspNetCore.Cluster 6.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.13.0">DotNext.MaintenanceServices 1.13.0</a>
+* Updated dependencies
+
 # 11-16-2026
 <a href="https://www.nuget.org/packages/dotnext/6.12.2">DotNext 6.12.2</a>
 * `Variant` data type becomes more usable for serialization frameworks where AOT-compatible fast reflection is needed: `TryCopyTo` and `TrySetValue` methods are introduced.
