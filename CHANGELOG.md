@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 11-20-2026
+# 11-22-2026
 <a href="https://www.nuget.org/packages/dotnext/6.13.0">DotNext 6.13.0</a>
 * Introduced `Atomic.Read` and `Atomic.Write` for arbitrary enum types
 * Fixed memory aliasing bug in `Atomic<T>` class
@@ -18,7 +18,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.threading/6.13.0">DotNext.Threading 6.13.0</a>
 * Performance improvements of optimistic read lock in `AsyncReaderWriterLock`
-* Fixed correctness of `LeaseConsumer` and `LeaseProvider` when implementing a distributed lease
+* Fixed correctness of `LeaseConsumer` and `LeaseProvider` when implementing a distributed lease. Changes are backward incompatible.
 * Introduced `LeaseProvider.ObserveAsync` that allows to observe the lease state without waiting for the real request for renewal
 
 <a href="https://www.nuget.org/packages/dotnext.io/6.13.0">DotNext.IO 6.13.0</a>
@@ -27,7 +27,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.13.0">DotNext.Net.Cluster 6.13.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.12.2">DotNext.AspNetCore.Cluster 6.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.13.0">DotNext.AspNetCore.Cluster 6.13.0</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.13.0">DotNext.MaintenanceServices 1.13.0</a>
