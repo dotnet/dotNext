@@ -281,7 +281,7 @@ public class CancellationTokenMultiplexerTests : Test
 
     private sealed class PostingSynchronizationContext : SynchronizationContext
     {
-        public override void Post(SendOrPostCallback d, object? state)
+        public override void Post(SendOrPostCallback d, object state)
             => ThreadPool.QueueUserWorkItem(static args => args.d(args.state), (d, state), preferLocal: false);
     }
 }

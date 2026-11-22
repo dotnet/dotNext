@@ -46,6 +46,11 @@ public static class Optional
     private static async Task<T?> Or<T>(Task<Optional<T>> task, T? defaultValue)
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
+    /// <inheritdoc cref="Unwrap{T}(Task{Optional{T}})"/>
+    [Obsolete("Use Unwrap<T>() method instead.")]
+    public static Task<T> Flatten<T>(this Task<Optional<T>> task)
+        => task.Unwrap();
+
     /// <summary>
     /// Returns a task that contains unwrapped value; or exception if <see cref="Optional{T}"/> has no value.
     /// </summary>
@@ -53,7 +58,7 @@ public static class Optional
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The task containing a value of type <typeparamref name="T"/>; or the exception if <see cref="Optional{T}"/> has no value.</returns>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
-    public static async Task<T> Flatten<T>(this Task<Optional<T>> task)
+    public static async Task<T> Unwrap<T>(this Task<Optional<T>> task)
         => (await task.ConfigureAwait(false)).Value;
 
     /// <summary>
@@ -84,9 +89,7 @@ public static class Optional
         var optional = await task.ConfigureAwait(false);
         return optional.HasValue
             ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
-            : optional.IsNull && RuntimeHelpers.IsNullable<TOutput>()
-                ? new(default)
-                : Optional<TOutput>.None;
+            : new Optional<TOutput>(optional.IsNull);
     }
 
     /// <summary>
@@ -213,7 +216,12 @@ public static class Optional
     /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
     public static Optional<T> Null<T>()
         where T : class?
-        => new(null);
+        => new(isNull: true);
+
+    /// <inheritdoc cref="Unwrap{T}(in Optional{Optional{T}})"/>
+    [Obsolete("Use Unwrap<T>() method instead.")]
+    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+        => optional.Unwrap();
 
     /// <summary>
     /// Flattens the nested optional value.
@@ -221,7 +229,7 @@ public static class Optional
     /// <typeparam name="T">The type of the underlying value.</typeparam>
     /// <param name="optional">The nested optional value.</param>
     /// <returns>Flattened value.</returns>
-    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+    public static Optional<T> Unwrap<T>(this in Optional<Optional<T>> optional)
         => new(in optional);
 }
 
@@ -236,12 +244,8 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     private const byte NullValue = 1;
     private const byte NotEmptyValue = 3;
 
-    private static readonly bool IsOptional;
-
-    static Optional()
-    {
-        IsOptional = typeof(T) is { IsConstructedGenericType: true } type && type.GetGenericTypeDefinition() == typeof(Optional<>);
-    }
+    private static readonly bool IsOptional =
+        typeof(T) is { IsConstructedGenericType: true } type && type.GetGenericTypeDefinition() == typeof(Optional<>);
 
     private readonly T? value;
     private readonly byte kind;
@@ -261,10 +265,16 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
     }
 
-    internal Optional(in Optional<Optional<T>> value)
+    internal Optional(ref readonly Optional<Optional<T>> value)
     {
         this.value = value.value.value;
         kind = value.kind;
+    }
+
+    internal Optional(bool isNull)
+    {
+        value = default;
+        kind = Unsafe.BitCast<bool, byte>(RuntimeHelpers.IsNullable<T>() & isNull);
     }
 
     private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
@@ -344,7 +354,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Boxes value encapsulated by this object.
     /// </summary>
     /// <returns>The boxed value.</returns>
-    public Optional<object> Box() => IsUndefined ? default : new(value);
+    public Optional<object> Box() => IsUndefined
+        ? Optional<object>.None
+        : new(value);
 
     /// <summary>
     /// Attempts to extract value from this container if it is present.
@@ -365,20 +377,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
     public bool TryGet([NotNullWhen(true)] out T? value, out bool isNull)
     {
-        value = this.value!;
-        switch (kind)
-        {
-            default:
-                isNull = false;
-                return false;
-            case NullValue:
-                isNull = true;
-                return false;
-            case NotEmptyValue:
-                Debug.Assert(value is not null);
-                isNull = false;
-                return true;
-        }
+        value = this.value;
+        isNull = kind is NullValue;
+        return HasValue;
     }
 
     /// <summary>
@@ -479,7 +480,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, returns the value, otherwise throws an exception.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
-    [DisallowNull]
+    [NotNull]
     public T Value
     {
         get
@@ -494,7 +495,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [UnscopedRef]
-    [DisallowNull]
+    [NotNull]
     [JsonIgnore]
     public ref readonly T ValueRef
     {
@@ -568,7 +569,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && RuntimeHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : new Optional<TResult>(IsNull);
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is

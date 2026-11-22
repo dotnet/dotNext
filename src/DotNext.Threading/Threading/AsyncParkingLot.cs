@@ -6,6 +6,8 @@ using DotNext.Threading.Tasks;
 
 namespace DotNext.Threading;
 
+using Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Represents a set of wait queues shared by many lightweight asynchronous locks.
 /// </summary>
@@ -154,6 +156,7 @@ public partial class AsyncParkingLot : Disposable
     /// </summary>
     /// <param name="state">The state of the lock.</param>
     /// <returns><see langword="true"/> if the lock is acquired; <see langword="false"/> if the lock is already acquired.</returns>
+    [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
     public static bool TryPark(ref State state)
         => Interlocked.CompareExchange(ref state, State.Locked, State.Free) is State.Free;
 
@@ -164,8 +167,7 @@ public partial class AsyncParkingLot : Disposable
         lock (queue.Lock)
         {
             var stateCopy = state;
-
-            // lock was freed, go back to the fast path
+            
             if (!(isDisposed = IsDisposingOrDisposed)
                 && stateCopy is not State.Free
                 && Interlocked.CompareExchange(ref state, State.LockedWithWaiters, stateCopy) == stateCopy)
@@ -176,6 +178,7 @@ public partial class AsyncParkingLot : Disposable
             }
             else
             {
+                // lock was freed, go back to the fast path
                 node = null;
             }
         }
@@ -220,8 +223,7 @@ public partial class AsyncParkingLot : Disposable
         {
             // the lock is handed off to the signaled waiter, so it remains Locked
             node = queue.TrySignalFirst(position, userData, in measurementTags, out var hasMore, out resumable);
-            var newState = node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked;
-            Volatile.Write(ref Unsafe.As<State, byte>(ref state), (byte)newState);
+            Atomic.Write(ref state, node is null ? State.Free : hasMore ? State.LockedWithWaiters : State.Locked);
         }
 
         if (resumable)

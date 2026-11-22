@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime.ExceptionServices;
+
 [StructLayout(LayoutKind.Auto)]
 internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowableBuffer<T>
 {

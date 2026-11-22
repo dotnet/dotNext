@@ -74,7 +74,7 @@ public static partial class Collection
     public static SpanOwner<T> Copy<T>(this IEnumerable<T> enumerable, Span<T> buffer, bool usePooledMemory = true)
     {
         var writer = new BufferWriterSlim<T>(buffer, usePooledMemory ? MemoryAllocator<T>.ArrayPool : MemoryAllocator<T>.Array);
-        writer.AddAll(enumerable);
+        writer += enumerable;
         var detached = writer.TryDetachBuffer(out SpanOwner<T> owner);
         Debug.Assert(detached);
         return owner;

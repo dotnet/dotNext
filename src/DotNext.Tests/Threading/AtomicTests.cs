@@ -3,6 +3,7 @@
 public sealed class AtomicTests : Test
 {
     [Fact]
+    [Obsolete]
     public static void AtomicULongTest()
     {
         var i = 80UL;
@@ -13,6 +14,7 @@ public sealed class AtomicTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static void AtomicLongTest()
     {
         var i = 80L;
@@ -23,6 +25,7 @@ public sealed class AtomicTests : Test
     }
     
     [Fact]
+    [Obsolete]
     public static void AtomicDoubleTest()
     {
         var i = 80D;
@@ -78,5 +81,15 @@ public sealed class AtomicTests : Test
 
         False(Interlocked.IsAtomic<ValueTuple<byte, long>>());
         False(Interlocked.IsAtomic<Guid>());
+    }
+
+    [Fact]
+    public static void ReadWriteEnum()
+    {
+        var value = EnvironmentVariableTarget.Machine;
+        Equal(EnvironmentVariableTarget.Machine, Atomic.Read(in value));
+        
+        Atomic.Write(ref value, EnvironmentVariableTarget.Process);
+        Equal(EnvironmentVariableTarget.Process, Atomic.Read(in value));
     }
 }

@@ -6,6 +6,7 @@ namespace DotNext;
 
 using Runtime;
 using Runtime.CompilerServices;
+using Runtime.ExceptionServices;
 
 /// <summary>
 /// Provides access to user data associated with the object.
@@ -432,7 +433,8 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         switch (obj)
         {
             case null:
-                throw new ArgumentNullException(nameof(obj));
+                ArgumentNullException.Throw(nameof(obj));
+                break;
             case IContainer container:
                 obj = container.Source;
                 break;

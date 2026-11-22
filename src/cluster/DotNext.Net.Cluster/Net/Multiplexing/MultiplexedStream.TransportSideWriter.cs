@@ -79,7 +79,7 @@ partial class MultiplexedStream
 
     private void AdjustWindowIfNeeded(IBufferWriter<byte> writer, uint streamId)
     {
-        var totalReceived = Atomic.Read(in bytesReceived);
+        var totalReceived = Volatile.Read(in bytesReceived);
         if (totalReceived > resumeWatermark)
         {
             var windowSize = int.CreateSaturating(totalReceived);

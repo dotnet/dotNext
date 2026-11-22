@@ -8,6 +8,8 @@ using static InlineIL.TypeRef;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using ExceptionServices;
+
 partial class AdvancedHelpers
 {
     /// <summary>

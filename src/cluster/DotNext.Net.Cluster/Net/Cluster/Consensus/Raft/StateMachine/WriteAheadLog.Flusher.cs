@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Diagnostics;
 using IO.Log;
-using Runtime.CompilerServices;
 using Threading;
 
 partial class WriteAheadLog
@@ -189,8 +188,8 @@ partial class WriteAheadLog
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
     {
-        get => Atomic.Read(in field);
-        private set => Atomic.Write(ref field, value);
+        get => Volatile.Read(in field);
+        private set => Volatile.Write(ref field, value);
     }
     
     private long Commit(long index)
@@ -232,9 +231,9 @@ partial class WriteAheadLog
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UnflushedIndexField : IFieldReference<FlushState, long>
+    private readonly struct UnflushedIndexField : Atomic<FlushState>.IFieldReference<long>
     {
-        static ref readonly long IFieldReference<FlushState, long>.GetReference(in FlushState value)
+        static ref readonly long Atomic<FlushState>.IFieldReference<long>.GetReference(in FlushState value)
             => ref value.UnflushedIndex;
     }
 }

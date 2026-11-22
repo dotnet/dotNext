@@ -52,24 +52,6 @@ public static class BlockingOperations
 
         return Wait(new ThreadWrapper(thread), timeout, token, throwOnCancellation);
     }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ThreadWrapper(Thread thread) : ISupplier<TimeSpan, bool>
-    {
-        bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => @thread.Join(timeout);
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockWrapper(System.Threading.Lock @lock) : ISupplier<TimeSpan, bool>
-    {
-        bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => @lock.TryEnter(timeout);
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
     
     private static bool Wait<TLock>(TLock @lock, TimeSpan timeout, CancellationToken token, bool throwOnCancellation = false)
         where TLock : struct, ISupplier<TimeSpan, bool>, allows ref struct
@@ -122,4 +104,22 @@ public static class BlockingOperations
 
         Unsafe.As<Thread>(thread).Interrupt();
     }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct ThreadWrapper(Thread thread) : ISupplier<TimeSpan, bool>
+{
+    bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => thread.Join(timeout);
+
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly ref struct LockWrapper(System.Threading.Lock @lock) : ISupplier<TimeSpan, bool>
+{
+    bool ISupplier<TimeSpan, bool>.Invoke(TimeSpan timeout) => @lock.TryEnter(timeout);
+
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }

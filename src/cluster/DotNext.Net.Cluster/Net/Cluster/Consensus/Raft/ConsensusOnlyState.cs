@@ -78,7 +78,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     [StructLayout(LayoutKind.Auto)]
     private readonly struct CommitChecker(ConsensusOnlyState state, long index) : ISupplier<bool>
     {
-        bool ISupplier<bool>.Invoke() => index <= Atomic.Read(in state.commitIndex);
+        bool ISupplier<bool>.Invoke() => index <= Volatile.Read(in state.commitIndex);
     }
 
     private readonly AsyncReaderWriterLock syncRoot = new();
@@ -92,8 +92,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc cref="IPersistentState.Term"/>
     public long Term
     {
-        get => Atomic.Read(in term);
-        private set => Atomic.Write(ref term, value);
+        get => Volatile.Read(in term);
+        private set => Volatile.Write(ref term, value);
     }
 
     /// <inheritdoc/>
@@ -187,7 +187,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             }
             else if (entry.IsSnapshot)
             {
-                Atomic.Write(ref lastTerm, entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
                 LastCommittedEntryIndex = LastEntryIndex = startIndex;
                 log = [];
                 commitEvent.Signal(resumeAll: true);
@@ -234,7 +234,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             if (count > 0)
             {
                 LastCommittedEntryIndex = startIndex + count - 1;
-                Atomic.Write(ref lastTerm, log[count - 1]);
+                Volatile.Write(ref lastTerm, log[count - 1]);
 
                 // count indicates how many elements should be removed from log
                 log = log[(int)count..];
@@ -254,8 +254,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// </summary>
     public long LastCommittedEntryIndex
     {
-        get => Atomic.Read(in commitIndex);
-        private set => Atomic.Write(ref commitIndex, value);
+        get => Volatile.Read(in commitIndex);
+        private set => Volatile.Write(ref commitIndex, value);
     }
 
     /// <summary>
@@ -263,8 +263,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// </summary>
     public long LastEntryIndex
     {
-        get => Atomic.Read(in index);
-        private set => Atomic.Write(ref index, value);
+        get => Volatile.Read(in index);
+        private set => Volatile.Write(ref index, value);
     }
 
     /// <inheritdoc/>
@@ -290,7 +290,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
         var commitIndex = LastCommittedEntryIndex;
         var offset = startIndex - commitIndex - 1L;
-        return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, Atomic.Read(in lastTerm)), offset >= 0 ? null : new long?(commitIndex), token);
+        return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, Volatile.Read(in lastTerm)), offset >= 0 ? null : new long?(commitIndex), token);
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
+using Runtime.ExceptionServices;
 using Runtime.InteropServices;
 using static Collections.Generic.Collection;
 

@@ -8,7 +8,7 @@ using Runtime.CompilerServices;
 partial struct Atomic<T>
 {
     private T value;
-    private nuint version; // even = stable, odd = write in progress (seqlock)
+    private SeqLock seqLock;
     
     private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
         where TComparer : struct, IEqualityComparer, allows ref struct
@@ -36,48 +36,23 @@ partial struct Atomic<T>
         for (var spinner = new SpinWait();; spinner.SpinOnce())
         {
             var stamp = Read(ref spinner, out var current);
+            var success = comparer.Equals(in current, in expected);
+            if (success && !TryWrite(stamp, in update))
+                continue;
+
+            // result can alias update or expected, so it must be written last
             RuntimeHelpers.Copy(in current, out result);
-            if (!comparer.Equals(in current, in expected))
-                return false;
-
-            if (TryWrite(stamp, in update))
-                return true;
+            return success;
         }
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private nuint EnterWriteLock()
-    {
-        var stamp = version;
-        return TryEnterWriteLock(stamp) ? stamp : Contention(ref version);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static nuint Contention(ref nuint version)
-        {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var stamp = version;
-                if (TryEnterWriteLock(ref version, stamp))
-                    return stamp;
-            }
-        }
-    }
-
-    private static bool TryEnterWriteLock(ref nuint version, nuint stamp)
-        => (stamp & 1U) is 0U && Interlocked.CompareExchange(ref version, stamp + 1U, stamp) == stamp;
-
-    private bool TryEnterWriteLock(nuint stamp) => TryEnterWriteLock(ref version, stamp);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ExitWriteLock(nuint stamp) => Volatile.Write(ref version, stamp + 2U);
 
     internal bool TryWrite(nuint stamp, in T newValue)
     {
-        var entered = TryEnterWriteLock(stamp);
+        var entered = seqLock.TryEnterWriteLock(stamp);
         if (entered)
         {
             RuntimeHelpers.Copy(in newValue, out value);
-            ExitWriteLock(stamp);
+            seqLock.ExitWriteLock(stamp);
         }
 
         return entered;
@@ -102,16 +77,12 @@ partial struct Atomic<T>
         where TOperation : struct, IReadOperation<TResult>, allows ref struct
     {
         Unsafe.SkipInit(out result);
-        Unsafe.SkipInit(out stamp);
 
-        var currentStamp = Volatile.Read(in version);
-        if ((currentStamp & 1U) is 1U)
+        if (!seqLock.TryOptimisticRead(out stamp))
             return false;
 
         TOperation.Invoke(in value, out result);
-        Volatile.ReadBarrier();
-        stamp = currentStamp;
-        return currentStamp == version;
+        return seqLock.Validate(stamp);
     }
     
     internal interface IReadOperation<TResult>

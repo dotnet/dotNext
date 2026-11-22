@@ -126,7 +126,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     else
     {
         wal = new ConsensusOnlyState();
-        factory = Func<IRaftCluster, DataModifier?>.Constant(null);
+        factory = Func<IRaftCluster?, DataModifier?>.Constant(null);
     }
 
     await using var cluster = new RaftCluster(config) { AuditTrail = wal };

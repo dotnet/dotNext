@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 using Buffers;
+using Runtime.ExceptionServices;
 using Runtime.InteropServices;
 
 /// <summary>
