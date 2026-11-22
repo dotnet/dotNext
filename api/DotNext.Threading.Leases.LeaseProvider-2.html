@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class LeaseProvider&lt;TKey, TMetadata&gt; | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class LeaseProvider&lt;TKey, TMetadata&gt; | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Leases.LeaseProvider`2">
+
+
+
+  <h1 id="DotNext_Threading_Leases_LeaseProvider_2" data-uid="DotNext.Threading.Leases.LeaseProvider`2" class="text-break">Class LeaseProvider&lt;TKey, TMetadata&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents provider side of multiple leases in a distributed environment.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">LeaseProvider&lt;TKey, TMetadata&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a>.<a class="xref" href="DotNext.Threading.Leases.html">Leases</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class LeaseProvider&lt;TKey, TMetadata&gt; : Disposable, IDisposable where TKey : notnull</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the lease identifier.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TMetadata</span></td>
+        <td><p>The type of metadata associated with a lease.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>An instance of this type must support concurrent calls. Each lease is identified by the key
+and tracked independently in the same way as by <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-1.html">LeaseProvider&lt;TMetadata&gt;</a>.</p>
+<p>
+Each instance tracks the expiration of every lease using its own monotonic clock, starting from the moment it observes
+a particular version of the lease. Thus, the wall clocks of the instances sharing the same storage don't need
+to be synchronized. As a consequence, a newly created instance waits for the full <a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html#DotNext_Threading_Leases_LeaseState_1_TimeToLive">TimeToLive</a>
+before taking over the lease that was not released explicitly. Call <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_ObserveAsync__0_System_Threading_CancellationToken_">ObserveAsync(TKey, CancellationToken)</a>
+immediately after the instantiation to start tracking the expiration as early as possible.
+</p>
+<p>
+The provider keeps the tracking information for every lease it has observed, until it observes the lease released.
+</p>
+<p>
+The lease is held on behalf of the owner identified by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a>. The owner must be unique
+across all consumers of the lease. Acquisition, renewal and release by the owner don't require the actual
+version of the lease. Thus, these operations can be retried safely if the response is lost.
+</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2__ctor_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.#ctor*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2__ctor_System_Collections_Generic_IEqualityComparer__0__System_TimeProvider_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.#ctor(System.Collections.Generic.IEqualityComparer{`0},System.TimeProvider)">LeaseProvider(IEqualityComparer&lt;TKey&gt;?, TimeProvider?)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of lease provider.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected LeaseProvider(IEqualityComparer&lt;TKey&gt;? comparer = null, TimeProvider? provider = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;TKey&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The comparer of the lease identifiers.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeprovider">TimeProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The time provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_LifetimeToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.LifetimeToken*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_LifetimeToken" data-uid="DotNext.Threading.Leases.LeaseProvider`2.LifetimeToken">LifetimeToken</h4>
+  <div class="markdown level1 summary"><p>A token that represents state of this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected CancellationToken LifetimeToken { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_LifetimeToken_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A call to <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_Dispose_System_Boolean_">Dispose(bool)</a> cancels the token.</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.AcquireAsync(`0,System.Guid,System.Threading.CancellationToken)">AcquireAsync(TKey, Guid, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;&gt; AcquireAsync(TKey leaseId, Guid ownerId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;&gt;</td>
+        <td><p>The status of the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the lease is already held by <code class="paramref">ownerId</code>, it is renewed.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.AcquireAsync``1(`0,System.Guid,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">AcquireAsync&lt;TArg&gt;(TKey, Guid, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;&gt; AcquireAsync&lt;TArg&gt;(TKey leaseId, Guid ownerId, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;&gt;</td>
+        <td><p>The status of the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the lease is already held by <code class="paramref">ownerId</code>, it is renewed.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_Dispose_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.Dispose*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_Dispose_System_Boolean_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_GetStateAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.GetStateAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_GetStateAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.GetStateAsync(`0,System.Threading.CancellationToken)">GetStateAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Loads the state of a lease from the underlying storage.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;LeaseState&lt;TMetadata&gt;&gt; GetStateAsync(TKey leaseId, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html">LeaseState</a>&lt;TMetadata&gt;&gt;</td>
+        <td><p>The state restored from the underlying storage.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_GetStateAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The method can be called concurrently.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_ObserveAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ObserveAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_ObserveAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ObserveAsync(`0,System.Threading.CancellationToken)">ObserveAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Starts tracking the expiration of the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; ObserveAsync(TKey leaseId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the lease is alive from the perspective of this instance;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if it's expired, released, or never acquired.
+The first observation of the lease that was not released explicitly always returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_ObserveAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The expiration of the lease is tracked from the moment when this instance observes the particular version
+of the lease for the first time. This method can be called immediately after the instantiation of the provider
+to reduce the time needed to take over the lease that was not released explicitly.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync__0_System_Guid_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ReleaseAsync(`0,System.Guid,System.Threading.CancellationToken)">ReleaseAsync(TKey, Guid, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Releases the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long?&gt; ReleaseAsync(TKey leaseId, Guid ownerId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?&gt;</td>
+        <td><p>The version of the released lease; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner or already released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync__0_System_Guid_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The expired lease can be released as well if it is not taken by another owner.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.ReleaseAsync``1(`0,System.Guid,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">ReleaseAsync&lt;TArg&gt;(TKey, Guid, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Releases the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long?&gt; ReleaseAsync&lt;TArg&gt;(TKey leaseId, Guid ownerId, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?&gt;</td>
+        <td><p>The version of the released lease; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner or already released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_ReleaseAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The expired lease can be released as well if it is not taken by another owner.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync__0_System_Guid_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryAcquireAsync(`0,System.Guid,System.Threading.CancellationToken)">TryAcquireAsync(TKey, Guid, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to acquire the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;?&gt; TryAcquireAsync(TKey leaseId, Guid ownerId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;?&gt;</td>
+        <td><p>The acquisition result; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync__0_System_Guid_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the lease is already held by <code class="paramref">ownerId</code>, it is renewed.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryAcquireAsync``1(`0,System.Guid,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">TryAcquireAsync&lt;TArg&gt;(TKey, Guid, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to acquire the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;?&gt; TryAcquireAsync&lt;TArg&gt;(TKey leaseId, Guid ownerId, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;?&gt;</td>
+        <td><p>The acquisition result; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_TryAcquireAsync__1__0_System_Guid___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the lease is already held by <code class="paramref">ownerId</code>, it is renewed.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_TryRenewAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryRenewAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_TryRenewAsync__0_System_Guid_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryRenewAsync(`0,System.Guid,System.Boolean,System.Threading.CancellationToken)">TryRenewAsync(TKey, Guid, bool, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to renew the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;?&gt; TryRenewAsync(TKey leaseId, Guid ownerId, bool reacquire, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">reacquire</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to acquire the lease on renewal if it is expired.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;?&gt;</td>
+        <td><p>The status of the operation; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner, released, or expired.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_TryRenewAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryRenewAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_TryRenewAsync__1__0_System_Guid_System_Boolean___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryRenewAsync``1(`0,System.Guid,System.Boolean,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">TryRenewAsync&lt;TArg&gt;(TKey, Guid, bool, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to renew the lease.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;LeaseAcquisitionResult&lt;TMetadata&gt;?&gt; TryRenewAsync&lt;TArg&gt;(TKey leaseId, Guid ownerId, bool reacquire, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">ownerId</span></td>
+        <td><p>The unique identifier of the lease owner.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">reacquire</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to acquire the lease on renewal if it is expired.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.Leases.LeaseAcquisitionResult-1.html">LeaseAcquisitionResult</a>&lt;TMetadata&gt;?&gt;</td>
+        <td><p>The status of the operation; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the lease is taken by another owner, released, or expired.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">ownerId</code> is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid.empty">Empty</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_TryUpdateStateAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryUpdateStateAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_TryUpdateStateAsync__0_DotNext_Threading_Leases_LeaseState__1__DotNext_Threading_Leases_LeaseState__1__System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.TryUpdateStateAsync(`0,DotNext.Threading.Leases.LeaseState{`1},DotNext.Threading.Leases.LeaseState{`1},System.Threading.CancellationToken)">TryUpdateStateAsync(TKey, LeaseState&lt;TMetadata&gt;, LeaseState&lt;TMetadata&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Attempts to update the state in the underlying storage using compare-and-set semantics.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;bool&gt; TryUpdateStateAsync(TKey leaseId, LeaseState&lt;TMetadata&gt; expected, LeaseState&lt;TMetadata&gt; update, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html">LeaseState</a>&lt;TMetadata&gt;</td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The state previously returned by <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_GetStateAsync__0_System_Threading_CancellationToken_">GetStateAsync(TKey, CancellationToken)</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html">LeaseState</a>&lt;TMetadata&gt;</td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The state to be stored in the underlying storage.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if update is performed successfully; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> is compare-and-set failed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_TryUpdateStateAsync__0_DotNext_Threading_Leases_LeaseState__1__DotNext_Threading_Leases_LeaseState__1__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The operation must use compare-and-set semantics in the following way: save <code class="paramref">update</code>
+only if <a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html#DotNext_Threading_Leases_LeaseState_1_Version">Version</a> and <a class="xref" href="DotNext.Threading.Leases.LeaseState-1.html#DotNext_Threading_Leases_LeaseState_1_RenewalStamp">RenewalStamp</a>
+of the currently stored state are equal to the corresponding properties of <code class="paramref">expected</code>.
+Other properties must not be compared.
+If the lease doesn't exist in the storage, save <code class="paramref">update</code> only if the lease is still absent.
+Note that the method can be called concurrently.</p>
+</div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeReleaseAsync(`0,System.Threading.CancellationToken)">UnsafeReleaseAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Releases the lease ungracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; UnsafeReleaseAsync(TKey leaseId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
+        <td><p>The version of the released lease.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It's possible to call <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken_">AcquireAsync(TKey, Guid, CancellationToken)</a> method after the current one
+and get a new lease while the existing owner thinks that the lease is exclusively owned.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync__1__0___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeReleaseAsync``1(`0,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">UnsafeReleaseAsync&lt;TArg&gt;(TKey, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Releases the lease ungracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; UnsafeReleaseAsync&lt;TArg&gt;(TKey leaseId, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
+        <td><p>The version of the released lease.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeReleaseAsync__1__0___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It's possible to call <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken_">AcquireAsync(TKey, Guid, CancellationToken)</a> method after the current one
+and get a new lease while the existing owner thinks that the lease is exclusively owned.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeTryReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeTryReleaseAsync(`0,System.Threading.CancellationToken)">UnsafeTryReleaseAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to release the lease ungracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long?&gt; UnsafeTryReleaseAsync(TKey leaseId, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?&gt;</td>
+        <td><p>The version of the released lease; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if updated or taken by another process.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It's possible to call <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken_">AcquireAsync(TKey, Guid, CancellationToken)</a> method after the current one
+and get a new lease while the existing owner thinks that the lease is exclusively owned.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeTryReleaseAsync*"></a>
+  <h4 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync__1__0___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken_" data-uid="DotNext.Threading.Leases.LeaseProvider`2.UnsafeTryReleaseAsync``1(`0,``0,System.Func{``0,`1,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`1}},System.Threading.CancellationToken)">UnsafeTryReleaseAsync&lt;TArg&gt;(TKey, TArg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to release the lease ungracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long?&gt; UnsafeTryReleaseAsync&lt;TArg&gt;(TKey leaseId, TArg arg, Func&lt;TArg, TMetadata, CancellationToken, ValueTask&lt;TMetadata&gt;&gt; updater, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">leaseId</span></td>
+        <td><p>The identifier of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;TArg, TMetadata, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TMetadata&gt;&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>An idempotent operation to update the metadata on successful acquisition of the lease.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?&gt;</td>
+        <td><p>The version of the released lease; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if updated or taken by another process.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the metadata updater.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Leases_LeaseProvider_2_UnsafeTryReleaseAsync__1__0___0_System_Func___0__1_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__1___System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It's possible to call <a class="xref" href="DotNext.Threading.Leases.LeaseProvider-2.html#DotNext_Threading_Leases_LeaseProvider_2_AcquireAsync__0_System_Guid_System_Threading_CancellationToken_">AcquireAsync(TKey, Guid, CancellationToken)</a> method after the current one
+and get a new lease while the existing owner thinks that the lease is exclusively owned.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The provider has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">leaseId</code> or <code class="paramref">updater</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Leases.LeaseConsumer.html">LeaseConsumer</a></div>
+      <div><a class="xref" href="DotNext.Threading.Leases.LeaseProvider-1.html">LeaseProvider</a>&lt;TMetadata&gt;</div>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/DotNext.Threading/Threading/Leases/LeaseProvider.TKey.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
