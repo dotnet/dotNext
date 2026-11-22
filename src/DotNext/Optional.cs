@@ -354,7 +354,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Boxes value encapsulated by this object.
     /// </summary>
     /// <returns>The boxed value.</returns>
-    public Optional<object> Box() => IsUndefined ? None : new(value);
+    public Optional<object> Box() => IsUndefined
+        ? Optional<object>.None
+        : new(value);
 
     /// <summary>
     /// Attempts to extract value from this container if it is present.
