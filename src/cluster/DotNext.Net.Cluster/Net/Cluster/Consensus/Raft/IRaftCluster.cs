@@ -43,6 +43,12 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// The token moves to canceled state if the current node downgrades to the follower state.
     /// </remarks>
     CancellationToken LeadershipToken { get; }
+    
+    /// <summary>
+    /// Gets the term which belongs to the current leadership.
+    /// </summary>
+    /// <value><see langword="null"/> if the current node is not a leader.</value>
+    long? LeadershipTerm { get; }
 
     /// <summary>
     /// Gets a token that remains non-canceled while the local node is a part of the majority of the cluster and

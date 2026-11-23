@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -144,20 +145,21 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IRaftCluster.TryGetLeaseToken(out CancellationToken)"/>
     public bool TryGetLeaseToken(out CancellationToken token)
     {
-        if (Volatile.Read(in state) is LeaderState<TMember> leader)
-            return leader.TryGetLeaseToken(out token);
+        if (ConfirmedLeaderState?.TryGetLeaseToken(out token) is not { } result)
+        {
+            token = new(canceled: true);
+            result = false;
+        }
 
-        token = new(canceled: true);
-        return false;
+        return result;
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => Volatile.Read(in state) switch
-    {
-        LeaderState<TMember> leaderState when AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier => leaderState.Token,
-        ZombieState zombieState => throw zombieState.CreateException(),
-        _ => new(canceled: true),
-    };
+    public CancellationToken LeadershipToken
+        => ConfirmedLeaderState?.Token ?? new(canceled: true);
+
+    /// <inheritdoc cref="IRaftCluster.LeadershipTerm"/>
+    public long? LeadershipTerm => ConfirmedLeaderState?.Term;
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
     public CancellationToken ConsensusToken => Volatile.Read(in state) switch
@@ -165,6 +167,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ConsensusState<TMember> consensusState => consensusState.Token,
         ZombieState zombieState => throw zombieState.CreateException(),
         _ => new(canceled: true),
+    };
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private LeaderState<TMember>? ConfirmedLeaderState => Volatile.Read(in state) switch
+    {
+        LeaderState<TMember> leaderState when AuditTrail.LastCommittedEntryIndex >= leaderState.WriteBarrier => leaderState,
+        ZombieState zombieState => throw zombieState.CreateException(),
+        _ => null,
     };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -1459,6 +1469,22 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private sealed class ZombieState(RaftCluster<TMember> cluster, Exception innerException) : RaftState<TMember>(cluster)
     {
         public new UnreachableException CreateException() => new(innerException.Message, innerException);
+    }
+    
+    private interface ILeadershipEvidence<out TResult>
+    {
+        static abstract TResult GetEvidence(LeaderState<TMember> state);
+    }
+
+    private readonly ref struct LeadershipEvidence :
+        ILeadershipEvidence<CancellationToken>,
+        ILeadershipEvidence<long>
+    {
+        static CancellationToken ILeadershipEvidence<CancellationToken>.GetEvidence(LeaderState<TMember> state)
+            => state.Token;
+
+        static long ILeadershipEvidence<long>.GetEvidence(LeaderState<TMember> state)
+            => state.Term;
     }
 }
 
