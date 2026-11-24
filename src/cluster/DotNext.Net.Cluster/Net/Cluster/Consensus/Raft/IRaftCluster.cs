@@ -43,12 +43,16 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// The token moves to canceled state if the current node downgrades to the follower state.
     /// </remarks>
     CancellationToken LeadershipToken { get; }
-    
+
     /// <summary>
-    /// Gets the term which belongs to the current leadership.
+    /// Gets the ticket that can be passed to <see cref="ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)"/>
+    /// to confirm later that the local node is still the leader.
     /// </summary>
-    /// <value><see langword="null"/> if the current node is not a leader.</value>
-    long? LeadershipTerm { get; }
+    /// <value>
+    /// The ticket of the current leadership if the local node is the leader and its write barrier is committed;
+    /// otherwise, <see langword="null"/>.
+    /// </value>
+    LeadershipTicket? LeadershipTicket { get; }
 
     /// <summary>
     /// Gets a token that remains non-canceled while the local node is a part of the majority of the cluster and
@@ -110,7 +114,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// forwarded to the leader. It fails if the local node is not the leader.
     /// </para>
     /// </remarks>
-    /// <param name="term">The term in which the leadership was obtained; see <see cref="LeadershipTerm"/>.</param>
+    /// <param name="ticket">The state previously captured with <see cref="LeadershipTicket"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="NotLeaderException">
@@ -119,8 +123,8 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// </exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
-    /// <seealso cref="LeadershipTerm"/>
-    ValueTask ConfirmLeadershipAsync(long term, CancellationToken token = default);
+    /// <seealso cref="LeadershipTicket"/>
+    ValueTask ConfirmLeadershipAsync(LeadershipTicket ticket, CancellationToken token = default);
 
     /// <summary>
     /// Associates the configuration storage with the WAL.

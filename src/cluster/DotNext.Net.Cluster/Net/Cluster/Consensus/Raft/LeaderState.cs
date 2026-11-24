@@ -65,7 +65,9 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             // populates running replications on first iteration
             membersCopy = await HandleMembershipChangesAsync(membersCopy, Members).ConfigureAwait(false);
             
-            // do not resume suspended callers that came after the barrier, resume them in the next iteration
+            // do not resume suspended callers that came after the barrier, resume them in the next iteration.
+            // Must be called before the requests are sent to the followers, so the ticket captured before this point
+            // is confirmed by the responses to the requests sent after it
             replicationQueue.SwitchValve();
             var startTime = new Timestamp();
             
@@ -96,7 +98,8 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                 barrier.Reuse();
             }
 
-            // resume all suspended callers added to the queue concurrently before SwitchValve()
+            // resume all suspended callers added to the queue concurrently before SwitchValve().
+            // If the round has no consensus, the loop is interrupted above and the round is never completed
             replicationQueue.Drain();
             forced = await WaitForReplicationAsync(startTime, period, Token).ConfigureAwait(false);
         }

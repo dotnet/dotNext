@@ -158,8 +158,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public CancellationToken LeadershipToken
         => ConfirmedLeaderState?.Token ?? new(canceled: true);
 
-    /// <inheritdoc cref="IRaftCluster.LeadershipTerm"/>
-    public long? LeadershipTerm => ConfirmedLeaderState?.Term;
+    /// <inheritdoc cref="IRaftCluster.LeadershipTicket"/>
+    public LeadershipTicket? LeadershipTicket
+        => ConfirmedLeaderState is { } leaderState ? new(leaderState.Term, leaderState.Stamp) : null;
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
     public CancellationToken ConsensusToken => Volatile.Read(in state) switch
@@ -304,9 +305,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.ConfirmLeadershipAsync"/>
-    public ValueTask ConfirmLeadershipAsync(long term, CancellationToken token = default)
-        => Volatile.Read(in state) is LeaderState<TMember> leaderState && leaderState.Term == term
-            ? leaderState.WaitForNextRoundAsync(token)
+    public ValueTask ConfirmLeadershipAsync(LeadershipTicket ticket, CancellationToken token = default)
+        => Volatile.Read(in state) is LeaderState<TMember> leaderState && leaderState.Term == ticket.Term
+            ? leaderState.WaitForRoundAsync(ticket.Stamp, token) // the leader is elected once per term, so it's the same state
             : ValueTask.FromException(new NotLeaderException());
 
     private ValueTask FreezeAsync()
