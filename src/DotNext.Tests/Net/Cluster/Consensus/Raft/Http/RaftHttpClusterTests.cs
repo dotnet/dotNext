@@ -642,7 +642,7 @@ public sealed class RaftHttpClusterTests : RaftTest
 
         var token = GetLocalClusterView(host2).ConsensusToken;
         False(token.IsCancellationRequested);
-        Equal(leadershipTerm, GetLocalClusterView(host1).LeadershipTerm);
+        await GetLocalClusterView(host1).ConfirmLeadershipAsync(leadershipTerm, TestToken);
 
         await host1.StopAsync(TestToken);
 

@@ -303,6 +303,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return leaderState.Token;
     }
 
+    /// <inheritdoc cref="IRaftCluster.ConfirmLeadershipAsync"/>
+    public ValueTask ConfirmLeadershipAsync(long term, CancellationToken token = default)
+        => Volatile.Read(in state) is LeaderState<TMember> leaderState && leaderState.Term == term
+            ? leaderState.WaitForNextRoundAsync(token)
+            : ValueTask.FromException(new NotLeaderException());
+
     private ValueTask FreezeAsync()
     {
         Debug.Assert(transitionLock.IsLockHeld);

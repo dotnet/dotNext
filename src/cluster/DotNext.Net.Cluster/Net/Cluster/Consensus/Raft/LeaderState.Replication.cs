@@ -40,6 +40,9 @@ internal partial class LeaderState<TMember>
         return replicationTask;
     }
 
+    internal ValueTask WaitForNextRoundAsync(CancellationToken token)
+        => replicationQueue.WaitAsync(token);
+
     // synchronous version that doesn't wait for the end of replication round
     internal void ForceReplication()
     {
