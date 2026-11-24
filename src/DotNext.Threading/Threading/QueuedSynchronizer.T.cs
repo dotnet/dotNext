@@ -28,12 +28,12 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         TContext IWaitNodeFeature<TContext>.Feature => Context!;
     }
 
+    private readonly bool fair;
+
     /// <summary>
     /// Initializes a new synchronization primitive.
     /// </summary>
-    protected QueuedSynchronizer()
-    {
-    }
+    protected QueuedSynchronizer() => fair = true;
 
     /// <summary>
     /// Tests whether the lock acquisition can be done successfully before calling <see cref="AcquireCore(TContext)"/>.
@@ -72,6 +72,21 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
+    /// <summary>
+    /// Gets or initializes a value indicating whether the suspended callers are resumed in FIFO order.
+    /// </summary>
+    /// <remarks>
+    /// If <see langword="true"/>, the release stops at the first suspended caller that cannot acquire
+    /// the synchronization primitive. Otherwise, all suspended callers in the queue are examined on every release,
+    /// which costs O(n) per release.
+    /// </remarks>
+    /// <value>The default value is <see langword="true"/>.</value>
+    protected bool IsFair
+    {
+        get => fair;
+        init => fair = value;
+    }
+
     private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
     {
         for (; !queue.IsEndOfQueue<WaitNode, TContext>(out var context); queue.Advance())
@@ -81,12 +96,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 case false when GetAcquisitionException(context) is { } factory:
                     queue.SignalCurrent(factory.CreateException());
                     goto default;
-                case false:
+                case false when fair:
                     return;
                 case true when queue.SignalCurrent():
                     AcquireCore(context);
                     goto default;
                 default:
+                    // includes 'false' for the unfair queue: skip the caller and examine the next one
                     continue;
             }
         }
@@ -236,7 +252,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
     private bool TryAcquireCore(TContext context)
     {
-        var acquired = IsEmptyQueue && CanAcquire(context);
+        var acquired = (!fair || IsEmptyQueue) && CanAcquire(context);
         if (acquired)
         {
             AcquireCore(context);
