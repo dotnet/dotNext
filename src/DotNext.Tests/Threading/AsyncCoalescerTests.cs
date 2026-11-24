@@ -20,7 +20,12 @@ public sealed class AsyncCoalescerTests : Test
     [Fact]
     public static async Task CoalesceManually()
     {
-        await using var coalescer = new TestCoalescer(InfiniteTimeSpan);
+        await using var coalescer = new TestCoalescer(InfiniteTimeSpan)
+        {
+            ConcurrencyLevel = 2L
+        };
+
+        Equal(2L, coalescer.ConcurrencyLevel);
         var task1 = coalescer.WaitAsync(TestToken).AsTask();
         var task2 = coalescer.WaitAsync(TestToken).AsTask();
 
