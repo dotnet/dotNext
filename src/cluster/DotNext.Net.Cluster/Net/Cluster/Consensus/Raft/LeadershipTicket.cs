@@ -12,4 +12,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// and at the completion confirmed by the majority (even value).
 /// </param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct LeadershipTicket(long Term, long Stamp);
+public readonly record struct LeadershipTicket(long Term, long Stamp)
+{
+    /// <inheritdoc/>
+    public override string ToString() => $"{Term:X16}-{Stamp:X16}";
+}
