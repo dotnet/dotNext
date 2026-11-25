@@ -20,7 +20,7 @@ public sealed class AsyncLambdaLoweringTests : Test
 
         public Recorder Inner => field ??= new(log);
 
-        public string? A
+        public string A
         {
             get;
             set
@@ -30,7 +30,7 @@ public sealed class AsyncLambdaLoweringTests : Test
             }
         }
 
-        public string? B
+        public string B
         {
             get;
             set
@@ -307,9 +307,9 @@ public sealed class AsyncLambdaLoweringTests : Test
     [Theory]
     [InlineData("L", "L")]
     [InlineData(null, "R")]
-    public static async Task CoalesceShortCircuit(string? left, string expected)
+    public static async Task CoalesceShortCircuit(string left, string expected)
     {
-        var lambda = AsyncLambda<Func<List<string>, string?, Task<string>>>(static fun =>
+        var lambda = AsyncLambda<Func<List<string>, string, Task<string>>>(static fun =>
         {
             Return(Expression.Coalesce(fun[1], LogAsyncExpr(fun[0], "R")));
         }).Compile();

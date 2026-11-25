@@ -103,8 +103,8 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// Only a round that starts after this method is called counts.
     /// The method completes successfully only if the majority of the cluster members confirm the leadership
     /// of the local node in that round. So when the returned task completes,
-    /// no other node could have been elected as a leader in a term greater than <paramref name="term"/>
-    /// before this method was called.
+    /// no other node could have been elected as a leader in a term greater than <see cref="LeadershipTicket.Term"/>
+    /// in <paramref name="ticket"/> before this method was called.
     /// <para>
     /// Many concurrent callers share the same heartbeat round, so they produce no extra network traffic.
     /// The trade-off is latency, which can reach one heartbeat period plus the duration of one replication round.
