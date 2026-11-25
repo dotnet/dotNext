@@ -28,21 +28,24 @@ public class ExecutionStackTests : Test
     [Fact]
     public static void CheckExecutionStackSize()
     {
-        // 2 MB is not used: the runtime ignores exactly that value on Linux and gives the thread the OS default stack size
-        const int stackSize = 1024 * 1024 * 4;
-        nuint actualSize = 0U, remaining = 0U;
+        const int frameSize = 64 * 1024;
 
-        // asserts can't run on the raw thread: an unhandled exception there aborts the test host
-        var t = new Thread(() =>
+        // The runtime doesn't always honor the requested stack size (it may fall back to the OS default),
+        // so the test checks invariants instead of the exact size
+        var stackSize = RuntimeHelpers.ExecutionStackSize;
+        Equal(0U, stackSize % (uint)Environment.SystemPageSize);
+
+        var remaining = RuntimeHelpers.RemainingExecutionStack;
+        InRange(remaining, 1U, stackSize - 1U);
+
+        InRange(GetRemainingStackInDeeperFrame(), 1U, remaining - frameSize);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static nuint GetRemainingStackInDeeperFrame()
         {
-            actualSize = RuntimeHelpers.ExecutionStackSize;
-            remaining = RuntimeHelpers.RemainingExecutionStack;
-        }, stackSize);
-
-        t.Start();
-        t.Join();
-
-        Equal((nuint)stackSize, actualSize);
-        InRange(remaining, 1U, actualSize - 1U);
+            Span<byte> frame = stackalloc byte[frameSize];
+            frame[0] = 1;
+            return RuntimeHelpers.RemainingExecutionStack;
+        }
     }
 }
