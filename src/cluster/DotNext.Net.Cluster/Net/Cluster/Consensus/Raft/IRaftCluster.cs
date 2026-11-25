@@ -45,6 +45,16 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     CancellationToken LeadershipToken { get; }
 
     /// <summary>
+    /// Gets the ticket that can be passed to <see cref="ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)"/>
+    /// to confirm later that the local node is still the leader.
+    /// </summary>
+    /// <value>
+    /// The ticket of the current leadership if the local node is the leader and its write barrier is committed;
+    /// otherwise, <see langword="null"/>.
+    /// </value>
+    LeadershipTicket? LeadershipTicket { get; }
+
+    /// <summary>
     /// Gets a token that remains non-canceled while the local node is a part of the majority of the cluster and
     /// has communication with the leader.
     /// </summary>
@@ -82,6 +92,39 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <exception cref="QuorumUnreachableException">The local node is stopped and never can be elected as leader.</exception>
     /// <seealso cref="LeadershipToken"/>
     Task<CancellationToken> WaitForLeadershipAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Waits for the next heartbeat round to confirm that the local node is still the leader
+    /// in the specified term.
+    /// </summary>
+    /// <remarks>
+    /// Unlike <see cref="IReplicationCluster.ForceReplicationAsync(CancellationToken)"/>, this method doesn't start a replication round.
+    /// It waits for the next scheduled heartbeat round, or for a round started by another caller.
+    /// Only a round that starts after this method is called counts.
+    /// The method completes successfully only if the majority of the cluster members confirm the leadership
+    /// of the local node in that round. So when the returned task completes,
+    /// no other node could have been elected as a leader in a term greater than <paramref name="term"/>
+    /// before this method was called.
+    /// <para>
+    /// Many concurrent callers share the same heartbeat round, so they produce no extra network traffic.
+    /// The trade-off is latency, which can reach one heartbeat period plus the duration of one replication round.
+    /// </para>
+    /// <para>
+    /// Unlike <see cref="ApplyReadBarrierAsync(ReadBarrierType, CancellationToken)"/>, the request is never
+    /// forwarded to the leader. It fails if the local node is not the leader.
+    /// </para>
+    /// </remarks>
+    /// <param name="ticket">The state previously captured with <see cref="LeadershipTicket"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="NotLeaderException">
+    /// The local node is not the leader, or its leadership was obtained in a different term,
+    /// or it lost its leadership while waiting.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    /// <seealso cref="LeadershipTicket"/>
+    ValueTask ConfirmLeadershipAsync(LeadershipTicket ticket, CancellationToken token = default);
 
     /// <summary>
     /// Associates the configuration storage with the WAL.

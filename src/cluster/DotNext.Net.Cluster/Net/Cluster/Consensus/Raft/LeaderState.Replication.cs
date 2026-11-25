@@ -23,22 +23,36 @@ internal partial class LeaderState<TMember>
 
     internal ValueTask ForceReplicationAsync(CancellationToken token)
     {
-        ValueTask replicationTask;
-        try
+        // enqueue a new task representing completion callback
+        var task = replicationQueue.WaitAsync(token);
+        if (task.IsCompleted)
         {
-            // enqueue a new task representing completion callback
-            replicationTask = replicationQueue.WaitAsync(token);
-
-            // resume heartbeat loop to force replication
-            replicationEvent.Set();
+            task = task.CompleteSynchronously();
         }
-        catch (ObjectDisposedException e)
+        else
         {
-            replicationTask = ValueTask.FromException(new NotLeaderException(e));
+            try
+            {
+                // resume heartbeat loop to force replication
+                replicationEvent.Set();
+            }
+            catch (ObjectDisposedException e)
+            {
+                task = ValueTask.FromException(new NotLeaderException(e));
+            }
         }
 
-        return replicationTask;
+        return task;
     }
+
+    // Waits for the completion of the first round started after the stamp has been captured
+    internal ValueTask WaitForRoundAsync(long stamp, CancellationToken token)
+    {
+        var task = replicationQueue.WaitAsync(stamp, token);
+        return task.IsCompleted ? task.CompleteSynchronously() : task;
+    }
+
+    internal long Stamp => replicationQueue.Stamp;
 
     // synchronous version that doesn't wait for the end of replication round
     internal void ForceReplication()
@@ -59,4 +73,28 @@ internal partial class LeaderState<TMember>
 file sealed class PoolingReplicationBarrier(BoundedObjectPool<ReplicationBarrier> pool) : ReplicationBarrier
 {
     protected override void ReuseCore() => pool.TryReturn(this);
+}
+
+file static class ValueTaskExtensions
+{
+    public static ValueTask CompleteSynchronously(this in ValueTask task)
+    {
+        try
+        {
+            task.GetAwaiter().GetResult();
+            return ValueTask.CompletedTask;
+        }
+        catch (ObjectDisposedException e)
+        {
+            return ValueTask.FromException(new NotLeaderException(e));
+        }
+        catch (OperationCanceledException e)
+        {
+            return ValueTask.FromCanceled(e.CancellationToken);
+        }
+        catch (Exception e)
+        {
+            return ValueTask.FromException(e);
+        }
+    }
 }

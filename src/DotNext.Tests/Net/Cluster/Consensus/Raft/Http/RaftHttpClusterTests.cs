@@ -634,6 +634,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host2.StartAsync(TestToken);
 
         Equal(await GetLocalClusterView(host1).WaitForLeadershipAsync(TestToken), GetLocalClusterView(host1).LeadershipToken);
+        var ticket = NotNull(GetLocalClusterView(host1).LeadershipTicket);
         Equal(GetLocalClusterView(host1).LeadershipToken, GetLocalClusterView(host1).ConsensusToken);
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress, TestToken));
 
@@ -641,6 +642,7 @@ public sealed class RaftHttpClusterTests : RaftTest
 
         var token = GetLocalClusterView(host2).ConsensusToken;
         False(token.IsCancellationRequested);
+        await GetLocalClusterView(host1).ConfirmLeadershipAsync(ticket, TestToken);
 
         await host1.StopAsync(TestToken);
 
