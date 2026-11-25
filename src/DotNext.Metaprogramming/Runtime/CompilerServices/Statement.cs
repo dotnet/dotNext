@@ -12,6 +12,8 @@ using static Linq.Expressions.ExpressionBuilder;
 /// </summary>
 internal class Statement : Expression
 {
+    // Represents the position after the node (or the head of the list) that was the last one at the time of capture.
+    // The code inserted later at the same position precedes the code inserted earlier.
     private sealed class CodeInsertionPoint
     {
         private object nodeOrList;
@@ -25,7 +27,7 @@ internal class Statement : Expression
             switch (nodeOrList)
             {
                 case LinkedList<Expression> list:
-                    nodeOrList = list.AddLast(expr);
+                    nodeOrList = list.AddFirst(expr);
                     break;
                 case LinkedListNode<Expression> node:
                     Debug.Assert(node.List is not null);
