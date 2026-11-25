@@ -34,7 +34,7 @@ public partial class PeerController
         // forwards JOIN request to all neighbors excluding joined peer
         foreach (var neighbor in activeView.Remove(joinedPeer))
         {
-            tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength, LifecycleToken), LifecycleToken));
+            tasks.Add(Task.Run(() => ForwardJoinAsync(neighbor, joinedPeer, activeRandomWalkLength, LifecycleToken), LifecycleToken));
         }
 
         // await responses
