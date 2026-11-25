@@ -339,13 +339,13 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override ElementInit VisitElementInit(ElementInit node)
     {
-        var arguments = Visit(node.Arguments, arg => context.Rewrite(arg, new Converter<Expression, Expression>(Visit)));
+        var arguments = Visit(node.Arguments, arg => context.Rewrite<Expression, Expression>(arg, Visit));
         return node.Update(arguments);
     }
 
     protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
     {
-        var expression = context.Rewrite(node.Expression, new Converter<Expression, Expression>(Visit));
+        var expression = context.Rewrite<Expression, Expression>(node.Expression, Visit);
         return ReferenceEquals(expression, node.Expression) ? node : node.Update(expression);
     }
 
@@ -667,10 +667,10 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
     }
 
-    private Expression? Rewrite(Statement body)
-        => Visit(body)?.Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
+    private Expression Rewrite(Statement body)
+        => Visit(body).Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
 
-    internal Expression? Rewrite(Expression body)
+    internal Expression Rewrite(Expression body)
         => Rewrite(body is BlockExpression block ?
             new Statement(Expression.Block(typeof(void), block.Variables, block.Expressions)) :
             new Statement(body));
@@ -847,7 +847,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     internal Expression<TDelegate> Build(Expression body, bool tailCall, bool usePooling)
     {
-        body = methodBuilder.Rewrite(body) ?? Expression.Empty();
+        body = methodBuilder.Rewrite(body);
 
         // build state machine type
         stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, usePooling, methodBuilder.Variables);
