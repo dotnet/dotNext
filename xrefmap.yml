@@ -29788,6 +29788,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail
   nameWithType: IRaftCluster.AuditTrail
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,System.Threading.CancellationToken)
+  name: ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, System.Threading.CancellationToken)
+  nameWithType: IRaftCluster.ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync*
+  name: ConfirmLeadershipAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync
+  nameWithType: IRaftCluster.ConfirmLeadershipAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
   name: ConsensusToken
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConsensusToken
@@ -29812,6 +29824,18 @@ references:
   commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout
   nameWithType: IRaftCluster.ElectionTimeout
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket
+  nameWithType: IRaftCluster.LeadershipTicket
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket*
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket
+  nameWithType: IRaftCluster.LeadershipTicket
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken
   name: LeadershipToken
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken
@@ -30133,6 +30157,150 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException
   fullName: DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException
   nameWithType: LeaderOperationException
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket
+  nameWithType: LeadershipTicket
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.#ctor(System.Int64,System.Int64)
+  name: LeadershipTicket(long, long)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket__ctor_System_Int64_System_Int64_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.#ctor(System.Int64,System.Int64)
+  name.vb: New(Long, Long)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.LeadershipTicket(long, long)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.New(Long, Long)
+  nameWithType: LeadershipTicket.LeadershipTicket(long, long)
+  nameWithType.vb: LeadershipTicket.New(Long, Long)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.#ctor*
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket__ctor_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.#ctor
+  name.vb: New
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.LeadershipTicket
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.New
+  nameWithType: LeadershipTicket.LeadershipTicket
+  nameWithType.vb: LeadershipTicket.New
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct(System.Int64@,System.Int64@)
+  name: Deconstruct(out long, out long)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Deconstruct_System_Int64__System_Int64__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct(System.Int64@,System.Int64@)
+  name.vb: Deconstruct(Long, Long)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct(out long, out long)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct(Long, Long)
+  nameWithType: LeadershipTicket.Deconstruct(out long, out long)
+  nameWithType.vb: LeadershipTicket.Deconstruct(Long, Long)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct*
+  name: Deconstruct
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Deconstruct_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Deconstruct
+  nameWithType: LeadershipTicket.Deconstruct
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  name: Equals(LeadershipTicket)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Equals_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  nameWithType: LeadershipTicket.Equals(LeadershipTicket)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(System.Object)
+  name: Equals(object)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Equals_System_Object_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(object)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals(Object)
+  nameWithType: LeadershipTicket.Equals(object)
+  nameWithType.vb: LeadershipTicket.Equals(Object)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals*
+  name: Equals
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Equals_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Equals
+  nameWithType: LeadershipTicket.Equals
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_GetHashCode
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode()
+  nameWithType: LeadershipTicket.GetHashCode()
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_GetHashCode_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.GetHashCode
+  nameWithType: LeadershipTicket.GetHashCode
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp
+  name: Stamp
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Stamp
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp
+  nameWithType: LeadershipTicket.Stamp
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp*
+  name: Stamp
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Stamp_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Stamp
+  nameWithType: LeadershipTicket.Stamp
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term
+  name: Term
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Term
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term
+  nameWithType: LeadershipTicket.Term
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term*
+  name: Term
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_Term_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.Term
+  nameWithType: LeadershipTicket.Term
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString
+  name: ToString()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_ToString
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString()
+  nameWithType: LeadershipTicket.ToString()
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString*
+  name: ToString
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_ToString_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.ToString
+  nameWithType: LeadershipTicket.ToString
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Equality(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  name: operator ==(LeadershipTicket, LeadershipTicket)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_op_Equality_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Equality(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  name.vb: =(LeadershipTicket, LeadershipTicket)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.operator ==(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.=(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  nameWithType: LeadershipTicket.operator ==(LeadershipTicket, LeadershipTicket)
+  nameWithType.vb: LeadershipTicket.=(LeadershipTicket, LeadershipTicket)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Equality*
+  name: operator ==
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_op_Equality_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Equality
+  name.vb: =
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.operator ==
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.=
+  nameWithType: LeadershipTicket.operator ==
+  nameWithType.vb: LeadershipTicket.=
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Inequality(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  name: operator !=(LeadershipTicket, LeadershipTicket)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_op_Inequality_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Inequality(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  name.vb: <>(LeadershipTicket, LeadershipTicket)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.operator !=(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.<>(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket)
+  nameWithType: LeadershipTicket.operator !=(LeadershipTicket, LeadershipTicket)
+  nameWithType.vb: LeadershipTicket.<>(LeadershipTicket, LeadershipTicket)
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html#DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_op_Inequality_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.op_Inequality
+  name.vb: <>
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.operator !=
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.<>
+  nameWithType: LeadershipTicket.operator !=
+  nameWithType.vb: LeadershipTicket.<>
 - uid: DotNext.Net.Cluster.Consensus.Raft.Membership
   name: DotNext.Net.Cluster.Consensus.Raft.Membership
   href: api/DotNext.Net.Cluster.Consensus.Raft.Membership.html
@@ -31882,6 +32050,22 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConfigurationChangeScope.Members
   nameWithType: RaftCluster<TMember>.ConfigurationChangeScope.Members
   nameWithType.vb: RaftCluster(Of TMember).ConfigurationChangeScope.Members
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,System.Threading.CancellationToken)
+  name: ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfirmLeadershipAsync*
+  name: ConfirmLeadershipAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConfirmLeadershipAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConfirmLeadershipAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.ConfirmLeadershipAsync
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConfirmLeadershipAsync
+  nameWithType: RaftCluster<TMember>.ConfirmLeadershipAsync
+  nameWithType.vb: RaftCluster(Of TMember).ConfirmLeadershipAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken
   name: ConsensusToken
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConsensusToken
@@ -32085,6 +32269,22 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).LeaderChanged
   nameWithType: RaftCluster<TMember>.LeaderChanged
   nameWithType.vb: RaftCluster(Of TMember).LeaderChanged
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipTicket
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeadershipTicket
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipTicket
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.LeadershipTicket
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).LeadershipTicket
+  nameWithType: RaftCluster<TMember>.LeadershipTicket
+  nameWithType.vb: RaftCluster(Of TMember).LeadershipTicket
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipTicket*
+  name: LeadershipTicket
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeadershipTicket_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipTicket
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.LeadershipTicket
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).LeadershipTicket
+  nameWithType: RaftCluster<TMember>.LeadershipTicket
+  nameWithType.vb: RaftCluster(Of TMember).LeadershipTicket
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.LeadershipToken
   name: LeadershipToken
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_LeadershipToken
@@ -51641,6 +51841,93 @@ references:
   commentId: Overload:DotNext.Threading.AsyncBridge.WaitAsync
   fullName: DotNext.Threading.AsyncBridge.WaitAsync
   nameWithType: AsyncBridge.WaitAsync
+- uid: DotNext.Threading.AsyncCoalescer
+  name: AsyncCoalescer
+  href: api/DotNext.Threading.AsyncCoalescer.html
+  commentId: T:DotNext.Threading.AsyncCoalescer
+  fullName: DotNext.Threading.AsyncCoalescer
+  nameWithType: AsyncCoalescer
+- uid: DotNext.Threading.AsyncCoalescer.#ctor(System.TimeSpan,System.TimeProvider)
+  name: AsyncCoalescer(TimeSpan, TimeProvider)
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer__ctor_System_TimeSpan_System_TimeProvider_
+  commentId: M:DotNext.Threading.AsyncCoalescer.#ctor(System.TimeSpan,System.TimeProvider)
+  name.vb: New(TimeSpan, TimeProvider)
+  fullName: DotNext.Threading.AsyncCoalescer.AsyncCoalescer(System.TimeSpan, System.TimeProvider)
+  fullName.vb: DotNext.Threading.AsyncCoalescer.New(System.TimeSpan, System.TimeProvider)
+  nameWithType: AsyncCoalescer.AsyncCoalescer(TimeSpan, TimeProvider)
+  nameWithType.vb: AsyncCoalescer.New(TimeSpan, TimeProvider)
+- uid: DotNext.Threading.AsyncCoalescer.#ctor*
+  name: AsyncCoalescer
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer__ctor_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.#ctor
+  name.vb: New
+  fullName: DotNext.Threading.AsyncCoalescer.AsyncCoalescer
+  fullName.vb: DotNext.Threading.AsyncCoalescer.New
+  nameWithType: AsyncCoalescer.AsyncCoalescer
+  nameWithType.vb: AsyncCoalescer.New
+- uid: DotNext.Threading.AsyncCoalescer.CompleteAsync(System.Boolean)
+  name: CompleteAsync(bool)
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_CompleteAsync_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncCoalescer.CompleteAsync(System.Boolean)
+  name.vb: CompleteAsync(Boolean)
+  fullName: DotNext.Threading.AsyncCoalescer.CompleteAsync(bool)
+  fullName.vb: DotNext.Threading.AsyncCoalescer.CompleteAsync(Boolean)
+  nameWithType: AsyncCoalescer.CompleteAsync(bool)
+  nameWithType.vb: AsyncCoalescer.CompleteAsync(Boolean)
+- uid: DotNext.Threading.AsyncCoalescer.CompleteAsync*
+  name: CompleteAsync
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_CompleteAsync_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.CompleteAsync
+  fullName: DotNext.Threading.AsyncCoalescer.CompleteAsync
+  nameWithType: AsyncCoalescer.CompleteAsync
+- uid: DotNext.Threading.AsyncCoalescer.ConcurrencyLevel
+  name: ConcurrencyLevel
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_ConcurrencyLevel
+  commentId: P:DotNext.Threading.AsyncCoalescer.ConcurrencyLevel
+  fullName: DotNext.Threading.AsyncCoalescer.ConcurrencyLevel
+  nameWithType: AsyncCoalescer.ConcurrencyLevel
+- uid: DotNext.Threading.AsyncCoalescer.ConcurrencyLevel*
+  name: ConcurrencyLevel
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_ConcurrencyLevel_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.ConcurrencyLevel
+  fullName: DotNext.Threading.AsyncCoalescer.ConcurrencyLevel
+  nameWithType: AsyncCoalescer.ConcurrencyLevel
+- uid: DotNext.Threading.AsyncCoalescer.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_DisposeAsync
+  commentId: M:DotNext.Threading.AsyncCoalescer.DisposeAsync
+  fullName: DotNext.Threading.AsyncCoalescer.DisposeAsync()
+  nameWithType: AsyncCoalescer.DisposeAsync()
+- uid: DotNext.Threading.AsyncCoalescer.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_DisposeAsync_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.DisposeAsync
+  fullName: DotNext.Threading.AsyncCoalescer.DisposeAsync
+  nameWithType: AsyncCoalescer.DisposeAsync
+- uid: DotNext.Threading.AsyncCoalescer.Flush
+  name: Flush()
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_Flush
+  commentId: M:DotNext.Threading.AsyncCoalescer.Flush
+  fullName: DotNext.Threading.AsyncCoalescer.Flush()
+  nameWithType: AsyncCoalescer.Flush()
+- uid: DotNext.Threading.AsyncCoalescer.Flush*
+  name: Flush
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_Flush_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.Flush
+  fullName: DotNext.Threading.AsyncCoalescer.Flush
+  nameWithType: AsyncCoalescer.Flush
+- uid: DotNext.Threading.AsyncCoalescer.WaitAsync(System.Threading.CancellationToken)
+  name: WaitAsync(CancellationToken)
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_WaitAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncCoalescer.WaitAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncCoalescer.WaitAsync(System.Threading.CancellationToken)
+  nameWithType: AsyncCoalescer.WaitAsync(CancellationToken)
+- uid: DotNext.Threading.AsyncCoalescer.WaitAsync*
+  name: WaitAsync
+  href: api/DotNext.Threading.AsyncCoalescer.html#DotNext_Threading_AsyncCoalescer_WaitAsync_
+  commentId: Overload:DotNext.Threading.AsyncCoalescer.WaitAsync
+  fullName: DotNext.Threading.AsyncCoalescer.WaitAsync
+  nameWithType: AsyncCoalescer.WaitAsync
 - uid: DotNext.Threading.AsyncCorrelationSource`2
   name: AsyncCorrelationSource<TKey, TValue>
   href: api/DotNext.Threading.AsyncCorrelationSource-2.html
@@ -57948,6 +58235,22 @@ references:
   fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).GetAcquisitionException
   nameWithType: QueuedSynchronizer<TContext>.GetAcquisitionException
   nameWithType.vb: QueuedSynchronizer(Of TContext).GetAcquisitionException
+- uid: DotNext.Threading.QueuedSynchronizer`1.IsFair
+  name: IsFair
+  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_IsFair
+  commentId: P:DotNext.Threading.QueuedSynchronizer`1.IsFair
+  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.IsFair
+  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).IsFair
+  nameWithType: QueuedSynchronizer<TContext>.IsFair
+  nameWithType.vb: QueuedSynchronizer(Of TContext).IsFair
+- uid: DotNext.Threading.QueuedSynchronizer`1.IsFair*
+  name: IsFair
+  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_IsFair_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer`1.IsFair
+  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.IsFair
+  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).IsFair
+  nameWithType: QueuedSynchronizer<TContext>.IsFair
+  nameWithType.vb: QueuedSynchronizer(Of TContext).IsFair
 - uid: DotNext.Threading.QueuedSynchronizer`1.Release
   name: Release()
   href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_Release

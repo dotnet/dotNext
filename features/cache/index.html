@@ -117,6 +117,15 @@ async ValueTask&lt;byte[]&gt; ReadFile(string fileName)
 <li>Lower value of <code>collisionThreshold</code> reduces the chance of contention between writes by the cost of increased chance of the resize</li>
 <li><a href="https://learn.microsoft.com/en-us/dotnet/api/system.int32.maxvalue">int.MaxValue</a> can be specified to disable the resize at all. In that case, the chance of the contention between grows linearly with the number of items in the cache.</li>
 </ul>
+<h1 id="large-sized-cache">Large-sized cache</h1>
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> can create a significant pressure on the GC when Full Blocking GC is triggered. Every cache entry in the cache is a managed object which needs to be visited by the GC. For large caches (from 1M of entries and larger), it creates a significant GC pause. Typically, most entries remain alive during the application lifecycle, so visiting them is a waste of time.</p>
+<p>When <code>TValue</code> can be represented by the unmanaged type, <a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-1.html">RandomAccessCache&lt;TValue&gt;</a> needs to be used instead. This version keeps the entries in the unmanaged memory, and releases the memory as soon as eviction happens. The only supported key type is <a href="https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;byte&gt;</a>.</p>
+<p>The implementation of the unmanaged SIEVE uses Pinned Object Heap for one-time static allocations, and unmanaged heap for dynamic allocations of the entries. The following metrics can be used to monitor unmanaged memory occupation:</p>
+<ul>
+<li>Meter Name: <code>DotNext.Runtime.Caching.RandomAccessCache.Unmanaged</code></li>
+<li><code>entries-count</code> to get the number of alive entries in the cache</li>
+<li><code>allocated-memory</code> to get the number of memory allocated in the unmanaged heap. The value doesn't include POH allocation, which remains the same during the cache lifetime. POH size can be observed by using standard .NET Runtime metrics</li>
+</ul>
 
 </article>
           </div>

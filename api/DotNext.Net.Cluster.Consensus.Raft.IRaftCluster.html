@@ -119,7 +119,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LocalAddressMeterAttributeName" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LocalAddressMeterAttributeName">LocalAddressMeterAttributeName</h4>
   <div class="markdown level1 summary"><p>Represents metrics attribute containing the address of the local node.</p>
@@ -148,7 +148,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail">AuditTrail</h4>
@@ -176,7 +176,7 @@
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConsensusToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConsensusToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken">ConsensusToken</h4>
@@ -208,7 +208,7 @@ has communication with the leader.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout">ElectionTimeout</h4>
@@ -236,7 +236,38 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipTicket">LeadershipTicket</h4>
+  <div class="markdown level1 summary"><p>Gets the ticket that can be passed to <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken_">ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)</a>
+to confirm later that the local node is still the leader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">LeadershipTicket? LeadershipTicket { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html">LeadershipTicket</a>?</td>
+        <td><p>The ticket of the current leadership if the local node is the leader and its write barrier is committed;
+otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken">LeadershipToken</h4>
@@ -267,7 +298,7 @@ has communication with the leader.</p>
 </div>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Members*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Members">Members</h4>
@@ -295,7 +326,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Readiness*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Readiness">Readiness</h4>
@@ -325,7 +356,7 @@ has communication with the leader.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_ReadBarrierType_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync(DotNext.Net.Cluster.Consensus.Raft.ReadBarrierType,System.Threading.CancellationToken)">ApplyReadBarrierAsync(ReadBarrierType, CancellationToken)</h4>
@@ -404,7 +435,109 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConfirmLeadershipAsync(DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket,System.Threading.CancellationToken)">ConfirmLeadershipAsync(LeadershipTicket, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Waits for the next heartbeat round to confirm that the local node is still the leader
+in the specified term.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask ConfirmLeadershipAsync(LeadershipTicket ticket, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LeadershipTicket.html">LeadershipTicket</a></td>
+        <td><span class="parametername">ticket</span></td>
+        <td><p>The state previously captured with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket">LeadershipTicket</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Unlike <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ForceReplicationAsync_System_Threading_CancellationToken_">ForceReplicationAsync(CancellationToken)</a>, this method doesn't start a replication round.
+It waits for the next scheduled heartbeat round, or for a round started by another caller.
+Only a round that starts after this method is called counts.
+The method completes successfully only if the majority of the cluster members confirm the leadership
+of the local node in that round. So when the returned task completes,
+no other node could have been elected as a leader in a term greater than <code class="paramref">term</code>
+before this method was called.</p>
+<p>
+Many concurrent callers share the same heartbeat round, so they produce no extra network traffic.
+The trade-off is latency, which can reach one heartbeat period plus the duration of one replication round.
+</p>
+<p>
+Unlike <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_DotNext_Net_Cluster_Consensus_Raft_ReadBarrierType_System_Threading_CancellationToken_">ApplyReadBarrierAsync(ReadBarrierType, CancellationToken)</a>, the request is never
+forwarded to the leader. It fails if the local node is not the leader.
+</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html">NotLeaderException</a></td>
+        <td><p>The local node is not the leader, or its leadership was obtained in a different term,
+or it lost its leadership while waiting.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The local node is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConfirmLeadershipAsync_DotNext_Net_Cluster_Consensus_Raft_LeadershipTicket_System_Threading_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipTicket">LeadershipTicket</a></div>
+  </div>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_SetConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.SetConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_SetConfigurationStorage_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.SetConfigurationStorage(DotNext.Net.Cluster.Consensus.Raft.IPersistentState,DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage)">SetConfigurationStorage(IPersistentState, IClusterConfigurationStorage)</h4>
@@ -441,7 +574,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_TryGetLeaseToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.TryGetLeaseToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_TryGetLeaseToken_System_Threading_CancellationToken__" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.TryGetLeaseToken(System.Threading.CancellationToken@)">TryGetLeaseToken(out CancellationToken)</h4>
@@ -488,7 +621,7 @@ has communication with the leader.</p>
   </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync(System.Threading.CancellationToken)">WaitForLeadershipAsync(CancellationToken)</h4>
@@ -594,7 +727,7 @@ has communication with the leader.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/f7e9550ab5e951fbc427a6c010c47e2a66577b1b/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
