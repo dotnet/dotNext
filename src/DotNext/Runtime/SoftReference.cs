@@ -9,47 +9,16 @@ namespace DotNext.Runtime;
 /// </summary>
 /// <remarks>
 /// The object that is soft-referenced survives the garbage collection in
-/// Generation 0 and 1. When GC is triggered for Generation 2,
-/// the object can be reclaimed according to <see cref="SoftReferenceOptions"/>.
+/// Generation 0 and 1. When the object reaches Generation 2, the soft reference
+/// downgrades to a weak reference according to <see cref="SoftReferenceOptions"/>,
+/// so the object can be reclaimed by the subsequent GC in Generation 2.
 /// All public instance members of this type are thread-safe.
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
 [DebuggerDisplay($"State = {{{nameof(State)}}}")]
-public sealed class SoftReference<T> : IOptionMonad<T>
+public sealed partial class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
-    // tracks generation of Target in each GC collection using Finalizer as a callback
-    private sealed class Tracker(SoftReference<T> parent, SoftReferenceOptions options) : IGCCallback
-    {
-        ~Tracker()
-        {
-            // Thread safety: preserve order of fields
-            if (parent.strongRef is not { } target || parent.trackerRef is not { } thisRef)
-            {
-                // do nothing
-            }
-            else if (ReferenceEquals(this, thisRef.Target) && options.KeepTracking(target))
-            {
-                GC.ReRegisterForFinalize(this);
-            }
-            else
-            {
-                try
-                {
-                    thisRef.Target = target; // downgrade to weak reference
-                }
-                catch (InvalidOperationException)
-                {
-                    // suspend exception, the weak reference is already finalized
-                }
-                finally
-                {
-                    parent.strongRef = null;
-                }
-            }
-        }
-    }
-
     // Thread safety: this field must be requested first. If it is null then try to get the reference
     // from trackerRef
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -69,24 +38,27 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         if (target is not null)
         {
             options ??= SoftReferenceOptions.Default;
+            var gen2CollectionCount = SoftReferenceOptions.UnknownCollectionCount;
 
             // https://learn.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/8.0/getgeneration-return-value
             if (GC.GetGeneration(target) is int.MaxValue)
             {
                 strongRef = target;
             }
-            else if (options.KeepTracking(target))
+            else if (options.KeepTracking(target, ref gen2CollectionCount))
             {
                 strongRef = target;
-                var tracker = new Tracker(this, options);
-                trackerRef = new(tracker);
-                GC.KeepAlive(tracker);
+                trackerRef = new(new Tracker(this, options) { Gen2CollectionCount = gen2CollectionCount });
+                return;
             }
             else
             {
                 trackerRef = new(target);
             }
         }
+
+        // the finalizer is needed only to stop the tracker
+        GC.SuppressFinalize(this);
     }
 
     private void ClearCore()
@@ -205,6 +177,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
 /// </summary>
 public class SoftReferenceOptions
 {
+    internal const int UnknownCollectionCount = -1;
     private readonly int collectionCount;
     private readonly long memoryLimit = long.MaxValue;
     private readonly double memoryThreshold = 1D;
@@ -215,12 +188,17 @@ public class SoftReferenceOptions
     public static SoftReferenceOptions Default { get; } = new();
 
     /// <summary>
-    /// Indicates how many collections can the referenced object survive.
+    /// Indicates how many Generation 2 collections can the referenced object survive
+    /// after it has been promoted to Generation 2.
     /// </summary>
+    /// <remarks>
+    /// The default is 0.
+    /// </remarks>
+    /// <value>The number of collections; must not be negative.</value>
     public int CollectionCount
     {
         get => collectionCount;
-        init => collectionCount = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => collectionCount = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -250,10 +228,18 @@ public class SoftReferenceOptions
         init => memoryThreshold = double.IsFinite(value) && value is > 0D and <= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    internal bool KeepTracking(object target)
+    // gen2CollectionCount is the number of Gen2 collections when the target has been observed in Gen2 for the first time
+    internal bool KeepTracking(object target, ref int gen2CollectionCount)
     {
         var generation = GC.GetGeneration(target);
-        return generation < GC.MaxGeneration || (GC.CollectionCount(generation) <= collectionCount && CheckLimits(generation));
+        if (generation < GC.MaxGeneration)
+            return true;
+
+        var currentCount = GC.CollectionCount(generation);
+        if (gen2CollectionCount is UnknownCollectionCount)
+            gen2CollectionCount = currentCount;
+
+        return currentCount - gen2CollectionCount <= collectionCount && CheckLimits(generation);
     }
 
     private bool CheckLimits(int generation)
