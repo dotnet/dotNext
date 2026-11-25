@@ -28,14 +28,21 @@ public class ExecutionStackTests : Test
     [Fact]
     public static void CheckExecutionStackSize()
     {
-        const int stackSize = 1024 * 1024 * 2;
-        var t = new Thread(static () =>
+        // 2 MB is not used: the runtime ignores exactly that value on Linux and gives the thread the OS default stack size
+        const int stackSize = 1024 * 1024 * 4;
+        nuint actualSize = 0U, remaining = 0U;
+
+        // asserts can't run on the raw thread: an unhandled exception there aborts the test host
+        var t = new Thread(() =>
         {
-            Equal((uint)stackSize, RuntimeHelpers.ExecutionStackSize);
-            True(RuntimeHelpers.RemainingExecutionStack < stackSize);
+            actualSize = RuntimeHelpers.ExecutionStackSize;
+            remaining = RuntimeHelpers.RemainingExecutionStack;
         }, stackSize);
-        
+
         t.Start();
         t.Join();
+
+        Equal((nuint)stackSize, actualSize);
+        InRange(remaining, 1U, actualSize - 1U);
     }
 }
