@@ -1,11 +1,10 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Runtime.ExceptionServices;
+using static Runtime.ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Represents simple memory reader backed by <see cref="ReadOnlySpan{T}"/>.
@@ -256,15 +255,4 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <returns>The textual representation of the written content.</returns>
     public readonly override string ToString() => ConsumedSpan.ToString();
-}
-
-file static class InternalBufferOverflowExceptionExtensions
-{
-    extension(InternalBufferOverflowException)
-    {
-        [DoesNotReturn]
-        [StackTraceHidden]
-        public static void Throw()
-            => throw new InternalBufferOverflowException();
-    }
 }

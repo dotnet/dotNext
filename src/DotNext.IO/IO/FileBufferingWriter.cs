@@ -10,6 +10,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.IO;
 
 using Buffers;
+using static Runtime.ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Represents builder of contiguous block of memory that may
@@ -206,14 +207,9 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         if (position > buffer.Length - count)
-            ThrowInvalidOperationException();
+            InvalidOperationException.Throw();
 
         position += count;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidOperationException()
-            => throw new InvalidOperationException();
     }
 
     private MemoryEvaluationResult PrepareMemory(int size, out Memory<byte> output)
