@@ -22,10 +22,14 @@ internal sealed class ClosureAnalyzer : ExpressionVisitor
     {
         if (node is ParameterExpression p && locals.Contains(p))
         {
-            // replace local with closure variable
-            var closure = Expression.Variable(typeof(StrongBox<>).MakeGenericType(p.Type));
-            p.UserData.Set(ClosureVariableSlot, true);
-            Closures.Add(p, closure);
+            // replace local with closure variable, the same local can be referenced multiple times
+            if (!Closures.TryGetValue(p, out var closure))
+            {
+                closure = Expression.Variable(typeof(StrongBox<>).MakeGenericType(p.Type));
+                p.UserData.Set(ClosureVariableSlot, true);
+                Closures.Add(p, closure);
+            }
+
             return Expression.Field(closure, nameof(StrongBox<>.Value));
         }
 

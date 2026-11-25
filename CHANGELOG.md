@@ -1,6 +1,37 @@
 Release Notes
 ====
 
+# 11-24-2026
+<a href="https://www.nuget.org/packages/dotnext/6.14.0">DotNext 6.14.0</a>
+* Fixed LEB128 encoder: now it detects incorrect input
+* Fixed UNC path encoding provided by `FileUri` class
+* `FileUri.TryCreateFromFileName` returns **false** correctly when the input buffer is too small
+* Finalized target is no longer returned by `SoftReference<T>`
+* Introduced `ExceptionExtensions` with extensions for [Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception) class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.0">DotNext.Metaprogramming 6.14.0</a>
+* Fixed evaluation order in async lambda lowering
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.14.0">DotNext.Unsafe 6.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/6.14.0">DotNext.Threading 6.14.0</a>
+* Introduced `AsyncCoalescer` synchronization primitive which allows to organize barriers based on the timer rather than number of participants
+* Added `QueuedSynchronized<T>.IsFair` property for advanced scenarios when the whole wait queue needs to be resumed
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.14.0">DotNext.IO 6.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.14.0">DotNext.Net.Cluster 6.14.0</a>
+* Introduced `LeadershipTicket` property and `ConfirmLeadershipAsync` method in `RaftCluster<TMember>` class. These members allow to ensure leadership of the current node without applying the read barrier
+* Fixed `ObjectDisposedException` exception that can be thrown by `ForceReplicationAsync` method due to race conditions
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.14.0">DotNext.AspNetCore.Cluster 6.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.14.0">DotNext.MaintenanceServices 1.14.0</a>
+* Updated dependencies
+
 # 11-22-2026
 <a href="https://www.nuget.org/packages/dotnext/6.13.0">DotNext 6.13.0</a>
 * Introduced `Atomic.Read` and `Atomic.Write` for arbitrary enum types

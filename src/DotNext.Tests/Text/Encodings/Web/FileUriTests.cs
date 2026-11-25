@@ -16,6 +16,14 @@ public sealed class FileUriTests : Test
         { @"C:\с\кириллицей", @"C:\с\кириллицей" },
         { @"C:\ελληνικά\γράμματα", @"C:\ελληνικά\γράμματα" },
         { @"\\unc\path", @"\\unc\path" },
+        { @"\\unc\path\", @"\\unc\path\" },
+        { @"\\unc", @"\\unc" },
+        { @"\\?\C:\device\path", @"C:\device\path" },
+        { @"\\.\C:\device\path", @"C:\device\path" },
+        { @"\\?\UNC\unc\path", @"\\unc\path" },
+        { @"\\.\unc\unc\path", @"\\unc\path" },
+        { @"C:/forward/slashes", @"C:\forward\slashes" },
+        { @"C:\", @"C:\" },
 
         // Unix path
         { "/without/whitespace", "/without/whitespace" },
@@ -77,8 +85,43 @@ public sealed class FileUriTests : Test
     [InlineData("../path")]
     [InlineData("./path")]
     [InlineData("")]
+    [InlineData("C:")]
+    [InlineData("CD:\\path")]
+    [InlineData(":\\path")]
+    [InlineData("1:\\path")]
+    [InlineData("x#y:\\path")]
+    [InlineData("\\\\")]
+    [InlineData("\\\\\\path")]
+    [InlineData("\\\\my host\\share")]
+    [InlineData("\\\\host#name\\share")]
+    [InlineData("\\\\.\\pipe\\name")]
+    [InlineData("\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}\\path")]
+    [InlineData("\\\\?\\UNC\\")]
     public static void CheckFullyQualifiedPath(string path)
     {
         Throws<ArgumentException>(() => FileUri.CreateFromFileName(path));
+    }
+
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/a/")]
+    [InlineData("/a b/c")]
+    [InlineData(@"C:\")]
+    [InlineData(@"C:\a\")]
+    [InlineData(@"\\?\C:\a")]
+    [InlineData(@"\\host")]
+    [InlineData(@"\\host\share\")]
+    [InlineData(@"\\?\UNC\host\share")]
+    public static void TryCreateFromFileNameSmallBuffer(string fileName)
+    {
+        var expected = FileUri.CreateFromFileName(fileName);
+        True(FileUri.GetMaxEncodedLength(fileName) >= expected.Length);
+
+        var buffer = new char[expected.Length];
+        for (var size = 0; size < expected.Length; size++)
+            False(FileUri.TryCreateFromFileName(fileName, UrlEncoder.Default, buffer.AsSpan(0, size), out _));
+
+        True(FileUri.TryCreateFromFileName(fileName, UrlEncoder.Default, buffer, out var charsWritten));
+        Equal(expected, buffer.AsSpan(0, charsWritten).ToString());
     }
 }

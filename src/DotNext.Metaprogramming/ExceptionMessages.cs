@@ -37,6 +37,8 @@ internal static class ExceptionMessages
 
     internal static string FilterHasAwait => (string)Resources.Get();
 
+    internal static string UnsupportedAsyncShortCircuit => (string)Resources.Get();
+
     internal static string OutOfLexicalScope => (string)Resources.Get();
 
     internal static string LoopNotAvailable => (string)Resources.Get();

@@ -59,37 +59,36 @@ npx skills add dotnet/dotNext
 Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai/plugins/dotnext-skills/skills) to the skills directory of your agent, e.g. `.claude/skills/` for Claude Code, or `.agents/skills/` for Codex and GitHub Copilot.
 
 # What's new
-Release Date: 11-22-2026
+Release Date: 11-25-2026
 
-<a href="https://www.nuget.org/packages/dotnext/6.13.0">DotNext 6.13.0</a>
-* Introduced `Atomic.Read` and `Atomic.Write` for arbitrary enum types
-* Fixed memory aliasing bug in `Atomic<T>` class
-* Deprecation of `Atomic.Read` for **long**, **ulong**, and **double** data types
-* Fixed nullability attributes in `Optional<T>` class
-* Various performance improvements of `Optional<T>` implementation
-* `SpanOwner<T>` removes allocation when passed [MemoryPool&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1) is [shared pool](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1.shared)
+<a href="https://www.nuget.org/packages/dotnext/6.14.0">DotNext 6.14.0</a>
+* Fixed LEB128 encoder: now it detects incorrect input
+* Fixed UNC path encoding provided by `FileUri` class
+* `FileUri.TryCreateFromFileName` returns **false** correctly when the input buffer is too small
+* Finalized target is no longer returned by `SoftReference<T>`
+* Introduced `ExceptionExtensions` with extensions for [Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception) class
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.13.0">DotNext.Metaprogramming 6.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.0">DotNext.Metaprogramming 6.14.0</a>
+* Fixed evaluation order in async lambda lowering
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.14.0">DotNext.Unsafe 6.14.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/6.13.0">DotNext.Unsafe 6.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/6.14.0">DotNext.Threading 6.14.0</a>
+* Introduced `AsyncCoalescer` synchronization primitive which allows to organize barriers based on the timer rather than number of participants
+* Added `QueuedSynchronized<T>.IsFair` property for advanced scenarios when the whole wait queue needs to be resumed
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.14.0">DotNext.IO 6.14.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/6.13.0">DotNext.Threading 6.13.0</a>
-* Performance improvements of optimistic read lock in `AsyncReaderWriterLock`
-* Fixed correctness of `LeaseConsumer` and `LeaseProvider` when implementing a distributed lease. Changes are backward incompatible.
-* Introduced `LeaseProvider.ObserveAsync` that allows to observe the lease state without waiting for the real request for renewal
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.14.0">DotNext.Net.Cluster 6.14.0</a>
+* Introduced `LeadershipTicket` property and `ConfirmLeadershipAsync` method in `RaftCluster<TMember>` class. These members allow to ensure leadership of the current node without applying the read barrier
+* Fixed `ObjectDisposedException` exception that can be thrown by `ForceReplicationAsync` method due to race conditions
 
-<a href="https://www.nuget.org/packages/dotnext.io/6.13.0">DotNext.IO 6.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.14.0">DotNext.AspNetCore.Cluster 6.14.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.13.0">DotNext.Net.Cluster 6.13.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.13.0">DotNext.AspNetCore.Cluster 6.13.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.13.0">DotNext.MaintenanceServices 1.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.14.0">DotNext.MaintenanceServices 1.14.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

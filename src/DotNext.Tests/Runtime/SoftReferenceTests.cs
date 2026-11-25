@@ -110,4 +110,85 @@ public sealed class SoftReferenceTests : Test
         Same(target, monad.Or(string.Empty));
         Same(target, monad.OrInvoke(Func<string>.Constant(string.Empty)));
     }
+
+    [Fact]
+    public static void CollectionCountIsRelativeToPromotion()
+    {
+        // make sure that the process-wide number of Gen2 collections exceeds CollectionCount
+        const int collectionCount = 3;
+        for (var i = 0; i <= collectionCount; i++)
+            FullCollection();
+
+        var reference = CreateReference();
+
+        // promote the target to Gen2
+        while (reference.TargetAndState is (Target: { } target, State: SoftReferenceState.Strong) && GC.GetGeneration(target) < GC.MaxGeneration)
+            FullCollection();
+
+        for (var i = 0; i < collectionCount; i++)
+        {
+            FullCollection();
+            Equal(SoftReferenceState.Strong, reference.TargetAndState.State);
+        }
+
+        FullCollection();
+        Equal(SoftReferenceState.Weak, reference.TargetAndState.State);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static SoftReference<object> CreateReference()
+            => new(new(), new SoftReferenceOptions { CollectionCount = collectionCount });
+    }
+
+    private sealed class FinalizableTarget
+    {
+        internal static volatile bool Finalized;
+        internal bool IsAlive = true;
+
+        ~FinalizableTarget()
+        {
+            IsAlive = false;
+            Finalized = true;
+        }
+    }
+
+    [Fact]
+    public static void FinalizedTargetIsNotObservable()
+    {
+        var reference = CreateReference();
+
+        // wait for downgrade to weak reference
+        while (GetState(reference) is SoftReferenceState.Strong)
+            FullCollection();
+
+        // the target is not reachable, so it must be finalized
+        for (var i = 0; i < 10 && !FinalizableTarget.Finalized; i++)
+            FullCollection();
+
+        True(FinalizableTarget.Finalized);
+        False(IsFinalizedTargetObservable(reference));
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static SoftReference<FinalizableTarget> CreateReference() => new(new());
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static SoftReferenceState GetState(SoftReference<FinalizableTarget> reference) => reference.TargetAndState.State;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static bool IsFinalizedTargetObservable(SoftReference<FinalizableTarget> reference)
+            => reference.TryGetTarget(out var target) && !target.IsAlive;
+    }
+
+    [Fact]
+    public static void DefaultCollectionCount()
+    {
+        Equal(0, SoftReferenceOptions.Default.CollectionCount);
+        Equal(0, new SoftReferenceOptions { CollectionCount = 0 }.CollectionCount);
+        Throws<ArgumentOutOfRangeException>(static () => new SoftReferenceOptions { CollectionCount = -1 });
+    }
+
+    private static void FullCollection()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
 }

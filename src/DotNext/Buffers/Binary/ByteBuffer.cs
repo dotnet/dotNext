@@ -376,6 +376,9 @@ public static class ByteBuffer
     /// <param name="reader">The buffer reader.</param>
     /// <typeparam name="T">The integer type.</typeparam>
     /// <returns>The decoded integer.</returns>
+    /// <exception cref="InvalidDataException">
+    /// The encoded value is longer than <see cref="Leb128{T}.MaxSizeInBytes"/>, or it doesn't fit into <typeparamref name="T"/>.
+    /// </exception>
     public static T ReadLeb128<T>(this ref SpanReader<byte> reader)
         where T : struct, IBinaryInteger<T>
     {

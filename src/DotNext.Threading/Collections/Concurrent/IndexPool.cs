@@ -1,8 +1,9 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Concurrent;
+
+using static Runtime.ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Represents a pool of integer values.
@@ -81,11 +82,7 @@ public sealed class IndexPool
     public void Return(int value)
     {
         if (!TryReturn(value))
-            ThrowOverflowException();
-        
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowOverflowException() => throw new OverflowException();
+            OverflowException.Throw();
     }
 
     /// <summary>

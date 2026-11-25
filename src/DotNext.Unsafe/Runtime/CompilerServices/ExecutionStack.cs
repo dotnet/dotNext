@@ -1,10 +1,10 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace DotNext.Runtime.CompilerServices;
+
+using static Runtime.ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Extends <see cref="RuntimeHelpers"/> class with execution stack inspection routines.
@@ -159,7 +159,7 @@ file readonly struct StackInfo
     public bool IsInRange(nuint addressToCheck)
     {
         if (IsInvalid)
-            ThrowNotSupportedException();
+            PlatformNotSupportedException.Throw();
 
         return addressToCheck >= start && addressToCheck < end;
     }
@@ -169,7 +169,7 @@ file readonly struct StackInfo
         get
         {
             if (IsInvalid)
-                ThrowNotSupportedException();
+                PlatformNotSupportedException.Throw();
 
             return end - start;
         }
@@ -178,15 +178,10 @@ file readonly struct StackInfo
     public nuint GetRemainingSpace(nuint stackPointer)
     {
         if (IsInvalid)
-            ThrowNotSupportedException();
+            PlatformNotSupportedException.Throw();
 
         return stackPointer - start; // stack grows down on all supported platforms
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowNotSupportedException()
-        => throw new PlatformNotSupportedException();
 
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("android")]
