@@ -52,3 +52,13 @@ Weight-based cache can grow over the time in contrast to capacity-based cache. T
 * Higher value of `collisionThreshold` reduces the chance of the resize by the cost of potential contention between writers
 * Lower value of `collisionThreshold` reduces the chance of contention between writes by the cost of increased chance of the resize
 * [int.MaxValue](https://learn.microsoft.com/en-us/dotnet/api/system.int32.maxvalue) can be specified to disable the resize at all. In that case, the chance of the contention between grows linearly with the number of items in the cache.
+
+# Large-sized cache
+[RandomAccessCache&lt;TKey,TValue&gt;](xref:DotNext.Runtime.Caching.RandomAccessCache`2) can create a significant pressure on the GC when Full Blocking GC is triggered. Every cache entry in the cache is a managed object which needs to be visited by the GC. For large caches (from 1M of entries and larger), it creates a significant GC pause. Typically, most entries remain alive during the application lifecycle, so visiting them is a waste of time.
+
+When `TValue` can be represented by the unmanaged type, [RandomAccessCache&lt;TValue&gt;](xref:DotNext.Runtime.Caching.RandomAccessCache`1) needs to be used instead. This version keeps the entries in the unmanaged memory, and releases the memory as soon as eviction happens. The only supported key type is [ReadOnlySpan&lt;byte&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1).
+
+The implementation of the unmanaged SIEVE uses Pinned Object Heap for one-time static allocations, and unmanaged heap for dynamic allocations of the entries. The following metrics can be used to monitor unmanaged memory occupation:
+* Meter Name: `DotNext.Runtime.Caching.RandomAccessCache.Unmanaged`
+* `entries-count` to get the number of alive entries in the cache
+* `allocated-memory` to get the number of memory allocated in the unmanaged heap. The value doesn't include POH allocation, which remains the same during the cache lifetime. POH size can be observed by using standard .NET Runtime metrics
