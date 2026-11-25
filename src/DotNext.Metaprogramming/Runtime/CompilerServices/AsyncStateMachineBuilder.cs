@@ -783,7 +783,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         }
     }
 
-    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables, out ParameterExpression stateMachine)
+    private static ReadOnlySpan<MemberExpression> CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables, out ParameterExpression stateMachine)
     {
         var sm = new StateMachineBuilder(returnType, usePooling);
         MemberExpression[] slots;
@@ -807,9 +807,9 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     private static ParameterExpression CreateStateHolderType(Type returnType, bool usePooling, IDictionary<ParameterExpression, MemberExpression?> variables)
     {
-        var vars = variables.Keys.ToArray();
+        ReadOnlySpan<ParameterExpression> vars = [.. variables.Keys];
         var slots = CreateStateHolderType(returnType, usePooling, vars, out var stateMachine);
-        for (var i = 0L; i < slots.LongLength; i++)
+        for (var i = 0; i < slots.Length; i++)
         {
             var v = vars[i];
             var s = slots[i];
