@@ -62,10 +62,14 @@ Alternatively, copy the skill folders from [ai/plugins/dotnext-skills/skills](ai
 Release Date: 11-25-2026
 
 <a href="https://www.nuget.org/packages/dotnext/6.14.0">DotNext 6.14.0</a>
-* Updated dependencies
+* Fixed LEB128 encoder: now it detects incorrect input
+* Fixed UNC path encoding provided by `FileUri` class
+* `FileUri.TryCreateFromFileName` returns **false** correctly when the input buffer is too small
+* Finalized target is no longer returned by `SoftReference<T>`
+* Introduced `ExceptionExtensions` with extensions for [Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception) class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.0">DotNext.Metaprogramming 6.14.0</a>
-* Updated dependencies
+* Fixed evaluation order in async lambda lowering
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/6.14.0">DotNext.Unsafe 6.14.0</a>
 * Updated dependencies
