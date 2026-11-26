@@ -58,14 +58,13 @@ file sealed class BoxedEnumerator<TEnumerator, T>(in TEnumerator enumerator, Can
     {
         get
         {
-            var elementType = typeof(T);
-            if (elementType.IsByRefLike)
-                throw new NotSupportedException();
-
             var value = enumerator.Current;
-            return elementType.IsValueType
-                ? RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), typeof(T).TypeHandle)
-                : Unsafe.As<T, object>(ref value);
+            return typeof(T) switch
+            {
+                { IsByRefLike: true } => throw new NotSupportedException(),
+                { IsValueType: true } vt => RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), vt.TypeHandle),
+                _ => Unsafe.As<T, object>(ref value)
+            };
         }
     }
 
