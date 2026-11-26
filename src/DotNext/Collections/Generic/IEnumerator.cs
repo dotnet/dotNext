@@ -33,7 +33,7 @@ public interface IEnumerator<TSelf, out T> : IResettable
     /// </summary>
     /// <param name="enumerator">Ad-hoc enumerator.</param>
     /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    internal static virtual IEnumerator<T> ToEnumerator(in TSelf enumerator)
+    protected internal static virtual IEnumerator<T> ToEnumerator(in TSelf enumerator)
         => new BoxedEnumerator<TSelf, T>(enumerator);
 
     /// <summary>
@@ -42,7 +42,7 @@ public interface IEnumerator<TSelf, out T> : IResettable
     /// <param name="enumerator">Ad-hoc enumerator.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
     /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    internal static virtual IAsyncEnumerator<T> ToAsyncEnumerator(in TSelf enumerator, CancellationToken token)
+    protected internal static virtual IAsyncEnumerator<T> ToAsyncEnumerator(in TSelf enumerator, CancellationToken token)
         => new BoxedEnumerator<TSelf, T>(enumerator, token);
 }
 
