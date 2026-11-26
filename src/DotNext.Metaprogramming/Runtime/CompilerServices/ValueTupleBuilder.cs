@@ -72,7 +72,7 @@ public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
         if (Count < 7)
             items.Add(itemType);
         else if (rest is null)
-            rest = new ValueTupleBuilder() { itemType };
+            rest = new ValueTupleBuilder { itemType };
         else
             rest.Add(itemType);
     }

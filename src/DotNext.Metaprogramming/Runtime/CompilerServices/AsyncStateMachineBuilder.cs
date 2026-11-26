@@ -74,12 +74,14 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
 
-    private unsafe ParameterExpression NewStateSlot(Type type)
-        => NewStateSlot(Func<ParameterExpression>.FromPointer(&Expression.Variable, type));
+    private ParameterExpression NewStateSlot(Type type)
+        => NewStateSlot(Expression.Variable(type));
 
-    private ParameterExpression NewStateSlot(Func<ParameterExpression> factory)
+    private ParameterExpression NewStateSlot(AwaitExpression expr)
+        => NewStateSlot(expr.NewAwaiterHolder());
+
+    private ParameterExpression NewStateSlot(ParameterExpression slot)
     {
-        var slot = factory();
         Variables[slot] = null;
         return slot;
     }
@@ -364,7 +366,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         var prologue = context.CurrentStatement.PrologueCodeInserter();
 
         // allocate slot for awaiter
-        var awaiterSlot = NewStateSlot(node.NewAwaiterHolder);
+        var awaiterSlot = NewStateSlot(node);
 
         // generate new state and label for it
         var (stateId, transition) = context.NewTransition(stateSwitchTable);
