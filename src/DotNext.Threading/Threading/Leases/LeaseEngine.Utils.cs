@@ -38,6 +38,18 @@ partial class LeaseEngine<TMetadata>
         static bool ITransitionCondition.RequiresVersionBump => false;
     }
 
+    // Renewal with the metadata update. The update is a durable change of the state, so it always increments the version
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct RenewalWithUpdateCondition(Guid ownerId, bool reacquire) : ITransitionCondition
+    {
+        bool ITransitionCondition.Invoke(in LeaseState<TMetadata> state, bool isExpired)
+            => state.IsOwnedBy(ownerId) && (reacquire || !isExpired);
+
+        Guid ITransitionCondition.OwnerId => ownerId;
+
+        static bool ITransitionCondition.RequiresVersionBump => true;
+    }
+
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Updater<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater) : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
