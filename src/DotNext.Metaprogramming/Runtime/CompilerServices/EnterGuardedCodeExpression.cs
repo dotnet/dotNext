@@ -8,8 +8,8 @@ internal sealed class EnterGuardedCodeExpression(uint stateId) : TransitionExpre
 {
     public override Type Type => typeof(void);
 
-    public override Expression Reduce() => Empty();
+    public override DefaultExpression Reduce() => Empty();
 
-    internal override Expression Reduce(ParameterExpression stateMachine)
+    internal override MethodCallExpression Reduce(ParameterExpression stateMachine)
         => stateMachine.Call(nameof(AsyncStateMachine<>.EnterGuardedCode), StateId);
 }

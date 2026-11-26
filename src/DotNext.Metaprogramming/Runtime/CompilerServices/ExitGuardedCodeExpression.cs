@@ -18,8 +18,8 @@ internal sealed class ExitGuardedCodeExpression : TransitionExpression
 
     public override Type Type => typeof(void);
 
-    public override Expression Reduce() => Empty();
+    public override DefaultExpression Reduce() => Empty();
 
-    internal override Expression Reduce(ParameterExpression stateMachine)
+    internal override MethodCallExpression Reduce(ParameterExpression stateMachine)
         => stateMachine.Call(nameof(AsyncStateMachine<>.ExitGuardedCode), StateId, Constant(suspendException));
 }

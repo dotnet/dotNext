@@ -3,9 +3,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices;
 
-/// <summary>
-/// Represents statement.
-/// </summary>
 internal sealed class ClosureExpression : Expression
 {
     private readonly LambdaExpression closure;
@@ -34,10 +31,10 @@ internal sealed class ClosureExpression : Expression
         foreach (var (k, v) in mapping)
         {
             if (stateMachineContext[k]?.Expression is MemberExpression inner)
-                body.Add(Expression.Assign(v, inner));
+                body.Add(Assign(v, inner));
         }
 
         body.Add(closure);
-        return Expression.Block(closure.Type, mapping.Values, body);
+        return Block(closure.Type, mapping.Values, body);
     }
 }

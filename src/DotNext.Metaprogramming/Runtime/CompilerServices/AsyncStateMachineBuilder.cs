@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Runtime.CompilerServices;
 
 using Linq.Expressions;
+using Patterns;
 using Reflection;
 using static Collections.Generic.Collection;
 
@@ -23,16 +24,6 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 {
     private static readonly UserDataSlot<int> ParameterPositionSlot = new();
 
-    // small optimization - reuse variable for awaiters of the same type
-    private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
-    {
-        public bool Equals(ParameterExpression? x, ParameterExpression? y)
-            => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
-
-        public int GetHashCode(ParameterExpression variable)
-            => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
-    }
-
     internal readonly TaskType Task;
     internal readonly Dictionary<ParameterExpression, MemberExpression?> Variables;
     private readonly VisitorContext context;
@@ -46,7 +37,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
     {
         Task = new TaskType(taskType);
-        Variables = new(new VariableEqualityComparer());
+        Variables = new(VariableEqualityComparer.Instance);
         for (var position = 0; position < parameters.Count; position++)
         {
             var parameter = parameters[position];
@@ -101,23 +92,23 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitConditional(ConditionalExpression node)
     {
-        if (node.Type == typeof(void))
+        if (node.Type.IsVoid)
         {
             node = node.Update(node.Test, Statement.Wrap(node.IfTrue), Statement.Wrap(node.IfFalse));
             return context.Rewrite(node, base.VisitConditional);
         }
-        else if (node is { IfTrue: BlockExpression } or { IfFalse: BlockExpression })
+
+        if (node is { IfTrue: BlockExpression } or { IfFalse: BlockExpression })
         {
             throw new NotSupportedException(ExceptionMessages.UnsupportedConditionalExpr);
         }
-        else if (AwaitDetector.ContainsAwait(node.IfTrue) || AwaitDetector.ContainsAwait(node.IfFalse))
+
+        if (AwaitDetector.ContainsAwait(node.IfTrue) || AwaitDetector.ContainsAwait(node.IfFalse))
         {
             return context.Rewrite(node, LowerConditional);
         }
-        else
-        {
-            return context.Rewrite(node, base.VisitConditional);
-        }
+
+        return context.Rewrite(node, base.VisitConditional);
     }
 
     // The branch with await expression must be lowered to the statement. Otherwise, the suspension point
@@ -198,8 +189,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
             => expression.Type == type ? expression : Expression.Convert(expression, type);
     }
 
-    protected override Expression VisitLabel(LabelExpression node)
-        => node.Type == typeof(void)
+    protected override LabelExpression VisitLabel(LabelExpression node)
+        => node.Type.IsVoid
             ? context.Rewrite(node, Func<LabelExpression, LabelExpression>.Identity)
             : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
@@ -308,7 +299,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitSwitch(SwitchExpression node)
     {
-        if (node.Type != typeof(void))
+        if (!node.Type.IsVoid)
             throw new NotSupportedException(ExceptionMessages.VoidSwitchExpected);
 
         node = Statement.Rewrite(node);
@@ -357,7 +348,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     protected override Expression VisitTry(TryExpression node)
         => context.Rewrite(node, stateSwitchTable, base.VisitExtension);
 
-    private Expression VisitAwait(AwaitExpression node)
+    private MethodCallExpression VisitAwait(AwaitExpression node)
     {
         node = (AwaitExpression)base.VisitExtension(node);
 
@@ -422,6 +413,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return node;
     }
 
+    // use it after a node is visited
     private static bool ContainsAwait(Expression node)
         => ExpressionAttributes.Get(node) is { ContainsAwait: true };
 
@@ -529,7 +521,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         _ => null,
     };
 
-    private Expression RewriteBinary(BinaryExpression node)
+    private BinaryExpression RewriteBinary(BinaryExpression node)
     {
         var left = Visit(node.Left);
         var insertionPoint = context.CurrentStatement.PrologueCodeInserter();
@@ -588,17 +580,17 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     protected override Expression VisitConstant(ConstantExpression node)
         => context.Rewrite(node, base.VisitConstant);
 
-    private Expression RewriteMethodCall(MethodCallExpression node)
+    private MethodCallExpression RewriteMethodCall(MethodCallExpression node)
     {
         Expression?[] operands = [node.Object, .. node.Arguments];
         VisitOperands(operands, GetLocationOperands(node.Object, node.Method));
         return node.Update(operands[0], operands[1..]!);
     }
 
-    protected override Expression VisitMethodCall(MethodCallExpression node)
+    protected override MethodCallExpression VisitMethodCall(MethodCallExpression node)
         => context.Rewrite(node, RewriteMethodCall);
 
-    private Expression RewriteInvocation(InvocationExpression node)
+    private InvocationExpression RewriteInvocation(InvocationExpression node)
     {
         Expression?[] operands = [node.Expression, .. node.Arguments];
         var invokeMethod = node.Expression.Type.GetMethod(nameof(Action.Invoke));
@@ -606,42 +598,42 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return node.Update(operands[0]!, operands[1..]!);
     }
 
-    protected override Expression VisitInvocation(InvocationExpression node)
+    protected override InvocationExpression VisitInvocation(InvocationExpression node)
         => context.Rewrite(node, RewriteInvocation);
 
-    private Expression RewriteIndex(IndexExpression node)
+    private IndexExpression RewriteIndex(IndexExpression node)
     {
         Expression?[] operands = [node.Object, .. node.Arguments];
         VisitOperands(operands, [node.Object?.Type.IsValueType ?? false]);
         return node.Update(operands[0]!, operands[1..]!);
     }
 
-    protected override Expression VisitIndex(IndexExpression node)
+    protected override IndexExpression VisitIndex(IndexExpression node)
         => context.Rewrite(node, RewriteIndex);
 
-    private Expression RewriteNew(NewExpression node)
+    private NewExpression RewriteNew(NewExpression node)
     {
         Expression?[] operands = [.. node.Arguments];
         VisitOperands(operands, GetLocationOperands(receiver: null, node.Constructor).AsSpan(1));
         return node.Update(operands!);
     }
 
-    protected override Expression VisitNew(NewExpression node)
+    protected override NewExpression VisitNew(NewExpression node)
         => context.Rewrite(node, RewriteNew);
 
-    private Expression RewriteNewArray(NewArrayExpression node)
+    private NewArrayExpression RewriteNewArray(NewArrayExpression node)
     {
         Expression?[] operands = [.. node.Expressions];
         VisitOperands(operands, []);
         return node.Update(operands!);
     }
 
-    protected override Expression VisitNewArray(NewArrayExpression node)
+    protected override NewArrayExpression VisitNewArray(NewArrayExpression node)
         => context.Rewrite(node, RewriteNewArray);
 
     protected override Expression VisitLoop(LoopExpression node)
     {
-        if (node.Type != typeof(void))
+        if (!node.Type.IsVoid)
             throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
 
         node = Statement.Rewrite(node);
@@ -768,7 +760,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         internal MemberExpression Build(Type stateType)
         {
             Type stateMachineType;
-            if (returnType == typeof(void))
+            if (returnType.IsVoid)
             {
                 stateMachineType = usePooling ? typeof(PoolingAsyncStateMachine<>) : typeof(AsyncStateMachine<>);
                 stateMachineType = stateMachineType.MakeGenericType(stateType);
@@ -861,7 +853,8 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
     public void Dispose() => methodBuilder.Dispose();
 }
 
-// detects await expressions in the expression tree before its rewriting
+// Detects await expressions in the expression tree before its rewriting.
+// Use it before a node is visited.
 file sealed class AwaitDetector : ExpressionVisitor
 {
     private bool found;
@@ -889,4 +882,20 @@ file sealed class AwaitDetector : ExpressionVisitor
         detector.Visit(node);
         return detector.found;
     }
+}
+
+// small optimization - reuse variable for awaiters of the same type
+file sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>, ISingleton<VariableEqualityComparer>
+{
+    public static VariableEqualityComparer Instance { get; } = new();
+
+    private VariableEqualityComparer()
+    {
+    }
+    
+    public bool Equals(ParameterExpression? x, ParameterExpression? y)
+        => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
+
+    public int GetHashCode(ParameterExpression variable)
+        => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
 }
