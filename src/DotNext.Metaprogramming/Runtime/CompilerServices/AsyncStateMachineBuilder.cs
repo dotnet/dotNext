@@ -785,22 +785,20 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         }
     }
 
-    private static ReadOnlySpan<MemberExpression> CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables, out ParameterExpression stateMachine)
+    private static ReadOnlySpan<MemberExpression> CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables,
+        out ParameterExpression stateMachine)
     {
         var sm = new StateMachineBuilder(returnType, usePooling);
-        MemberExpression[] slots;
-        using (var builder = new ValueTupleBuilder())
+        var builder = new ValueTupleBuilder();
+        foreach (var v in variables)
         {
-            foreach (var v in variables)
-            {
-                var type = ClosureAnalyzer.IsClosure(v)
-                    ? typeof(StrongBox<>).MakeGenericType(v.Type)
-                    : v.Type;
-                builder.Add(type);
-            }
-
-            slots = builder.Build<MemberExpression>(sm.Build, out _);
+            var type = ClosureAnalyzer.IsClosure(v)
+                ? typeof(StrongBox<>).MakeGenericType(v.Type)
+                : v.Type;
+            builder.Add(type);
         }
+
+        ReadOnlySpan<MemberExpression> slots = builder.Build<MemberExpression>(sm.Build, out _);
 
         Debug.Assert(sm.StateMachine is not null);
         stateMachine = sm.StateMachine;
