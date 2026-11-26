@@ -20,7 +20,8 @@ internal sealed partial class CommandContext : InvocationConfiguration
     
     private const char LeftSquareBracket = '[';
     private const char RightSquareBracket = ']';
-    
+
+    private readonly IMaintenanceSession session;
     private bool printExitCode;
     private bool suppressOutputBuffer;
     private bool suppressErrorBuffer;
@@ -29,15 +30,10 @@ internal sealed partial class CommandContext : InvocationConfiguration
     {
         Debug.Assert(session is not null);
 
-        Session = session;
+        this.session = session;
         ProcessTerminationTimeout = null;
         EnableDefaultExceptionHandler = false;
     }
-
-    /// <summary>
-    /// Gets the maintenance session.
-    /// </summary>
-    public IMaintenanceSession Session { get; }
 
     internal async ValueTask<int> InvokeAsync(RootCommand root,
         string input,
@@ -53,9 +49,9 @@ internal sealed partial class CommandContext : InvocationConfiguration
         {
             exitCode = ProcessParseErrors(root, errors, result.Tokens);
         }
-        else if (await AuthenticateAsync(Session, result, authentication, token).ConfigureAwait(false)
-                 && await authorization.AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false)
-                 && await AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false))
+        else if (await AuthenticateAsync(session, result, authentication, token).ConfigureAwait(false)
+                 && await authorization.AuthorizeAsync(session, result.CommandResult, token).ConfigureAwait(false)
+                 && await AuthorizeAsync(session, result.CommandResult, token).ConfigureAwait(false))
         {
             exitCode = await result.InvokeAsync(this, token).ConfigureAwait(false);
         }
@@ -83,7 +79,7 @@ internal sealed partial class CommandContext : InvocationConfiguration
 
         static bool Matches(Token token, Directive directive)
             => token is { Type: TokenType.Directive, Value: [LeftSquareBracket, .. var directiveName, RightSquareBracket] }
-               && MemoryExtensions.SequenceEqual<char>(directiveName, directive.Name);
+               && directiveName.SequenceEqual<char>(directive.Name);
     }
 
     private static async ValueTask<bool> AuthenticateAsync(IMaintenanceSession session,
@@ -118,27 +114,28 @@ internal sealed partial class CommandContext : InvocationConfiguration
 
     internal void Exit(int exitCode, BufferWriter<char> output, BufferWriter<char> error)
     {
+        var writer = session.ResponseWriter;
         if (printExitCode)
         {
-            Session.ResponseWriter.Write(LeftSquareBracket);
-            Session.ResponseWriter.Write(exitCode);
-            Session.ResponseWriter.Write(RightSquareBracket);
+            writer.Write(LeftSquareBracket);
+            writer.Write(exitCode);
+            writer.Write(RightSquareBracket);
         }
 
         switch (exitCode)
         {
             case 0 when suppressOutputBuffer is false:
-                Session.ResponseWriter.Write(output.WrittenMemory.Span);
+                writer.Write(output.WrittenMemory.Span);
                 break;
             case not 0 when suppressErrorBuffer is false:
-                Session.ResponseWriter.Write(error.WrittenMemory.Span);
+                writer.Write(error.WrittenMemory.Span);
                 break;
         }
 
-        if (Session.IsInteractive)
+        if (session.IsInteractive)
         {
             const string prompt = "> ";
-            Session.ResponseWriter.Write(prompt);
+            writer.Write(prompt);
         }
     }
 
@@ -162,5 +159,5 @@ internal sealed partial class CommandContext : InvocationConfiguration
     }
 
     internal static IMaintenanceSession? TryGetSession(ParseResult result)
-        => (result.InvocationConfiguration as CommandContext)?.Session;
+        => (result.InvocationConfiguration as CommandContext)?.session;
 }
