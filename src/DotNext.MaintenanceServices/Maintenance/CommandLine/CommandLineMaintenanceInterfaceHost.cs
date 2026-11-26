@@ -33,6 +33,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     {
         root = new(RootCommand.ExecutableName + " Maintenance Interface")
         {
+            HelpName = string.Empty,
             Action = new NoOpAction()
         };
 
