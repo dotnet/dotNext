@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -89,11 +88,11 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     // async method cannot have block expression with type not equal to void
     protected override Expression VisitBlock(BlockExpression node)
     {
-        if (node.Type == typeof(void))
+        if (node.Type.IsVoid)
         {
             node = Statement.Rewrite(node);
             node.Variables.ForEach(variable => Variables.Add(variable, null));
-            node = node.Update(Empty<ParameterExpression>(), node.Expressions);
+            node = node.Update([], node.Expressions);
             return context.Rewrite(node, base.VisitBlock);
         }
 
@@ -469,7 +468,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     // Visits operands in their evaluation order. The operands evaluated before the last await expression
     // are spilled to the state slots, so they are evaluated before the suspension point, as in C#.
-    private void VisitOperands(Expression?[] operands, ReadOnlySpan<bool> isLocation)
+    private void VisitOperands(Span<Expression?> operands, ReadOnlySpan<bool> isLocation)
     {
         var insertionPoints = new CodeInsertionPoint[operands.Length];
         var lastAsyncOperand = -1;
