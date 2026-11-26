@@ -78,6 +78,15 @@ partial class AdvancedHelpers
         
         internal static ref byte GetRawData(object obj)
             => ref Unsafe.As<RawData>(obj).Data;
+
+        internal static object? Box<T>(T value)
+            where T : allows ref struct
+            => typeof(T) switch
+            {
+                { IsByRefLike: true } => throw new NotSupportedException(),
+                { IsValueType: true } vt => RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), vt.TypeHandle),
+                _ => Unsafe.As<T, object>(ref value)
+            };
     }
 
     internal static T UnboxAny<T>(this object obj)

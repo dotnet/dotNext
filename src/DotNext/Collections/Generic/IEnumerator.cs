@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic;
 
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents ad-hoc enumerator implemented as value type to avoid enumerator allocation
 /// and prevent the compiler to generate <see cref="IDisposable.Dispose()"/> call.
@@ -54,19 +56,7 @@ file sealed class BoxedEnumerator<TEnumerator, T>(in TEnumerator enumerator, Can
     
     public T Current => enumerator.Current;
 
-    object? IEnumerator.Current
-    {
-        get
-        {
-            var value = enumerator.Current;
-            return typeof(T) switch
-            {
-                { IsByRefLike: true } => throw new NotSupportedException(),
-                { IsValueType: true } vt => RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), vt.TypeHandle),
-                _ => Unsafe.As<T, object>(ref value)
-            };
-        }
-    }
+    object? IEnumerator.Current => Unsafe.Box(enumerator.Current);
 
     bool IEnumerator.MoveNext() => enumerator.MoveNext();
 
