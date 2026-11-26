@@ -128,6 +128,15 @@ partial class AdvancedHelpers
             Ceq();
             return Return<bool>();
         }
+
+        internal static RuntimeTypeHandle VoidHandle
+        {
+            get
+            {
+                Ldtoken(new InlineIL.TypeRef(CoreLibrary, "System.Void"));
+                return Return<RuntimeTypeHandle>();
+            }
+        }
     }
 
     /// <summary>
