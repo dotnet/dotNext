@@ -186,4 +186,49 @@ public sealed class FileReaderTests : Test
         using (var reader = new FileReader(handle))
             await ThrowsAsync<InvalidDataException>(reader.ParseAsync<int>(LengthFormat.LittleEndian, token: TestToken).AsTask);
     }
+
+    // a😀bcd: the 4-byte char split 3 + 1 between chunks produces a surrogate pair from 1 byte;
+    // abc?defg: the dangling lead byte produces a replacement char in addition to the next chunk
+    public static TheoryData<byte[]> ChunkBoundaryPayloads => new()
+    {
+        new byte[] { 0x61, 0xF0, 0x9F, 0x98, 0x80, 0x62, 0x63, 0x64 },
+        new byte[] { 0x61, 0x62, 0x63, 0xE2, 0x64, 0x65, 0x66, 0x67 },
+    };
+
+    private static byte[] WithLengthPrefix(byte[] payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result, sizeof(int));
+        return result;
+    }
+
+    [Theory]
+    [MemberData(nameof(ChunkBoundaryPayloads))]
+    public static async Task DecodeInChunksAtCharBoundary(byte[] payload)
+    {
+        var path = GetTempPath();
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        await RandomAccess.WriteAsync(handle, WithLengthPrefix(payload), 0L, TestToken);
+
+        using (var reader = new FileReader(handle))
+        {
+            var actual = new System.Text.StringBuilder();
+            await foreach (var chunk in reader.DecodeAsync(System.Text.Encoding.UTF8, LengthFormat.LittleEndian, new char[4], TestToken))
+                actual.Append(chunk.Span);
+
+            Equal(System.Text.Encoding.UTF8.GetString(payload), actual.ToString());
+        }
+
+        // the empty buffer caused infinite loop
+        using (var reader = new FileReader(handle))
+        {
+            foreach (var size in (int[])[0, 1])
+            {
+                await using var enumerator = reader.DecodeAsync(System.Text.Encoding.UTF8, LengthFormat.LittleEndian, new char[size], TestToken).GetAsyncEnumerator(TestToken);
+                await ThrowsAsync<ArgumentException>(enumerator.MoveNextAsync().AsTask);
+            }
+        }
+    }
 }

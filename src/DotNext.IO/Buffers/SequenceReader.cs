@@ -339,10 +339,13 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
     [UnscopedRef]
     public SpanDecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Span<char> buffer)
     {
-        ArgumentException.ThrowIfEmpty(buffer);
+        var chunkSize = context.GetMaxChunkSize(buffer.Length);
+        if (chunkSize is 0)
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         var length = ReadLength(lengthFormat);
         var bytes = RemainingSequence;
@@ -355,7 +358,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             throw new EndOfStreamException(e.Message, e);
         }
 
-        return new(in bytes, ref position, context, buffer);
+        return new(in bytes, ref position, context, buffer, chunkSize);
     }
 
     /// <summary>
@@ -368,12 +371,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
     public DecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer)
     {
-        ArgumentException.ThrowIfEmpty(buffer);
+        var chunkSize = context.GetMaxChunkSize(buffer.Length);
+        if (chunkSize is 0)
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         var length = ReadLength(lengthFormat);
-        return new(Read(length), in context, in buffer);
+        return new(Read(length), in context, in buffer, chunkSize);
     }
 
     /// <summary>
@@ -870,21 +876,23 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         private readonly ReadOnlySequence<byte> bytes;
         private readonly DecodingContext context;
         private readonly Memory<char> buffer;
+        private readonly int chunkSize;
 
-        internal DecodingEnumerable(ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer)
+        internal DecodingEnumerable(ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer, int chunkSize)
         {
-            Debug.Assert(buffer.Length > 0);
+            Debug.Assert(chunkSize > 0);
 
             this.bytes = bytes;
             this.context = context;
             this.buffer = buffer;
+            this.chunkSize = chunkSize;
         }
 
         /// <summary>
         /// Gets enumerator over decoded chunks of characters.
         /// </summary>
         /// <returns>The enumerator over decoded chunks of characters.</returns>
-        public Enumerator GetEnumerator() => new(in bytes, in context, buffer);
+        public Enumerator GetEnumerator() => new(in bytes, in context, buffer, chunkSize);
 
         /// <inheritdoc />
         IEnumerator<ReadOnlyMemory<char>> IEnumerable<ReadOnlyMemory<char>>.GetEnumerator()
@@ -906,14 +914,16 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             private readonly ReadOnlySequence<byte> bytes;
             private readonly Decoder decoder;
             private readonly Memory<char> buffer;
+            private readonly int chunkSize;
             private SequencePosition position;
             private int charsWritten;
 
-            internal Enumerator(in ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer)
+            internal Enumerator(in ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer, int chunkSize)
             {
                 this.bytes = bytes;
                 decoder = context.GetDecoder();
                 this.buffer = buffer;
+                this.chunkSize = chunkSize;
                 position = bytes.Start;
             }
 
@@ -926,8 +936,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             /// Decodes the next chunk of bytes.
             /// </summary>
             /// <returns><see langword="true"/> if decoding is successful; <see langword="false"/> if nothing to decode.</returns>
-            public bool MoveNext()
-                => (charsWritten = GetChars(in bytes, ref position, decoder, buffer.Span)) > 0;
+            public bool MoveNext() => GetChars(in bytes, ref position, decoder, buffer.Span, chunkSize, out charsWritten);
         }
     }
 
@@ -941,22 +950,24 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         private readonly DecodingContext context;
         private readonly Span<char> buffer;
         private readonly ref SequencePosition position;
+        private readonly int chunkSize;
 
-        internal SpanDecodingEnumerable(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer)
+        internal SpanDecodingEnumerable(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer, int chunkSize)
         {
-            Debug.Assert(!buffer.IsEmpty);
+            Debug.Assert(chunkSize > 0);
 
             this.bytes = bytes;
             this.position = ref position;
             this.context = context;
             this.buffer = buffer;
+            this.chunkSize = chunkSize;
         }
 
         /// <summary>
         /// Gets enumerator over decoded chunks of characters.
         /// </summary>
         /// <returns>The enumerator over decoded chunks of characters.</returns>
-        public Enumerator GetEnumerator() => new(in bytes, ref position, context.GetDecoder(), buffer);
+        public Enumerator GetEnumerator() => new(in bytes, ref position, context.GetDecoder(), buffer, chunkSize);
 
         /// <summary>
         /// Represents enumerator over decoded characters.
@@ -968,14 +979,16 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             private readonly Decoder decoder;
             private readonly Span<char> buffer;
             private readonly ref SequencePosition position;
+            private readonly int chunkSize;
             private int charsWritten;
 
-            internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer)
+            internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer, int chunkSize)
             {
                 this.bytes = bytes;
                 this.position = ref position;
                 this.decoder = decoder;
                 this.buffer = buffer;
+                this.chunkSize = chunkSize;
             }
 
             /// <summary>
@@ -987,27 +1000,25 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             /// Decodes the next chunk of bytes.
             /// </summary>
             /// <returns><see langword="true"/> if decoding is successful; <see langword="false"/> if nothing to decode.</returns>
-            public bool MoveNext()
-                => (charsWritten = GetChars(in bytes, ref position, decoder, buffer)) > 0;
+            public bool MoveNext() => GetChars(in bytes, ref position, decoder, buffer, chunkSize, out charsWritten);
         }
     }
 
-    private static int GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer)
+    // returns false if there are no more bytes to decode
+    private static bool GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer, int chunkSize, out int charsWritten)
     {
-        int charsWritten;
-        if (bytes.TryGet(ref position, out var source, advance: false) && !source.IsEmpty)
+        // a chunk can produce no chars, e.g. if it contains only the leading bytes of the multibyte char
+        for (charsWritten = 0; charsWritten is 0; )
         {
-            var length = int.Min(source.Length, buffer.Length);
-            position = bytes.GetPosition(length, position);
+            if (!bytes.TryGet(ref position, out var source, advance: false) || source.IsEmpty)
+                return false;
 
+            var length = int.Min(source.Length, chunkSize);
+            position = bytes.GetPosition(length, position);
             charsWritten = decoder.GetChars(source.Span.Slice(0, length), buffer, position.Equals(bytes.End));
         }
-        else
-        {
-            charsWritten = 0;
-        }
 
-        return charsWritten;
+        return true;
     }
 }
 

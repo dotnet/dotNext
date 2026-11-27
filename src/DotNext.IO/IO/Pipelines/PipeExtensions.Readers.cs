@@ -206,10 +206,16 @@ partial class PipeExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
-        => buffer.IsEmpty ? IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
+    {
+        var chunkSize = context.GetMaxChunkSize(buffer.Length);
+        return chunkSize > 0
+            ? DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, chunkSize, token)
+            : IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer)));
+    }
 
-    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
+    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, int chunkSize, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (lengthInBytes < 0)
@@ -217,7 +223,7 @@ partial class PipeExtensions
         
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
-            state = new(decoder, lengthInBytes, buffer);
+            state = new(decoder, lengthInBytes, chunkSize, buffer);
             var writtenChars = await ReadAsync<int, DecodingReader>(reader, state, token).ConfigureAwait(false);
             yield return buffer.Slice(0, writtenChars);
         }

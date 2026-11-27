@@ -10,6 +10,7 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
+using Collections.Generic;
 using Pipelines;
 using DecodingContext = Text.DecodingContext;
 
@@ -138,18 +139,23 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    async ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    async ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null,
+        CancellationToken token = default)
     {
         MemoryOwner<byte> result;
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        if (length > 0)
+        switch (length)
         {
-            result = allocator.DefaultIfNull.AllocateExactly(length);
-            await ReadAsync(result.Memory, token).ConfigureAwait(false);
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                result = allocator.DefaultIfNull.AllocateExactly(length);
+                await ReadAsync(result.Memory, token).ConfigureAwait(false);
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -166,20 +172,25 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null,
+        CancellationToken token = default)
     {
         MemoryOwner<char> result;
         var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-
-        if (lengthInBytes > 0)
+        switch (lengthInBytes)
         {
-            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
-
-            result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+                result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(
+                        new(in context, lengthInBytes, result.Memory), token)
+                    .ConfigureAwait(false));
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -196,16 +207,25 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
     IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
-        => DecodeAsync(context.GetDecoder(), lengthFormat, buffer, token);
+    {
+        var chunkSize = context.GetMaxChunkSize(buffer.Length);
+        return chunkSize > 0
+            ? DecodeAsync(context.GetDecoder(), lengthFormat, buffer, chunkSize, token)
+            : IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer)));
+    }
 
-    private async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
+    private async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, int chunkSize, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (lengthInBytes < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
 
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
-            state = new(decoder, lengthInBytes, buffer);
+            state = new(decoder, lengthInBytes, chunkSize, buffer);
             var writtenChars = await ReadAsync<int, DecodingReader>(state, token).ConfigureAwait(false);
             yield return buffer.Slice(0, writtenChars);
         }

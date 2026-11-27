@@ -192,10 +192,11 @@ internal struct CharBufferDecodingReader(in DecodingContext context, int length,
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer) : IBufferReader, ISupplier<int>
+internal struct DecodingReader(Decoder decoder, int length, int chunkSize, Memory<char> buffer) : IBufferReader, ISupplier<int>
 {
-    // the chunk of the encoded string to be decoded into the buffer, it can be delivered in multiple blocks
-    private int writtenChars, length = length, remainingBytes = int.Min(length, buffer.Length);
+    // the chunk of the encoded string to be decoded into the buffer, it can be delivered in multiple blocks.
+    // The chunk size is limited by Encoding.GetMaxCharCount, because the decoder can produce more chars than bytes
+    private int writtenChars, length = length, remainingBytes = int.Min(length, chunkSize);
 
     public readonly int RemainingBytes => remainingBytes;
 

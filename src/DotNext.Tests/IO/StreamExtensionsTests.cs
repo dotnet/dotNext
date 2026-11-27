@@ -400,4 +400,34 @@ public sealed class StreamExtensionsTests : Test
         await ThrowsAsync<InvalidDataException>(new MemoryStream(bytes).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer, token: TestToken).AsTask);
         await ThrowsAsync<InvalidDataException>(new MemoryStream(bytes).ParseAsync<int>(LengthFormat.LittleEndian, buffer, provider: null, TestToken).AsTask);
     }
+
+    // a😀bcd: the 4-byte char split 3 + 1 between chunks produces a surrogate pair from 1 byte;
+    // abc?defg: the dangling lead byte produces a replacement char in addition to the next chunk
+    public static TheoryData<byte[]> ChunkBoundaryPayloads => new()
+    {
+        new byte[] { 0x61, 0xF0, 0x9F, 0x98, 0x80, 0x62, 0x63, 0x64 },
+        new byte[] { 0x61, 0x62, 0x63, 0xE2, 0x64, 0x65, 0x66, 0x67 },
+    };
+
+    private static byte[] WithLengthPrefix(byte[] payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result, sizeof(int));
+        return result;
+    }
+
+    [Theory]
+    [MemberData(nameof(ChunkBoundaryPayloads))]
+    public static async Task DecodeInChunksAtCharBoundary(byte[] payload)
+    {
+        var actual = new StringBuilder();
+        await foreach (var chunk in new MemoryStream(WithLengthPrefix(payload)).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new char[4], new byte[16], TestToken))
+            actual.Append(chunk.Span);
+
+        Equal(Encoding.UTF8.GetString(payload), actual.ToString());
+
+        await using var enumerator = new MemoryStream(WithLengthPrefix(payload)).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new char[1], new byte[16], TestToken).GetAsyncEnumerator(TestToken);
+        await ThrowsAsync<ArgumentException>(enumerator.MoveNextAsync().AsTask);
+    }
 }

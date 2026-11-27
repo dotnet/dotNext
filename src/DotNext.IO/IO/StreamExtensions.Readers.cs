@@ -231,33 +231,35 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="charBuffer"/> is too small to decode at least one character.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, CancellationToken token = default)
     {
         string paramName;
+        int chunkSize;
         if (byteBuffer.IsEmpty)
         {
             paramName = nameof(byteBuffer);
         }
-        else if (charBuffer.IsEmpty)
+        else if ((chunkSize = context.GetMaxChunkSize(charBuffer.Length)) is 0)
         {
             paramName = nameof(charBuffer);
         }
         else
         {
-            return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, token);
+            return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, chunkSize, token);
         }
 
         return IAsyncEnumerable<ReadOnlyMemory<char>>.Throw( ArgumentException.BufferTooSmall(paramName));
     }
 
-    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
+    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, int chunkSize, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await ReadLengthAsync(stream, lengthFormat, byteBuffer, token).ConfigureAwait(false);
         if (lengthInBytes < 0)
             throw new InvalidDataException(ExceptionMessages.NegativeLength);
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
-            state = new(decoder, lengthInBytes, charBuffer);
+            state = new(decoder, lengthInBytes, chunkSize, charBuffer);
             var writtenChars = await ReadAsync<int, DecodingReader>(stream, state, byteBuffer, token).ConfigureAwait(false);
             yield return charBuffer.Slice(0, writtenChars);
         }

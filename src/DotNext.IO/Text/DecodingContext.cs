@@ -44,6 +44,24 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
     /// </summary>
     public Encoding Encoding => encoding ?? Encoding.Default;
 
+    // Gets the maximum number of bytes that are guaranteed to be decoded into the buffer of the specified size,
+    // including the bytes kept by the decoder from the previous chunk. 0 means the buffer is too small.
+    internal int GetMaxChunkSize(int bufferSize)
+    {
+        var enc = Encoding;
+        var low = 0;
+        for (var high = int.Min(bufferSize, Array.MaxLength); low < high;)
+        {
+            var middle = low + (high - low + 1) / 2;
+            if (enc.GetMaxCharCount(middle) <= bufferSize)
+                low = middle;
+            else
+                high = middle - 1;
+        }
+
+        return low;
+    }
+
     // the reused decoder can keep the state of the previous decoding that has failed
     internal Decoder GetDecoder()
     {

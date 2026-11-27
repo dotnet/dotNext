@@ -262,4 +262,54 @@ public sealed class SequenceReaderTests : Test
         Throws<InvalidDataException>(() => new SequenceReader(bytes).Decode(Encoding.UTF8, LengthFormat.LittleEndian));
         Throws<InvalidDataException>(() => new SequenceReader(bytes).Parse<int>(LengthFormat.LittleEndian));
     }
+
+    // a😀bcd: the 4-byte char split 3 + 1 between chunks produces a surrogate pair from 1 byte;
+    // abc?defg: the dangling lead byte produces a replacement char in addition to the next chunk
+    public static TheoryData<byte[]> ChunkBoundaryPayloads => new()
+    {
+        new byte[] { 0x61, 0xF0, 0x9F, 0x98, 0x80, 0x62, 0x63, 0x64 },
+        new byte[] { 0x61, 0x62, 0x63, 0xE2, 0x64, 0x65, 0x66, 0x67 },
+    };
+
+    private static byte[] WithLengthPrefix(byte[] payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result, sizeof(int));
+        return result;
+    }
+
+    [Theory]
+    [MemberData(nameof(ChunkBoundaryPayloads))]
+    public static void DecodeInChunksAtCharBoundary(byte[] payload)
+    {
+        var expected = Encoding.UTF8.GetString(payload);
+
+        var actual = new StringBuilder();
+        foreach (var chunk in new SequenceReader(WithLengthPrefix(payload)).Decode(Encoding.UTF8, LengthFormat.LittleEndian, new char[4].AsMemory()))
+            actual.Append(chunk.Span);
+
+        Equal(expected, actual.ToString());
+
+        actual.Clear();
+        var reader = new SequenceReader(WithLengthPrefix(payload));
+        foreach (var chunk in reader.Decode(Encoding.UTF8, LengthFormat.LittleEndian, stackalloc char[4]))
+            actual.Append(chunk);
+
+        Equal(expected, actual.ToString());
+
+        Throws<ArgumentException>(() => new SequenceReader(WithLengthPrefix(payload)).Decode(Encoding.UTF8, LengthFormat.LittleEndian, new char[1].AsMemory()));
+    }
+
+    [Fact]
+    public static void DecodeInChunksWithSegmentedChar()
+    {
+        // the segment containing only the leading byte of the 3-byte char produces no chars
+        var bytes = WithLengthPrefix("a€b"u8.ToArray());
+        var actual = new StringBuilder();
+        foreach (var chunk in new SequenceReader(ToReadOnlySequence<byte>(bytes, 1)).Decode(Encoding.UTF8, LengthFormat.LittleEndian, new char[4].AsMemory()))
+            actual.Append(chunk.Span);
+
+        Equal("a€b", actual.ToString());
+    }
 }
