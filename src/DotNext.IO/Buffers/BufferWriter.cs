@@ -67,7 +67,7 @@ public static class BufferWriter
     internal static unsafe int WriteLength(this ref SpanWriter<byte> destination, int value, LengthFormat lengthFormat)
     {
         Debug.Assert(value >= 0);
-        
+
         delegate*<ref SpanWriter<byte>, uint, int> writer = lengthFormat switch
         {
             LengthFormat.LittleEndian => &ByteBuffer.WriteLittleEndian,
@@ -152,14 +152,20 @@ public static class BufferWriter
     /// <param name="context">The encoding context.</param>
     /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
     /// <returns>The number of written bytes.</returns>
-    public static int Encode(this ref SpanWriter<byte> writer, scoped ReadOnlySpan<char> chars, in EncodingContext context, LengthFormat? lengthFormat = null)
+    public static int Encode(this ref SpanWriter<byte> writer, scoped ReadOnlySpan<char> chars, in EncodingContext context,
+        LengthFormat? lengthFormat = null)
     {
+        var expectedLength = context.Encoding.GetByteCount(chars);
         var result = lengthFormat.HasValue
-            ? writer.WriteLength(context.Encoding.GetByteCount(chars), lengthFormat.GetValueOrDefault())
+            ? writer.WriteLength(expectedLength, lengthFormat.GetValueOrDefault())
             : 0;
 
         var bytesWritten = context.TryGetEncoder()?.GetBytes(chars, writer.RemainingSpan, flush: true)
                            ?? context.Encoding.GetBytes(chars, writer.RemainingSpan);
+
+        if (bytesWritten != expectedLength)
+            throw new InsufficientMemoryException();
+
         result += bytesWritten;
         writer.Advance(bytesWritten);
 
@@ -176,8 +182,12 @@ public static class BufferWriter
     public static int Write(this ref SpanWriter<byte> writer, scoped ReadOnlySpan<byte> value, LengthFormat lengthFormat)
     {
         var result = writer.WriteLength(value.Length, lengthFormat);
-        result += writer.Write(value);
-        
+        checked
+        {
+            writer += value;
+        }
+
+        result += value.Length;
         return result;
     }
 
