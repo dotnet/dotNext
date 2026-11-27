@@ -19,6 +19,8 @@ public partial class FileBufferingWriter
         private readonly FileOptions options;
         internal readonly int BufferSize;
 
+        internal bool IsTemporary => temporary;
+
         private BackingFileProvider(string path, bool temp, int bufferSize, bool asyncIO, bool writeThrough)
         {
             var options = FileOptions.SequentialScan;
@@ -130,7 +132,7 @@ public partial class FileBufferingWriter
         /// </summary>
         /// <remarks>
         /// If this property is defined then the file will not be deleted automatically on <see cref="Dispose"/>
-        /// call.
+        /// call. However, <see cref="Clear(bool)"/> deletes the file if the internal buffer is not reused.
         /// </remarks>
         public string FileName
         {

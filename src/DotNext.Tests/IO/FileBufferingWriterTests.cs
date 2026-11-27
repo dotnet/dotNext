@@ -333,6 +333,103 @@ public sealed class FileBufferingWriterTests : Test
         Throws<InvalidOperationException>(writer.GetWrittenContent);
         await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2, TestToken));
         await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync(TestToken).AsTask);
+        Throws<InvalidOperationException>(() => writer.GetMemory());
+        Throws<InvalidOperationException>(() => writer.GetSpan(10));
+        Throws<InvalidOperationException>(() => writer.Advance(0));
+    }
+
+    [Fact]
+    public static async Task CanceledWriteToFile()
+    {
+        await using var writer = new FileBufferingWriter(memoryThreshold: 16);
+        await ThrowsAnyAsync<OperationCanceledException>(writer.WriteAsync(new byte[100], new CancellationToken(canceled: true)).AsTask);
+        Equal(0L, writer.Length);
+
+        await writer.WriteAsync(new byte[] { 1, 2, 3, 4 }, TestToken);
+        Equal(4L, writer.Length);
+
+        var content = new byte[4];
+        Equal(4, writer.CopyTo(content));
+        Equal<byte>([1, 2, 3, 4], content);
+    }
+
+    [Fact]
+    public static void ClearPermanentFile()
+    {
+        var fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        try
+        {
+            using (var writer = new FileBufferingWriter(new FileBufferingWriter.Options { FileName = fileName, MemoryThreshold = 16 }))
+            {
+                writer.Write(new byte[20]);
+                True(File.Exists(fileName));
+
+                // the file is truncated and reused
+                writer.Clear(reuseBuffer: true);
+                Equal(0L, new FileInfo(fileName).Length);
+                Equal(0L, writer.Length);
+                writer.Write(new byte[20]);
+                Equal(20L, writer.Length);
+
+                // the file is deleted
+                writer.Clear(reuseBuffer: false);
+                False(File.Exists(fileName));
+                writer.Write(new byte[20]);
+                True(File.Exists(fileName));
+            }
+
+            // the file survives Dispose
+            Equal(20L, new FileInfo(fileName).Length);
+        }
+        finally
+        {
+            File.Delete(fileName);
+        }
+    }
+
+    [Fact]
+    public static void ReuseTruncatedFile()
+    {
+        using var writer = new FileBufferingWriter(memoryThreshold: 16);
+        writer.Write(new byte[20]);
+        writer.Clear(reuseBuffer: true);
+        writer.Write([1, 2, 3]);
+
+        using (var source = writer.GetWrittenContent(segmentSize: 32))
+            Equal<byte>([1, 2, 3], source.Sequence.ToArray());
+
+        using (var manager = writer.GetWrittenContent())
+            Equal<byte>([1, 2, 3], manager.Memory.Span);
+
+        var content = new byte[3];
+        Equal(3, writer.CopyTo(content));
+        Equal<byte>([1, 2, 3], content);
+    }
+
+    [Fact]
+    public static unsafe void PinFileSegment()
+    {
+        using var writer = new FileBufferingWriter(memoryThreshold: 16);
+        var bytes = new byte[100];
+        for (var i = 0; i < bytes.Length; i++)
+            bytes[i] = (byte)i;
+
+        writer.Write(bytes);
+        using var source = writer.GetWrittenContent(segmentSize: 32);
+        using var handle = source.Sequence.First.Slice(10).Pin();
+        Equal(10, *(byte*)handle.Pointer);
+    }
+
+    [Fact]
+    public static void EmptyRangeOfFile()
+    {
+        using var writer = new FileBufferingWriter(memoryThreshold: 16);
+        writer.Write(new byte[100]);
+
+        using (var manager = writer.GetWrittenContent(50..50))
+            True(manager.Memory.IsEmpty);
+
+        Throws<ArgumentOutOfRangeException>(() => writer.GetWrittenContent(50..101));
     }
 
     [Fact]

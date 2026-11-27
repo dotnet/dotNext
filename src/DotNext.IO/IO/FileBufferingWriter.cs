@@ -140,6 +140,10 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <summary>
     /// Removes all written data.
     /// </summary>
+    /// <remarks>
+    /// If the writer switched to the file, and <paramref name="reuseBuffer"/> is <see langword="true"/>, the file is truncated
+    /// and reused. Otherwise, the file is closed. The file specified by <see cref="Options.FileName"/> is deleted in that case.
+    /// </remarks>
     /// <param name="reuseBuffer"><see langword="true"/> to keep internal buffer alive; otherwise, <see langword="false"/>.</param>
     /// <exception cref="InvalidOperationException">Attempt to cleanup this writer while reading.</exception>
     public void Clear(bool reuseBuffer = true)
@@ -147,7 +151,20 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        ClearCore(reuseBuffer);
+        if (reuseBuffer && fileBackend is not null)
+        {
+            RandomAccess.SetLength(fileBackend, 0L);
+            filePosition = position = 0;
+        }
+        else
+        {
+            var fileToDelete = fileProvider.IsTemporary ? null : fileName;
+            ClearCore(reuseBuffer);
+
+            // the file is created by this writer, so it must be removed to allow switching to the file again
+            if (fileToDelete is not null)
+                File.Delete(fileToDelete);
+        }
     }
 
     /// <inheritdoc/>
@@ -173,6 +190,9 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <inheritdoc/>
     public Memory<byte> GetMemory(int sizeHint = 0)
     {
+        if (IsReading)
+            throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
         switch (sizeHint)
         {
             case < 0:
@@ -205,6 +225,9 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     public void Advance(int count)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        if (IsReading)
+            throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         if (position > buffer.Length - count)
             InvalidOperationException.Throw();
@@ -273,7 +296,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         Debug.Assert(HasBufferedData);
 
         EnsureBackingStore();
-        return Submit(RandomAccess.WriteAsync(fileBackend, WrittenMemory, filePosition, token), flushToDisk ? writeCallback : writeAndFlushCallback);
+        return Submit(RandomAccess.WriteAsync(fileBackend, WrittenMemory, filePosition, token), flushToDisk ? writeAndFlushCallback : writeCallback);
     }
 
     [MemberNotNull(nameof(fileBackend))]
@@ -324,17 +347,11 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     {
         EnsureBackingStore();
 
-        ValueTask task;
-        if (HasBufferedData)
-        {
-            secondBuffer = input;
-            task = RandomAccess.WriteAsync(fileBackend, (IReadOnlyList<ReadOnlyMemory<byte>>)this.As<IDynamicInterfaceCastable>(), filePosition, token);
-        }
-        else
-        {
-            position = input.Length;
-            task = RandomAccess.WriteAsync(fileBackend, input, filePosition, token);
-        }
+        // position must not be modified until the write completes successfully
+        secondBuffer = input;
+        var task = HasBufferedData
+            ? RandomAccess.WriteAsync(fileBackend, (IReadOnlyList<ReadOnlyMemory<byte>>)this.As<IDynamicInterfaceCastable>(), filePosition, token)
+            : RandomAccess.WriteAsync(fileBackend, input, filePosition, token);
 
         return Submit(task, writeCallback);
     }
@@ -572,6 +589,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// </summary>
     /// <param name="output">The memory block used as a destination for copy operation.</param>
     /// <returns>The actual number of copied elements.</returns>
+    /// <exception cref="EndOfStreamException">The backing file is shorter than the written content.</exception>
     public int CopyTo(Span<byte> output)
     {
         var totalBytes = 0;
@@ -581,8 +599,13 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (fileBackend is not null)
         {
-            totalBytes = RandomAccess.Read(fileBackend, output, 0L);
-            output = output.Slice(totalBytes);
+            // a single read may return fewer bytes than requested
+            for (int count; totalBytes < filePosition && !output.IsEmpty; totalBytes += count, output = output.Slice(count))
+            {
+                count = RandomAccess.Read(fileBackend, output.TrimLength(int.CreateSaturating(filePosition - totalBytes)), totalBytes);
+                if (count is 0)
+                    throw new EndOfStreamException();
+            }
         }
 
         if (HasBufferedData)
@@ -600,6 +623,8 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <param name="output">The memory block used as a destination for copy operation.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of copied elements.</returns>
+    /// <exception cref="EndOfStreamException">The backing file is shorter than the written content.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
     {
         var totalBytes = 0;
@@ -609,8 +634,13 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (fileBackend is not null)
         {
-            totalBytes = await RandomAccess.ReadAsync(fileBackend, output, 0L, token).ConfigureAwait(false);
-            output = output.Slice(totalBytes);
+            // a single read may return fewer bytes than requested
+            for (int count; totalBytes < filePosition && !output.IsEmpty; totalBytes += count, output = output.Slice(count))
+            {
+                count = await RandomAccess.ReadAsync(fileBackend, output.TrimLength(int.CreateSaturating(filePosition - totalBytes)), totalBytes, token).ConfigureAwait(false);
+                if (count is 0)
+                    throw new EndOfStreamException();
+            }
         }
 
         if (HasBufferedData)
@@ -683,7 +713,8 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     private IMemoryOwner<byte> GetWrittenContentCore(in Range range, [CallerArgumentExpression(nameof(range))] string? paramName = null) => range.GetOffsetAndLength(filePosition) switch
     {
         (< 0L, _) or (_, < 0L) => throw new ArgumentOutOfRangeException(paramName),
-        (0L, 0L) => new BufferedMemoryManager(),
+        var (offset, length) when offset + length > filePosition => throw new ArgumentOutOfRangeException(paramName),
+        (_, 0L) => new BufferedMemoryManager(),
         (_, > int.MaxValue) => throw new InsufficientMemoryException(),
         var (offset, length) => new MemoryMappedFileManager(this, offset, length)
     };

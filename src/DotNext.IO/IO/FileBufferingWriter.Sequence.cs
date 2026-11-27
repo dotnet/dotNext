@@ -145,7 +145,7 @@ public partial class FileBufferingWriter
         MemoryHandle IMemorySegmentProvider.Pin(in Segment window, int elementIndex)
         {
             GetSpan(in window);
-            return buffer.Memory.Pin();
+            return buffer.Memory.Slice(elementIndex).Pin();
         }
 
         private void BuildSegments([AllowNull] ref LazySegment first, [AllowNull] ref LazySegment last)
@@ -156,9 +156,6 @@ public partial class FileBufferingWriter
                 LazySegment.AddSegment(this, segmentLength, ref first, ref last);
                 remainingLength -= segmentLength;
             }
-
-            Debug.Assert(first is not null);
-            Debug.Assert(last is not null);
         }
 
         /// <summary>
@@ -174,6 +171,11 @@ public partial class FileBufferingWriter
 
                 LazySegment? first = null, last = null;
                 BuildSegments(ref first, ref last);
+
+                // the file can be empty after Clear
+                if (first is null || last is null)
+                    return new(this.tail);
+
                 ReadOnlySequenceSegment<byte> tail = this.tail.IsEmpty ? last : new TailSegment(last, this.tail);
                 return new(first, 0, tail, tail.Memory.Length);
             }
