@@ -20,10 +20,10 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/6.14.1">DotNext.Net.Cluster 6.14.1</a>
-* Updated dependencies
+* HyParView fix [317](https://github.com/dotnet/dotNext/pull/317)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.14.1">DotNext.AspNetCore.Cluster 6.14.1</a>
-* Updated dependencies
+* HyParView fix [317](https://github.com/dotnet/dotNext/pull/317)
 
 <a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.14.1">DotNext.MaintenanceServices 1.14.1</a>
 * Added `process` group of commands
