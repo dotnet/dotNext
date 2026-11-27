@@ -532,4 +532,29 @@ public sealed class StreamExtensionsTests : Test
         using (var chars = await reader.As<IAsyncBinaryReader>().DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, token: TestToken))
             Equal(expectedString, chars.Span.ToString());
     }
+
+    [Fact]
+    public static async Task BufferTooSmallForLength()
+    {
+        using var stream = new MemoryStream();
+        var buffer = new byte[2];
+
+        await ThrowsAsync<ArgumentException>(() => stream.WriteAsync(new byte[10], LengthFormat.LittleEndian, buffer, TestToken).AsTask());
+        await ThrowsAsync<ArgumentException>(() => stream.EncodeAsync("hello".AsMemory(), Encoding.Latin1, LengthFormat.LittleEndian, buffer, TestToken).AsTask());
+        await ThrowsAsync<ArgumentException>(() => stream.FormatAsync(42, LengthFormat.LittleEndian, buffer, token: TestToken).AsTask());
+        Equal(0L, stream.Length);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100)]
+    public static async Task WriteSequence(int segmentSize)
+    {
+        var expected = RandomBytes(1024);
+        var sequence = segmentSize > 0 ? ToReadOnlySequence<byte>(expected, segmentSize) : new(expected);
+        using var stream = new MemoryStream();
+
+        await stream.WriteAsync(sequence, TestToken);
+        Equal(expected, stream.ToArray());
+    }
 }

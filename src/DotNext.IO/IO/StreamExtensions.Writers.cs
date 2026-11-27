@@ -89,6 +89,9 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask WriteAsync(this Stream stream, ReadOnlyMemory<byte> value, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token = default)
     {
+        if (buffer.Length < lengthFormat.MaxByteCount)
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
+
         await stream.WriteAsync(buffer.Slice(0, WriteLength(buffer.Span, value.Length, lengthFormat)), token).ConfigureAwait(false);
         await stream.WriteAsync(value, token).ConfigureAwait(false);
     }
@@ -111,8 +114,8 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<long> EncodeAsync(this Stream stream, ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token = default)
     {
-        var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-        if (maxChars is 0)
+        if (buffer.Length < context.Encoding.GetMaxByteCount(1)
+            || (lengthFormat.HasValue && buffer.Length < lengthFormat.GetValueOrDefault().MaxByteCount))
             throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         long result;
@@ -154,6 +157,7 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of the formatted value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<long> FormatAsync<T>(this Stream stream, T value, EncodingContext context, LengthFormat? lengthFormat, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
         where T : ISpanFormattable
@@ -187,6 +191,7 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for the length and the formatted value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<int> FormatAsync<T>(this Stream stream, T value, LengthFormat? lengthFormat, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         where T : IUtf8SpanFormattable
@@ -194,8 +199,12 @@ public static partial class StreamExtensions
         Memory<byte> bufferForLength;
         if (lengthFormat.HasValue)
         {
-            bufferForLength = buffer.Slice(0, lengthFormat.GetValueOrDefault().MaxByteCount);
-            buffer = buffer.Slice(bufferForLength.Length);
+            var maxLengthSize = lengthFormat.GetValueOrDefault().MaxByteCount;
+            if (buffer.Length < maxLengthSize)
+                throw ArgumentException.BufferTooSmall(nameof(buffer));
+
+            bufferForLength = buffer.Slice(0, maxLengthSize);
+            buffer = buffer.Slice(maxLengthSize);
         }
         else
         {
@@ -223,9 +232,16 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask WriteAsync(this Stream stream, ReadOnlySequence<byte> sequence, CancellationToken token = default)
+    public static ValueTask WriteAsync(this Stream stream, ReadOnlySequence<byte> sequence, CancellationToken token = default)
     {
-        foreach (var block in sequence)
-            await stream.WriteAsync(block, token).ConfigureAwait(false);
+        return sequence.IsSingleSegment
+            ? stream.WriteAsync(sequence.First, token)
+            : WriteSegmentsAsync(stream, sequence, token);
+
+        static async ValueTask WriteSegmentsAsync(Stream stream, ReadOnlySequence<byte> sequence, CancellationToken token)
+        {
+            foreach (var block in sequence)
+                await stream.WriteAsync(block, token).ConfigureAwait(false);
+        }
     }
 }
