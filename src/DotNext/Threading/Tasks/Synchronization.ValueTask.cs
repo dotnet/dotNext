@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -356,20 +356,15 @@ public static partial class Synchronization
 
         static void BlockingWait(ref TAwaiter awaiter)
         {
-            var currentThread = Thread.CurrentThread;
-            if (currentThread.IsThreadPoolThread)
+            var waiter = new CompletionWaiter<TAwaiter>(ref awaiter);
+
+            // after registration, because the continuation can be queued to the local queue of the current thread
+            if (Thread.CurrentThread.IsThreadPoolThread)
                 DrainThreadLocalQueue();
-            
-            awaiter.UnsafeOnCompleted(currentThread.Interrupt);
-            try
-            {
-                // park thread
-                Thread.Sleep(Infinite);
-            }
-            catch (ThreadInterruptedException) when (TProvider.IsCompleted(ref awaiter))
-            {
-                // suppress exception
-            }
+
+            // The callback cannot be unregistered, so the waiter can receive a signal from the previous interrupted wait.
+            // Thus, check the awaiter instead of the signal
+            waiter.Wait<TProvider>(ref awaiter);
         }
     }
 
@@ -398,5 +393,50 @@ public static partial class Synchronization
         static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>.IsCompleted(
             ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
             => awaiter.IsCompleted;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct CompletionWaiter<TAwaiter>
+        where TAwaiter : struct, ICriticalNotifyCompletion
+    {
+        private readonly object syncRoot;
+
+        public CompletionWaiter(scoped ref TAwaiter awaiter)
+        {
+            var callback = SignalingCallback;
+            awaiter.UnsafeOnCompleted(callback);
+
+            // Target is the lock object only if the callback is bound to the static method
+            Debug.Assert(callback is { Target: not null, Method.IsStatic: true });
+            syncRoot = callback.Target;
+        }
+
+        public void Wait<TProvider>(scoped ref TAwaiter awaiter)
+            where TProvider : struct, IAwaiterStateProvider<TAwaiter>, allows ref struct
+        {
+            lock (syncRoot)
+            {
+                while (!TProvider.IsCompleted(ref awaiter))
+                    Monitor.Wait(syncRoot);
+            }
+        }
+    }
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [field: ThreadStatic]
+    private static Action SignalingCallback
+    {
+        get
+        {
+            return field ??= new Action<object>(Signal).Bind(new());
+                
+            static void Signal(object syncRoot)
+            {
+                lock (syncRoot)
+                {
+                    Monitor.Pulse(syncRoot);
+                }
+            }
+        }
     }
 }

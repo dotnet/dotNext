@@ -220,4 +220,33 @@ public sealed class SynchronizationTests : Test
         cts.TrySetResult(42);
         thread.Join();
     }
+
+    [Fact]
+    public static async Task InterruptedSynchronousWait()
+    {
+        var task = Task.Factory.StartNew(static () =>
+        {
+            var source = new TaskCompletionSource();
+            var task = new ValueTask(source.Task);
+
+            Thread.CurrentThread.Interrupt();
+            Throws<ThreadInterruptedException>(() => task.Wait());
+
+            // the continuation is called synchronously on the current thread, and must not interrupt it
+            source.SetResult();
+            Thread.Sleep(0);
+
+            // the parker is reused by the next wait on the same thread
+            source = new();
+            task = new(source.Task);
+            ThreadPool.UnsafeQueueUserWorkItem(static source =>
+            {
+                Thread.Sleep(100);
+                source.SetResult();
+            }, source, preferLocal: false);
+            task.Wait();
+        }, TaskCreationOptions.LongRunning);
+
+        await task.WaitAsync(DefaultTimeout, TestContext.Current.CancellationToken);
+    }
 }
