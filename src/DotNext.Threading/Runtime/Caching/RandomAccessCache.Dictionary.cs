@@ -497,13 +497,13 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             var task = parkingLot.ParkAsync(index, ref this[index].LockState, this, timeout, token);
             if (!task.IsCompletedSuccessfully)
-                return AcquireSlowAsync(task);
+                return AcquireSlowAsync(task.ConfigureAwait(false));
 
             return task.Result ? ValueTask.CompletedTask : ValueTask.FromException(new TimeoutException());
 
-            static async ValueTask AcquireSlowAsync(ValueTask<bool> task)
+            static async ValueTask AcquireSlowAsync(ConfiguredValueTaskAwaitable<bool> task)
             {
-                if (!await task.ConfigureAwait(false))
+                if (!await task)
                     throw new TimeoutException();
             }
         }

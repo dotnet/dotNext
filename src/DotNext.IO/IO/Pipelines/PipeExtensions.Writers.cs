@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using DotNext.Buffers;
 
 namespace DotNext.IO.Pipelines;
@@ -24,7 +25,7 @@ public static partial class PipeExtensions
         {
             var task = writer.WriteAsync(block, token);
             if (!task.IsCompletedSuccessfully)
-                return WaitAsync(task, token);
+                return WaitAsync(task.ConfigureAwait(false), token);
 
             try
             {
@@ -50,9 +51,9 @@ public static partial class PipeExtensions
             }
         }
 
-        static async ValueTask WaitAsync(ValueTask<FlushResult> task, CancellationToken token)
+        static async ValueTask WaitAsync(ConfiguredValueTaskAwaitable<FlushResult> task, CancellationToken token)
         {
-            var flushResult = await task.ConfigureAwait(false);
+            var flushResult = await task;
             flushResult.ThrowIfCancellationRequested(token);
         }
     }
