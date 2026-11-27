@@ -59,7 +59,7 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
 
     private Storage AsStorage(TKey leaseId) => new(this, leaseId);
 
-    private void RemoveObservation(TKey leaseId) => observations
+    private bool RemoveObservation(TKey leaseId) => observations
         .As<IDictionary<TKey, Observation>>()
         .Remove(leaseId);
 
@@ -78,7 +78,7 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
     {
         ArgumentNullException.ThrowIfNull<TKey>(leaseId);
 
-        return observations.TryRemove(leaseId, out _);
+        return RemoveObservation(leaseId);
     }
 
     private static ArgumentNullException? CheckArguments(TKey? leaseId,
