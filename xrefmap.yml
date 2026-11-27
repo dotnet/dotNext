@@ -7490,6 +7490,40 @@ references:
   fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).MoveNext
   nameWithType: IEnumerator<TSelf, T>.MoveNext
   nameWithType.vb: IEnumerator(Of TSelf, T).MoveNext
+- uid: DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator(`0@,System.Threading.CancellationToken)
+  name: ToAsyncEnumerator(in TSelf, CancellationToken)
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_ToAsyncEnumerator__0__System_Threading_CancellationToken_
+  commentId: M:DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator(`0@,System.Threading.CancellationToken)
+  name.vb: ToAsyncEnumerator(TSelf, CancellationToken)
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.ToAsyncEnumerator(in TSelf, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).ToAsyncEnumerator(TSelf, System.Threading.CancellationToken)
+  nameWithType: IEnumerator<TSelf, T>.ToAsyncEnumerator(in TSelf, CancellationToken)
+  nameWithType.vb: IEnumerator(Of TSelf, T).ToAsyncEnumerator(TSelf, CancellationToken)
+- uid: DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator*
+  name: ToAsyncEnumerator
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_ToAsyncEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.ToAsyncEnumerator
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).ToAsyncEnumerator
+  nameWithType: IEnumerator<TSelf, T>.ToAsyncEnumerator
+  nameWithType.vb: IEnumerator(Of TSelf, T).ToAsyncEnumerator
+- uid: DotNext.Collections.Generic.IEnumerator`2.ToEnumerator(`0@)
+  name: ToEnumerator(in TSelf)
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_ToEnumerator__0__
+  commentId: M:DotNext.Collections.Generic.IEnumerator`2.ToEnumerator(`0@)
+  name.vb: ToEnumerator(TSelf)
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.ToEnumerator(in TSelf)
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).ToEnumerator(TSelf)
+  nameWithType: IEnumerator<TSelf, T>.ToEnumerator(in TSelf)
+  nameWithType.vb: IEnumerator(Of TSelf, T).ToEnumerator(TSelf)
+- uid: DotNext.Collections.Generic.IEnumerator`2.ToEnumerator*
+  name: ToEnumerator
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_ToEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.IEnumerator`2.ToEnumerator
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.ToEnumerator
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).ToEnumerator
+  nameWithType: IEnumerator<TSelf, T>.ToEnumerator
+  nameWithType.vb: IEnumerator(Of TSelf, T).ToEnumerator
 - uid: DotNext.Collections.Generic.List
   name: List
   href: api/DotNext.Collections.Generic.List.html
@@ -25510,6 +25544,18 @@ references:
   commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
   fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
   nameWithType: ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand
+  name: ProcessCommand()
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_ProcessCommand
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand()
+  nameWithType: ApplicationMaintenanceCommand.ProcessCommand()
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand*
+  name: ProcessCommand
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_ProcessCommand_
+  commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.ProcessCommand
+  nameWithType: ApplicationMaintenanceCommand.ProcessCommand
 - uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult})
   name: SetAction(Action<IMaintenanceSession, ParseResult>)
   href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Action_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult__
@@ -45384,21 +45430,36 @@ references:
   commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Count
   fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Count
   nameWithType: ValueTupleBuilder.Count
-- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)
-  name: Dispose(bool)
-  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_System_Boolean_
-  commentId: M:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)
-  name.vb: Dispose(Boolean)
-  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(bool)
-  fullName.vb: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(Boolean)
-  nameWithType: ValueTupleBuilder.Dispose(bool)
-  nameWithType.vb: ValueTupleBuilder.Dispose(Boolean)
-- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose*
-  name: Dispose
-  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_
-  commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose
-  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose
-  nameWithType: ValueTupleBuilder.Dispose
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator
+  name: ValueTupleBuilder.Enumerator
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.html
+  commentId: T:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator
+  nameWithType: ValueTupleBuilder.Enumerator
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current
+  name: Current
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Enumerator_Current
+  commentId: P:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current
+  nameWithType: ValueTupleBuilder.Enumerator.Current
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Enumerator_Current_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.Current
+  nameWithType: ValueTupleBuilder.Enumerator.Current
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Enumerator_MoveNext
+  commentId: M:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext()
+  nameWithType: ValueTupleBuilder.Enumerator.MoveNext()
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Enumerator.MoveNext
+  nameWithType: ValueTupleBuilder.Enumerator.MoveNext
 - uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator
   name: GetEnumerator()
   href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_GetEnumerator
@@ -45411,6 +45472,18 @@ references:
   commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator
   fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator
   nameWithType: ValueTupleBuilder.GetEnumerator
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset
+  name: Reset()
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Reset
+  commentId: M:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset()
+  nameWithType: ValueTupleBuilder.Reset()
+- uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset*
+  name: Reset
+  href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html#DotNext_Runtime_CompilerServices_ValueTupleBuilder_Reset_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset
+  fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder.Reset
+  nameWithType: ValueTupleBuilder.Reset
 - uid: DotNext.Runtime.ExceptionServices
   name: DotNext.Runtime.ExceptionServices
   href: api/DotNext.Runtime.ExceptionServices.html

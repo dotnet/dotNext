@@ -112,7 +112,7 @@
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Buffers/Binary/Leb128.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Buffers/Binary/Leb128.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_Leb128_TryReadLeb128_" data-uid="DotNext.Buffers.Binary.Leb128.TryReadLeb128*"></a>
   <h4 id="DotNext_Buffers_Binary_Leb128_TryReadLeb128__1_System_ReadOnlySpan_System_Byte____0__System_Int32__" data-uid="DotNext.Buffers.Binary.Leb128.TryReadLeb128``1(System.ReadOnlySpan{System.Byte},``0@,System.Int32@)">TryReadLeb128&lt;T&gt;(ReadOnlySpan&lt;byte&gt;, out T, out int)</h4>
@@ -164,7 +164,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if operation is successful; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if operation is successful;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if <code class="paramref">buffer</code> ends before the last octet of the encoded value.</p>
 </td>
       </tr>
     </tbody>
@@ -184,9 +185,25 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.invaliddataexception">InvalidDataException</a></td>
+        <td><p>The encoded value is longer than <a class="xref" href="DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_MaxSizeInBytes">MaxSizeInBytes</a>, or it doesn't fit into <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Buffers/Binary/Leb128.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Buffers/Binary/Leb128.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Binary_Leb128_TryWriteLeb128_" data-uid="DotNext.Buffers.Binary.Leb128.TryWriteLeb128*"></a>
   <h4 id="DotNext_Buffers_Binary_Leb128_TryWriteLeb128__1___0_System_Span_System_Byte__System_Int32__" data-uid="DotNext.Buffers.Binary.Leb128.TryWriteLeb128``1(``0,System.Span{System.Byte},System.Int32@)">TryWriteLeb128&lt;T&gt;(T, Span&lt;byte&gt;, out int)</h4>
@@ -266,7 +283,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Buffers/Binary/Leb128.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Buffers/Binary/Leb128.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

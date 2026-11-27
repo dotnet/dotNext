@@ -115,7 +115,7 @@ but can be converted to it by using regular type cast.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_IEnumerator_2_Current_" data-uid="DotNext.Collections.Generic.IEnumerator`2.Current*"></a>
   <h4 id="DotNext_Collections_Generic_IEnumerator_2_Current" data-uid="DotNext.Collections.Generic.IEnumerator`2.Current">Current</h4>
@@ -144,7 +144,7 @@ but can be converted to it by using regular type cast.</p>
 </h3>
 
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_IEnumerator_2_MoveNext_" data-uid="DotNext.Collections.Generic.IEnumerator`2.MoveNext*"></a>
   <h4 id="DotNext_Collections_Generic_IEnumerator_2_MoveNext" data-uid="DotNext.Collections.Generic.IEnumerator`2.MoveNext">MoveNext()</h4>
@@ -169,6 +169,106 @@ but can be converted to it by using regular type cast.</p>
       </tr>
     </tbody>
   </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_IEnumerator_2_ToAsyncEnumerator_" data-uid="DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator*"></a>
+  <h4 id="DotNext_Collections_Generic_IEnumerator_2_ToAsyncEnumerator__0__System_Threading_CancellationToken_" data-uid="DotNext.Collections.Generic.IEnumerator`2.ToAsyncEnumerator(`0@,System.Threading.CancellationToken)">ToAsyncEnumerator(in TSelf, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Converts ad-hoc enumerator to a generic enumerator.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected static IAsyncEnumerator&lt;out T&gt; ToAsyncEnumerator(in TSelf enumerator, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TSelf</span></td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>Ad-hoc enumerator.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the enumeration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1">IAsyncEnumerator</a>&lt;T&gt;</td>
+        <td><p>The enumerator over values of type <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_IEnumerator_2_ToEnumerator_" data-uid="DotNext.Collections.Generic.IEnumerator`2.ToEnumerator*"></a>
+  <h4 id="DotNext_Collections_Generic_IEnumerator_2_ToEnumerator__0__" data-uid="DotNext.Collections.Generic.IEnumerator`2.ToEnumerator(`0@)">ToEnumerator(in TSelf)</h4>
+  <div class="markdown level1 summary"><p>Converts ad-hoc enumerator to a generic enumerator.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected static IEnumerator&lt;out T&gt; ToEnumerator(in TSelf enumerator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TSelf</span></td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>Ad-hoc enumerator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
+        <td><p>The enumerator over values of type <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
@@ -188,7 +288,7 @@ but can be converted to it by using regular type cast.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/6ab50effeeb4a3bdde96a6408c74b2e3e6b75e23/src/DotNext/Collections/Generic/IEnumerator.cs" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/32435f25306d758efe07aaa040603de9fe1d8fc4/src/DotNext/Collections/Generic/IEnumerator.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
