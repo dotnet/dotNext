@@ -112,10 +112,12 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
     {
         ArgumentOutOfRangeException.ThrowIfNegative(value);
         ThrowIfDisposed();
-        
-        if (WriteCore())
-            Reset();
-        
+
+        // the read buffer may contain the data beyond the new length
+        if (!WriteCore())
+            ClearReadBufferBeforeWrite();
+
+        Reset();
         stream.SetLength(value);
     }
 
@@ -408,7 +410,7 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
         ThrowIfDisposed();
 
         if (!stream.CanRead)
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         
         return data.IsEmpty ? 0 : ReadCore(data);
     }
@@ -443,8 +445,9 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
         else
         {
             Debug.Assert(readPosition == readLength);
-            
-            readPosition = 0;
+
+            // the consumed data must not become readable again if the underlying stream throws
+            readPosition = readLength = 0;
             readLength = stream.Read(EnsureBufferAllocated().Span);
             bytesRead += ReadFromBuffer(data);
         }
@@ -507,7 +510,9 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
         else
         {
             Debug.Assert(readPosition == readLength);
-            readPosition = 0;
+
+            // the consumed data must not become readable again if the underlying stream throws
+            readPosition = readLength = 0;
             readLength = await stream.ReadAsync(EnsureBufferAllocated().Memory, token).ConfigureAwait(false);
             bytesRead += ReadFromBuffer(data.Span);
         }
@@ -602,6 +607,8 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
                 break;
         }
 
+        // append the data to the unread part of the buffer
+        readBuffer = readBuffer.Slice(readLength);
         return true;
     }
 
@@ -647,8 +654,19 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
         Debug.Assert(writePosition is 0);
 
         await stream.FlushAsync(token).ConfigureAwait(false);
-        ClearReadBufferBeforeWrite();
-        buffer.Dispose();
+        ClearReadBuffer();
+    }
+
+    private void ClearReadBuffer()
+    {
+        Debug.Assert(stream is not null);
+
+        // the read buffer cannot be discarded without data loss if the stream cannot rewind its position
+        if (!HasBufferedDataToRead || stream.CanSeek)
+        {
+            ClearReadBufferBeforeWrite();
+            buffer.Dispose();
+        }
     }
 
     /// <inheritdoc cref="Stream.Flush()"/>
@@ -659,8 +677,7 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
 
         WriteCore();
         stream.Flush();
-        ClearReadBufferBeforeWrite();
-        buffer.Dispose();
+        ClearReadBuffer();
     }
 
     /// <inheritdoc/>
@@ -780,6 +797,7 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
             stream = null;
         }
 
+        GC.SuppressFinalize(this);
         return task;
     }
 

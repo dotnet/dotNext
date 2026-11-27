@@ -124,6 +124,9 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
         if (!stream.CanRead)
             return ValueTask.FromException(new NotSupportedException());
 
+        if (HasBufferedDataToWrite)
+            return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.WriteBufferNotEmpty));
+
         return count.HasValue
             ? CopyToAsync(consumer, count.GetValueOrDefault(), token)
             : CopyToAsync(consumer, token);
@@ -186,6 +189,10 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
                     {
                         task = ValueTask.FromException(e);
                     }
+                }
+                else if (HasBufferedDataToWrite)
+                {
+                    task = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.WriteBufferNotEmpty));
                 }
                 else
                 {

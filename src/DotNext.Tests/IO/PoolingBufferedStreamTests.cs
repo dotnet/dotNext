@@ -1,3 +1,4 @@
+using System.Buffers;
 using DotNext.Buffers;
 
 namespace DotNext.IO;
@@ -486,5 +487,174 @@ public sealed class PoolingBufferedStreamTests : Test
         var position = reader.Position;
         await reader.FlushAsync(TestToken);
         Equal(position, reader.Position);
+    }
+
+    // returns at most chunkSize bytes per read, optionally fails or forbids seeking
+    private sealed class ChunkedStream(byte[] data, int chunkSize, bool seekable = true) : Stream
+    {
+        private int position;
+
+        internal int FailingReads { get; set; } = int.MaxValue;
+
+        public override int Read(Span<byte> buffer)
+        {
+            if (FailingReads-- <= 0)
+                throw new IOException();
+
+            var count = int.Min(int.Min(chunkSize, buffer.Length), data.Length - position);
+            data.AsSpan(position, count).CopyTo(buffer);
+            position += count;
+            return count;
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
+            => ValueTask.FromResult(Read(buffer.Span));
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => seekable;
+
+        public override bool CanWrite => true;
+
+        public override long Length => data.Length;
+
+        public override long Position
+        {
+            get => position;
+            set => position = (int)value;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin) => seekable
+            ? position = (int)(origin switch
+            {
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => position + offset,
+                _ => data.Length + offset,
+            })
+            : throw new NotSupportedException();
+
+        public override void Flush()
+        {
+        }
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
+    [Fact]
+    public static async Task FillBufferIncrementally()
+    {
+        var expected = RandomBytes(32);
+        await using var stream = new PoolingBufferedStream(new ChunkedStream(expected, 3)) { MaxBufferSize = 16 };
+
+        True(stream.Read());
+        True(await stream.ReadAsync(TestToken));
+        True(stream.TryGetReadBuffer(6, out var buffer));
+        Equal(expected.AsSpan(0, 6), buffer.Span);
+
+        stream.Read(2);
+        while (!stream.TryGetReadBuffer(14, out buffer))
+            True(await stream.ReadAsync(TestToken));
+
+        Equal(expected.AsSpan(2, buffer.Length), buffer.Span);
+
+        // compacts the buffer and fills it completely
+        while (!stream.TryGetReadBuffer(16, out buffer))
+            True(stream.Read());
+
+        Equal(expected.AsSpan(2, 16), buffer.Span);
+        Throws<InternalBufferOverflowException>(() => stream.Read());
+    }
+
+    [Fact]
+    public static void ConsumedDataAfterFailedRead()
+    {
+        var expected = RandomBytes(100);
+        var source = new ChunkedStream(expected, 10) { FailingReads = 1 };
+        using var stream = new PoolingBufferedStream(source) { MaxBufferSize = 64 };
+
+        stream.ReadExactly(new byte[5]);
+        Throws<IOException>(() => stream.ReadExactly(new byte[20]));
+        False(stream.HasBufferedDataToRead);
+
+        source.FailingReads = int.MaxValue;
+        var actual = new byte[4];
+        stream.ReadExactly(actual);
+        Equal(expected.AsSpan(10, 4), actual.AsSpan());
+    }
+
+    [Fact]
+    public static async Task ConsumedDataAfterFailedReadAsync()
+    {
+        var expected = RandomBytes(100);
+        var source = new ChunkedStream(expected, 10) { FailingReads = 1 };
+        await using var stream = new PoolingBufferedStream(source) { MaxBufferSize = 64 };
+
+        await stream.ReadExactlyAsync(new byte[5], TestToken);
+        await ThrowsAsync<IOException>(() => stream.ReadExactlyAsync(new byte[20], TestToken).AsTask());
+        False(stream.HasBufferedDataToRead);
+
+        source.FailingReads = int.MaxValue;
+        var actual = new byte[4];
+        await stream.ReadExactlyAsync(actual, TestToken);
+        Equal(expected.AsSpan(10, 4), actual.AsSpan());
+    }
+
+    [Fact]
+    public static async Task ReadWithBufferedDataToWrite()
+    {
+        await using var stream = new PoolingBufferedStream(new ChunkedStream(RandomBytes(10), 10, seekable: false));
+        stream.Write([1, 2]);
+
+        IAsyncBinaryReader reader = stream;
+        await ThrowsAsync<InvalidOperationException>(() => reader.CopyToAsync(new ArrayBufferWriter<byte>(), token: TestToken).AsTask());
+        await ThrowsAsync<InvalidOperationException>(() => reader.SkipAsync(1L, TestToken).AsTask());
+        True(stream.HasBufferedDataToWrite);
+    }
+
+    [Fact]
+    public static async Task FlushNonSeekableStreamWithBufferedDataToRead()
+    {
+        var expected = RandomBytes(100);
+        await using var stream = new PoolingBufferedStream(new ChunkedStream(expected, 10, seekable: false));
+
+        Equal(expected[0], stream.ReadByte());
+        stream.Flush();
+        await stream.FlushAsync(TestToken);
+        True(stream.HasBufferedDataToRead);
+
+        var actual = new byte[9];
+        stream.ReadExactly(actual);
+        Equal(expected.AsSpan(1, 9), actual.AsSpan());
+    }
+
+    [Fact]
+    public static void SetLengthDropsReadBuffer()
+    {
+        using var source = new MemoryStream();
+        source.Write(RandomBytes(100));
+        source.Position = 0L;
+        using var stream = new PoolingBufferedStream(source);
+
+        stream.ReadByte();
+        stream.SetLength(10L);
+        False(stream.HasBufferedDataToRead);
+        Equal(1L, stream.Position);
+        Equal(9, stream.Read(new byte[100]));
+    }
+
+    [Fact]
+    public static void ReadFromWriteOnlyStream()
+    {
+        using var stream = new PoolingBufferedStream(new WriteOnlyStream());
+        Throws<NotSupportedException>(() => stream.Read(new byte[1]));
+    }
+
+    private sealed class WriteOnlyStream : MemoryStream
+    {
+        public override bool CanRead => false;
     }
 }
