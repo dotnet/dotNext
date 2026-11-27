@@ -51,6 +51,9 @@ public static partial class PipeExtensions
             destination.Advance(bytesRead);
             var result = await destination.FlushAsync(token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
+
+            if (result.IsCompleted)
+                break;
         }
     }
 }

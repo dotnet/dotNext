@@ -644,4 +644,15 @@ public sealed class PipeExtensionsTests : Test
 
         await writer;
     }
+
+    [Fact]
+    public static async Task CopyFromStreamStopsWhenReaderCompleted()
+    {
+        using var source = new MemoryStream(new byte[1024 * 1024]);
+        var pipe = new Pipe();
+        await pipe.Reader.CompleteAsync();
+
+        await pipe.Writer.CopyFromAsync(source, source.Length, TestToken);
+        True(source.Position < source.Length);
+    }
 }
