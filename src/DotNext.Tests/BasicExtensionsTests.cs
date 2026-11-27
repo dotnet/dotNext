@@ -82,6 +82,94 @@ public sealed class BasicExtensionsTests : Test
         Equal(42L, obj1.UserData.Get(slot));
     }
 
+    private readonly struct TypeTag<T>;
+
+    [Fact]
+    public static void StorageExtendedWithNewType()
+    {
+        var slot = new UserDataSlot<long>();
+        var obj = new UserDataSupport();
+        obj.UserData.Set(slot, 42L);
+
+        // the type index is allocated after the storage
+        var newTypeSlot = new UserDataSlot<TypeTag<StorageExtendedWithNewTypeTag>>();
+        False(obj.UserData.TryGet(newTypeSlot, out _));
+        False(obj.UserData.Remove(newTypeSlot));
+        obj.UserData.Set(newTypeSlot, default);
+        True(obj.UserData.TryGet(newTypeSlot, out _));
+
+        var copy = new UserDataSupport();
+        obj.UserData.CopyTo(copy);
+        Equal(42L, copy.UserData.Get(slot));
+        True(copy.UserData.TryGet(newTypeSlot, out _));
+    }
+
+    private sealed class StorageExtendedWithNewTypeTag;
+
+    [Fact]
+    public static void ConcurrentWritesDuringStorageExtension()
+    {
+        Round<int>(50);
+
+        // every round uses the new type, so the type index is allocated after the storages are created
+        static void Round<T>(int remaining)
+        {
+            if (remaining is 0)
+                return;
+
+            var existingSlot = new UserDataSlot<string>();
+            var objects = new object[2000];
+            foreach (ref var obj in objects.AsSpan())
+            {
+                obj = new();
+                obj.UserData.Set(existingSlot, string.Empty);
+            }
+
+            var slot = new UserDataSlot<string>();
+            var newTypeSlot = new UserDataSlot<TypeTag<T>>();
+            var winners = new int[objects.Length];
+            using var barrier = new Barrier(3);
+
+            var threads = new[]
+            {
+                new Thread(() => GetOrSet("a")),
+                new Thread(() => GetOrSet("b")),
+                new Thread(() =>
+                {
+                    barrier.SignalAndWait();
+                    foreach (var obj in objects)
+                        obj.UserData.Set(newTypeSlot, default);
+                }),
+            };
+
+            foreach (var thread in threads)
+                thread.Start();
+
+            foreach (var thread in threads)
+                True(thread.Join(DefaultTimeout));
+
+            for (var i = 0; i < objects.Length; i++)
+            {
+                True(objects[i].UserData.TryGet(slot, out _));
+                True(objects[i].UserData.TryGet(newTypeSlot, out _));
+                Equal(1, winners[i]);
+            }
+
+            Round<TypeTag<T>>(remaining - 1);
+
+            void GetOrSet(string value)
+            {
+                barrier.SignalAndWait();
+                for (var i = 0; i < objects.Length; i++)
+                {
+                    objects[i].UserData.GetOrSet(slot, value, out var isSet);
+                    if (isSet)
+                        Interlocked.Increment(ref winners[i]);
+                }
+            }
+        }
+    }
+
     [Fact]
     public static void RegressionIssue248()
     {

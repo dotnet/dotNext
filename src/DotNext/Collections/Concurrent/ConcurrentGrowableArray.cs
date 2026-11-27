@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,6 +7,7 @@ namespace DotNext.Collections.Concurrent;
 
 [StructLayout(LayoutKind.Auto)]
 internal struct ConcurrentGrowableArray<T>()
+    where T : class?
 {
     private readonly Lock syncRoot = new();
     private T[] array = [];
@@ -13,20 +15,32 @@ internal struct ConcurrentGrowableArray<T>()
     public T[] Array
     {
         readonly get => Volatile.Read(in array);
-        set => Volatile.Write(ref array, value);
+        set
+        {
+            // synchronized with Resize, otherwise the resized old array can overwrite the value
+            lock (syncRoot)
+            {
+                array = value;
+            }
+        }
     }
 
-    public readonly ref T TryGet(int index)
+    public readonly bool TryGet(int index, [MaybeNullWhen(false)] out T result)
     {
         Debug.Assert(index >= 0);
 
         var arrayCopy = Array;
-        return ref (uint)index < (uint)arrayCopy.Length
-            ? ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index)
-            : ref Unsafe.NullRef<T>();
+        if ((uint)index < (uint)arrayCopy.Length)
+        {
+            result = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index);
+            return true;
+        }
+
+        result = null;
+        return false;
     }
 
-    public ref T Get<TInitializer>(int index)
+    public T Get<TInitializer>(int index)
         where TInitializer : IElementInitializer, allows ref struct
     {
         Debug.Assert(index >= 0);
@@ -35,7 +49,7 @@ internal struct ConcurrentGrowableArray<T>()
         if ((uint)index >= (uint)arrayCopy.Length)
             arrayCopy = Resize<TInitializer>(index);
 
-        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index);
+        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index);
     }
 
     private T[] Resize<TInitializer>(int index)
@@ -61,28 +75,69 @@ internal struct ConcurrentGrowableArray<T>()
         {
             foreach (ref var item in array)
             {
-                TInitializer.Initialize(out item);
+                item = TInitializer.Create();
             }
+        }
+    }
+
+    // the element is initialized lazily, so the array may contain null elements
+    [return: NotNull]
+    public T GetOrAdd<TInitializer>(int index)
+        where TInitializer : IElementInitializer, allows ref struct
+    {
+        Debug.Assert(index >= 0);
+
+        var arrayCopy = Array;
+        return (uint)index < (uint)arrayCopy.Length
+               && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index) is { } item
+            ? item
+            : Add<TInitializer>(index);
+    }
+
+    [return: NotNull]
+    private T Add<TInitializer>(int index)
+        where TInitializer : IElementInitializer, allows ref struct
+    {
+        lock (syncRoot)
+        {
+            // the element must be written to the current array, otherwise it can be lost by Resize
+            var arrayCopy = array;
+            if ((uint)index >= (uint)arrayCopy.Length)
+            {
+                System.Array.Resize(ref arrayCopy, index + 1);
+                array = arrayCopy;
+            }
+
+            ref var item = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayCopy), (uint)index);
+            return item ??= TInitializer.Create();
         }
     }
 
     public interface IElementInitializer
     {
-        public static abstract void Initialize(out T value);
+        [return: NotNull]
+        public static abstract T Create();
     }
 }
 
 internal static class ConcurrentGrowableArray
 {
     // TODO: Migrate to extension indexer
-    public static ref T Get<T>(this ref ConcurrentGrowableArray<T> array, int index)
-        where T : new()
-        => ref array.Get<DefaultInitializer<T>>(index);
+    public static T Get<T>(this ref ConcurrentGrowableArray<T> array, int index)
+        where T : class?, new()
+        => array.Get<DefaultInitializer<T>>(index);
+
+    [return: NotNull]
+    public static T GetOrAdd<T>(this ref ConcurrentGrowableArray<T> array, int index)
+        where T : class?, new()
+        => array.GetOrAdd<DefaultInitializer<T>>(index);
 }
 
 [StructLayout(LayoutKind.Auto)]
 file readonly ref struct DefaultInitializer<T> : ConcurrentGrowableArray<T>.IElementInitializer
-    where T : new()
+    where T : class?, new()
 {
-    static void ConcurrentGrowableArray<T>.IElementInitializer.Initialize(out T value) => value = new();
+    [return: NotNull]
+    static T ConcurrentGrowableArray<T>.IElementInitializer.Create()
+        => new();
 }

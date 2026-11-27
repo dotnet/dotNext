@@ -98,8 +98,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
     {
-        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
-        return !Unsafe.IsNullRef(ref itemRef) && HasValue(itemRef);
+        return entries.TryGet(TypeSlot<TKey>.Index, out var entry) && HasValue(entry);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool HasValue(Entry entry)
@@ -165,16 +164,15 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
     {
-        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
-        if (Unsafe.IsNullRef(ref itemRef))
+        if (!entries.TryGet(TypeSlot<TKey>.Index, out var entry))
         {
             value = default;
             return false;
         }
 
         return UseReferenceEntry
-            ? Unsafe.As<ReferenceEntry>(itemRef).Unset(out value)
-            : Unsafe.As<GenericEntry>(itemRef).Unset(out value);
+            ? Unsafe.As<ReferenceEntry>(entry).Unset(out value)
+            : Unsafe.As<GenericEntry>(entry).Unset(out value);
     }
 
     /// <summary>
@@ -195,16 +193,15 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
         where TKey : allows ref struct
     {
-        ref var itemRef = ref entries.TryGet(TypeSlot<TKey>.Index);
-        if (Unsafe.IsNullRef(ref itemRef))
+        if (!entries.TryGet(TypeSlot<TKey>.Index, out var entry))
         {
             value = default;
             return false;
         }
 
         return UseReferenceEntry
-            ? Unsafe.As<ReferenceEntry>(itemRef).TryGet(out value)
-            : Unsafe.As<GenericEntry>(itemRef).TryGet(out value);
+            ? Unsafe.As<ReferenceEntry>(entry).TryGet(out value)
+            : Unsafe.As<GenericEntry>(entry).TryGet(out value);
     }
 
     /// <summary>
@@ -387,8 +384,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct Initializer : ConcurrentGrowableArray<Entry>.IElementInitializer
     {
-        static void ConcurrentGrowableArray<Entry>.IElementInitializer.Initialize(out Entry value)
-            => value = UseReferenceEntry
+        static Entry ConcurrentGrowableArray<Entry>.IElementInitializer.Create()
+            => UseReferenceEntry
                 ? new ReferenceEntry()
                 : new GenericEntry();
     }
@@ -461,10 +458,7 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
-    {
-        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        return !Unsafe.IsNullRef(ref itemRef) && !itemRef.Get<T>().IsUndefined;
-    }
+        => entries.TryGet(TypeSlot<T>.Index, out var entry) && !entry.Get<T>().IsUndefined;
 
     /// <summary>
     /// Attempts to add a new value or returns existing value, atomically.
@@ -508,14 +502,13 @@ public partial class ConcurrentTypeMap : ITypeMap
     private Optional<T> RemoveCore<T>()
     {
         Optional<T> result;
-        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
-        if (Unsafe.IsNullRef(ref itemRef))
+        if (entries.TryGet(TypeSlot<T>.Index, out var entry))
         {
-            result = Optional<T>.None;
+            entry.Get<T>().Clear(out result);
         }
         else
         {
-            itemRef.Get<T>().Clear(out result);
+            result = Optional<T>.None;
         }
 
         return result;
@@ -533,15 +526,14 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
     public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
     {
-        ref var itemRef = ref entries.TryGet(TypeSlot<T>.Index);
         Optional<T> optional;
-        if (Unsafe.IsNullRef(ref itemRef))
+        if (entries.TryGet(TypeSlot<T>.Index, out var entry))
         {
-            optional = Optional<T>.None;
+            entry.Get<T>().Read(out optional);
         }
         else
         {
-            itemRef.Get<T>().Read(out optional);
+            optional = Optional<T>.None;
         }
 
         return optional.TryGet(out value);
