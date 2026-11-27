@@ -118,12 +118,13 @@ public static class BufferWriter
             result = 0;
             var encoder = context.GetEncoder();
             byteCount = context.Encoding.GetMaxByteCount(1);
-            for (int charsUsed, bytesWritten; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
+
+            // the encoder can keep the bytes produced by the fallback if the buffer is full, even if all chars are used
+            int charsUsed, bytesWritten;
+            for (var completed = chars.IsEmpty; !completed; chars = chars.Slice(charsUsed), result += bytesWritten)
             {
                 buffer = writer.GetSpan(byteCount);
-                var maxChars = buffer.Length / byteCount;
-
-                encoder.Convert(chars, buffer, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+                encoder.Convert(chars, buffer, flush: true, out charsUsed, out bytesWritten, out completed);
                 writer.Advance(bytesWritten);
             }
         }

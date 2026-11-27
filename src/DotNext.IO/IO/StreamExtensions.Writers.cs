@@ -127,10 +127,12 @@ public static partial class StreamExtensions
             result = 0L;
         }
 
+        // the encoder can keep the bytes produced by the fallback if the buffer is full, even if all chars are used
         var encoder = context.GetEncoder();
-        for (int charsUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
+        int charsUsed;
+        for (var completed = chars.IsEmpty; !completed; chars = chars.Slice(charsUsed), result += bytesWritten)
         {
-            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            encoder.Convert(chars.Span, buffer.Span, flush: true, out charsUsed, out bytesWritten, out completed);
             await stream.WriteAsync(buffer.Slice(0, bytesWritten), token).ConfigureAwait(false);
         }
 

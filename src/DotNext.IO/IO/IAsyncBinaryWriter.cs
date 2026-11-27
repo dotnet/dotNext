@@ -190,23 +190,23 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
             result = 0L;
         }
 
+        // the encoder can keep the bytes produced by the fallback if the buffer is full, even if all chars are used
         var encoder = context.GetEncoder();
-        for (int charsUsed, maxByteCount = context.Encoding.GetMaxByteCount(1);
-             !chars.IsEmpty;
-             chars = chars.Slice(charsUsed), result += bytesWritten)
+        var maxByteCount = context.Encoding.GetMaxByteCount(1);
+        int charsUsed;
+        for (var completed = chars.IsEmpty; !completed; chars = chars.Slice(charsUsed), result += bytesWritten)
         {
             var buffer = Buffer;
-            var maxChars = buffer.Length / maxByteCount;
 
-            if (maxChars is 0)
+            if (buffer.Length < maxByteCount)
             {
                 using var extraBuffer = MemoryAllocator<byte>.Default.AllocateExactly(maxByteCount);
-                await EncodeSingleCharAsync(encoder, chars.Span, extraBuffer.Memory, out charsUsed, out bytesWritten, token)
+                await EncodeSingleCharAsync(encoder, chars.Span, extraBuffer.Memory, out charsUsed, out bytesWritten, out completed, token)
                     .ConfigureAwait(false);
             }
             else
             {
-                await EncodeFragmentAsync(encoder, chars.Span, buffer.Span, maxChars, out charsUsed, out bytesWritten, token)
+                await EncodeFragmentAsync(encoder, chars.Span, buffer.Span, out charsUsed, out bytesWritten, out completed, token)
                     .ConfigureAwait(false);
             }
         }
@@ -220,9 +220,10 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         Memory<byte> buffer,
         out int charsUsed,
         out int bytesWritten,
+        out bool completed,
         CancellationToken token)
     {
-        encoder.Convert(chars, buffer.Span, chars.Length is 1, out charsUsed, out bytesWritten, out _);
+        encoder.Convert(chars, buffer.Span, flush: true, out charsUsed, out bytesWritten, out completed);
         return WriteAsync(buffer.Slice(0, bytesWritten), token);
     }
 
@@ -230,12 +231,12 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         Encoder encoder,
         ReadOnlySpan<char> chars,
         Span<byte> buffer,
-        int maxChars,
         out int charsUsed,
         out int bytesWritten,
+        out bool completed,
         CancellationToken token)
     {
-        encoder.Convert(chars, buffer, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+        encoder.Convert(chars, buffer, flush: true, out charsUsed, out bytesWritten, out completed);
         return AdvanceAsync(bytesWritten, token);
     }
 

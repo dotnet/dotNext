@@ -374,6 +374,34 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         }
     }
 
+    [Theory]
+    [MemberData(nameof(GetSources))]
+    public static async Task EncodeInvalidSurrogates(IAsyncBinaryReaderWriterSource source)
+    {
+        await using (source)
+        {
+            // the lone low surrogate is the last char that fits into 512-byte buffer, so its replacement doesn't fit
+            var text1 = new string('a', 510) + "\uDC00";
+
+            // the lone high surrogate at the end is kept by the encoder until flush
+            var text2 = new string('a', 1000) + "\uD800";
+
+            var context = new EncodingContext(Encoding.UTF8, reuseEncoder: true);
+            var writer = source.CreateWriter();
+            await writer.EncodeAsync(text1.AsMemory(), context, lengthFormat: null, TestToken);
+            await writer.EncodeAsync(text2.AsMemory(), context, lengthFormat: null, TestToken);
+            await writer.EncodeAsync("x".AsMemory(), context, LengthFormat.LittleEndian, TestToken);
+
+            if (source is IFlushable)
+                await ((IFlushable)source).FlushAsync(TestToken);
+
+            byte[] expected = [.. Encoding.UTF8.GetBytes(text1), .. Encoding.UTF8.GetBytes(text2), 1, 0, 0, 0, (byte)'x'];
+            var actual = new byte[expected.Length];
+            await source.CreateReader().ReadAsync(actual, TestToken);
+            Equal(expected, actual);
+        }
+    }
+
     public static TheoryData<IAsyncBinaryReaderWriterSource> GetSources() =>
     [
         new StreamSource(),

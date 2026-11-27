@@ -42,9 +42,14 @@ public readonly struct EncodingContext(Encoding encoding, bool reuseEncoder) : I
     /// </summary>
     public Encoding Encoding => encoding ?? Encoding.Default;
 
-    internal Encoder GetEncoder() => encoder ?? Encoding.GetEncoder();
+    // the reused encoder can keep the state of the previous encoding that has failed
+    internal Encoder GetEncoder() => TryGetEncoder() ?? Encoding.GetEncoder();
 
-    internal Encoder? TryGetEncoder() => encoder;
+    internal Encoder? TryGetEncoder()
+    {
+        encoder?.Reset();
+        return encoder;
+    }
 
     /// <summary>
     /// Creates encoding context.
