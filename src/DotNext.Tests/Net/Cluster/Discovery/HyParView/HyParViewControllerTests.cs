@@ -48,6 +48,8 @@ public sealed class HyParViewControllerTests : Test
     {
         private readonly UriEndPoint contactNode;
         private readonly TransportLayer transport;
+        internal readonly TaskCompletionSource<(EndPoint Receiver, EndPoint JoinedPeer)> FirstForwardJoin =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal TestPeerController(HttpPeerConfiguration configuration, TransportLayer transport)
             : base(configuration)
@@ -75,7 +77,10 @@ public sealed class HyParViewControllerTests : Test
             => transport[neighbor].EnqueueNeighborAsync(Address, highPriority, token).AsTask();
 
         protected override Task ForwardJoinAsync(EndPoint receiver, EndPoint joinedPeer, int timeToLive, CancellationToken token)
-            => transport[receiver].EnqueueForwardJoinAsync(Address, joinedPeer, timeToLive, token).AsTask();
+        {
+            FirstForwardJoin.TrySetResult((receiver, joinedPeer));
+            return transport[receiver].EnqueueForwardJoinAsync(Address, joinedPeer, timeToLive, token).AsTask();
+        }
 
         protected override Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token)
             => transport.TryGetValue(peer, out var client) ? client.EnqueueDisconnectAsync(Address, isAlive, token).AsTask() : Task.CompletedTask;
@@ -98,6 +103,44 @@ public sealed class HyParViewControllerTests : Test
         controller.PeerDiscovered += handler;
         await listener.Task.WaitAsync(DefaultTimeout);
         controller.PeerDiscovered -= handler;
+    }
+
+    [Fact]
+    public static async Task JoinIsForwardedToExistingNeighbor()
+    {
+        var transport = new TransportLayer();
+        using var contact = CreatePeer(3262);
+        using var neighbor = CreatePeer(3263, 3262);
+        using var joined = CreatePeer(3264, 3262);
+
+        try
+        {
+            await contact.StartAsync(TestToken);
+            var connected = WaitForPeer(neighbor, contact.Address);
+            await neighbor.StartAsync(TestToken);
+            await connected.WaitAsync(TestToken);
+
+            await joined.StartAsync(TestToken);
+            var request = await contact.FirstForwardJoin.Task.WaitAsync(DefaultTimeout, TestToken);
+
+            Equal(neighbor.Address, request.Receiver);
+            Equal(joined.Address, request.JoinedPeer);
+        }
+        finally
+        {
+            await joined.StopAsync(TestToken);
+            await neighbor.StopAsync(TestToken);
+            await contact.StopAsync(TestToken);
+        }
+
+        TestPeerController CreatePeer(int port, int? contactPort = null)
+            => new(new HttpPeerConfiguration
+            {
+                ActiveViewCapacity = 3,
+                PassiveViewCapacity = 6,
+                LocalNode = new($"http://localhost:{port}"),
+                ContactNode = contactPort is { } value ? new($"http://localhost:{value}") : null,
+            }, transport);
     }
 
     [Fact]
