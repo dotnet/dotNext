@@ -72,7 +72,8 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
         }
     }
 
-    private long RemainingBytes => length - Position;
+    // the underlying stream can be moved beyond the segment
+    private long RemainingBytes => long.Max(length - Position, 0L);
 
     /// <inheritdoc cref="Stream.Flush()"/>
     public override void Flush() => stream.Flush();
@@ -143,7 +144,10 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <inheritdoc/>
     public override void SetLength(long value)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)(stream.Length - stream.Position), nameof(value));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)(stream.Length - offset), nameof(value));
+
+        if (Position > value)
+            stream.Position = offset + value;
 
         length = value;
     }
@@ -196,6 +200,8 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     {
         if (!leaveOpen)
             await stream.DisposeAsync().ConfigureAwait(false);
-        await base.DisposeAsync().ConfigureAwait(false);
+
+        // base.DisposeAsync() calls Dispose(true) that disposes the underlying stream again
+        GC.SuppressFinalize(this);
     }
 }

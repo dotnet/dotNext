@@ -114,4 +114,91 @@ public sealed class StreamSegmentTests : Test
         await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3, TestToken));
         await ThrowsAsync<NotSupportedException>(segment.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken).AsTask);
     }
+
+    [Fact]
+    public static void SetLengthRelativeToOffset()
+    {
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
+        using var segment = ms.Slice(1L, 2L);
+        segment.ReadExactly(new byte[2]);
+
+        segment.SetLength(4L);
+        Equal((1L, 4L), segment.Range);
+        Equal(8, segment.ReadByte());
+
+        Throws<ArgumentOutOfRangeException>(() => segment.SetLength(5L));
+
+        // the position of the underlying stream doesn't matter
+        ms.Position = 0L;
+        Throws<ArgumentOutOfRangeException>(() => segment.SetLength(5L));
+        Equal((1L, 4L), segment.Range);
+    }
+
+    [Fact]
+    public static async Task SetLengthBeforePosition()
+    {
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
+        using var segment = new StreamSegment(ms);
+        segment.Position = 4L;
+
+        segment.SetLength(2L);
+        Equal(2L, segment.Position);
+        Equal(0, segment.Read(new byte[4], 0, 4));
+        Equal(0, segment.Read(new byte[4]));
+        Equal(0, await segment.ReadAsync(new byte[4], 0, 4, TestToken));
+        Equal(0, await segment.ReadAsync(new byte[4], TestToken));
+        Equal(-1, segment.ReadByte());
+        segment.CopyTo(Stream.Null);
+
+        segment.Position = 0L;
+        var buffer = new byte[4];
+        Equal(2, segment.Read(buffer));
+        Equal(new byte[] { 1, 3 }, buffer[..2]);
+    }
+
+    [Fact]
+    public static void ReadWhenBaseStreamIsBeyondSegment()
+    {
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
+        using var segment = ms.Slice(0L, 2L);
+        ms.Position = 4L;
+
+        Equal(0, segment.Read(new byte[4], 0, 4));
+        Equal(0, segment.Read(new byte[4]));
+        Equal(-1, segment.ReadByte());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task DisposeBaseStreamOnce(bool async)
+    {
+        var stream = new DisposeCountingStream();
+        var segment = new StreamSegment(stream, leaveOpen: false);
+        if (async)
+            await segment.DisposeAsync();
+        else
+            segment.Dispose();
+
+        Equal(1, stream.Count);
+    }
+
+    private sealed class DisposeCountingStream : MemoryStream
+    {
+        internal int Count;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                Count++;
+
+            base.Dispose(disposing);
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            Count++;
+            return ValueTask.CompletedTask;
+        }
+    }
 }
