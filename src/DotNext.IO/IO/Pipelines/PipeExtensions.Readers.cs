@@ -429,33 +429,74 @@ partial class PipeExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is negative or greater than the length of <paramref name="destination"/>.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public static async ValueTask<int> ReadAtLeastAsync(this PipeReader reader, Memory<byte> destination, int minimumSize, CancellationToken token)
+    public static ValueTask<int> ReadAtLeastAsync(this PipeReader reader, Memory<byte> destination, int minimumSize, CancellationToken token = default)
     {
+        ValueTask<int> task;
         if ((uint)minimumSize > (uint)destination.Length)
-            throw new ArgumentOutOfRangeException(nameof(minimumSize));
-
-        var result = await reader.ReadAtLeastAsync(minimumSize, token).ConfigureAwait(false);
-        result.ThrowIfCancellationRequested(reader, token);
-
-        return Read(reader, result.Buffer, destination, minimumSize);
-
-        static int Read(PipeReader reader, ReadOnlySequence<byte> source, in Memory<byte> destination, int minimumSize)
         {
-            var readCount = 0;
+            task = ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(minimumSize)));
+        }
+        else if (minimumSize is 0)
+        {
+            // the same as Stream.ReadAtLeastAsync, completes without waiting for the data
+            task = ValueTask.FromResult(0);
+        }
+        else if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled<int>(token);
+        }
+        else if (!reader.TryRead(out var result))
+        {
+            task = ReadAtLeastSlowAsync(reader, destination, minimumSize, token);
+        }
+        else if (result.IsCanceled)
+        {
+            reader.AdvanceTo(result.Buffer.Start);
+            task = ValueTask.FromCanceled<int>(new(canceled: true));
+        }
+        else if (result.Buffer.Length >= minimumSize || result.IsCompleted)
+        {
+            // fast path, the data is available synchronously
+            try
+            {
+                task = ValueTask.FromResult(ReadAtLeast(reader, result.Buffer, destination.Span, minimumSize));
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException<int>(e);
+            }
+        }
+        else
+        {
+            // ReadAtLeastAsync waits for the minimum by itself. Don't mark the buffer as examined:
+            // Pipe.ReadAtLeastAsync doesn't complete after AdvanceTo(start, end) even if enough data arrives
+            reader.AdvanceTo(result.Buffer.Start);
+            task = ReadAtLeastSlowAsync(reader, destination, minimumSize, token);
+        }
+
+        return task;
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        static async ValueTask<int> ReadAtLeastSlowAsync(PipeReader reader, Memory<byte> destination, int minimumSize, CancellationToken token)
+        {
+            var result = await reader.ReadAtLeastAsync(minimumSize, token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(reader, token);
+
+            return ReadAtLeast(reader, result.Buffer, destination.Span, minimumSize);
+        }
+
+        static int ReadAtLeast(PipeReader reader, in ReadOnlySequence<byte> source, Span<byte> destination, int minimumSize)
+        {
             var consumed = source.Start;
             try
             {
-                readCount = source.CopyTo(destination.Span, out consumed);
-                if (minimumSize > readCount)
-                    throw new EndOfStreamException();
+                var readCount = source.CopyTo(destination, out consumed);
+                return minimumSize <= readCount ? readCount : throw new EndOfStreamException();
             }
             finally
             {
                 reader.AdvanceTo(consumed);
             }
-
-            return readCount;
         }
     }
 

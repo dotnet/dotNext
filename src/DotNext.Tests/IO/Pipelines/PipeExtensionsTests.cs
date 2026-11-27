@@ -472,4 +472,80 @@ public sealed class PipeExtensionsTests : Test
         using var result = await PipeReader.Create(new(EncodeWithLength("abc"u8, trailer: 0))).DecodeAsync(context, LengthFormat.LittleEndian, token: TestToken);
         Equal("abc", result.Span.ToString());
     }
+
+    [Fact]
+    public static async Task ReadAtLeastWithZeroMinimum()
+    {
+        var pipe = new Pipe();
+        var task = pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: 0, TestToken);
+        True(task.IsCompletedSuccessfully);
+        Equal(0, await task);
+    }
+
+    [Fact]
+    public static async Task ReadAtLeastSynchronously()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1, 2, 3, 4, 5, 6 }, TestToken);
+
+        var destination = new byte[4];
+        var task = pipe.Reader.ReadAtLeastAsync(destination, minimumSize: 2, TestToken);
+        True(task.IsCompletedSuccessfully);
+        Equal(4, await task);
+        Equal<byte>([1, 2, 3, 4], destination);
+
+        // the rest of the data stays in the pipe
+        Equal(2, await pipe.Reader.ReadAtLeastAsync(destination, minimumSize: 2, TestToken));
+        Equal<byte>([5, 6], destination.AsSpan(0, 2));
+    }
+
+    [Fact]
+    public static async Task ReadAtLeastWaitsForData()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1 }, TestToken);
+
+        var destination = new byte[4];
+        var task = pipe.Reader.ReadAtLeastAsync(destination, minimumSize: 2, TestToken);
+        False(task.IsCompleted);
+
+        await pipe.Writer.WriteAsync(new byte[] { 2 }, TestToken);
+        Equal(2, await task.AsTask().WaitAsync(DefaultTimeout, TestToken));
+        Equal<byte>([1, 2], destination.AsSpan(0, 2));
+    }
+
+    [Fact]
+    public static async Task ReadAtLeastFromCompletedPipe()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1, 2 }, TestToken);
+        await pipe.Writer.CompleteAsync();
+
+        await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: 3, TestToken).AsTask);
+    }
+
+    [Fact]
+    public static async Task ReadAtLeastCanceled()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1, 2 }, TestToken);
+
+        await ThrowsAnyAsync<OperationCanceledException>(pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: 1, new CancellationToken(canceled: true)).AsTask);
+
+        pipe.Reader.CancelPendingRead();
+        await ThrowsAnyAsync<OperationCanceledException>(pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: 1, TestToken).AsTask);
+
+        // the data is not consumed
+        var destination = new byte[4];
+        Equal(2, await pipe.Reader.ReadAtLeastAsync(destination, minimumSize: 2, TestToken));
+        Equal<byte>([1, 2], destination.AsSpan(0, 2));
+    }
+
+    [Fact]
+    public static async Task ReadAtLeastInvalidMinimum()
+    {
+        var pipe = new Pipe();
+        await ThrowsAsync<ArgumentOutOfRangeException>(pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: 5, TestToken).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(pipe.Reader.ReadAtLeastAsync(new byte[4], minimumSize: -1, TestToken).AsTask);
+    }
 }
