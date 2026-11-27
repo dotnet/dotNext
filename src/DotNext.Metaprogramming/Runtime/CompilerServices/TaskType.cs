@@ -30,17 +30,18 @@ internal readonly record struct TaskType
         else
         {
             ReadOnlySpan<Type> types = [typeof(Task<>), typeof(ValueTask<>)];
-            var enumerator = types.GetEnumerator();
+            for (var enumerator = types.GetEnumerator();;)
+            {
+                if (!enumerator.MoveNext())
+                    throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
 
-        move_next:
-            if (!enumerator.MoveNext())
-                throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
-
-            var current = enumerator.Current;
-            if (taskType.IsGenericInstanceOf(current))
-                resultType = taskType.GetGenericArguments(current)[0];
-            else
-                goto move_next;
+                var current = enumerator.Current;
+                if (taskType.IsGenericInstanceOf(current))
+                {
+                    resultType = taskType.GetGenericArguments(current)[0];
+                    break;
+                }
+            }
         }
     }
 
