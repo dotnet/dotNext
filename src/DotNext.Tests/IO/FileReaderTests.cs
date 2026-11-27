@@ -1,5 +1,7 @@
 namespace DotNext.IO;
 
+using Buffers;
+
 public sealed class FileReaderTests : Test
 {
     [Fact]
@@ -230,5 +232,60 @@ public sealed class FileReaderTests : Test
                 await ThrowsAsync<ArgumentException>(enumerator.MoveNextAsync().AsTask);
             }
         }
+    }
+
+    // the length prefix claims 500 MB, but the data is absent
+    private static byte[] ClaimedLengthOnly()
+    {
+        var result = new byte[sizeof(int)];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, 500_000_000);
+        return result;
+    }
+
+    private static byte[] LengthPrefixed(ReadOnlySpan<byte> payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result.AsSpan(sizeof(int)));
+        return result;
+    }
+
+    private sealed class AllocationTracker<T>
+    {
+        internal int MaxLength;
+
+        internal MemoryAllocator<T> Allocator => length =>
+        {
+            MaxLength = int.Max(MaxLength, length);
+            return MemoryAllocator<T>.Default(length);
+        };
+    }
+
+    [Fact]
+    public static async Task NoAllocationForAbsentData()
+    {
+        var bytes = new AllocationTracker<byte>();
+        var chars = new AllocationTracker<char>();
+
+        var path = GetTempPath();
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        await RandomAccess.WriteAsync(handle, ClaimedLengthOnly(), 0L, TestToken);
+
+        using (var reader = new FileReader(handle))
+            await ThrowsAsync<EndOfStreamException>(reader.ReadAsync(LengthFormat.LittleEndian, bytes.Allocator, TestToken).AsTask);
+
+        using (var reader = new FileReader(handle))
+            await ThrowsAsync<EndOfStreamException>(reader.DecodeAsync(System.Text.Encoding.UTF8, LengthFormat.LittleEndian, chars.Allocator, TestToken).AsTask);
+
+        Equal(0, bytes.MaxLength);
+        Equal(0, chars.MaxLength);
+
+        // the allocator is also used for the internal buffer of the reader
+        var internalBuffer = new AllocationTracker<byte>();
+        using (var reader = new FileReader(handle) { Allocator = internalBuffer.Allocator })
+            await ThrowsAsync<EndOfStreamException>(reader.ParseAsync<int>(LengthFormat.LittleEndian, token: TestToken).AsTask);
+
+        True(internalBuffer.MaxLength <= 64 * 1024);
     }
 }

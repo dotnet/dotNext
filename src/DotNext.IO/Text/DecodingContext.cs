@@ -3,6 +3,8 @@ using System.Text;
 
 namespace DotNext.Text;
 
+using Buffers;
+
 /// <summary>
 /// Represents text decoding context.
 /// </summary>
@@ -70,6 +72,23 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
 
         decoder.Reset();
         return decoder;
+    }
+
+    // decodes the bytes that are already received
+    internal MemoryOwner<char> Decode(ReadOnlySpan<byte> bytes, MemoryAllocator<char>? allocator)
+    {
+        var result = allocator.DefaultIfNull.AllocateExactly(Encoding.GetMaxCharCount(bytes.Length));
+        try
+        {
+            result.TryResize(GetDecoder().GetChars(bytes, result.Span, flush: true));
+        }
+        catch
+        {
+            result.Dispose();
+            throw;
+        }
+
+        return result;
     }
 
     /// <summary>

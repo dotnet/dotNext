@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Utf8 = System.Text.Unicode.Utf8;
 
@@ -146,7 +147,11 @@ public static partial class StreamExtensions
                 throw new InvalidDataException(ExceptionMessages.NegativeLength);
         }
 
-        if (length > 0)
+        if (length is 0)
+        {
+            result = default;
+        }
+        else if (length <= IAsyncBinaryReader.MaxPreallocationSize || IsAvailable(stream, length))
         {
             result = allocator.AllocateExactly(length);
 
@@ -163,11 +168,16 @@ public static partial class StreamExtensions
         }
         else
         {
-            result = default;
+            // the length is untrusted, allocate the memory as the data arrives
+            result = await IAsyncBinaryReader.ReadAsync(new StreamBlockReader(stream), length, allocator, token).ConfigureAwait(false);
         }
 
         return result;
     }
+
+    // returns true if the stream has the specified number of bytes; false if the stream is not seekable
+    private static bool IsAvailable(Stream stream, int length)
+        => stream.CanSeek && (stream.Length - stream.Position >= length ? true : throw new EndOfStreamException());
 
     /// <summary>
     /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
@@ -192,7 +202,11 @@ public static partial class StreamExtensions
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
         if (length < 0)
             throw new InvalidDataException(ExceptionMessages.NegativeLength);
-        if (length > 0)
+        if (length is 0)
+        {
+            result = default;
+        }
+        else if (length <= IAsyncBinaryReader.MaxPreallocationSize || IsAvailable(stream, length))
         {
             result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
 
@@ -211,7 +225,9 @@ public static partial class StreamExtensions
         }
         else
         {
-            result = default;
+            // the length is untrusted, decode the bytes when they arrive
+            using var bytes = await IAsyncBinaryReader.ReadAsync(new StreamBlockReader(stream), length, MemoryAllocator<byte>.Default, token).ConfigureAwait(false);
+            result = context.Decode(bytes.Span, allocator);
         }
 
         return result;
@@ -756,4 +772,11 @@ public static partial class StreamExtensions
 
         return flush;
     }
+}
+
+[StructLayout(LayoutKind.Auto)]
+file readonly struct StreamBlockReader(Stream stream) : IAsyncBinaryReader.IMemoryBlockReader
+{
+    ValueTask IAsyncBinaryReader.IMemoryBlockReader.ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
+        => stream.ReadExactlyAsync(buffer, token);
 }

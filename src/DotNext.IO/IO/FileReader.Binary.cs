@@ -122,6 +122,15 @@ public partial class FileReader : IAsyncBinaryReader
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
         => ReadAsync<TReader, ProxyReader<TReader>>(reader, token);
 
+    // the length is untrusted, the large buffer must not be allocated if the file doesn't contain the data
+    private void EnsureAvailable(int blockSize)
+    {
+        if (blockSize > IAsyncBinaryReader.MaxPreallocationSize
+            && TryGetRemainingBytesCount(out var remaining)
+            && remaining < blockSize)
+            throw new EndOfStreamException();
+    }
+
     private ValueTask<int> ReadLengthAsync(LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
     {
         LengthFormat.LittleEndian => ReadLittleEndianAsync<int>(token),
@@ -145,16 +154,18 @@ public partial class FileReader : IAsyncBinaryReader
     {
         MemoryOwner<byte> result;
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        if (length < 0)
-            throw new InvalidDataException(ExceptionMessages.NegativeLength);
-        if (length > 0)
+        switch (length)
         {
-            result = allocator.DefaultIfNull.AllocateExactly(length);
-            await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                EnsureAvailable(length);
+                result = allocator.DefaultIfNull.AllocateExactly(length);
+                await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -172,22 +183,24 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
-    public async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    public async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null,
+        CancellationToken token = default)
     {
         MemoryOwner<char> result;
         var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        if (lengthInBytes < 0)
-            throw new InvalidDataException(ExceptionMessages.NegativeLength);
-
-        if (lengthInBytes > 0)
+        switch (lengthInBytes)
         {
-            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
-
-            result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                EnsureAvailable(lengthInBytes);
+                result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+                result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token)
+                    .ConfigureAwait(false));
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -266,6 +279,7 @@ public partial class FileReader : IAsyncBinaryReader
         else
         {
             // slow path with temp buffer
+            EnsureAvailable(length);
             using var buffer = Allocator.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
             result = T.Parse(buffer.Span, provider);
@@ -311,6 +325,7 @@ public partial class FileReader : IAsyncBinaryReader
         }
         else
         {
+            EnsureAvailable(length);
             using var buffer = Allocator.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
             result = T.Parse(buffer.Span, style, provider);
@@ -425,6 +440,9 @@ public partial class FileReader : IAsyncBinaryReader
 
     /// <inheritdoc />
     bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
+        => TryGetRemainingBytesCount(out count);
+
+    private bool TryGetRemainingBytesCount(out long count)
     {
         count = length.IsInfinite
             ? long.Max(0L, RandomAccess.GetLength(handle) - fileOffset)

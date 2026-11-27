@@ -3,6 +3,7 @@ using System.Text;
 
 namespace DotNext.IO;
 
+using Buffers;
 using Buffers.Binary;
 using Collections.Generic;
 
@@ -429,5 +430,106 @@ public sealed class StreamExtensionsTests : Test
 
         await using var enumerator = new MemoryStream(WithLengthPrefix(payload)).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new char[1], new byte[16], TestToken).GetAsyncEnumerator(TestToken);
         await ThrowsAsync<ArgumentException>(enumerator.MoveNextAsync().AsTask);
+    }
+
+    // the length prefix claims 500 MB, but the data is absent
+    private static byte[] ClaimedLengthOnly()
+    {
+        var result = new byte[sizeof(int)];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, 500_000_000);
+        return result;
+    }
+
+    private static byte[] LengthPrefixed(ReadOnlySpan<byte> payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result.AsSpan(sizeof(int)));
+        return result;
+    }
+
+    private sealed class AllocationTracker<T>
+    {
+        internal int MaxLength;
+
+        internal MemoryAllocator<T> Allocator => length =>
+        {
+            MaxLength = int.Max(MaxLength, length);
+            return MemoryAllocator<T>.Default(length);
+        };
+    }
+
+    private sealed class NonSeekableStream(Stream stream) : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => stream.Read(buffer, offset, count);
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default) => stream.ReadAsync(buffer, token);
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
+    [Fact]
+    public static async Task NoAllocationForAbsentData()
+    {
+        var bytes = new AllocationTracker<byte>();
+        var chars = new AllocationTracker<char>();
+        var buffer = new byte[16];
+
+        // the size of the seekable stream is known
+        await ThrowsAsync<EndOfStreamException>(new MemoryStream(ClaimedLengthOnly()).ReadBlockAsync(LengthFormat.LittleEndian, bytes.Allocator, TestToken).AsTask);
+        await ThrowsAsync<EndOfStreamException>(new MemoryStream(ClaimedLengthOnly()).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer, chars.Allocator, TestToken).AsTask);
+        True(bytes.MaxLength <= sizeof(int));
+        Equal(0, chars.MaxLength);
+
+        // the memory is allocated as the data arrives
+        await ThrowsAsync<EndOfStreamException>(new NonSeekableStream(new MemoryStream(ClaimedLengthOnly())).ReadBlockAsync(LengthFormat.LittleEndian, bytes.Allocator, TestToken).AsTask);
+        await ThrowsAsync<EndOfStreamException>(new NonSeekableStream(new MemoryStream(ClaimedLengthOnly())).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer, chars.Allocator, TestToken).AsTask);
+        True(bytes.MaxLength <= 64 * 1024);
+        Equal(0, chars.MaxLength);
+
+        // the default implementation of IAsyncBinaryReader
+        await using var reader = new PoolingBufferedStream(new NonSeekableStream(new MemoryStream(ClaimedLengthOnly())));
+        await ThrowsAsync<EndOfStreamException>(reader.As<IAsyncBinaryReader>().ReadAsync(LengthFormat.LittleEndian, bytes.Allocator, TestToken).AsTask);
+        True(bytes.MaxLength <= 64 * 1024);
+    }
+
+    [Fact]
+    public static async Task ReadLargeBlockFromNonSeekableStream()
+    {
+        var expectedString = string.Concat(Enumerable.Repeat("Привет, мир! ", 30_000));
+        var expectedBytes = RandomBytes(300_000);
+        var content = new MemoryStream();
+        content.Write(LengthPrefixed(expectedBytes));
+        content.Write(LengthPrefixed(Encoding.UTF8.GetBytes(expectedString)));
+        content.Write(LengthPrefixed(expectedBytes));
+        content.Write(LengthPrefixed(Encoding.UTF8.GetBytes(expectedString)));
+        content.Position = 0L;
+
+        var stream = new NonSeekableStream(content);
+        using (var block = await stream.ReadBlockAsync(LengthFormat.LittleEndian, token: TestToken))
+            Equal(expectedBytes, block.Span);
+
+        using (var chars = await stream.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new byte[16], token: TestToken))
+            Equal(expectedString, chars.Span.ToString());
+
+        // the default implementation of IAsyncBinaryReader
+        await using var reader = new PoolingBufferedStream(stream);
+        using (var block = await reader.As<IAsyncBinaryReader>().ReadAsync(LengthFormat.LittleEndian, token: TestToken))
+            Equal(expectedBytes, block.Span);
+
+        using (var chars = await reader.As<IAsyncBinaryReader>().DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, token: TestToken))
+            Equal(expectedString, chars.Span.ToString());
     }
 }

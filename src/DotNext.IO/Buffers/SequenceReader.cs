@@ -50,6 +50,13 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// </summary>
     public readonly ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
+    // the length is untrusted, the buffer must not be allocated if the sequence doesn't contain the data
+    private readonly void EnsureAvailable(int length)
+    {
+        if (RemainingSequence.Length < length)
+            throw new EndOfStreamException();
+    }
+
     /// <summary>
     /// Gets position in the underlying sequence.
     /// </summary>
@@ -267,6 +274,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         MemoryOwner<byte> result;
         if (length > 0)
         {
+            EnsureAvailable(length);
             result = allocator.DefaultIfNull.AllocateExactly(length);
             Read(result.Span);
         }
@@ -317,6 +325,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         var length = ReadLength(lengthFormat);
         if (length > 0)
         {
+            EnsureAvailable(length);
             result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
             var parser = new CharBufferDecodingReader(in context, length, result.Memory);
             result.TryResize(Read<int, CharBufferDecodingReader>(ref parser));
@@ -417,6 +426,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         }
         else
         {
+            EnsureAvailable(length);
             var reader = new ParsingReader<TArg, TResult>(arg, parser, length);
             return Read<TResult, ParsingReader<TArg, TResult>>(ref reader);
         }

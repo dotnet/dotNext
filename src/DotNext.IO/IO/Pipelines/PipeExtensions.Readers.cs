@@ -178,6 +178,12 @@ partial class PipeExtensions
         {
             case < 0:
                 throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > IAsyncBinaryReader.MaxPreallocationSize:
+                // the length is untrusted, the pipe buffers the data before the allocation
+                var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(reader, token);
+                result = DecodeBufferedBlock(reader, in context, readResult.Buffer, length, allocator);
+                break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
                 result.TryResize(
@@ -191,6 +197,70 @@ partial class PipeExtensions
         }
 
         return result;
+    }
+
+    private static MemoryOwner<char> DecodeBufferedBlock(PipeReader reader, in DecodingContext context, ReadOnlySequence<byte> source, int length, MemoryAllocator<char>? allocator)
+    {
+        var consumed = source.Start;
+        try
+        {
+            if (source.Length < length)
+            {
+                consumed = source.End;
+                throw new EndOfStreamException();
+            }
+
+            var bytes = source.Slice(0, length);
+            var result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+            try
+            {
+                var decoder = context.GetDecoder();
+                var writtenChars = 0;
+                var remaining = length;
+                for (var position = bytes.Start; bytes.TryGet(ref position, out var block);)
+                {
+                    remaining -= block.Length;
+                    writtenChars += decoder.GetChars(block.Span, result.Span.Slice(writtenChars), flush: remaining is 0);
+                }
+
+                result.TryResize(writtenChars);
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
+
+            consumed = bytes.End;
+            return result;
+        }
+        finally
+        {
+            reader.AdvanceTo(consumed);
+        }
+    }
+
+    private static MemoryOwner<byte> CopyBufferedBlock(PipeReader reader, ReadOnlySequence<byte> source, int length, MemoryAllocator<byte>? allocator)
+    {
+        var consumed = source.Start;
+        try
+        {
+            if (source.Length < length)
+            {
+                consumed = source.End;
+                throw new EndOfStreamException();
+            }
+
+            var bytes = source.Slice(0, length);
+            var result = allocator.DefaultIfNull.AllocateExactly(length);
+            bytes.CopyTo(result.Span);
+            consumed = bytes.End;
+            return result;
+        }
+        finally
+        {
+            reader.AdvanceTo(consumed);
+        }
     }
 
     /// <summary>
@@ -527,6 +597,12 @@ partial class PipeExtensions
         {
             case < 0:
                 throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > IAsyncBinaryReader.MaxPreallocationSize:
+                // the length is untrusted, the pipe buffers the data before the allocation
+                var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(reader, token);
+                result = CopyBufferedBlock(reader, readResult.Buffer, length, allocator);
+                break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateExactly(length);
                 await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);

@@ -312,4 +312,44 @@ public sealed class SequenceReaderTests : Test
 
         Equal("a€b", actual.ToString());
     }
+
+    // the length prefix claims 500 MB, but the data is absent
+    private static byte[] ClaimedLengthOnly()
+    {
+        var result = new byte[sizeof(int)];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, 500_000_000);
+        return result;
+    }
+
+    private static byte[] LengthPrefixed(ReadOnlySpan<byte> payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result.AsSpan(sizeof(int)));
+        return result;
+    }
+
+    private sealed class AllocationTracker<T>
+    {
+        internal int MaxLength;
+
+        internal MemoryAllocator<T> Allocator => length =>
+        {
+            MaxLength = int.Max(MaxLength, length);
+            return MemoryAllocator<T>.Default(length);
+        };
+    }
+
+    [Fact]
+    public static void NoAllocationForAbsentData()
+    {
+        var bytes = new AllocationTracker<byte>();
+        var chars = new AllocationTracker<char>();
+
+        Throws<EndOfStreamException>(() => new SequenceReader(ClaimedLengthOnly()).ReadBlock(LengthFormat.LittleEndian, bytes.Allocator));
+        Throws<EndOfStreamException>(() => new SequenceReader(ClaimedLengthOnly()).Decode(Encoding.UTF8, LengthFormat.LittleEndian, chars.Allocator));
+        Throws<EndOfStreamException>(() => new SequenceReader(ClaimedLengthOnly()).Parse<int>(LengthFormat.LittleEndian));
+        Equal(0, bytes.MaxLength);
+        Equal(0, chars.MaxLength);
+    }
 }

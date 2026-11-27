@@ -19,7 +19,7 @@ using DecodingContext = Text.DecodingContext;
 /// from various sources such as streams, pipes, unmanaged memory etc.
 /// </summary>
 /// <seealso cref="IAsyncBinaryWriter"/>
-public interface IAsyncBinaryReader
+public partial interface IAsyncBinaryReader
 {
     /// <summary>
     /// Represents empty reader.
@@ -94,6 +94,10 @@ public interface IAsyncBinaryReader
         return reader.Invoke();
     }
 
+    // returns true if the reader has the specified number of bytes; false if the number of bytes is unknown
+    private bool IsAvailable(int length)
+        => TryGetRemainingBytesCount(out var remaining) && (remaining >= length ? true : throw new EndOfStreamException());
+
     private ValueTask<int> ReadLengthAsync(LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
     {
         LengthFormat.LittleEndian => ReadLittleEndianAsync<int>(token),
@@ -149,6 +153,10 @@ public interface IAsyncBinaryReader
         {
             case < 0:
                 throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > MaxPreallocationSize when !IsAvailable(length):
+                // the length is untrusted, allocate the memory as the data arrives
+                result = await ReadAsync(new BinaryBlockReader(this), length, allocator.DefaultIfNull, token).ConfigureAwait(false);
+                break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateExactly(length);
                 await ReadAsync(result.Memory, token).ConfigureAwait(false);
@@ -182,6 +190,14 @@ public interface IAsyncBinaryReader
         {
             case < 0:
                 throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > MaxPreallocationSize when !IsAvailable(lengthInBytes):
+                // the length is untrusted, decode the bytes when they arrive
+                using (var bytes = await ReadAsync(new BinaryBlockReader(this), lengthInBytes, MemoryAllocator<byte>.Default, token).ConfigureAwait(false))
+                {
+                    result = context.Decode(bytes.Span, allocator);
+                }
+
+                break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
                 result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(

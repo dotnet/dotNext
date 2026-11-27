@@ -578,4 +578,70 @@ public sealed class PipeExtensionsTests : Test
         await using var enumerator = PipeReader.Create(new(WithLengthPrefix(payload))).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new char[1], TestToken).GetAsyncEnumerator(TestToken);
         await ThrowsAsync<ArgumentException>(enumerator.MoveNextAsync().AsTask);
     }
+
+    // the length prefix claims 500 MB, but the data is absent
+    private static byte[] ClaimedLengthOnly()
+    {
+        var result = new byte[sizeof(int)];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, 500_000_000);
+        return result;
+    }
+
+    private static byte[] LengthPrefixed(ReadOnlySpan<byte> payload)
+    {
+        var result = new byte[sizeof(int) + payload.Length];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result.AsSpan(sizeof(int)));
+        return result;
+    }
+
+    private sealed class AllocationTracker<T>
+    {
+        internal int MaxLength;
+
+        internal MemoryAllocator<T> Allocator => length =>
+        {
+            MaxLength = int.Max(MaxLength, length);
+            return MemoryAllocator<T>.Default(length);
+        };
+    }
+
+    [Fact]
+    public static async Task NoAllocationForAbsentData()
+    {
+        var bytes = new AllocationTracker<byte>();
+        var chars = new AllocationTracker<char>();
+
+        await ThrowsAsync<EndOfStreamException>(PipeReader.Create(new(ClaimedLengthOnly())).ReadAsync(LengthFormat.LittleEndian, bytes.Allocator, TestToken).AsTask);
+        await ThrowsAsync<EndOfStreamException>(PipeReader.Create(new(ClaimedLengthOnly())).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, chars.Allocator, TestToken).AsTask);
+        Equal(0, bytes.MaxLength);
+        Equal(0, chars.MaxLength);
+    }
+
+    [Fact]
+    public static async Task ReadLargeBlockFromConcurrentWriter()
+    {
+        var expectedString = string.Concat(Enumerable.Repeat("Привет, мир! ", 30_000));
+        var expectedBytes = RandomBytes(300_000);
+
+        var pipe = new Pipe();
+        var writer = Task.Run(async () =>
+        {
+            foreach (var payload in new[] { LengthPrefixed(expectedBytes), LengthPrefixed(Encoding.UTF8.GetBytes(expectedString)) })
+            {
+                for (var offset = 0; offset < payload.Length; offset += 4096)
+                    await pipe.Writer.WriteAsync(payload.AsMemory(offset, int.Min(4096, payload.Length - offset)), TestToken);
+            }
+
+            await pipe.Writer.CompleteAsync();
+        }, TestToken);
+
+        using (var block = await pipe.Reader.ReadAsync(LengthFormat.LittleEndian, token: TestToken))
+            Equal(expectedBytes, block.Span);
+
+        using (var chars = await pipe.Reader.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, token: TestToken))
+            Equal(expectedString, chars.Span.ToString());
+
+        await writer;
+    }
 }
