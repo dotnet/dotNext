@@ -657,4 +657,17 @@ public sealed class PoolingBufferedStreamTests : Test
     {
         public override bool CanRead => false;
     }
+
+    [Fact]
+    public static async Task FormatUtf8LargerThanBuffer()
+    {
+        var value = Guid.NewGuid();
+        using var ms = new MemoryStream();
+        await using var stream = new PoolingBufferedStream(ms) { MaxBufferSize = 16 };
+        IAsyncBinaryWriter writer = stream;
+
+        Equal(33, await writer.FormatAsync(value, LengthFormat.Compressed, "N", token: TestToken));
+        await stream.FlushAsync(TestToken);
+        Equal(33L, ms.Length);
+    }
 }

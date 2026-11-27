@@ -258,6 +258,20 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         return canBeDoneSynchronously;
     }
 
+    private async ValueTask<int> WriteLengthAsync(int length, LengthFormat lengthFormat, CancellationToken token)
+    {
+        if (TryWriteLengthFast(length, lengthFormat, out var bytesWritten))
+        {
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+        else
+        {
+            bytesWritten = await WriteLengthSlowAsync(length, lengthFormat, token).ConfigureAwait(false);
+        }
+
+        return bytesWritten;
+    }
+
     private async ValueTask<int> WriteLengthSlowAsync(int length, LengthFormat lengthFormat, CancellationToken token)
     {
         using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(lengthFormat.MaxByteCount);
@@ -341,8 +355,12 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
             if (value.TryFormat(buffer.Span, out var bytesWritten, format, provider))
             {
-                await WriteAsync(buffer.Memory.Slice(0, bytesWritten), lengthFormat, token).ConfigureAwait(false);
-                return bytesWritten;
+                var lengthSize = lengthFormat.HasValue
+                    ? await WriteLengthAsync(bytesWritten, lengthFormat.GetValueOrDefault(), token).ConfigureAwait(false)
+                    : 0;
+
+                await WriteAsync(buffer.Memory.Slice(0, bytesWritten), token).ConfigureAwait(false);
+                return bytesWritten + lengthSize;
             }
         }
     }

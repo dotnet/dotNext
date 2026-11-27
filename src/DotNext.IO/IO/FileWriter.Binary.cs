@@ -68,7 +68,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     ValueTask IAsyncBinaryWriter.AdvanceAsync(int bytesWritten, CancellationToken token)
     {
         Produce(bytesWritten);
-        return WriteAsync(token);
+        return FreeCapacity is 0 ? WriteAsync(token) : ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -180,13 +180,24 @@ public partial class FileWriter : IAsyncBinaryWriter
             var maxByteCount = context.Encoding.GetMaxByteCount(1);
             var encoder = context.GetEncoder();
 
+            // the internal buffer can be too small to place the bytes of a single char
+            using var extraBuffer = maxByteCount > maxBufferSize ? Allocator.AllocateExactly(maxByteCount) : default;
+
             for (int charsUsed, bytesUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesUsed)
             {
-                if (FreeCapacity < maxByteCount)
-                    await FlushAsync(token).ConfigureAwait(false);
+                if (extraBuffer.IsEmpty)
+                {
+                    if (FreeCapacity < maxByteCount)
+                        await FlushAsync(token).ConfigureAwait(false);
 
-                Convert(encoder, chars.Span, BufferSpan, maxByteCount, chars.Length, out charsUsed, out bytesUsed);
-                Produce(bytesUsed);
+                    Convert(encoder, chars.Span, BufferSpan, maxByteCount, chars.Length, out charsUsed, out bytesUsed);
+                    Produce(bytesUsed);
+                }
+                else
+                {
+                    Convert(encoder, chars.Span, extraBuffer.Span, maxByteCount, chars.Length, out charsUsed, out bytesUsed);
+                    await WriteAsync(extraBuffer.Memory.Slice(0, bytesUsed), token).ConfigureAwait(false);
+                }
             }
         }
 
@@ -257,6 +268,12 @@ public partial class FileWriter : IAsyncBinaryWriter
         var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         var buffer = BufferSpan;
+        if (buffer.Length < expectedLengthSize)
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
         var result = value.TryFormat(buffer.Slice(expectedLengthSize), out bytesWritten, format, provider);
         if (result)
         {
@@ -268,7 +285,7 @@ public partial class FileWriter : IAsyncBinaryWriter
             {
                 Debug.Assert(lengthFormat is LengthFormat.Compressed);
 
-                buffer.Slice(expectedLengthSize).CopyTo(buffer.Slice(actualLengthSize));
+                buffer.Slice(expectedLengthSize, bytesWritten).CopyTo(buffer.Slice(actualLengthSize));
             }
 
             bytesWritten += actualLengthSize;
@@ -285,8 +302,9 @@ public partial class FileWriter : IAsyncBinaryWriter
         
         if (!TryFormat(value, lengthFormat, format, provider, out var bytesWritten))
         {
-            const int maxBufferSize = int.MaxValue / 2;
-            for (var bufferSize = maxBufferSize + Leb128<uint>.MaxSizeInBytes; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+            // the value doesn't fit in the internal buffer
+            const int maxSize = int.MaxValue / 2;
+            for (var bufferSize = int.Min(maxBufferSize, maxSize) << 1; ; bufferSize = bufferSize <= maxSize ? bufferSize << 1 : throw new InsufficientMemoryException())
             {
                 using var buffer = Allocator.AllocateAtLeast(bufferSize);
                 if (value.TryFormat(buffer.Span, out bytesWritten, format, provider))
@@ -312,6 +330,11 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         return bytesWritten;
     }
+
+    /// <inheritdoc />
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider,
+        CancellationToken token)
+        => FormatAsync(value, lengthFormat, format, provider, token);
 
     /// <inheritdoc />
     ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
