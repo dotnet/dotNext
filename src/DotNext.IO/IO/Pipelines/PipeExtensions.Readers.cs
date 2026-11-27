@@ -197,69 +197,46 @@ partial class PipeExtensions
         }
 
         return result;
-    }
-
-    private static MemoryOwner<char> DecodeBufferedBlock(PipeReader reader, in DecodingContext context, ReadOnlySequence<byte> source, int length, MemoryAllocator<char>? allocator)
-    {
-        var consumed = source.Start;
-        try
+        
+        static MemoryOwner<char> DecodeBufferedBlock(PipeReader reader, in DecodingContext context, ReadOnlySequence<byte> source, int length, MemoryAllocator<char>? allocator)
         {
-            if (source.Length < length)
-            {
-                consumed = source.End;
-                throw new EndOfStreamException();
-            }
-
-            var bytes = source.Slice(0, length);
-            var result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+            var consumed = source.Start;
             try
             {
-                var decoder = context.GetDecoder();
-                var writtenChars = 0;
-                var remaining = length;
-                for (var position = bytes.Start; bytes.TryGet(ref position, out var block);)
+                if (source.Length < length)
                 {
-                    remaining -= block.Length;
-                    writtenChars += decoder.GetChars(block.Span, result.Span.Slice(writtenChars), flush: remaining is 0);
+                    consumed = source.End;
+                    throw new EndOfStreamException();
                 }
 
-                result.TryResize(writtenChars);
+                var bytes = source.Slice(0, length);
+                var result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+                try
+                {
+                    var decoder = context.GetDecoder();
+                    var writtenChars = 0;
+                    var remaining = length;
+                    for (var position = bytes.Start; bytes.TryGet(ref position, out var block);)
+                    {
+                        remaining -= block.Length;
+                        writtenChars += decoder.GetChars(block.Span, result.Span.Slice(writtenChars), flush: remaining is 0);
+                    }
+
+                    result.TryResize(writtenChars);
+                }
+                catch
+                {
+                    result.Dispose();
+                    throw;
+                }
+
+                consumed = bytes.End;
+                return result;
             }
-            catch
+            finally
             {
-                result.Dispose();
-                throw;
+                reader.AdvanceTo(consumed);
             }
-
-            consumed = bytes.End;
-            return result;
-        }
-        finally
-        {
-            reader.AdvanceTo(consumed);
-        }
-    }
-
-    private static MemoryOwner<byte> CopyBufferedBlock(PipeReader reader, ReadOnlySequence<byte> source, int length, MemoryAllocator<byte>? allocator)
-    {
-        var consumed = source.Start;
-        try
-        {
-            if (source.Length < length)
-            {
-                consumed = source.End;
-                throw new EndOfStreamException();
-            }
-
-            var bytes = source.Slice(0, length);
-            var result = allocator.DefaultIfNull.AllocateExactly(length);
-            bytes.CopyTo(result.Span);
-            consumed = bytes.End;
-            return result;
-        }
-        finally
-        {
-            reader.AdvanceTo(consumed);
         }
     }
 
@@ -277,25 +254,27 @@ partial class PipeExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
-    public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
+    public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat,
+        Memory<char> buffer, CancellationToken token = default)
     {
         var chunkSize = context.GetMaxChunkSize(buffer.Length);
         return chunkSize > 0
-            ? DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, chunkSize, token)
+            ? DecodeCoreAsync(reader, context.GetDecoder(), lengthFormat, buffer, chunkSize, token)
             : IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer)));
-    }
 
-    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, int chunkSize, [EnumeratorCancellation] CancellationToken token = default)
-    {
-        var lengthInBytes = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        if (lengthInBytes < 0)
-            throw new InvalidDataException(ExceptionMessages.NegativeLength);
-        
-        for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
+        static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeCoreAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat,
+            Memory<char> buffer, int chunkSize, [EnumeratorCancellation] CancellationToken token = default)
         {
-            state = new(decoder, lengthInBytes, chunkSize, buffer);
-            var writtenChars = await ReadAsync<int, DecodingReader>(reader, state, token).ConfigureAwait(false);
-            yield return buffer.Slice(0, writtenChars);
+            var lengthInBytes = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+            if (lengthInBytes < 0)
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+
+            for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
+            {
+                state = new(decoder, lengthInBytes, chunkSize, buffer);
+                var writtenChars = await ReadAsync<int, DecodingReader>(reader, state, token).ConfigureAwait(false);
+                yield return buffer.Slice(0, writtenChars);
+            }
         }
     }
 
@@ -613,6 +592,29 @@ partial class PipeExtensions
         }
 
         return result;
+
+        static MemoryOwner<byte> CopyBufferedBlock(PipeReader reader, ReadOnlySequence<byte> source, int length, MemoryAllocator<byte>? allocator)
+        {
+            var consumed = source.Start;
+            try
+            {
+                if (source.Length < length)
+                {
+                    consumed = source.End;
+                    throw new EndOfStreamException();
+                }
+
+                var bytes = source.Slice(0, length);
+                var result = allocator.DefaultIfNull.AllocateExactly(length);
+                bytes.CopyTo(result.Span);
+                consumed = bytes.End;
+                return result;
+            }
+            finally
+            {
+                reader.AdvanceTo(consumed);
+            }
+        }
     }
 
     /// <summary>
