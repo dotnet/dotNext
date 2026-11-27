@@ -63,6 +63,24 @@ public abstract class LeaseProvider<TKey, TMetadata> : Disposable
         .As<IDictionary<TKey, Observation>>()
         .Remove(leaseId);
 
+    /// <summary>
+    /// Drops the tracking information of the lease.
+    /// </summary>
+    /// <remarks>
+    /// The provider keeps the tracking information for every lease it has observed, until it observes the lease released.
+    /// This method allows dropping it without the observation, e.g., when the lease is deleted from the underlying storage.
+    /// If the lease is observed after this call, the expiration of its current version is tracked from that moment.
+    /// </remarks>
+    /// <param name="leaseId">The identifier of the lease.</param>
+    /// <returns><see langword="true"/> if the tracking information has been dropped; <see langword="false"/> if the lease was not tracked.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="leaseId"/> is <see langword="null"/>.</exception>
+    protected bool Forget(TKey leaseId)
+    {
+        ArgumentNullException.ThrowIfNull<TKey>(leaseId);
+
+        return observations.TryRemove(leaseId, out _);
+    }
+
     private static ArgumentNullException? CheckArguments(TKey? leaseId,
         Delegate? updater,
         [CallerArgumentExpression(nameof(leaseId))]

@@ -164,6 +164,24 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task ForgetRestartsExpirationTracking()
+    {
+        var ttl = TimeSpan.FromMilliseconds(300);
+        using var provider = new TestKeyedLeaseProvider(ttl);
+        Guid owner1 = Guid.NewGuid(), owner2 = Guid.NewGuid();
+
+        NotNull(await provider.TryAcquireAsync("a", owner1, TestToken));
+        False(provider.Forget("b"));
+
+        // the lease is expired from the perspective of the provider
+        await Task.Delay(ttl + TimeSpan.FromMilliseconds(100), TestToken);
+
+        // the tracking information is dropped, so the next observation restarts the expiration tracking
+        True(provider.Forget("a"));
+        Null(await provider.TryAcquireAsync("a", owner2, TestToken));
+    }
+
+    [Fact]
     public static async Task RenewalStampExtendsLease()
     {
         var ttl = TimeSpan.FromMilliseconds(500);
@@ -674,6 +692,8 @@ public sealed class LeaseTests : Test
 
     private sealed class TestKeyedLeaseProvider(TimeSpan ttl, ConcurrentDictionary<string, LeaseStorage> storages = null) : LeaseProvider<string, int>
     {
+        internal new bool Forget(string leaseId) => base.Forget(leaseId);
+
         internal ConcurrentDictionary<string, LeaseStorage> Storages { get; } = storages ?? new();
 
         private LeaseStorage GetStorage(string leaseId) => Storages.GetOrAdd(leaseId, _ => new(ttl));
