@@ -147,14 +147,15 @@ partial class PipeExtensions
             : ReadAsync<T, IntegerReader<T>>(reader, IntegerReader<T>.BigEndian, token);
     }
 
-    private static ValueTask<int> ReadLengthAsync(this PipeReader reader, LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
-    {
-        LengthFormat.LittleEndian => reader.ReadLittleEndianAsync<int>(token),
-        LengthFormat.BigEndian => reader.ReadBigEndianAsync<int>(token),
-        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedIntReader>(reader, new(), token),
-        _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
-    };
-
+    private static ValueTask<int> ReadLengthAsync(this PipeReader reader, LengthFormat lengthFormat, CancellationToken token)
+        => lengthFormat switch
+        {
+            LengthFormat.LittleEndian => reader.ReadLittleEndianAsync<int>(token),
+            LengthFormat.BigEndian => reader.ReadBigEndianAsync<int>(token),
+            LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedIntReader>(reader, new(), token),
+            _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
+        };
+    
     /// <summary>
     /// Decodes string asynchronously from pipe.
     /// </summary>
@@ -167,19 +168,26 @@ partial class PipeExtensions
     /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<MemoryOwner<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
 
         MemoryOwner<char> result;
-        if (length > 0)
+        switch (length)
         {
-            result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
-            result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(reader, new(in context, length, result.Memory), token).ConfigureAwait(false));
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+                result.TryResize(
+                    await ReadAsync<int, CharBufferDecodingReader>(reader,
+                            new(in context, length, result.Memory), token)
+                        .ConfigureAwait(false));
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -197,12 +205,16 @@ partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
         => buffer.IsEmpty ? IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (lengthInBytes < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
+        
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
             state = new(decoder, lengthInBytes, buffer);
@@ -228,6 +240,7 @@ partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
@@ -239,14 +252,17 @@ partial class PipeExtensions
     private static async ValueTask<TResult> ParseAsync<TResult, TArg>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, LengthFormat lengthFormat, CancellationToken token)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        if (length > 0)
+        switch (length)
         {
-            var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
-            readResult.ThrowIfCancellationRequested(reader, token);
-            return Parse(reader, arg, parser, length, readResult.Buffer);
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(reader, token);
+                return Parse(reader, arg, parser, length, readResult.Buffer);
+            default:
+                return parser([], arg);
         }
-
-        return parser([], arg);
 
         static TResult Parse(PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
         {
@@ -293,6 +309,7 @@ partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static ValueTask<T> ParseAsync<T>(this PipeReader reader, LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
         where T : IUtf8SpanParsable<T>
         => reader.ParseAsync(provider, T.Parse, lengthFormat, token);
@@ -310,6 +327,7 @@ partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static ValueTask<T> ParseAsync<T>(this PipeReader reader, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
         where T : INumberBase<T>
     {
@@ -451,19 +469,24 @@ partial class PipeExtensions
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public static async ValueTask<MemoryOwner<byte>> ReadAsync(this PipeReader reader, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+    public static async ValueTask<MemoryOwner<byte>> ReadAsync(this PipeReader reader, LengthFormat lengthFormat,
+        MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         MemoryOwner<byte> result;
-        if (length > 0)
+        switch (length)
         {
-            result = allocator.DefaultIfNull.AllocateExactly(length);
-            await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
-        }
-        else
-        {
-            result = default;
+            case < 0:
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
+            case > 0:
+                result = allocator.DefaultIfNull.AllocateExactly(length);
+                await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
+                break;
+            default:
+                result = default;
+                break;
         }
 
         return result;
@@ -589,37 +612,38 @@ partial class PipeExtensions
         
         static async IAsyncEnumerable<ReadOnlyMemory<byte>> DoReadExactlyAsync(PipeReader reader, long length, [EnumeratorCancellation] CancellationToken token)
         {
-            ReadResult result;
-            do
+            while (length > 0L)
             {
-                result = await reader.ReadAsync(token).ConfigureAwait(false);
+                var result = await reader.ReadAsync(token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(reader, token);
-                var buffer = result.Buffer;
-                var consumed = buffer.Start;
 
+                // the bytes beyond the requested length must stay in the pipe
+                var buffer = result.Buffer;
+                if (buffer.Length > length)
+                    buffer = buffer.Slice(0L, length);
+
+                var consumed = buffer.Start;
                 try
                 {
+                    if (buffer.IsEmpty)
+                        throw new EndOfStreamException();
+
                     for (var position = consumed;
-                         length > 0L && buffer.TryGet(ref position, out var block);
-                         consumed = position,
-                         length -= block.Length)
+                         buffer.TryGet(ref position, out var block);
+                         consumed = position, length -= block.Length)
                     {
-                        block %= int.CreateSaturating(length);
                         if (!block.IsEmpty)
                             yield return block;
                     }
 
+                    // TryGet sets the position to default after the last segment
                     consumed = buffer.End;
                 }
                 finally
                 {
-                    reader.AdvanceTo(consumed, buffer.End);
+                    reader.AdvanceTo(consumed);
                 }
             }
-            while (!result.IsCompleted);
-        
-            if (length > 0L)
-                throw new EndOfStreamException();
         }
     }
 
@@ -654,6 +678,9 @@ partial class PipeExtensions
 
         static bool Decode(Decoder decoder, PipeReader reader, in ReadResult result, IBufferWriter<char> output, CancellationToken token)
         {
+            // the data must not be decoded if the read is canceled, because it stays in the pipe
+            result.ThrowIfCancellationRequested(reader, token);
+
             bool completed;
             var buffer = result.Buffer;
 
@@ -670,7 +697,6 @@ partial class PipeExtensions
             }
 
             decoder.Convert(in buffer, output, completed, out _, out _);
-            result.ThrowIfCancellationRequested(reader, token);
             reader.AdvanceTo(consumed);
 
             return completed;

@@ -139,10 +139,13 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public async ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         MemoryOwner<byte> result;
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         if (length > 0)
         {
             result = allocator.DefaultIfNull.AllocateExactly(length);
@@ -167,10 +170,13 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         MemoryOwner<char> result;
         var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (lengthInBytes < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
 
         if (lengthInBytes > 0)
         {
@@ -197,12 +203,15 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
         => DecodeAsync(context.GetDecoder(), lengthFormat, buffer, token);
 
     private async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (lengthInBytes < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
 
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
@@ -223,10 +232,13 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
         where T : IUtf8SpanParsable<T>
     {
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         T result;
 
         if (length <= 0)
@@ -267,10 +279,13 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
         where T : INumberBase<T>
     {
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
 
         T result;
         if (length <= 0)

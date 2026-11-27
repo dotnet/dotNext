@@ -166,4 +166,24 @@ public sealed class FileReaderTests : Test
 
         Equal(bytes, ms.ToArray());
     }
+
+    [Fact]
+    public static async Task NegativeLength()
+    {
+        var bytes = new byte[sizeof(int) + 5];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(bytes, -5);
+        var path = GetTempPath();
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        await RandomAccess.WriteAsync(handle, bytes, 0L, TestToken);
+
+        using (var reader = new FileReader(handle))
+            await ThrowsAsync<InvalidDataException>(reader.ReadAsync(LengthFormat.LittleEndian, token: TestToken).AsTask);
+
+        using (var reader = new FileReader(handle))
+            await ThrowsAsync<InvalidDataException>(reader.DecodeAsync(System.Text.Encoding.UTF8, LengthFormat.LittleEndian, token: TestToken).AsTask);
+
+        using (var reader = new FileReader(handle))
+            await ThrowsAsync<InvalidDataException>(reader.ParseAsync<int>(LengthFormat.LittleEndian, token: TestToken).AsTask);
+    }
 }

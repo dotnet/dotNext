@@ -388,4 +388,16 @@ public sealed class StreamExtensionsTests : Test
 
         Equal(new ReadOnlySpan<byte>(bytes, 0, 512), destination.ToArray());
     }
+
+    [Fact]
+    public static async Task NegativeLength()
+    {
+        var bytes = new byte[sizeof(int) + 5];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(bytes, -5);
+        var buffer = new byte[16];
+
+        await ThrowsAsync<InvalidDataException>(new MemoryStream(bytes).ReadBlockAsync(LengthFormat.LittleEndian, token: TestToken).AsTask);
+        await ThrowsAsync<InvalidDataException>(new MemoryStream(bytes).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer, token: TestToken).AsTask);
+        await ThrowsAsync<InvalidDataException>(new MemoryStream(bytes).ParseAsync<int>(LengthFormat.LittleEndian, buffer, provider: null, TestToken).AsTask);
+    }
 }

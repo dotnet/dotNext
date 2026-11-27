@@ -131,6 +131,7 @@ public static partial class StreamExtensions
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
@@ -141,6 +142,8 @@ public static partial class StreamExtensions
         using (result = allocator.AllocateExactly(lengthFormat.MaxByteCount))
         {
             length = await stream.ReadLengthAsync(lengthFormat, result.Memory, token).ConfigureAwait(false);
+            if (length < 0)
+                throw new InvalidDataException(ExceptionMessages.NegativeLength);
         }
 
         if (length > 0)
@@ -180,12 +183,15 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<MemoryOwner<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentException.ThrowIfEmpty(buffer);
 
         MemoryOwner<char> result;
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         if (length > 0)
         {
             result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
@@ -224,6 +230,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, CancellationToken token = default)
     {
         string paramName;
@@ -246,6 +253,8 @@ public static partial class StreamExtensions
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
     {
         var lengthInBytes = await ReadLengthAsync(stream, lengthFormat, byteBuffer, token).ConfigureAwait(false);
+        if (lengthInBytes < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
             state = new(decoder, lengthInBytes, charBuffer);
@@ -272,6 +281,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
@@ -294,10 +304,13 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, IFormatProvider? provider = null, CancellationToken token = default)
         where T : IUtf8SpanParsable<T>
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         if (length > 0)
         {
             buffer = buffer.Slice(0, length);
@@ -325,10 +338,13 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
         where T : INumberBase<T>
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
+        if (length < 0)
+            throw new InvalidDataException(ExceptionMessages.NegativeLength);
         if (length > 0)
         {
             buffer = buffer.Slice(0, length);

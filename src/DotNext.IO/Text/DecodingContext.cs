@@ -44,7 +44,15 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
     /// </summary>
     public Encoding Encoding => encoding ?? Encoding.Default;
 
-    internal Decoder GetDecoder() => decoder ?? Encoding.GetDecoder();
+    // the reused decoder can keep the state of the previous decoding that has failed
+    internal Decoder GetDecoder()
+    {
+        if (decoder is null)
+            return Encoding.GetDecoder();
+
+        decoder.Reset();
+        return decoder;
+    }
 
     /// <summary>
     /// Creates decoding context.

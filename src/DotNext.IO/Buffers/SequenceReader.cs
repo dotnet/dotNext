@@ -260,6 +260,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public MemoryOwner<byte> ReadBlock(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator)
     {
         var length = ReadLength(lengthFormat);
@@ -283,16 +284,22 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public ReadOnlySequence<byte> ReadBlock(LengthFormat lengthFormat)
         => Read(ReadLength(lengthFormat));
 
-    private int ReadLength(LengthFormat lengthFormat) => lengthFormat switch
+    private int ReadLength(LengthFormat lengthFormat)
     {
-        LengthFormat.LittleEndian => ReadLittleEndian<int>(),
-        LengthFormat.BigEndian => ReadBigEndian<int>(),
-        LengthFormat.Compressed => Read<int, SevenBitEncodedIntReader>(),
-        _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
-    };
+        var length = lengthFormat switch
+        {
+            LengthFormat.LittleEndian => ReadLittleEndian<int>(),
+            LengthFormat.BigEndian => ReadBigEndian<int>(),
+            LengthFormat.Compressed => Read<int, SevenBitEncodedIntReader>(),
+            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
+        };
+
+        return length >= 0 ? length : throw new InvalidDataException(ExceptionMessages.NegativeLength);
+    }
 
     /// <summary>
     /// Decodes a block of characters.
@@ -302,6 +309,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="allocator">The allocator of the buffer of characters.</param>
     /// <returns>The buffer of characters.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public MemoryOwner<char> Decode(in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
     {
         MemoryOwner<char> result;
@@ -330,6 +338,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The enumerator of characters.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     [UnscopedRef]
     public SpanDecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Span<char> buffer)
     {
@@ -358,6 +367,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The enumerator of characters.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public DecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer)
     {
         ArgumentException.ThrowIfEmpty(buffer);
@@ -379,6 +389,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The parsed block of characters.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="parser"/> is <see langword="null"/>.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public TResult Parse<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(parser);
@@ -414,6 +425,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The result of parsing.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public T Parse<T>(LengthFormat lengthFormat, IFormatProvider? provider = null)
         where T : IUtf8SpanParsable<T>
     {
@@ -433,6 +445,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The result of parsing.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public T Parse<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null)
         where T : INumberBase<T>
     {
@@ -457,6 +470,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The result of parsing.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    /// <exception cref="InvalidDataException">The encoded length is negative.</exception>
     public T Parse<T>(in DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
         where T : INumberBase<T>
     {

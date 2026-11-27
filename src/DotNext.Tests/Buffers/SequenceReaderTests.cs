@@ -250,4 +250,16 @@ public sealed class SequenceReaderTests : Test
 
         static bool IBufferReader.ThrowOnPartialData => true;
     }
+
+    [Fact]
+    public static void NegativeLength()
+    {
+        var bytes = new byte[sizeof(int) + 5];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(bytes, -5);
+
+        Throws<InvalidDataException>(() => new SequenceReader(bytes).ReadBlock(LengthFormat.LittleEndian, allocator: null));
+        Throws<InvalidDataException>(() => new SequenceReader(bytes).ReadBlock(LengthFormat.LittleEndian));
+        Throws<InvalidDataException>(() => new SequenceReader(bytes).Decode(Encoding.UTF8, LengthFormat.LittleEndian));
+        Throws<InvalidDataException>(() => new SequenceReader(bytes).Parse<int>(LengthFormat.LittleEndian));
+    }
 }

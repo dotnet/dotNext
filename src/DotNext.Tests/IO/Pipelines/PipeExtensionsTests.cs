@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Binary;
 using System.IO.Pipelines;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace DotNext.IO.Pipelines;
 
 using Buffers;
 using Buffers.Binary;
+using Text;
 
 public sealed class PipeExtensionsTests : Test
 {
@@ -372,5 +374,102 @@ public sealed class PipeExtensionsTests : Test
                 offset += block.Length;
             }
         }
+    }
+
+    private static byte[] EncodeWithLength(ReadOnlySpan<byte> payload, byte trailer)
+    {
+        var result = new byte[sizeof(int) + payload.Length + 1];
+        BinaryPrimitives.WriteInt32LittleEndian(result, payload.Length);
+        payload.CopyTo(result.AsSpan(sizeof(int)));
+        result[^1] = trailer;
+        return result;
+    }
+
+    [Theory]
+    [InlineData(1, 4)]
+    [InlineData(3, 4)]
+    [InlineData(7, 16)]
+    [InlineData(1024, 16)]
+    public static async Task DecodeStringInChunksFromSegments(int segmentSize, int bufferSize)
+    {
+        const string expected = "Привет, мир! Hello, world!";
+        var reader = PipeReader.Create(ToReadOnlySequence<byte>(EncodeWithLength(Encoding.UTF8.GetBytes(expected), trailer: 42), segmentSize));
+
+        var actual = new StringBuilder();
+        await foreach (var chunk in reader.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, new char[bufferSize], TestToken))
+            actual.Append(chunk.Span);
+
+        Equal(expected, actual.ToString());
+
+        // the string is consumed exactly
+        Equal(42, await reader.ReadLittleEndianAsync<byte>(TestToken));
+    }
+
+    [Fact]
+    public static async Task ReadBlockExactlyFromIncompletePipe()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, TestToken);
+
+        using var destination = new MemoryStream();
+        await foreach (var chunk in pipe.Reader.ReadExactlyAsync(4L, TestToken).WithCancellation(TestToken))
+            await destination.WriteAsync(chunk, TestToken);
+
+        Equal<byte>([1, 2, 3, 4], destination.ToArray());
+
+        // the rest of the data stays in the pipe
+        var rest = new byte[16];
+        Equal(6, await pipe.Reader.ReadAsync(rest.AsMemory(), TestToken));
+        Equal<byte>([5, 6, 7, 8, 9, 10], rest.AsSpan(0, 6));
+    }
+
+    [Fact]
+    public static async Task ReadBlockExactlyFromCompletedPipe()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync(new byte[] { 1, 2, 3 }, TestToken);
+        await pipe.Writer.CompleteAsync();
+
+        await using var enumerator = pipe.Reader.ReadExactlyAsync(4L, TestToken).GetAsyncEnumerator(TestToken);
+        True(await enumerator.MoveNextAsync());
+        await ThrowsAsync<EndOfStreamException>(enumerator.MoveNextAsync().AsTask);
+    }
+
+    [Fact]
+    public static async Task DecodeNullTerminatedStringAfterCancellation()
+    {
+        var pipe = new Pipe();
+        await pipe.Writer.WriteAsync("abc\0"u8.ToArray(), TestToken);
+
+        var writer = new ArrayBufferWriter<char>();
+        pipe.Reader.CancelPendingRead();
+        await ThrowsAnyAsync<OperationCanceledException>(pipe.Reader.ReadUtf8Async(writer, TestToken).AsTask);
+        Equal(0, writer.WrittenCount);
+
+        await pipe.Reader.ReadUtf8Async(writer, TestToken);
+        Equal("abc", writer.WrittenSpan.ToString());
+    }
+
+    [Fact]
+    public static async Task NegativeLength()
+    {
+        var bytes = EncodeWithLength("hello"u8, trailer: 0);
+        BinaryPrimitives.WriteInt32LittleEndian(bytes, -5);
+
+        await ThrowsAsync<InvalidDataException>(PipeReader.Create(new(bytes)).DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, token: TestToken).AsTask);
+        await ThrowsAsync<InvalidDataException>(PipeReader.Create(new(bytes)).ReadAsync(LengthFormat.LittleEndian, token: TestToken).AsTask);
+    }
+
+    [Fact]
+    public static async Task ReuseDecoderAfterFailure()
+    {
+        var context = new DecodingContext(Encoding.UTF8, reuseDecoder: true);
+
+        // the string is truncated in the middle of the 3-byte character
+        var truncated = EncodeWithLength([0xE2, 0x82, 0xAC], trailer: 0).AsSpan(0, sizeof(int) + 2).ToArray();
+        await ThrowsAsync<EndOfStreamException>(PipeReader.Create(new(truncated)).DecodeAsync(context, LengthFormat.LittleEndian, token: TestToken).AsTask);
+
+        using var result = await PipeReader.Create(new(EncodeWithLength("abc"u8, trailer: 0))).DecodeAsync(context, LengthFormat.LittleEndian, token: TestToken);
+        Equal("abc", result.Span.ToString());
     }
 }
