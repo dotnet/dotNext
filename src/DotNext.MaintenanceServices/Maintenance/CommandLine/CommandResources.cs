@@ -60,6 +60,10 @@ internal static class CommandResources
     internal static string ProbeCommandSuccessfulResponseOptionDescription => (string)Resources.Get();
 
     internal static string ProbeCommandUnsuccessfulResponseOptionDescription => (string)Resources.Get();
+    
+    internal static string ProcessCommandDescription => (string)Resources.Get();
+    
+    internal static string ProcessCommandIdDescription => (string)Resources.Get();
 
-    internal static string HelpCommandDescription => (string)Resources.Get();
+    internal static string ProcessCommandRuntimeDescription => (string)Resources.Get();
 }

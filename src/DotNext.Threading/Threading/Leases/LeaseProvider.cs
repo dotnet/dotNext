@@ -120,8 +120,13 @@ public abstract class LeaseProvider<TMetadata> : Disposable, LeaseEngine<TMetada
             : engine.AcquireAsync(this, ownerId, token);
 
     /// <summary>
-    /// Tries to renew the lease.
+    /// Tries to renew the lease and update its metadata.
     /// </summary>
+    /// <remarks>
+    /// Unlike the renewal without the metadata updater, this method always increments <see cref="LeaseState{TMetadata}.Version"/>,
+    /// even if the underlying storage supports <see cref="LeaseState{TMetadata}.RenewalStamp"/>, because the metadata update
+    /// is a durable change of the state. As a result, the owner gets a new fencing token.
+    /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to the metadata updater.</typeparam>
     /// <param name="ownerId">The unique identifier of the lease owner.</param>
     /// <param name="reacquire"><see langword="true"/> to acquire the lease on renewal if it is expired.</param>

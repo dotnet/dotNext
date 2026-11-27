@@ -28,14 +28,24 @@ public class ExecutionStackTests : Test
     [Fact]
     public static void CheckExecutionStackSize()
     {
-        const int stackSize = 1024 * 1024 * 2;
-        var t = new Thread(static () =>
+        const int frameSize = 64 * 1024;
+
+        // The runtime doesn't always honor the requested stack size (it may fall back to the OS default),
+        // so the test checks invariants instead of the exact size
+        var stackSize = RuntimeHelpers.ExecutionStackSize;
+        Equal(0U, stackSize % (uint)Environment.SystemPageSize);
+
+        var remaining = RuntimeHelpers.RemainingExecutionStack;
+        InRange(remaining, 1U, stackSize - 1U);
+
+        InRange(GetRemainingStackInDeeperFrame(), 1U, remaining - frameSize);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static nuint GetRemainingStackInDeeperFrame()
         {
-            Equal((uint)stackSize, RuntimeHelpers.ExecutionStackSize);
-            True(RuntimeHelpers.RemainingExecutionStack < stackSize);
-        }, stackSize);
-        
-        t.Start();
-        t.Join();
+            Span<byte> frame = stackalloc byte[frameSize];
+            frame[0] = 1;
+            return RuntimeHelpers.RemainingExecutionStack;
+        }
     }
 }

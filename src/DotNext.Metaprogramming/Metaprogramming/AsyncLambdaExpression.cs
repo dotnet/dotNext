@@ -29,9 +29,9 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     /// <summary>
     /// Gets this lambda expression suitable for recursive call.
     /// </summary>
-    internal override Expression Self => recursion ??= Expression.Variable(typeof(TDelegate), "self");
+    internal override ParameterExpression Self => recursion ??= Expression.Variable(typeof(TDelegate), "self");
 
-    internal override ParameterExpression? Result
+    private ParameterExpression? Result
     {
         get
         {
@@ -50,11 +50,8 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     /// </summary>
     internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-    internal override Expression Return(Expression? result)
-    {
-        result ??= lambdaResult;
-        return new AsyncResultExpression(result, taskType);
-    }
+    internal override AsyncResultExpression Return(Expression? result)
+        => new(result ?? lambdaResult, taskType);
 
     private new Expression<TDelegate> Build()
     {

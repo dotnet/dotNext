@@ -29,8 +29,6 @@ internal abstract class LambdaExpression : LexicalScope
         get;
     }
 
-    internal abstract ParameterExpression? Result { get; }
-
     /// <summary>
     /// Gets lambda parameters.
     /// </summary>
@@ -54,8 +52,9 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
     internal LambdaExpression(bool tailCall)
         : base(tailCall)
     {
-        if (typeof(TDelegate).IsAbstract)
+        if (!typeof(TDelegate).IsDelegate)
             throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
+
         var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         Parameters = GetParameters(invokeMethod.GetParameters());
         returnType = invokeMethod.ReturnType;
@@ -67,14 +66,14 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
     /// <remarks>
     /// This property can be used to make recursive calls.
     /// </remarks>
-    internal override Expression Self => recursion ??= Expression.Variable(typeof(TDelegate), "self");
+    internal override ParameterExpression Self => recursion ??= Expression.Variable(typeof(TDelegate), "self");
 
     /// <summary>
     /// Gets lambda parameters.
     /// </summary>
     internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-    internal override ParameterExpression? Result
+    private ParameterExpression? Result
     {
         get
         {
@@ -88,12 +87,11 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
 
     internal override Expression Return(Expression? result)
     {
-        if (returnLabel is null)
-            returnLabel = Expression.Label("leave");
-        if (result is null)
-            result = Expression.Default(returnType);
-        result = returnType == typeof(void) ? Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result!, result), Expression.Return(returnLabel));
-        return result;
+        var returnStatement = Expression.Return(returnLabel ??= Expression.Label("leave"));
+
+        return Result is { } resultVar
+            ? Expression.Block(Expression.Assign(resultVar, result ?? Expression.Default(resultVar.Type)), returnStatement)
+            : returnStatement;
     }
 
     private new Expression<TDelegate> Build()

@@ -45,7 +45,7 @@ internal sealed partial class LeaseEngine<TMetadata> : IDisposable
     public ValueTask<LeaseAcquisitionResult<TMetadata>?> TryRenewAsync<TStorage, TArg>(TStorage storage, Guid ownerId, bool reacquire, TArg arg,
         Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token)
         where TStorage : ILeaseStorage
-        => TryChangeStateAsync<TStorage, RenewalCondition, Updater<TArg>>(storage,
+        => TryChangeStateAsync<TStorage, RenewalWithUpdateCondition, Updater<TArg>>(storage,
             new(ownerId, reacquire),
             new(arg, updater), token);
 

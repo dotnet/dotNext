@@ -1,12 +1,44 @@
 Release Notes
 ====
 
-# 11-24-2026
-<a href="https://www.nuget.org/packages/dotnext/6.14.0">DotNext 6.14.0</a>
+# 11-27-2026
+<a href="https://www.nuget.org/packages/dotnext/6.14.1">DotNext 6.14.1</a>
+* Performance improvements of `IsVoid` extension property
+* All types implementing `IEnumerator<TSelf, T>` now can override the way how to convert the enumerator to the classic [IEnumerator&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.1">DotNext.Metaprogramming 6.14.1</a>
+* Performance improvements of async lambda builder
+* `ValueTupleBuilder` now exposes non-allocating enumerator
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/6.14.1">DotNext.Unsafe 6.14.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.0">DotNext.Metaprogramming 6.14.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/6.14.1">DotNext.Threading 6.14.1</a>
+* `LeaseProvider<TMetadata>` and `LeaseProvider<TKey, TMetadata>` bumps the lease version when the lease metadata is changed
+
+<a href="https://www.nuget.org/packages/dotnext.io/6.14.1">DotNext.IO 6.14.1</a>
 * Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/6.14.1">DotNext.Net.Cluster 6.14.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/6.14.1">DotNext.AspNetCore.Cluster 6.14.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/1.14.1">DotNext.MaintenanceServices 1.14.1</a>
+* Added `process` group of commands
+* Migration to System.CommandLine version 3.0
+
+# 11-24-2026
+<a href="https://www.nuget.org/packages/dotnext/6.14.0">DotNext 6.14.0</a>
+* Fixed LEB128 encoder: now it detects incorrect input
+* Fixed UNC path encoding provided by `FileUri` class
+* `FileUri.TryCreateFromFileName` returns **false** correctly when the input buffer is too small
+* Finalized target is no longer returned by `SoftReference<T>`
+* Introduced `ExceptionExtensions` with extensions for [Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception) class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/6.14.0">DotNext.Metaprogramming 6.14.0</a>
+* Fixed evaluation order in async lambda lowering
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/6.14.0">DotNext.Unsafe 6.14.0</a>
 * Updated dependencies

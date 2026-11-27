@@ -15,13 +15,13 @@ internal sealed class RecoverFromExceptionExpression : StateMachineExpression
         Receiver = receiver;
     }
 
-    public override Expression Reduce() => true.Quoted;
+    public override ConstantExpression Reduce() => true.Quoted;
 
     public override Type Type => typeof(bool);
 
-    internal override Expression Reduce(ParameterExpression stateMachine)
+    internal override MethodCallExpression Reduce(ParameterExpression stateMachine)
     {
-        MethodInfo? tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
+        var tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
         Debug.Assert(tryRecover is not null);
         tryRecover = tryRecover.MakeGenericMethod(Receiver.Type);
         return stateMachine.Call(tryRecover, Receiver);

@@ -85,7 +85,8 @@ internal sealed class VisitorContext : Disposable
 
     internal ParameterExpression? ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
 
-    private void ContainsAwait()
+    // marks the enclosing expressions of the current statement as containing await expression
+    internal void MarkContainsAwait()
     {
         foreach (var attr in attributes)
         {
@@ -133,7 +134,7 @@ internal sealed class VisitorContext : Disposable
                 break;
             case AwaitExpression _:
                 attr.ContainsAwait = true;
-                ContainsAwait();
+                MarkContainsAwait();
                 break;
         }
 

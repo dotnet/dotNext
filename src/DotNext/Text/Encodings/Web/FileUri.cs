@@ -16,8 +16,8 @@ public static class FileUri
     // On Windows:
     // C:\folder => file:///C|/folder
     // \\hostname\folder => file://hostname/folder
-    // \\?\folder => file://?/folder
-    // \\.\folder => file://./folder
+    // \\?\C:\folder, \\.\C:\folder => file:///C|/folder
+    // \\?\UNC\hostname\folder => file://hostname/folder
     private const string FileScheme = "file://";
     private const char UriPathSeparator = '/';
     private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create(UriPathSeparator);
@@ -86,45 +86,80 @@ public static class FileUri
     private static bool TryCreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         var writer = new SpanWriter<char>(output);
-        writer += FileScheme;
-
-        bool endsWithTrailingSeparator;
-        SearchValues<char> directoryPathSeparators;
-        switch (fileName)
+        var created = writer.TryWrite(FileScheme) && fileName switch
         {
-            case [UriPathSeparator, ..]: // Unix path
-                directoryPathSeparators = UnixDirectorySeparators;
-                break;
-            case ['\\', '\\', .. var rest]: // Windows UNC path
-                directoryPathSeparators = WindowsDirectorySeparators;
-                fileName = rest;
-                break;
-            default: // Windows path
-                const char driveSeparator = ':';
-                const char escapedDriveSeparatorChar = '|';
-                if (GetPathComponent(ref fileName, directoryPathSeparators = WindowsDirectorySeparators, out endsWithTrailingSeparator)
-                    is not [.. var drive, driveSeparator])
-                    throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
-
-                writer += UriPathSeparator;
-                writer += drive;
-                writer += endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar];
-                break;
-        }
-
-        for (;; writer += UriPathSeparator)
-        {
-            var component = GetPathComponent(ref fileName, directoryPathSeparators, out endsWithTrailingSeparator);
-            if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
-                return false;
-
-            writer.Advance(charsWritten);
-            if (!endsWithTrailingSeparator)
-                break;
-        }
+            [UriPathSeparator, .. var path] => // Unix path
+                writer.TryAdd(UriPathSeparator) && writer.TryWritePath(path, UnixDirectorySeparators, encoder),
+            ['\\', '\\', '?' or '.', '\\', 'U' or 'u', 'N' or 'n', 'C' or 'c', '\\', .. var uncPath] => // \\?\UNC\server\share
+                writer.TryWriteUncPath(uncPath, encoder),
+            ['\\', '\\', '?' or '.', '\\', .. var drivePath] => // \\?\C:\folder or \\.\C:\folder
+                writer.TryWriteDrivePath(drivePath, encoder),
+            ['\\', '\\', .. var uncPath] => // \\server\share
+                writer.TryWriteUncPath(uncPath, encoder),
+            _ => writer.TryWriteDrivePath(fileName, encoder)
+        };
 
         charsWritten = writer.WrittenCount;
-        return true;
+        return created;
+    }
+
+    extension(ref SpanWriter<char> writer)
+    {
+        private bool TryWriteDrivePath(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+        {
+            const char escapedDriveSeparatorChar = '|';
+
+            // drive-relative paths such as C:folder or C: are not fully-qualified
+            if (fileName is not [var drive, ':', '\\' or UriPathSeparator, .. var path] || !char.IsAsciiLetter(drive))
+                throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+
+            return writer.TryWrite([UriPathSeparator, drive, escapedDriveSeparatorChar, UriPathSeparator])
+                   && writer.TryWritePath(path, WindowsDirectorySeparators, encoder);
+        }
+
+        private bool TryWriteUncPath(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+        {
+            // host name is a part of URI authority, so it's written as-is instead of encoding
+            var hostName = GetPathComponent(ref fileName, WindowsDirectorySeparators, out var endsWithTrailingSeparator);
+            if (!IsValidHostName(hostName))
+                throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+
+            return writer.TryWrite(hostName)
+                   && (!endsWithTrailingSeparator
+                       || (writer.TryAdd(UriPathSeparator) && writer.TryWritePath(fileName, WindowsDirectorySeparators, encoder)));
+
+            // Non-ASCII characters are allowed for IDN host names
+            static bool IsValidHostName(ReadOnlySpan<char> hostName)
+            {
+                if (hostName.IsEmpty)
+                    return false;
+
+                foreach (var ch in hostName)
+                {
+                    if (char.IsAscii(ch) && !(char.IsAsciiLetterOrDigit(ch) || ch is '-' or '.' or '_'))
+                        return false;
+                }
+
+                return true;
+            }
+        }
+
+        private bool TryWritePath(ReadOnlySpan<char> path, SearchValues<char> directorySeparatorChars, UrlEncoder encoder)
+        {
+            while (true)
+            {
+                var component = GetPathComponent(ref path, directorySeparatorChars, out var endsWithTrailingSeparator);
+                if (encoder.Encode(component, writer.RemainingSpan, out _, out var charsWritten) is not OperationStatus.Done)
+                    return false;
+
+                writer.Advance(charsWritten);
+                if (!endsWithTrailingSeparator)
+                    return true;
+
+                if (!writer.TryAdd(UriPathSeparator))
+                    return false;
+            }
+        }
     }
 
     private static ReadOnlySpan<char> GetPathComponent(ref ReadOnlySpan<char> fileName, SearchValues<char> directorySeparatorChars, out bool endsWithTrailingSeparator)

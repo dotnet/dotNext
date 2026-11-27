@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Runtime.CompilerServices;
 
 using Linq.Expressions;
+using Patterns;
 using Reflection;
 using static Collections.Generic.Collection;
 
@@ -23,16 +24,6 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 {
     private static readonly UserDataSlot<int> ParameterPositionSlot = new();
 
-    // small optimization - reuse variable for awaiters of the same type
-    private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
-    {
-        public bool Equals(ParameterExpression? x, ParameterExpression? y)
-            => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
-
-        public int GetHashCode(ParameterExpression variable)
-            => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
-    }
-
     internal readonly TaskType Task;
     internal readonly Dictionary<ParameterExpression, MemberExpression?> Variables;
     private readonly VisitorContext context;
@@ -46,7 +37,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
     {
         Task = new TaskType(taskType);
-        Variables = new(new VariableEqualityComparer());
+        Variables = new(VariableEqualityComparer.Instance);
         for (var position = 0; position < parameters.Count; position++)
         {
             var parameter = parameters[position];
@@ -58,11 +49,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         stateSwitchTable = new StateTransitionTable();
     }
 
-    internal ParameterExpression? ResultVariable
-    {
-        get;
-        private set;
-    }
+    // the result must survive suspension in finally block, so it's a state slot
+    private ParameterExpression? resultSlot;
 
     private static void MarkAsParameter(ParameterExpression parameter, int position)
         => parameter.UserData.Set(ParameterPositionSlot, position);
@@ -76,12 +64,14 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
 
-    private unsafe ParameterExpression NewStateSlot(Type type)
-        => NewStateSlot(Func<ParameterExpression>.FromPointer(&Expression.Variable, type));
+    private ParameterExpression NewStateSlot(Type type)
+        => NewStateSlot(Expression.Variable(type));
 
-    private ParameterExpression NewStateSlot(Func<ParameterExpression> factory)
+    private ParameterExpression NewStateSlot(AwaitExpression expr)
+        => NewStateSlot(expr.NewAwaiterHolder());
+
+    private ParameterExpression NewStateSlot(ParameterExpression slot)
     {
-        var slot = factory();
         Variables[slot] = null;
         return slot;
     }
@@ -89,11 +79,11 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     // async method cannot have block expression with type not equal to void
     protected override Expression VisitBlock(BlockExpression node)
     {
-        if (node.Type == typeof(void))
+        if (node.Type.IsVoid)
         {
             node = Statement.Rewrite(node);
             node.Variables.ForEach(variable => Variables.Add(variable, null));
-            node = node.Update(Empty<ParameterExpression>(), node.Expressions);
+            node = node.Update([], node.Expressions);
             return context.Rewrite(node, base.VisitBlock);
         }
 
@@ -102,51 +92,105 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitConditional(ConditionalExpression node)
     {
-        if (node.Type == typeof(void))
+        if (node.Type.IsVoid)
         {
             node = node.Update(node.Test, Statement.Wrap(node.IfTrue), Statement.Wrap(node.IfFalse));
             return context.Rewrite(node, base.VisitConditional);
         }
-        else if (node is { IfTrue: BlockExpression, IfFalse: BlockExpression })
+
+        if (node is { IfTrue: BlockExpression } or { IfFalse: BlockExpression })
         {
             throw new NotSupportedException(ExceptionMessages.UnsupportedConditionalExpr);
+        }
+
+        if (AwaitDetector.ContainsAwait(node.IfTrue) || AwaitDetector.ContainsAwait(node.IfFalse))
+        {
+            return context.Rewrite(node, LowerConditional);
+        }
+
+        return context.Rewrite(node, base.VisitConditional);
+    }
+
+    // The branch with await expression must be lowered to the statement. Otherwise, the suspension point
+    // would be placed in the prologue of the enclosing statement and evaluated regardless of the condition.
+    private ParameterExpression LowerConditional(ConditionalExpression node)
+    {
+        /*
+            x = a ? await b() : c();
+            --transformed into--
+            if (a)
+                state.temp = await b();
+            else
+                state.temp = c();
+            x = state.temp;
+         */
+        var result = NewStateSlot(node.Type);
+        var statement = Visit(Expression.IfThenElse(node.Test, Expression.Assign(result, node.IfTrue), Expression.Assign(result, node.IfFalse)));
+
+        // after the code produced by the test expression
+        context.CurrentStatement.PrologueCodeInserter().Invoke(statement);
+        context.MarkContainsAwait();
+        return result;
+    }
+
+    private ParameterExpression LowerShortCircuit(BinaryExpression node)
+    {
+        if (node.Method is not null || node.Conversion is not null || (node.NodeType is not ExpressionType.Coalesce && node.Type != typeof(bool)))
+            throw new NotSupportedException(ExceptionMessages.UnsupportedAsyncShortCircuit);
+
+        var left = Visit(node.Left);
+        var insertionPoint = context.CurrentStatement.PrologueCodeInserter();
+        var result = NewStateSlot(node.Type);
+        Expression statement;
+        if (node.NodeType is ExpressionType.Coalesce)
+        {
+            /*
+                x = a ?? await b();
+                --transformed into--
+                state.left = a;
+                if (state.left != null)
+                    state.temp = state.left;
+                else
+                    state.temp = await b();
+                x = state.temp;
+             */
+            var leftValue = NewStateSlot(left.Type);
+            insertionPoint(Expression.Assign(leftValue, left));
+            Expression hasValue = Nullable.GetUnderlyingType(left.Type) is null
+                ? Expression.ReferenceNotEqual(leftValue, Expression.Constant(null, left.Type))
+                : Expression.Property(leftValue, nameof(Nullable<>.HasValue));
+
+            statement = Expression.IfThenElse(
+                hasValue,
+                Expression.Assign(result, ConvertIfNeeded(leftValue, node.Type)),
+                Expression.Assign(result, ConvertIfNeeded(node.Right, node.Type)));
         }
         else
         {
             /*
-                x = a ? await b() : c();
+                x = a && await b();
                 --transformed into--
-                var temp;
-                if(a)
-                    temp = await b();
-                else
-                    temp = c();
-                x = temp;
+                state.temp = a;
+                if (state.temp)
+                    state.temp = await b();
+                x = state.temp;
              */
-            var prologue = context.CurrentStatement.PrologueCodeInserter();
-            {
-                var result = context.Rewrite(node, base.VisitConditional);
-                if (result is ConditionalExpression conditional)
-                    node = conditional;
-                else
-                    return result;
-            }
-
-            if (ExpressionAttributes.Get(node.IfTrue) is { ContainsAwait: true } || ExpressionAttributes.Get(node.IfFalse) is { ContainsAwait: true })
-            {
-                var tempVar = NewStateSlot(node.Type);
-                prologue(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
-                return tempVar;
-            }
-            else
-            {
-                return node;
-            }
+            insertionPoint(Expression.Assign(result, left));
+            statement = Expression.IfThen(
+                node.NodeType is ExpressionType.AndAlso ? result : Expression.Not(result),
+                Expression.Assign(result, node.Right));
         }
+
+        insertionPoint(Visit(statement));
+        context.MarkContainsAwait();
+        return result;
+
+        static Expression ConvertIfNeeded(Expression expression, Type type)
+            => expression.Type == type ? expression : Expression.Convert(expression, type);
     }
 
-    protected override Expression VisitLabel(LabelExpression node)
-        => node.Type == typeof(void)
+    protected override LabelExpression VisitLabel(LabelExpression node)
+        => node.Type.IsVoid
             ? context.Rewrite(node, Func<LabelExpression, LabelExpression>.Identity)
             : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
@@ -159,15 +203,103 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return analyzer.Closures.Count > 0 ? new ClosureExpression(lambda, analyzer.Closures) : lambda;
     }
 
+    private static bool ContainsAwait(ElementInit initializer)
+        => initializer.Arguments.Any(AwaitDetector.ContainsAwait);
+
+    private static bool ContainsAwait(MemberBinding binding) => binding switch
+    {
+        MemberAssignment assignment => AwaitDetector.ContainsAwait(assignment.Expression),
+        MemberMemberBinding nested => nested.Bindings.Any(ContainsAwait),
+        MemberListBinding list => list.Initializers.Any(ContainsAwait),
+        _ => false,
+    };
+
     protected override Expression VisitListInit(ListInitExpression node)
-        => context.Rewrite(node, base.VisitListInit);
+        => node.Initializers.Any(ContainsAwait)
+            ? context.Rewrite(node, LowerListInit)
+            : context.Rewrite(node, base.VisitListInit);
+
+    protected override Expression VisitMemberInit(MemberInitExpression node)
+        => node.Bindings.Any(ContainsAwait)
+            ? context.Rewrite(node, LowerMemberInit)
+            : context.Rewrite(node, base.VisitMemberInit);
+
+    // Each binding must be completed before the next one is evaluated, as in C#. Thus, the initializer
+    // with the suspension point is lowered to the sequence of statements.
+    private ParameterExpression LowerMemberInit(MemberInitExpression node)
+    {
+        /*
+            x = new T { A = a(), B = await b() };
+            --transformed into--
+            state.temp = new T();
+            state.temp.A = a();
+            state.temp.B = await b();
+            x = state.temp;
+         */
+        var result = NewStateSlot(node.Type);
+        var statements = new List<Expression> { Expression.Assign(result, node.NewExpression) };
+        LowerBindings(result, node.Bindings, statements);
+        return LowerInitializer(result, statements);
+    }
+
+    private ParameterExpression LowerListInit(ListInitExpression node)
+    {
+        /*
+            x = new List<T> { a(), await b() };
+            --transformed into--
+            state.temp = new List<T>();
+            state.temp.Add(a());
+            state.temp.Add(await b());
+            x = state.temp;
+         */
+        var result = NewStateSlot(node.Type);
+        var statements = new List<Expression> { Expression.Assign(result, node.NewExpression) };
+        LowerElements(result, node.Initializers, statements);
+        return LowerInitializer(result, statements);
+    }
+
+    private ParameterExpression LowerInitializer(ParameterExpression result, List<Expression> statements)
+    {
+        var block = Visit(Expression.Block(typeof(void), statements));
+
+        // after the code produced by the enclosing expressions
+        context.CurrentStatement.PrologueCodeInserter().Invoke(block);
+        context.MarkContainsAwait();
+        return result;
+    }
+
+    private static void LowerBindings(Expression target, IEnumerable<MemberBinding> bindings, List<Expression> output)
+    {
+        foreach (var binding in bindings)
+        {
+            var member = Expression.MakeMemberAccess(target, binding.Member);
+            switch (binding)
+            {
+                case MemberAssignment assignment:
+                    output.Add(Expression.Assign(member, assignment.Expression));
+                    break;
+                case MemberMemberBinding nested:
+                    LowerBindings(member, nested.Bindings, output);
+                    break;
+                case MemberListBinding list:
+                    LowerElements(member, list.Initializers, output);
+                    break;
+            }
+        }
+    }
+
+    private static void LowerElements(Expression target, IEnumerable<ElementInit> initializers, List<Expression> output)
+    {
+        foreach (var initializer in initializers)
+            output.Add(Expression.Call(target, initializer.AddMethod, initializer.Arguments));
+    }
 
     protected override Expression VisitTypeBinary(TypeBinaryExpression node)
         => context.Rewrite(node, base.VisitTypeBinary);
 
     protected override Expression VisitSwitch(SwitchExpression node)
     {
-        if (node.Type != typeof(void))
+        if (!node.Type.IsVoid)
             throw new NotSupportedException(ExceptionMessages.VoidSwitchExpected);
 
         node = Statement.Rewrite(node);
@@ -199,13 +331,13 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override ElementInit VisitElementInit(ElementInit node)
     {
-        var arguments = Visit(node.Arguments, arg => context.Rewrite(arg, new Converter<Expression, Expression>(Visit)));
+        var arguments = Visit(node.Arguments, arg => context.Rewrite<Expression, Expression>(arg, Visit));
         return node.Update(arguments);
     }
 
     protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
     {
-        var expression = context.Rewrite(node.Expression, new Converter<Expression, Expression>(Visit));
+        var expression = context.Rewrite<Expression, Expression>(node.Expression, Visit);
         return ReferenceEquals(expression, node.Expression) ? node : node.Update(expression);
     }
 
@@ -216,13 +348,15 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     protected override Expression VisitTry(TryExpression node)
         => context.Rewrite(node, stateSwitchTable, base.VisitExtension);
 
-    private Expression VisitAwait(AwaitExpression node)
+    private MethodCallExpression VisitAwait(AwaitExpression node)
     {
-        var prologue = context.CurrentStatement.PrologueCodeInserter();
         node = (AwaitExpression)base.VisitExtension(node);
 
+        // suspension must be placed after the code produced by the operand
+        var prologue = context.CurrentStatement.PrologueCodeInserter();
+
         // allocate slot for awaiter
-        var awaiterSlot = NewStateSlot(node.NewAwaiterHolder);
+        var awaiterSlot = NewStateSlot(node);
 
         // generate new state and label for it
         var (stateId, transition) = context.NewTransition(stateSwitchTable);
@@ -236,15 +370,16 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         if (context.IsInFinally)
             throw new InvalidOperationException(ExceptionMessages.LeavingFinallyClause);
 
-        // attach all available finalization code
-        var prologue = context.CurrentStatement.PrologueCodeInserter();
+        // attach all available finalization code after the code produced by the result expression
         expr = (AsyncResultExpression)base.VisitExtension(expr);
+        var prologue = context.CurrentStatement.PrologueCodeInserter();
 
+        // the result must be computed before finalization code that can modify local variables
         if (Task.HasResult && expr.IsSimpleResult is false)
         {
-            ResultVariable ??= Expression.Parameter(Task.ResultType);
-            prologue(Expression.Assign(ResultVariable, expr.AsyncResult));
-            expr = expr.Update(ResultVariable);
+            resultSlot ??= NewStateSlot(Task.ResultType);
+            prologue(Expression.Assign(resultSlot, expr.AsyncResult));
+            expr = expr.Update(resultSlot);
         }
 
         foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
@@ -278,44 +413,145 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return node;
     }
 
-    private static bool IsAssignment(BinaryExpression binary) => binary.NodeType is ExpressionType.Assign or
-        ExpressionType.AddAssign or
-        ExpressionType.AddAssignChecked or
-        ExpressionType.SubtractAssign or
-        ExpressionType.SubtractAssignChecked or
-        ExpressionType.OrAssign or
-        ExpressionType.AndAssign or
-        ExpressionType.ExclusiveOrAssign or
-        ExpressionType.DivideAssign or
-        ExpressionType.LeftShiftAssign or
-        ExpressionType.RightShiftAssign or
-        ExpressionType.MultiplyAssign or
-        ExpressionType.MultiplyAssignChecked or
-        ExpressionType.ModuloAssign or
-        ExpressionType.PostDecrementAssign or
-        ExpressionType.PreDecrementAssign or
-        ExpressionType.PostIncrementAssign or
-        ExpressionType.PreIncrementAssign or
-        ExpressionType.PowerAssign;
+    // use it after a node is visited
+    private static bool ContainsAwait(Expression node)
+        => ExpressionAttributes.Get(node) is { ContainsAwait: true };
 
-    private Expression RewriteBinary(BinaryExpression node)
+    // stores the value of the expression in the state slot, so it can be evaluated before the suspension point
+    private Expression Spill(Expression node, CodeInsertionPoint insertionPoint)
     {
-        var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
-        var newNode = base.VisitBinary(node);
-        if (newNode is BinaryExpression binary)
-            node = binary;
-        else
-            return newNode;
-
-        // do not place left operand at statement level because it has no side effects
-        if (node.Left is ParameterExpression || node.Left is ConstantExpression || IsAssignment(node))
+        // these expressions produce the same value regardless of the evaluation order
+        if (node is ConstantExpression or DefaultExpression or LambdaExpression)
             return node;
-        var leftIsAsync = ExpressionAttributes.Get(node.Left) is { ContainsAwait: true };
-        var rightIsAsync = ExpressionAttributes.Get(node.Right) is { ContainsAwait: true };
 
-        // left operand should be computed before right, so bump it before await expression
-        if (rightIsAsync && !leftIsAsync)
+        var slot = NewStateSlot(node.Type);
+        insertionPoint(Expression.Assign(slot, node));
+        return slot;
+    }
+
+    // stores the parts of the location in the state slots, so the location remains the same
+    // after the suspension point, but the location itself is not copied
+    private Expression SpillLocation(Expression location, CodeInsertionPoint insertionPoint)
+    {
+        switch (location)
         {
+            case ParameterExpression or MemberExpression { Expression: null }:
+                return location;
+            case MemberExpression member:
+                return member.Update(SpillReceiver(member.Expression, insertionPoint));
+            case IndexExpression { Object: not null } index:
+                var receiver = SpillReceiver(index.Object, insertionPoint);
+                var arguments = new Expression[index.Arguments.Count];
+                for (var i = 0; i < arguments.Length; i++)
+                    arguments[i] = Spill(index.Arguments[i], insertionPoint);
+
+                return index.Update(receiver, arguments);
+            case BinaryExpression { NodeType: ExpressionType.ArrayIndex } arrayIndex:
+                return arrayIndex.Update(Spill(arrayIndex.Left, insertionPoint), arrayIndex.Conversion, Spill(arrayIndex.Right, insertionPoint));
+            default:
+                // not a location, so it can be copied
+                return Spill(location, insertionPoint);
+        }
+    }
+
+    // the receiver of value type must not be copied, because the copy can be mutated instead of the original value
+    private Expression SpillReceiver(Expression receiver, CodeInsertionPoint insertionPoint)
+        => receiver.Type.IsValueType ? SpillLocation(receiver, insertionPoint) : Spill(receiver, insertionPoint);
+
+    // Visits operands in their evaluation order. The operands evaluated before the last await expression
+    // are spilled to the state slots, so they are evaluated before the suspension point, as in C#.
+    private void VisitOperands(Span<Expression?> operands, ReadOnlySpan<bool> isLocation)
+    {
+        var insertionPoints = new CodeInsertionPoint[operands.Length];
+        var lastAsyncOperand = -1;
+        for (var i = 0; i < operands.Length; i++)
+        {
+            if (operands[i] is { } operand)
+            {
+                operands[i] = operand = Visit(operand);
+                if (ContainsAwait(operand))
+                    lastAsyncOperand = i;
+            }
+
+            // the position after the code produced by the operand
+            insertionPoints[i] = context.CurrentStatement.PrologueCodeInserter();
+        }
+
+        // in reverse order, because the insertion points of adjacent operands may share the same position
+        for (var i = lastAsyncOperand - 1; i >= 0; i--)
+        {
+            if (operands[i] is { } operand)
+            {
+                operands[i] = i < isLocation.Length && isLocation[i]
+                    ? SpillLocation(operand, insertionPoints[i])
+                    : Spill(operand, insertionPoints[i]);
+            }
+        }
+    }
+
+    private static bool IsByRefParameter(ParameterInfo parameter) => parameter.ParameterType.IsByRef;
+
+    private static bool[] GetLocationOperands(Expression? receiver, MethodBase? method)
+    {
+        var parameters = method?.GetParameters() ?? [];
+        var result = new bool[parameters.Length + 1];
+        result[0] = receiver?.Type.IsValueType ?? false;
+        for (var i = 0; i < parameters.Length; i++)
+            result[i + 1] = IsByRefParameter(parameters[i]);
+
+        return result;
+    }
+
+    private static ExpressionType? GetCompoundOperation(ExpressionType assignment) => assignment switch
+    {
+        ExpressionType.AddAssign => ExpressionType.Add,
+        ExpressionType.AddAssignChecked => ExpressionType.AddChecked,
+        ExpressionType.SubtractAssign => ExpressionType.Subtract,
+        ExpressionType.SubtractAssignChecked => ExpressionType.SubtractChecked,
+        ExpressionType.MultiplyAssign => ExpressionType.Multiply,
+        ExpressionType.MultiplyAssignChecked => ExpressionType.MultiplyChecked,
+        ExpressionType.DivideAssign => ExpressionType.Divide,
+        ExpressionType.ModuloAssign => ExpressionType.Modulo,
+        ExpressionType.PowerAssign => ExpressionType.Power,
+        ExpressionType.AndAssign => ExpressionType.And,
+        ExpressionType.OrAssign => ExpressionType.Or,
+        ExpressionType.ExclusiveOrAssign => ExpressionType.ExclusiveOr,
+        ExpressionType.LeftShiftAssign => ExpressionType.LeftShift,
+        ExpressionType.RightShiftAssign => ExpressionType.RightShift,
+        _ => null,
+    };
+
+    private BinaryExpression RewriteBinary(BinaryExpression node)
+    {
+        var left = Visit(node.Left);
+        var insertionPoint = context.CurrentStatement.PrologueCodeInserter();
+        var right = Visit(node.Right);
+        var conversion = VisitAndConvert(node.Conversion, nameof(VisitBinary));
+
+        if (ContainsAwait(right))
+        {
+            if (GetCompoundOperation(node.NodeType) is { } operation)
+            {
+                /*
+                    x += await a;
+                    --transformed into--
+                    state.field = x;
+                    state.awaiter = a.GetAwaiter();
+                    MoveNext(state.awaiter, newState);
+                    return;
+                    newState: x = state.field + state.awaiter.GetResult();
+                 */
+                left = SpillLocation(left, insertionPoint);
+                var current = Spill(left, insertionPoint);
+                Expression result = Expression.MakeBinary(operation, current, right, liftToNull: false, node.Method);
+                if (conversion is not null)
+                    result = Expression.Invoke(conversion, result);
+                else if (result.Type != left.Type)
+                    result = Expression.Convert(result, left.Type);
+
+                return Expression.Assign(left, result);
+            }
+
             /*
                 Method() + await a;
                 --transformed into--
@@ -325,16 +561,18 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
                 return;
                 newState: state.field + state.awaiter.GetResult();
              */
-            var leftTemp = NewStateSlot(node.Left.Type);
-            codeInsertionPoint(Expression.Assign(leftTemp, node.Left));
-            node = node.Update(leftTemp, node.Conversion, node.Right);
+            left = node.NodeType is ExpressionType.Assign
+                ? SpillLocation(left, insertionPoint)
+                : Spill(left, insertionPoint);
         }
 
-        return node;
+        return node.Update(left, conversion, right);
     }
 
     protected override Expression VisitBinary(BinaryExpression node)
-        => context.Rewrite(node, RewriteBinary);
+        => node.NodeType is ExpressionType.AndAlso or ExpressionType.OrElse or ExpressionType.Coalesce && AwaitDetector.ContainsAwait(node.Right)
+            ? context.Rewrite(node, LowerShortCircuit)
+            : context.Rewrite(node, RewriteBinary);
 
     protected override Expression VisitParameter(ParameterExpression node)
         => context.Rewrite(node, base.VisitParameter);
@@ -342,65 +580,60 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     protected override Expression VisitConstant(ConstantExpression node)
         => context.Rewrite(node, base.VisitConstant);
 
-    private Expression RewriteCallable<TException>(TException node, Expression[] arguments, Converter<TException, Expression> visitor, Func<TException, Expression[], TException> updater)
-        where TException : Expression
+    private MethodCallExpression RewriteMethodCall(MethodCallExpression node)
     {
-        var newNode = visitor(node);
-        if (newNode is TException typedExpr)
-            node = typedExpr;
-        else
-            return newNode;
-
-        var hasAwait = false;
-        var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
-        for (var i = arguments.LongLength - 1L; i >= 0L; i--)
-        {
-            ref Expression arg = ref arguments[i];
-            hasAwait |= ExpressionAttributes.Get(arg) is { ContainsAwait: true };
-            if (hasAwait)
-            {
-                var tempVar = NewStateSlot(arg.Type);
-                codeInsertionPoint(Expression.Assign(tempVar, arg));
-                arg = tempVar;
-            }
-        }
-
-        return updater(node, arguments);
+        Expression?[] operands = [node.Object, .. node.Arguments];
+        VisitOperands(operands, GetLocationOperands(node.Object, node.Method));
+        return node.Update(operands[0], operands[1..]!);
     }
 
-    private static MethodCallExpression UpdateArguments(MethodCallExpression node, IReadOnlyCollection<Expression> arguments)
-        => node.Update(node.Object!, arguments);
+    protected override MethodCallExpression VisitMethodCall(MethodCallExpression node)
+        => context.Rewrite(node, RewriteMethodCall);
 
-    protected override Expression VisitMethodCall(MethodCallExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitMethodCall, UpdateArguments));
+    private InvocationExpression RewriteInvocation(InvocationExpression node)
+    {
+        Expression?[] operands = [node.Expression, .. node.Arguments];
+        var invokeMethod = node.Expression.Type.GetMethod(nameof(Action.Invoke));
+        VisitOperands(operands, GetLocationOperands(receiver: null, invokeMethod));
+        return node.Update(operands[0]!, operands[1..]!);
+    }
 
-    private static InvocationExpression UpdateArguments(InvocationExpression node, IReadOnlyCollection<Expression> arguments)
-        => node.Update(node.Expression, arguments);
+    protected override InvocationExpression VisitInvocation(InvocationExpression node)
+        => context.Rewrite(node, RewriteInvocation);
 
-    protected override Expression VisitInvocation(InvocationExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitInvocation, UpdateArguments));
+    private IndexExpression RewriteIndex(IndexExpression node)
+    {
+        Expression?[] operands = [node.Object, .. node.Arguments];
+        VisitOperands(operands, [node.Object?.Type.IsValueType ?? false]);
+        return node.Update(operands[0]!, operands[1..]!);
+    }
 
-    private static IndexExpression UpdateArguments(IndexExpression node, IReadOnlyCollection<Expression> arguments)
-        => node.Update(node.Object!, arguments);
+    protected override IndexExpression VisitIndex(IndexExpression node)
+        => context.Rewrite(node, RewriteIndex);
 
-    protected override Expression VisitIndex(IndexExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Arguments], base.VisitIndex, UpdateArguments));
+    private NewExpression RewriteNew(NewExpression node)
+    {
+        Expression?[] operands = [.. node.Arguments];
+        VisitOperands(operands, GetLocationOperands(receiver: null, node.Constructor).AsSpan(1));
+        return node.Update(operands!);
+    }
 
-    private static NewExpression UpdateArguments(NewExpression node, IReadOnlyCollection<Expression> arguments)
-        => node.Update(arguments);
+    protected override NewExpression VisitNew(NewExpression node)
+        => context.Rewrite(node, RewriteNew);
 
-    protected override Expression VisitNew(NewExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Arguments], base.VisitNew, UpdateArguments));
+    private NewArrayExpression RewriteNewArray(NewArrayExpression node)
+    {
+        Expression?[] operands = [.. node.Expressions];
+        VisitOperands(operands, []);
+        return node.Update(operands!);
+    }
 
-    private static NewArrayExpression UpdateArguments(NewArrayExpression node, IReadOnlyCollection<Expression> arguments)
-        => node.Update(arguments);
-
-    protected override Expression VisitNewArray(NewArrayExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Expressions], base.VisitNewArray, UpdateArguments));
+    protected override NewArrayExpression VisitNewArray(NewArrayExpression node)
+        => context.Rewrite(node, RewriteNewArray);
 
     protected override Expression VisitLoop(LoopExpression node)
     {
-        if (node.Type != typeof(void))
+        if (!node.Type.IsVoid)
             throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
 
         node = Statement.Rewrite(node);
@@ -412,9 +645,6 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitMember(MemberExpression node)
         => context.Rewrite(node, base.VisitMember);
-
-    protected override Expression VisitMemberInit(MemberInitExpression node)
-        => context.Rewrite(node, base.VisitMemberInit);
 
     private Expression Rethrow(UnaryExpression node)
         => context.ExceptionHolder is { } holder ? RethrowExpression.Dispatch(holder) : new RethrowExpression();
@@ -430,10 +660,10 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
     }
 
-    private Expression? Rewrite(Statement body)
-        => Visit(body)?.Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
+    private Expression Rewrite(Statement body)
+        => Visit(body).Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
 
-    internal Expression? Rewrite(Expression body)
+    internal Expression Rewrite(Expression body)
         => Rewrite(body is BlockExpression block ?
             new Statement(Expression.Block(typeof(void), block.Variables, block.Expressions)) :
             new Statement(body));
@@ -530,7 +760,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         internal MemberExpression Build(Type stateType)
         {
             Type stateMachineType;
-            if (returnType == typeof(void))
+            if (returnType.IsVoid)
             {
                 stateMachineType = usePooling ? typeof(PoolingAsyncStateMachine<>) : typeof(AsyncStateMachine<>);
                 stateMachineType = stateMachineType.MakeGenericType(stateType);
@@ -546,22 +776,20 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         }
     }
 
-    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables, out ParameterExpression stateMachine)
+    private static ReadOnlySpan<MemberExpression> CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables,
+        out ParameterExpression stateMachine)
     {
         var sm = new StateMachineBuilder(returnType, usePooling);
-        MemberExpression[] slots;
-        using (var builder = new ValueTupleBuilder())
+        var builder = new ValueTupleBuilder();
+        foreach (var v in variables)
         {
-            foreach (var v in variables)
-            {
-                var type = ClosureAnalyzer.IsClosure(v)
-                    ? typeof(StrongBox<>).MakeGenericType(v.Type)
-                    : v.Type;
-                builder.Add(type);
-            }
-
-            slots = builder.Build<MemberExpression>(sm.Build, out _);
+            var type = ClosureAnalyzer.IsClosure(v)
+                ? typeof(StrongBox<>).MakeGenericType(v.Type)
+                : v.Type;
+            builder.Add(type);
         }
+
+        ReadOnlySpan<MemberExpression> slots = builder.Build<MemberExpression>(sm.Build, out _);
 
         Debug.Assert(sm.StateMachine is not null);
         stateMachine = sm.StateMachine;
@@ -570,9 +798,9 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     private static ParameterExpression CreateStateHolderType(Type returnType, bool usePooling, IDictionary<ParameterExpression, MemberExpression?> variables)
     {
-        var vars = variables.Keys.ToArray();
+        ReadOnlySpan<ParameterExpression> vars = [.. variables.Keys];
         var slots = CreateStateHolderType(returnType, usePooling, vars, out var stateMachine);
-        for (var i = 0L; i < slots.LongLength; i++)
+        for (var i = 0; i < slots.Length; i++)
         {
             var v = vars[i];
             var s = slots[i];
@@ -610,7 +838,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     internal Expression<TDelegate> Build(Expression body, bool tailCall, bool usePooling)
     {
-        body = methodBuilder.Rewrite(body) ?? Expression.Empty();
+        body = methodBuilder.Rewrite(body);
 
         // build state machine type
         stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, usePooling, methodBuilder.Variables);
@@ -618,16 +846,56 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         // replace all special expressions
         body = Visit(body);
 
-        if (methodBuilder.ResultVariable is { } resultVar)
-        {
-            body = body is BlockExpression block
-                ? block.Update(block.Variables.Append(resultVar), block.Expressions)
-                : Expression.Block(body.Type, [resultVar], body);
-        }
-
         // now we have state machine method, wrap it into lambda
         return Build(BuildStateMachine(body, stateMachine, tailCall));
     }
 
     public void Dispose() => methodBuilder.Dispose();
+}
+
+// Detects await expressions in the expression tree before its rewriting.
+// Use it before a node is visited.
+file sealed class AwaitDetector : ExpressionVisitor
+{
+    private bool found;
+
+    [return: NotNullIfNotNull(nameof(node))]
+    public override Expression? Visit(Expression? node) => found ? node : base.Visit(node);
+
+    // await expression inside of the nested lambda belongs to that lambda
+    protected override Expression VisitLambda<T>(Expression<T> node) => node;
+
+    protected override Expression VisitExtension(Expression node)
+    {
+        if (node is AwaitExpression)
+        {
+            found = true;
+            return node;
+        }
+
+        return node.CanReduce ? base.VisitExtension(node) : node;
+    }
+
+    public static bool ContainsAwait(Expression? node)
+    {
+        var detector = new AwaitDetector();
+        detector.Visit(node);
+        return detector.found;
+    }
+}
+
+// small optimization - reuse variable for awaiters of the same type
+file sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>, ISingleton<VariableEqualityComparer>
+{
+    public static VariableEqualityComparer Instance { get; } = new();
+
+    private VariableEqualityComparer()
+    {
+    }
+    
+    public bool Equals(ParameterExpression? x, ParameterExpression? y)
+        => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
+
+    public int GetHashCode(ParameterExpression variable)
+        => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
 }

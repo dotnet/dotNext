@@ -1,5 +1,6 @@
 {
   "name": "dotnext-skills",
+  "version": "6.14.0",
   "displayName": ".NEXT",
   "description": "Guidance for AI agents on writing efficient .NET code with the .NEXT libraries",
   "author": {

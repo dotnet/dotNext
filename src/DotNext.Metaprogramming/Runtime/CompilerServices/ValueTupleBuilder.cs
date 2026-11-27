@@ -1,7 +1,11 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
+
+using Collections.Generic;
 
 /// <summary>
 /// Represents value tuple builder with arbitrary number of tuple
@@ -9,15 +13,18 @@ namespace DotNext.Runtime.CompilerServices;
 /// </summary>
 /// <seealso cref="ValueTuple"/>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/tuples">Tuples</seealso>
-public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
+public sealed class ValueTupleBuilder : IEnumerable<Type>, IResettable
 {
-    private readonly IList<Type> items = new List<Type>(7); // no more than 7 items because max number of generic arguments of tuple type
+    // no more than 7 items because max number of generic arguments of tuple type
+    private const int MaxTupleSize = 7;
+    private InlineArray7<Type> items;
+    private int count;
     private ValueTupleBuilder? rest;
 
     /// <summary>
     /// Number of elements in the tuple.
     /// </summary>
-    public int Count => items.Count + (rest?.Count ?? 0);
+    public int Count => count + (rest?.Count ?? 0);
 
     /// <summary>
     /// Constructs value tuple.
@@ -38,12 +45,12 @@ public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
 
     private void Build(Expression instance, Span<MemberExpression> output)
     {
-        for (var i = 0; i < items.Count; i++)
+        for (var i = 0; i < count; i++)
             output[i] = Expression.Field(instance, "Item" + (i + 1));
         if (rest is not null)
         {
             instance = Expression.Field(instance, "Rest");
-            rest.Build(instance, output.Slice(7));
+            rest.Build(instance, output.Slice(MaxTupleSize));
         }
     }
 
@@ -69,10 +76,10 @@ public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
     /// <param name="itemType">The type of the tuple component.</param>
     public void Add(Type itemType)
     {
-        if (Count < 7)
-            items.Add(itemType);
+        if (count < MaxTupleSize)
+            items[count++] = itemType;
         else if (rest is null)
-            rest = new ValueTupleBuilder() { itemType };
+            rest = [itemType];
         else
             rest.Add(itemType);
     }
@@ -84,24 +91,71 @@ public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
     public void Add<T>() => Add(typeof(T));
 
     /// <summary>
+    /// Resets the builder.
+    /// </summary>
+    public void Reset()
+    {
+        count = 0;
+        Span<Type> types = items;
+        types.Clear();
+        
+        if (rest is not null)
+        {
+            rest.Reset();
+            rest = null;
+        }
+    }
+
+    /// <summary>
     /// Returns an enumerator over all tuple components.
     /// </summary>
     /// <returns>An enumerator over all tuple components.</returns>
-    public IEnumerator<Type> GetEnumerator()
-        => (rest is null ? items : items.Concat(rest)).GetEnumerator();
+    public Enumerator GetEnumerator() => new(this);
+
+    private IEnumerator<Type> ToClassicEnumerator()
+        => IEnumerator<Type>.Create(GetEnumerator());
 
     /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator<Type> IEnumerable<Type>.GetEnumerator() => ToClassicEnumerator();
 
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => ToClassicEnumerator();
+    
     /// <summary>
-    /// Releases all managed resources associated with this builder.
+    /// Represents enumerator over tuple items.
     /// </summary>
-    /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; otherwise, <see langword="false"/>.</param>
-    protected override void Dispose(bool disposing)
+    [StructLayout(LayoutKind.Auto)]
+    public struct Enumerator : IEnumerator<Enumerator, Type>
     {
-        if (disposing)
-            items.Clear();
-        rest?.Dispose(disposing);
-        base.Dispose(disposing);
+        private ValueTupleBuilder? builder;
+        private int offset;
+
+        internal Enumerator(ValueTupleBuilder builder)
+        {
+            this.builder = builder;
+            offset = -1;
+        }
+
+        /// <inheritdoc/>
+        public readonly Type Current => builder?.items[offset] ?? throw new InvalidOperationException();
+
+        /// <inheritdoc/>
+        public bool MoveNext()
+        {
+            if (builder is not null)
+            {
+                if (++offset < builder.count)
+                    return true;
+
+                if (builder.rest is { } tail)
+                {
+                    offset = 0;
+                    builder = tail;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace DotNext.Linq.Expressions;
 
+using static Reflection.TypeExtensions;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 
@@ -60,9 +61,10 @@ public sealed class AsyncResultExpression : CustomExpression
     /// </remarks>
     public override Type Type => taskType;
 
-    // indicates that AsyncResult cannot throw exception so it can be inlined
+    // indicates that AsyncResult cannot throw exception and cannot be changed by the subsequent code
+    // (such as finally block), so it can be inlined
     internal bool IsSimpleResult
-        => AsyncResult is ConstantExpression or ParameterExpression or DefaultExpression;
+        => AsyncResult is ConstantExpression or DefaultExpression;
 
     /// <summary>
     /// Translates this expression into predefined set of expressions
@@ -73,7 +75,7 @@ public sealed class AsyncResultExpression : CustomExpression
     {
         Expression completedTask, failedTask;
         var caughtException = Variable(typeof(Exception));
-        if (AsyncResult.Type == typeof(void))
+        if (AsyncResult.Type.IsVoid)
         {
             completedTask = Block(AsyncResult, Default(typeof(CompletedTask)));
             failedTask = typeof(CompletedTask).New([caughtException]);

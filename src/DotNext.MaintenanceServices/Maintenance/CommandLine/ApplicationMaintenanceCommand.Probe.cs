@@ -62,7 +62,8 @@ partial class ApplicationMaintenanceCommand
 
         static TimeSpan ParseTimeout(ArgumentResult result)
         {
-            var token = result.Tokens.FirstOrDefault()?.Value;
+            if (result.Tokens is not [{ Value: { Length: > 0 } token }, ..])
+                token = null;
 
             if (!(TimeSpan.TryParse(token, CultureInfo.InvariantCulture, out var timeout) && timeout > TimeSpan.Zero))
             {

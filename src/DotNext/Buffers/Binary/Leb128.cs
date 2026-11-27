@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,6 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers.Binary;
 
 using Numerics;
+using static Runtime.ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Represents encoder and decoder for 7-bit encoded integers.
@@ -26,17 +25,25 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     public static int MaxSizeInBytes { get; }
     
     private static readonly int MaxSizeInBits;
+    private static readonly int LastOctetShift;
+
+    // bits of the last octet that don't fit into T, including the sign bit for signed types
+    private static readonly byte LastOctetMask;
     private const byte BitMask = 0x7F;
     private const byte CarryBit = BitMask + 1;
 
     static Leb128()
     {
         var bitCount = Number.get_MaxByteCount<T>() * 8;
-        bitCount = Math.DivRem(bitCount, 7, out var remainder);
-        bitCount += Unsafe.BitCast<bool, byte>(remainder is not 0);
+        var octetCount = Math.DivRem(bitCount, 7, out var remainder);
+        octetCount += Unsafe.BitCast<bool, byte>(remainder is not 0);
         
-        MaxSizeInBytes = bitCount;
-        MaxSizeInBits = bitCount * 7;
+        MaxSizeInBytes = octetCount;
+        MaxSizeInBits = octetCount * 7;
+        LastOctetShift = MaxSizeInBits - 7;
+
+        var payloadBits = bitCount - LastOctetShift;
+        LastOctetMask = (byte)(byte.MaxValue << (Number.get_IsSigned<T>() ? payloadBits - 1 : payloadBits));
     }
 
     private ushort shift;
@@ -47,11 +54,13 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     /// </summary>
     /// <param name="b">The byte that represents a part of 7-bit encoded integer.</param>
     /// <returns><see langword="true"/> if the decoder expects more data to decode; <see langword="false"/> if the last octet detected.</returns>
-    /// <exception cref="InvalidDataException">The maximum number of octets reached.</exception>
+    /// <exception cref="InvalidDataException">
+    /// The maximum number of octets reached, or the last possible octet contains bits that don't fit into <typeparamref name="T"/>.
+    /// </exception>
     public bool Append(byte b)
     {
-        if (shift == MaxSizeInBits)
-            ThrowInvalidDataException();
+        if (shift >= LastOctetShift && (shift == MaxSizeInBits || !IsValidLastOctet(b)))
+            InvalidDataException.Throw();
         
         value |= (T.CreateTruncating(b) & T.CreateTruncating(BitMask)) << shift;
         shift += 7;
@@ -64,11 +73,14 @@ public struct Leb128<T> : ISupplier<T>, IResettable
             value |= T.AllBitsSet << shift;
 
         return nextOctetExpected;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidDataException()
-            => throw new InvalidDataException();
+        
+        // The last octet must not have the carry bit, and the bits beyond the size of T
+        // must be zero (unsigned) or equal to the sign bit (signed)
+        static bool IsValidLastOctet(byte b)
+        {
+            var extraBits = b & LastOctetMask;
+            return extraBits is 0 || (Number.get_IsSigned<T>() && extraBits == (LastOctetMask & BitMask));
+        }
     }
 
     /// <summary>
@@ -95,7 +107,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     /// <summary>
     /// Gets an enumerator over encoded octets.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The enumerator over encoded octets.</returns>
     public readonly Enumerator GetEnumerator() => new(value);
 
     /// <summary>
@@ -180,7 +192,7 @@ public static class Leb128
     /// <summary>
     /// Extends the binary integer types.
     /// </summary>
-    /// <param name="value">The value to encoder.</param>
+    /// <param name="value">The value to encode.</param>
     /// <typeparam name="T">The binary integer type.</typeparam>
     extension<T>(T value)
         where T : struct, IBinaryInteger<T>
@@ -191,7 +203,13 @@ public static class Leb128
         /// <param name="buffer">The input buffer containing LEB128 octets.</param>
         /// <param name="result">The decoded value.</param>
         /// <param name="bytesConsumed">The number of bytes consumed from <paramref name="buffer"/>.</param>
-        /// <returns><see langword="true"/> if operation is successful; otherwise, <see langword="false"/>.</returns>
+        /// <returns>
+        /// <see langword="true"/> if operation is successful;
+        /// <see langword="false"/> if <paramref name="buffer"/> ends before the last octet of the encoded value.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The encoded value is longer than <see cref="Leb128{T}.MaxSizeInBytes"/>, or it doesn't fit into <typeparamref name="T"/>.
+        /// </exception>
         public static bool TryReadLeb128(ReadOnlySpan<byte> buffer, out T result, out int bytesConsumed)
         {
             bytesConsumed = 0;

@@ -870,7 +870,7 @@ public static class CodeGenerator
 
     /// <summary>
     /// Adds <c>return</c> instruction to return from
-    /// underlying lambda function having non-<see cref="void"/>
+    /// underlying lambda function having non-<see cref="Void"/>
     /// return type.
     /// </summary>
     /// <param name="result">Optional value to be returned from the lambda function.</param>

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Reflection;
 
 using Buffers;
+using static Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Various extension methods for type reflection.
@@ -144,7 +145,7 @@ public static class TypeExtensions
         /// <summary>
         /// Gets a value indicating that the type is <see langword="void"/>.
         /// </summary>
-        public bool IsVoid => typeof(void) == type;
+        public bool IsVoid => RuntimeHelpers.VoidHandle.Equals(type.TypeHandle);
         
         /// <summary>
         /// Casts an object to the class, value type or interface.
