@@ -126,7 +126,7 @@ public partial class FileBufferingWriter
 
         /// <summary>
         /// Defines the path to the file to be used
-        /// as backing store for the written content when in-memory buffer overlfows.
+        /// as backing store for the written content when in-memory buffer overflows.
         /// </summary>
         /// <remarks>
         /// If this property is defined then the file will not be deleted automatically on <see cref="Dispose"/>
