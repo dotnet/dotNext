@@ -402,6 +402,88 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         }
     }
 
+    private sealed class TrackingAllocator<T>
+    {
+        internal int Rented, Returned;
+
+        internal MemoryAllocator<T> Allocator => length => new(Rent, length);
+
+        private IMemoryOwner<T> Rent(int length)
+        {
+            Rented++;
+            return new Owner(this, length);
+        }
+
+        private sealed class Owner(TrackingAllocator<T> allocator, int length) : IMemoryOwner<T>
+        {
+            public Memory<T> Memory { get; } = new T[length];
+
+            public void Dispose() => allocator.Returned++;
+        }
+    }
+
+    public static TheoryData<IAsyncBinaryReaderWriterSource> GetAllSources() =>
+    [
+        new StreamSource(),
+        new PipeSource(),
+        new BufferSource(),
+        new DefaultSource(),
+        new ReadOnlySequenceSource(),
+        new FileSource(128),
+        new BufferedFileSource(128)
+    ];
+
+    private static async Task CompleteWritingAsync(IAsyncBinaryReaderWriterSource source)
+    {
+        if (source is IFlushable flushable)
+            await flushable.FlushAsync(TestToken);
+
+        if (source is PipeSource pipe)
+            await pipe.CompleteWriterAsync();
+    }
+
+    [Theory]
+    [MemberData(nameof(GetAllSources))]
+    public static async Task DecodeInvalidBytesReturnsBuffer(IAsyncBinaryReaderWriterSource source)
+    {
+        await using (source)
+        {
+            await source.CreateWriter().WriteAsync(new byte[] { 0xFF, 0xFE, 0xFD }, LengthFormat.LittleEndian, TestToken);
+            await CompleteWritingAsync(source);
+
+            var encoding = Encoding.GetEncoding("utf-8", EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
+            var allocator = new TrackingAllocator<char>();
+            await ThrowsAsync<DecoderFallbackException>(async () =>
+            {
+                using var result = await source.CreateReader().DecodeAsync(new(encoding, reuseDecoder: false), LengthFormat.LittleEndian, allocator.Allocator, TestToken);
+            });
+
+            Equal(1, allocator.Rented);
+            Equal(1, allocator.Returned);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(GetAllSources))]
+    public static async Task ReadTruncatedBlockReturnsBuffer(IAsyncBinaryReaderWriterSource source)
+    {
+        await using (source)
+        {
+            var writer = source.CreateWriter();
+            await writer.WriteLittleEndianAsync(10, TestToken);
+            await writer.WriteAsync(new byte[5], lengthFormat: null, TestToken);
+            await CompleteWritingAsync(source);
+
+            var allocator = new TrackingAllocator<byte>();
+            await ThrowsAsync<EndOfStreamException>(async () =>
+            {
+                using var result = await source.CreateReader().ReadAsync(LengthFormat.LittleEndian, allocator.Allocator, TestToken);
+            });
+
+            Equal(allocator.Rented, allocator.Returned);
+        }
+    }
+
     public static TheoryData<IAsyncBinaryReaderWriterSource> GetSources() =>
     [
         new StreamSource(),

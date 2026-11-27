@@ -186,10 +186,20 @@ partial class PipeExtensions
                 break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
-                result.TryResize(
-                    await ReadAsync<int, CharBufferDecodingReader>(reader,
-                            new(in context, length, result.Memory), token)
-                        .ConfigureAwait(false));
+                try
+                {
+                    result.TryResize(
+                        await ReadAsync<int, CharBufferDecodingReader>(reader,
+                                new(in context, length, result.Memory), token)
+                            .ConfigureAwait(false));
+                }
+                catch
+                {
+                    // avoid memory leak in case of exception
+                    result.Dispose();
+                    throw;
+                }
+
                 break;
             default:
                 result = default;
@@ -584,7 +594,17 @@ partial class PipeExtensions
                 break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateExactly(length);
-                await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
+                try
+                {
+                    await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // avoid memory leak in case of exception
+                    result.Dispose();
+                    throw;
+                }
+
                 break;
             default:
                 result = default;

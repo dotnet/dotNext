@@ -161,7 +161,17 @@ public partial class FileReader : IAsyncBinaryReader
             case > 0:
                 EnsureAvailable(length);
                 result = allocator.DefaultIfNull.AllocateExactly(length);
-                await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
+                try
+                {
+                    await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // avoid memory leak in case of exception
+                    result.Dispose();
+                    throw;
+                }
+
                 break;
             default:
                 result = default;
@@ -195,8 +205,18 @@ public partial class FileReader : IAsyncBinaryReader
             case > 0:
                 EnsureAvailable(lengthInBytes);
                 result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
-                result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token)
-                    .ConfigureAwait(false));
+                try
+                {
+                    result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token)
+                        .ConfigureAwait(false));
+                }
+                catch
+                {
+                    // avoid memory leak in case of exception
+                    result.Dispose();
+                    throw;
+                }
+
                 break;
             default:
                 result = default;

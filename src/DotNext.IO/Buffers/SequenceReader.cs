@@ -328,7 +328,16 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             EnsureAvailable(length);
             result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
             var parser = new CharBufferDecodingReader(in context, length, result.Memory);
-            result.TryResize(Read<int, CharBufferDecodingReader>(ref parser));
+            try
+            {
+                result.TryResize(Read<int, CharBufferDecodingReader>(ref parser));
+            }
+            catch
+            {
+                // the decoder can throw DecoderFallbackException
+                result.Dispose();
+                throw;
+            }
         }
         else
         {
