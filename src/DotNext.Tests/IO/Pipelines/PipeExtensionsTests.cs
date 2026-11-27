@@ -655,4 +655,35 @@ public sealed class PipeExtensionsTests : Test
         await pipe.Writer.CopyFromAsync(source, source.Length, TestToken);
         True(source.Position < source.Length);
     }
+
+    [Theory]
+    [InlineData(0, 1024)]
+    [InlineData(1024, 1024)]
+    [InlineData(100, 1024)]
+    public static async Task WriteSequence(int segmentSize, int length)
+    {
+        var expected = RandomBytes(length);
+        var sequence = segmentSize > 0 ? ToReadOnlySequence<byte>(expected, segmentSize) : new(expected);
+        var pipe = new Pipe();
+
+        await pipe.Writer.WriteAsync(sequence, TestToken);
+        await pipe.Writer.CompleteAsync();
+
+        var result = await pipe.Reader.ReadAtLeastAsync(length + 1, TestToken);
+        Equal(expected, result.Buffer.ToArray());
+        pipe.Reader.AdvanceTo(result.Buffer.End);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100)]
+    public static async Task WriteSequenceCanceledFlush(int segmentSize)
+    {
+        var bytes = RandomBytes(1024);
+        var sequence = segmentSize > 0 ? ToReadOnlySequence<byte>(bytes, segmentSize) : new(bytes);
+        var pipe = new Pipe();
+        pipe.Writer.CancelPendingFlush();
+
+        await ThrowsAnyAsync<OperationCanceledException>(pipe.Writer.WriteAsync(sequence, TestToken).AsTask);
+    }
 }

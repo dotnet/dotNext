@@ -14,13 +14,46 @@ public static partial class PipeExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask WriteAsync(this PipeWriter writer, ReadOnlySequence<byte> sequence, CancellationToken token = default)
+    public static ValueTask WriteAsync(this PipeWriter writer, ReadOnlySequence<byte> sequence, CancellationToken token = default)
     {
-        var flushResult = new FlushResult(false, false);
+        return sequence.IsSingleSegment
+            ? WriteBlockAsync(writer, sequence.First, token)
+            : WriteSegmentsAsync(writer, sequence, token);
 
-        for (var position = sequence.Start; !flushResult.IsCompleted && sequence.TryGet(ref position, out var block); flushResult.ThrowIfCancellationRequested(token))
+        static ValueTask WriteBlockAsync(PipeWriter writer, ReadOnlyMemory<byte> block, CancellationToken token)
         {
-            flushResult = await writer.WriteAsync(block, token).ConfigureAwait(false);
+            var task = writer.WriteAsync(block, token);
+            if (!task.IsCompletedSuccessfully)
+                return WaitAsync(task, token);
+
+            try
+            {
+                task.Result.ThrowIfCancellationRequested(token);
+            }
+            catch (Exception e)
+            {
+                return ValueTask.FromException(e);
+            }
+
+            return ValueTask.CompletedTask;
+        }
+
+        static async ValueTask WriteSegmentsAsync(PipeWriter writer, ReadOnlySequence<byte> sequence, CancellationToken token)
+        {
+            var flushResult = new FlushResult(false, false);
+
+            for (var position = sequence.Start;
+                 !flushResult.IsCompleted && sequence.TryGet(ref position, out var block);
+                 flushResult.ThrowIfCancellationRequested(token))
+            {
+                flushResult = await writer.WriteAsync(block, token).ConfigureAwait(false);
+            }
+        }
+
+        static async ValueTask WaitAsync(ValueTask<FlushResult> task, CancellationToken token)
+        {
+            var flushResult = await task.ConfigureAwait(false);
+            flushResult.ThrowIfCancellationRequested(token);
         }
     }
 
