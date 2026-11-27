@@ -80,6 +80,84 @@ public sealed class LockTests : Test
     }
 
     [Fact]
+    public static void CanceledTokenAndUncontendedLock()
+    {
+        var @lock = new System.Threading.Lock();
+        var token = new CancellationToken(canceled: true);
+
+        True(@lock.TryEnter(InfiniteTimeSpan, token, throwOnCancellation: true));
+        @lock.Exit();
+
+        @lock.Enter();
+        try
+        {
+            False(Task.Factory.StartNew(() => @lock.TryEnter(InfiniteTimeSpan, token), TaskCreationOptions.LongRunning).Result);
+            Throws<OperationCanceledException>(() => Task.Factory.StartNew(() => @lock.TryEnter(InfiniteTimeSpan, token, throwOnCancellation: true), TaskCreationOptions.LongRunning).GetAwaiter().GetResult());
+        }
+        finally
+        {
+            @lock.Exit();
+        }
+    }
+
+    [Fact]
+    public static async Task CanceledTokenPreservesExternalInterruption()
+    {
+        var task = Task.Factory.StartNew(static () =>
+        {
+            var @lock = new System.Threading.Lock();
+            Thread.CurrentThread.Interrupt();
+            var acquired = @lock.TryEnter(InfiniteTimeSpan, new(canceled: true));
+            @lock.Exit();
+
+            try
+            {
+                Thread.Sleep(0);
+                return (acquired, false);
+            }
+            catch (ThreadInterruptedException)
+            {
+                return (acquired, true);
+            }
+        }, TaskCreationOptions.LongRunning);
+
+        var (acquired, interrupted) = await task;
+        True(acquired);
+        True(interrupted);
+    }
+
+    [Fact]
+    public static async Task CancellationConcurrentWithAcquisition()
+    {
+        await Task.Factory.StartNew(static () =>
+        {
+            var @lock = new System.Threading.Lock();
+            using var barrier = new Barrier(2);
+            for (var i = 0; i < 1000; i++)
+            {
+                using var cts = new CancellationTokenSource();
+                var canceller = new Thread(() =>
+                {
+                    barrier.SignalAndWait();
+                    cts.Cancel();
+                });
+
+                canceller.Start();
+                barrier.SignalAndWait();
+
+                // must not throw ThreadInterruptedException
+                if (@lock.TryEnter(InfiniteTimeSpan, cts.Token))
+                    @lock.Exit();
+
+                canceller.Join();
+
+                // must not leave pending interruption
+                Thread.Sleep(0);
+            }
+        }, TaskCreationOptions.LongRunning);
+    }
+
+    [Fact]
     public static async Task InterruptThreadJoin()
     {
         using var cts = new CancellationTokenSource();
