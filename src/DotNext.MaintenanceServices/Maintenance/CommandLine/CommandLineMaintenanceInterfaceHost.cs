@@ -97,7 +97,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             var exitCode = await context
                 .InvokeAsync(root, command.ToString(), ParserSettings, Authentication, Authorization, token)
                 .ConfigureAwait(false);
-            context.Exit(exitCode, output, error);
+            await context.ExitAsync(exitCode, CharBufferAllocator, output, error, token).ConfigureAwait(false);
         }
         catch (Exception e)
         {

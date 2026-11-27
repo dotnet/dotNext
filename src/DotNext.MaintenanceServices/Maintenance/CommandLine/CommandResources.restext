@@ -21,4 +21,6 @@ ProbeCommandUnsuccessfulResponseOptionDescription=Specifies the message to be re
 ProbeCommandInvalidTimeoutArg=Incorrect timeout {0}
 LoginOptionName=Login
 SecretOptionName=Password
-HelpCommandDescription=List of all available commands
+ProcessCommandDescription=Shows information about the current process
+ProcessCommandIdDescription=Shows the current process id
+ProcessCommandRuntimeDescription=Shows .NET runtime version

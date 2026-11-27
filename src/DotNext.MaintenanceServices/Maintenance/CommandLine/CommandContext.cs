@@ -8,6 +8,7 @@ namespace DotNext.Maintenance.CommandLine;
 using Authentication;
 using Authorization;
 using Buffers;
+using IO;
 
 /// <summary>
 /// Represents command invocation context.
@@ -21,19 +22,23 @@ internal sealed partial class CommandContext : InvocationConfiguration
     private const char LeftSquareBracket = '[';
     private const char RightSquareBracket = ']';
 
-    private readonly IMaintenanceSession session;
     private bool printExitCode;
     private bool suppressOutputBuffer;
     private bool suppressErrorBuffer;
     
-    internal CommandContext(IMaintenanceSession session)
+    public CommandContext(IMaintenanceSession session)
     {
         Debug.Assert(session is not null);
 
-        this.session = session;
+        Session = session;
         ProcessTerminationTimeout = null;
         EnableDefaultExceptionHandler = false;
     }
+    
+    /// <summary>
+    /// Gets the maintenance session.
+    /// </summary>
+    public IMaintenanceSession Session { get; }
 
     internal async ValueTask<int> InvokeAsync(RootCommand root,
         string input,
@@ -49,9 +54,9 @@ internal sealed partial class CommandContext : InvocationConfiguration
         {
             exitCode = ProcessParseErrors(root, errors, result.Tokens);
         }
-        else if (await AuthenticateAsync(session, result, authentication, token).ConfigureAwait(false)
-                 && await authorization.AuthorizeAsync(session, result.CommandResult, token).ConfigureAwait(false)
-                 && await AuthorizeAsync(session, result.CommandResult, token).ConfigureAwait(false))
+        else if (await AuthenticateAsync(Session, result, authentication, token).ConfigureAwait(false)
+                 && await authorization.AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false)
+                 && await AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false))
         {
             exitCode = await result.InvokeAsync(this, token).ConfigureAwait(false);
         }
@@ -112,30 +117,30 @@ internal sealed partial class CommandContext : InvocationConfiguration
         CancellationToken token)
         => (result.Command as ApplicationMaintenanceCommand)?.AuthorizeAsync(session, result, token) ?? ValueTask.FromResult(true);
 
-    internal void Exit(int exitCode, BufferWriter<char> output, BufferWriter<char> error)
+    internal async ValueTask ExitAsync(int exitCode, MemoryAllocator<char> allocator, BufferWriter<char> output, BufferWriter<char> error, CancellationToken token)
     {
-        var writer = session.ResponseWriter;
+        var writer = Session.ResponseWriter;
         if (printExitCode)
         {
-            writer.Write(LeftSquareBracket);
-            writer.Write(exitCode);
-            writer.Write(RightSquareBracket);
+            await writer.WriteAsync(allocator, $"{LeftSquareBracket}{exitCode}{RightSquareBracket}", token)
+                .ConfigureAwait(false);
         }
 
         switch (exitCode)
         {
-            case 0 when suppressOutputBuffer is false:
-                writer.Write(output.WrittenMemory.Span);
+            case 0 when !suppressOutputBuffer:
+                await writer.WriteAsync(output.WrittenMemory, token).ConfigureAwait(false);
                 break;
-            case not 0 when suppressErrorBuffer is false:
-                writer.Write(error.WrittenMemory.Span);
+            case not 0 when !suppressErrorBuffer:
+                await writer.WriteAsync(error.WrittenMemory, token).ConfigureAwait(false);
                 break;
         }
 
-        if (session.IsInteractive)
+        if (Session.IsInteractive)
         {
             const string prompt = "> ";
-            writer.Write(prompt);
+            await writer.WriteLineAsync(ReadOnlyMemory<char>.Empty, token).ConfigureAwait(false);
+            await writer.WriteAsync(prompt.AsMemory(), token).ConfigureAwait(false);
         }
     }
 
@@ -159,5 +164,5 @@ internal sealed partial class CommandContext : InvocationConfiguration
     }
 
     internal static IMaintenanceSession? TryGetSession(ParseResult result)
-        => (result.InvocationConfiguration as CommandContext)?.session;
+        => (result.InvocationConfiguration as CommandContext)?.Session;
 }

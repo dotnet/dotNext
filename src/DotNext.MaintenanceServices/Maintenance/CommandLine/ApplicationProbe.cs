@@ -9,7 +9,7 @@ internal static class ApplicationProbe
     internal const string LivenessProbeName = "liveness";
 
     internal static async Task InvokeProbeAsync(this IApplicationStatusProvider provider, string probeName, string successfulResponse,
-        string unsuccessfulRespose, TimeSpan timeout, TextWriter writer, CancellationToken token)
+        string unsuccessfulResponse, TimeSpan timeout, TextWriter writer, CancellationToken token)
     {
         bool success;
 
@@ -36,7 +36,7 @@ internal static class ApplicationProbe
             success = await ExecuteProbeByNameAsync(provider, probeName, token).ConfigureAwait(false);
         }
 
-        await writer.WriteAsync((success ? successfulResponse : unsuccessfulRespose).AsMemory(), token).ConfigureAwait(false);
+        await writer.WriteAsync((success ? successfulResponse : unsuccessfulResponse).AsMemory(), token).ConfigureAwait(false);
     }
 
     private static Task<bool> ExecuteProbeByNameAsync(IApplicationStatusProvider provider, string probeName, CancellationToken token) => probeName switch
