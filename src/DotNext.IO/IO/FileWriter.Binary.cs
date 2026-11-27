@@ -257,11 +257,11 @@ public partial class FileWriter : IAsyncBinaryWriter
         var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         var buffer = BufferSpan;
-        bool result;
-        if (result = value.TryFormat(buffer.Slice(expectedLengthSize), out bytesWritten, format, provider))
+        var result = value.TryFormat(buffer.Slice(expectedLengthSize), out bytesWritten, format, provider);
+        if (result)
         {
             var actualLengthSize = lengthFormat.HasValue
-                ? BufferWriter.WriteLength(buffer, bytesWritten, lengthFormat.GetValueOrDefault())
+                ? buffer.WriteLength(bytesWritten, lengthFormat.GetValueOrDefault())
                 : 0;
 
             if (actualLengthSize < expectedLengthSize)

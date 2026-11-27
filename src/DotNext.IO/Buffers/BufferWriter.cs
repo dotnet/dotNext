@@ -82,7 +82,7 @@ public static class BufferWriter
     private static int WriteLength<TWriter>(TWriter writer, int length, LengthFormat lengthFormat)
         where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        var bytesWritten = WriteLength(writer.GetSpan(lengthFormat.MaxByteCount), length, lengthFormat);
+        var bytesWritten = writer.GetSpan(lengthFormat.MaxByteCount).WriteLength(length, lengthFormat);
         writer.Advance(bytesWritten);
         return bytesWritten;
     }
@@ -90,7 +90,7 @@ public static class BufferWriter
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
         => WriteLength<IBufferWriter<byte>>(buffer, length, lengthFormat);
 
-    internal static int WriteLength(Span<byte> buffer, int length, LengthFormat lengthFormat)
+    internal static int WriteLength(this Span<byte> buffer, int length, LengthFormat lengthFormat)
     {
         var writer = new SpanWriter<byte>(buffer);
         return writer.WriteLength(length, lengthFormat);
@@ -291,7 +291,7 @@ public static class BufferWriter
             }
 
             var actualLengthSize = lengthFormat.HasValue
-                ? WriteLength(buffer.Slice(0, expectedLengthSize), bytesWritten, lengthFormat.GetValueOrDefault())
+                ? buffer.Slice(0, expectedLengthSize).WriteLength(bytesWritten, lengthFormat.GetValueOrDefault())
                 : 0;
 
             if (actualLengthSize < expectedLengthSize)
