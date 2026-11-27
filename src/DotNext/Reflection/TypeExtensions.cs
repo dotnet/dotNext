@@ -46,7 +46,7 @@ public static class TypeExtensions
 
             switch (type)
             {
-                case { IsGenericTypeDefinition: true } when genericDefinition.IsGenericTypeDefinition is false:
+                case { IsGenericTypeDefinition: true } when !genericDefinition.IsGenericTypeDefinition:
                     return null;
                 case { IsConstructedGenericType: true } when type.GetGenericTypeDefinition() == genericDefinition:
                     return type;
@@ -54,8 +54,8 @@ public static class TypeExtensions
 
             switch (genericDefinition)
             {
-                case { IsSealed: true }:
-                    return IsGenericInstanceOf(type) ? type : null;
+                case { IsSealed: true } when IsGenericInstanceOf(type):
+                    return type;
                 case { IsInterface: true }:
                     foreach (var iface in type.GetInterfaces())
                     {
