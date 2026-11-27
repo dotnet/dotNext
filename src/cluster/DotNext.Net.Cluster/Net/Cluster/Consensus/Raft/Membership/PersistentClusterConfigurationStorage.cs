@@ -45,7 +45,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         try
         {
             var configBuffer = MemoryAllocator.AllocateExactly(length - sizeof(long));
-            await RandomAccess.ReadAsync(handle, [versionBuffer.Memory, configBuffer.Memory], fileOffset: 0L, token).ConfigureAwait(false);
+            await RandomAccess.ReadExactlyAsync(handle, versionBuffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
+            await RandomAccess.ReadExactlyAsync(handle, configBuffer.Memory, fileOffset: sizeof(long), token).ConfigureAwait(false);
             return (configBuffer, ReadInt64LittleEndian(versionBuffer.Span));
         }
         finally
@@ -102,7 +103,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             // restore version from file
             using (var handle = File.OpenHandle(configurationFile, FileMode.Open, FileAccess.Read, FileShare.Read, Options))
             {
-                await RandomAccess.ReadAsync(handle, versionBuffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
+                await RandomAccess.ReadExactlyAsync(handle, versionBuffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
                 version = ReadInt64LittleEndian(versionBuffer.Span);
             }
 

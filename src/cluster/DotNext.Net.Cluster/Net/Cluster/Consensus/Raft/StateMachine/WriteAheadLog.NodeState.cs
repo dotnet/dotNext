@@ -6,6 +6,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
+using IO;
 using Threading;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
@@ -50,10 +51,15 @@ partial class WriteAheadLog
             handle = File.OpenHandle(path, mode, FileAccess.ReadWrite, FileShare.Read, FileOptions.WriteThrough, preallocationSize);
             buffer = GC.AllocateUninitializedArray<byte>(Size, pinned: true);
 
-            if (RandomAccess.Read(handle, buffer, fileOffset: 0L) < buffer.Length)
+            // the file is new, or the process crashed before the state was written
+            if (RandomAccess.GetLength(handle) < buffer.Length)
             {
                 Array.Clear(buffer);
                 RandomAccess.Write(handle, buffer, fileOffset: 0L);
+            }
+            else
+            {
+                RandomAccess.ReadExactly(handle, buffer, fileOffset: 0L);
             }
 
             if (Unsafe.BitCast<byte, bool>(buffer[LastVotePresenceOffset]))

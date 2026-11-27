@@ -599,13 +599,9 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (fileBackend is not null)
         {
-            // a single read may return fewer bytes than requested
-            for (int count; totalBytes < filePosition && !output.IsEmpty; totalBytes += count, output = output.Slice(count))
-            {
-                count = RandomAccess.Read(fileBackend, output.TrimLength(int.CreateSaturating(filePosition - totalBytes)), totalBytes);
-                if (count is 0)
-                    throw new EndOfStreamException();
-            }
+            totalBytes = int.CreateSaturating(long.Min(filePosition, output.Length));
+            RandomAccess.ReadExactly(fileBackend, output.Slice(0, totalBytes), fileOffset: 0L);
+            output = output.Slice(totalBytes);
         }
 
         if (HasBufferedData)
@@ -634,13 +630,9 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (fileBackend is not null)
         {
-            // a single read may return fewer bytes than requested
-            for (int count; totalBytes < filePosition && !output.IsEmpty; totalBytes += count, output = output.Slice(count))
-            {
-                count = await RandomAccess.ReadAsync(fileBackend, output.TrimLength(int.CreateSaturating(filePosition - totalBytes)), totalBytes, token).ConfigureAwait(false);
-                if (count is 0)
-                    throw new EndOfStreamException();
-            }
+            totalBytes = int.CreateSaturating(long.Min(filePosition, output.Length));
+            await RandomAccess.ReadExactlyAsync(fileBackend, output.Slice(0, totalBytes), fileOffset: 0L, token).ConfigureAwait(false);
+            output = output.Slice(totalBytes);
         }
 
         if (HasBufferedData)

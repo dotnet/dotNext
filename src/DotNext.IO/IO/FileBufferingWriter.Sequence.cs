@@ -133,8 +133,10 @@ public partial class FileBufferingWriter
 
             if (current != window)
             {
+                RandomAccess.ReadExactly(handle, result.Slice(0, window.Length), window.Offset);
+
+                // the window is cached only if the read is successful
                 current = window;
-                RandomAccess.Read(handle, result, window.Offset);
             }
 
             return result.Slice(0, window.Length);

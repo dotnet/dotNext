@@ -10,6 +10,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using IO;
 using Numerics;
 
 partial class WriteAheadLog
@@ -135,7 +136,17 @@ partial class WriteAheadLog
         public void Populate(DirectoryInfo location, uint pageIndex)
         {
             using var handle = OpenRead(GetPageFileName(location, pageIndex));
-            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
+            var page = GetSpan();
+
+            // the page file is empty if the process crashed before the file was extended to the page size
+            if (RandomAccess.GetLength(handle) is 0L)
+            {
+                page.Clear();
+            }
+            else
+            {
+                RandomAccess.ReadExactly(handle, page, fileOffset: 0L);
+            }
         }
         
         public static void Delete(DirectoryInfo directory, uint pageIndex)
