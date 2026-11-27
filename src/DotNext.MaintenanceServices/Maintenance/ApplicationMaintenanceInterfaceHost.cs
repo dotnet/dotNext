@@ -31,7 +31,7 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedService
 {
     private const int MinBufferSize = 32;
-    internal const UnixFileMode DefaultSocketFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.GroupRead | UnixFileMode.GroupWrite;
+    private const UnixFileMode DefaultSocketFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.GroupRead | UnixFileMode.GroupWrite;
     private static readonly ReadOnlyMemory<char> NewLineMemory = Environment.NewLine.AsMemory();
     private static readonly ReadOnlyMemory<char> NullTerminationCharMemory = new[] { '\0' };
 

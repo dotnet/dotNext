@@ -21,13 +21,13 @@ internal sealed class MoveNextExpression : TransitionExpression
 
     public override Expression Reduce() => awaiter;
 
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override MoveNextExpression VisitChildren(ExpressionVisitor visitor)
     {
         var newAwaiter = visitor.Visit(awaiter);
-        return ReferenceEquals(awaiter, newAwaiter) ? this : new MoveNextExpression(newAwaiter, stateId);
+        return ReferenceEquals(awaiter, newAwaiter) ? this : new(newAwaiter, stateId);
     }
 
-    internal override Expression Reduce(ParameterExpression stateMachine)
+    internal override MethodCallExpression Reduce(ParameterExpression stateMachine)
     {
         const BindingFlags publicInstanceFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
         var genericParam = Type.MakeGenericMethodParameter(0).MakeByRefType();

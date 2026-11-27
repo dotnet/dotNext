@@ -1,13 +1,11 @@
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
-using Collections.Generic;
 using AuthorizationCallback = Authorization.AuthorizationCallback;
 using IAuthenticationHandler = Authentication.IAuthenticationHandler;
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;

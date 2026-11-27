@@ -145,6 +145,25 @@ public sealed class LeaseTests : Test
     }
 
     [Fact]
+    public static async Task RenewalWithMetadataUpdateIncrementsVersion()
+    {
+        var storage = new LeaseStorage(DefaultTimeout, supportsRenewalStamp: true);
+        using var provider = new TestLeaseProvider(DefaultTimeout, storage);
+        var owner = Guid.NewGuid();
+
+        Equal(1L, NotNull(await provider.TryAcquireAsync(owner, TestToken)).State.Version);
+
+        // the metadata update is durable, so it increments the version even if the storage supports renewal stamps
+        var renewed = NotNull(await provider.TryRenewAsync(owner, reacquire: false, 42, static (value, _, _) => ValueTask.FromResult(value), TestToken)).State;
+        Equal(2L, renewed.Version);
+        Equal(42, renewed.Metadata);
+        Equal(renewed.Version, storage.State.Version);
+
+        // renewal without the metadata update keeps the version
+        Equal(2L, NotNull(await provider.TryRenewAsync(owner, reacquire: false, TestToken)).State.Version);
+    }
+
+    [Fact]
     public static async Task RenewalStampExtendsLease()
     {
         var ttl = TimeSpan.FromMilliseconds(500);

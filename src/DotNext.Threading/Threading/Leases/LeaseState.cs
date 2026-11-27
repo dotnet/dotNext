@@ -88,7 +88,8 @@ public readonly struct LeaseState<TMetadata>
     /// The value is opaque, it is compared only for equality and must not be interpreted.
     /// <para>
     /// <see cref="Guid.Empty"/> means that the underlying storage doesn't support renewal stamps.
-    /// In that case, every renewal increments <see cref="Version"/>.
+    /// In that case, every renewal increments <see cref="Version"/>. The renewal that updates the metadata
+    /// always increments <see cref="Version"/>.
     /// </para>
     /// <para>
     /// If the underlying storage supports renewal stamps, it must return the stamp of the current state,

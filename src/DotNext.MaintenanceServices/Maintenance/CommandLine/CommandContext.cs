@@ -8,6 +8,7 @@ namespace DotNext.Maintenance.CommandLine;
 using Authentication;
 using Authorization;
 using Buffers;
+using IO;
 
 /// <summary>
 /// Represents command invocation context.
@@ -20,12 +21,12 @@ internal sealed partial class CommandContext : InvocationConfiguration
     
     private const char LeftSquareBracket = '[';
     private const char RightSquareBracket = ']';
-    
+
     private bool printExitCode;
     private bool suppressOutputBuffer;
     private bool suppressErrorBuffer;
     
-    internal CommandContext(IMaintenanceSession session)
+    public CommandContext(IMaintenanceSession session)
     {
         Debug.Assert(session is not null);
 
@@ -33,7 +34,7 @@ internal sealed partial class CommandContext : InvocationConfiguration
         ProcessTerminationTimeout = null;
         EnableDefaultExceptionHandler = false;
     }
-
+    
     /// <summary>
     /// Gets the maintenance session.
     /// </summary>
@@ -83,7 +84,7 @@ internal sealed partial class CommandContext : InvocationConfiguration
 
         static bool Matches(Token token, Directive directive)
             => token is { Type: TokenType.Directive, Value: [LeftSquareBracket, .. var directiveName, RightSquareBracket] }
-               && MemoryExtensions.SequenceEqual<char>(directiveName, directive.Name);
+               && directiveName.SequenceEqual<char>(directive.Name);
     }
 
     private static async ValueTask<bool> AuthenticateAsync(IMaintenanceSession session,
@@ -116,29 +117,30 @@ internal sealed partial class CommandContext : InvocationConfiguration
         CancellationToken token)
         => (result.Command as ApplicationMaintenanceCommand)?.AuthorizeAsync(session, result, token) ?? ValueTask.FromResult(true);
 
-    internal void Exit(int exitCode, BufferWriter<char> output, BufferWriter<char> error)
+    internal async ValueTask ExitAsync(int exitCode, MemoryAllocator<char> allocator, BufferWriter<char> output, BufferWriter<char> error, CancellationToken token)
     {
+        var writer = Session.ResponseWriter;
         if (printExitCode)
         {
-            Session.ResponseWriter.Write(LeftSquareBracket);
-            Session.ResponseWriter.Write(exitCode);
-            Session.ResponseWriter.Write(RightSquareBracket);
+            await writer.WriteAsync(allocator, $"{LeftSquareBracket}{exitCode}{RightSquareBracket}", token)
+                .ConfigureAwait(false);
         }
 
         switch (exitCode)
         {
-            case 0 when suppressOutputBuffer is false:
-                Session.ResponseWriter.Write(output.WrittenMemory.Span);
+            case 0 when !suppressOutputBuffer:
+                await writer.WriteAsync(output.WrittenMemory, token).ConfigureAwait(false);
                 break;
-            case not 0 when suppressErrorBuffer is false:
-                Session.ResponseWriter.Write(error.WrittenMemory.Span);
+            case not 0 when !suppressErrorBuffer:
+                await writer.WriteAsync(error.WrittenMemory, token).ConfigureAwait(false);
                 break;
         }
 
         if (Session.IsInteractive)
         {
             const string prompt = "> ";
-            Session.ResponseWriter.Write(prompt);
+            await writer.WriteLineAsync(ReadOnlyMemory<char>.Empty, token).ConfigureAwait(false);
+            await writer.WriteAsync(prompt.AsMemory(), token).ConfigureAwait(false);
         }
     }
 

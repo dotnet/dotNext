@@ -9,11 +9,11 @@ internal sealed class RethrowExpression : StateMachineExpression
 {
     public override Type Type => typeof(void);
 
-    public override Expression Reduce() => Rethrow();
+    public override UnaryExpression Reduce() => Rethrow();
 
-    internal static Expression Dispatch(ParameterExpression exceptionHolder)
+    internal static MethodCallExpression Dispatch(ParameterExpression exceptionHolder)
         => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), [], exceptionHolder);
 
-    internal override Expression Reduce(ParameterExpression stateMachine)
+    internal override MethodCallExpression Reduce(ParameterExpression stateMachine)
         => stateMachine.Call(nameof(AsyncStateMachine<>.Rethrow));
 }

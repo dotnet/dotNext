@@ -144,4 +144,11 @@ public sealed class TypeExtensionsTests : Test
         Equal((nuint)0, typeof(nuint).DefaultValue);
         Equal(Guid.Empty, typeof(Guid).DefaultValue);
     }
+
+    [Fact]
+    public static void VoidCheck()
+    {
+        True(typeof(void).IsVoid);
+        False(typeof(int).IsVoid);
+    }
 }

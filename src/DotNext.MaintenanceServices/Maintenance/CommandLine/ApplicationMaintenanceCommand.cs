@@ -45,12 +45,14 @@ public sealed partial class ApplicationMaintenanceCommand : Command
     /// <seealso cref="GCCommand"/>
     /// <seealso cref="EnterInteractiveModeCommand"/>
     /// <seealso cref="LeaveInteractiveModeCommand"/>
+    /// <seealso cref="ProcessCommand"/>
     public static IEnumerable<ApplicationMaintenanceCommand> GetDefaultCommands()
     {
         yield return HelpCommand();
         yield return GCCommand();
         yield return EnterInteractiveModeCommand();
         yield return LeaveInteractiveModeCommand();
+        yield return ProcessCommand();
     }
 
     private static bool False(ArgumentResult _) => false;

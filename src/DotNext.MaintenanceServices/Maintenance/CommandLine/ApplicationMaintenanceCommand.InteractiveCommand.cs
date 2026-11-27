@@ -18,13 +18,13 @@ partial class ApplicationMaintenanceCommand
         command.SetAction(EnterInteractiveMode);
         return command;
 
-        static Task EnterInteractiveMode(ParseResult result, CancellationToken token)
+        static ValueTask EnterInteractiveMode(IMaintenanceSession session, ParseResult result, CancellationToken token)
         {
-            CommandContext.TryGetSession(result)?.IsInteractive = true;
+            session.IsInteractive = true;
 
-            return result.InvocationConfiguration.Output.WriteLineAsync(
+            return new(result.InvocationConfiguration.Output.WriteLineAsync(
                 CommandResources.WelcomeMessage(RootCommand.ExecutableName).AsMemory(),
-                token);
+                token));
         }
     }
 
@@ -39,12 +39,7 @@ partial class ApplicationMaintenanceCommand
             Description = CommandResources.ExitCommandDescription,
         };
 
-        command.SetAction(static result =>
-        {
-            if (CommandContext.TryGetSession(result) is { } session)
-                session.IsInteractive = false;
-        });
-        
+        command.SetAction(static (session, _) => session.IsInteractive = false);
         return command;
     }
 }

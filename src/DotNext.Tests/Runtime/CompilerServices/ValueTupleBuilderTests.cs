@@ -15,7 +15,7 @@ public sealed class ValueTupleBuilderTests : Test
         Equal(typeof(ValueTuple<DateTime, string>), builder.Build());
         builder.Add<int>();
         Equal(typeof(ValueTuple<DateTime, string, int>), builder.Build());
-        for (int i = 0; i < 16; i++)
+        for (var i = 0; i < 16; i++)
             builder.Add<bool>();
         Equal(19, builder.Count);
         var tupleType = builder.Build();
@@ -44,5 +44,25 @@ public sealed class ValueTupleBuilderTests : Test
         var members = builder.Build(Expression.New, out _);
         Equal(typeof(DateTime), members[0].Type);
         Equal(typeof(bool), members[7].Type);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(7)]
+    [InlineData(9)]
+    public static void CheckEnumerator(int count)
+    {
+        var builder = new ValueTupleBuilder();
+        for (var i = 0; i < count; i++)
+        {
+            builder.Add<decimal>();
+        }
+        
+        Equal(Enumerable.Repeat(typeof(decimal), count), builder);
+        
+        builder.Reset();
+        Empty(builder);
+        Empty(builder);
     }
 }

@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic;
 
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents ad-hoc enumerator implemented as value type to avoid enumerator allocation
 /// and prevent the compiler to generate <see cref="IDisposable.Dispose()"/> call.
@@ -33,7 +35,7 @@ public interface IEnumerator<TSelf, out T> : IResettable
     /// </summary>
     /// <param name="enumerator">Ad-hoc enumerator.</param>
     /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    internal static virtual IEnumerator<T> ToEnumerator(in TSelf enumerator)
+    protected internal static virtual IEnumerator<T> ToEnumerator(in TSelf enumerator)
         => new BoxedEnumerator<TSelf, T>(enumerator);
 
     /// <summary>
@@ -42,7 +44,7 @@ public interface IEnumerator<TSelf, out T> : IResettable
     /// <param name="enumerator">Ad-hoc enumerator.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
     /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    internal static virtual IAsyncEnumerator<T> ToAsyncEnumerator(in TSelf enumerator, CancellationToken token)
+    protected internal static virtual IAsyncEnumerator<T> ToAsyncEnumerator(in TSelf enumerator, CancellationToken token)
         => new BoxedEnumerator<TSelf, T>(enumerator, token);
 }
 
@@ -54,20 +56,7 @@ file sealed class BoxedEnumerator<TEnumerator, T>(in TEnumerator enumerator, Can
     
     public T Current => enumerator.Current;
 
-    object? IEnumerator.Current
-    {
-        get
-        {
-            var elementType = typeof(T);
-            if (elementType.IsByRefLike)
-                throw new NotSupportedException();
-
-            var value = enumerator.Current;
-            return elementType.IsValueType
-                ? RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), typeof(T).TypeHandle)
-                : Unsafe.As<T, object>(ref value);
-        }
-    }
+    object? IEnumerator.Current => Unsafe.Box(enumerator.Current);
 
     bool IEnumerator.MoveNext() => enumerator.MoveNext();
 

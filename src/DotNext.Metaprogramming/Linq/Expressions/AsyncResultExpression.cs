@@ -2,6 +2,7 @@
 
 namespace DotNext.Linq.Expressions;
 
+using static Reflection.TypeExtensions;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 
@@ -74,7 +75,7 @@ public sealed class AsyncResultExpression : CustomExpression
     {
         Expression completedTask, failedTask;
         var caughtException = Variable(typeof(Exception));
-        if (AsyncResult.Type == typeof(void))
+        if (AsyncResult.Type.IsVoid)
         {
             completedTask = Block(AsyncResult, Default(typeof(CompletedTask)));
             failedTask = typeof(CompletedTask).New([caughtException]);
