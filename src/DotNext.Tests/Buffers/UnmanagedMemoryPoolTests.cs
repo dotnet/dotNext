@@ -322,4 +322,73 @@ public sealed class UnmanagedMemoryPoolTests : Test
         using var memory = IUnmanagedMemory<long>.Allocate(2);
         Equal(memory.Pointer.Address, UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
     }
+
+    [Fact]
+    public static void TrackedMemoryDisposedInAnyOrder()
+    {
+        var pool = new UnmanagedMemoryPool<int>(16) { TrackAllocations = true };
+        var owners = new IMemoryOwner<int>[10];
+        foreach (ref var owner in owners.AsSpan())
+            owner = pool.Rent(4);
+
+        // the first, the middle and the last rented blocks
+        int[] disposed = [0, 5, 9];
+        foreach (var index in disposed)
+        {
+            owners[index].Dispose();
+            True(owners[index].Memory.IsEmpty);
+        }
+
+        for (var i = 0; i < owners.Length; i++)
+        {
+            if (!disposed.Contains(i))
+                Equal(4, owners[i].Memory.Length);
+        }
+
+        pool.Dispose();
+        foreach (var owner in owners)
+        {
+            True(owner.Memory.IsEmpty);
+            owner.Dispose();
+        }
+    }
+
+    [Fact]
+    public static void RentAfterTrackedMemoryDisposed()
+    {
+        using var pool = new UnmanagedMemoryPool<int>(16) { TrackAllocations = true };
+        pool.Rent(4).Dispose();
+
+        var owner = pool.Rent(4);
+        pool.Dispose();
+        True(owner.Memory.IsEmpty);
+    }
+
+    [Fact]
+    public static void DisposePoolAndMemoryConcurrently()
+    {
+        for (var round = 0; round < 100; round++)
+        {
+            var pool = new UnmanagedMemoryPool<byte>(16) { TrackAllocations = true };
+            var owners = new IMemoryOwner<byte>[1000];
+            foreach (ref var owner in owners.AsSpan())
+                owner = pool.Rent(8);
+
+            using var barrier = new Barrier(2);
+            var thread = new Thread(() =>
+            {
+                barrier.SignalAndWait();
+                foreach (var owner in owners)
+                    owner.Dispose();
+            });
+
+            thread.Start();
+            barrier.SignalAndWait();
+            pool.Dispose();
+            True(thread.Join(DefaultTimeout));
+
+            foreach (var owner in owners)
+                True(owner.Memory.IsEmpty);
+        }
+    }
 }

@@ -15,8 +15,8 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
 {
     private readonly Lock? syncRoot;
     private readonly int defaultBufferSize;
-    private readonly Func<int, IUnmanagedMemory<T>> allocator;
-    private Action? ownerDisposal;
+    private readonly bool zeroed;
+    private PooledMemory? head; // the list of rented memory blocks, if the allocations are tracked
 
     /// <summary>
     /// Initializes a new pool of unmanaged memory.
@@ -30,7 +30,6 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         const int defaultBufferSize = 32;
         MaxBufferSize = maxBufferSize;
         this.defaultBufferSize = int.Min(defaultBufferSize, maxBufferSize);
-        allocator = Action<IUnmanagedMemory<T>?>.NoOp.Rent<T, DraftAllocator<T>>;
     }
 
     /// <summary>
@@ -55,22 +54,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     public bool TrackAllocations
     {
         get => syncRoot is not null;
-        init
-        {
-            Action<IUnmanagedMemory<T>> removeMemory;
-            if (value)
-            {
-                syncRoot = new();
-                removeMemory = RemoveTracking;
-            }
-            else
-            {
-                syncRoot = null;
-                removeMemory = Action<IUnmanagedMemory<T>?>.NoOp;
-            }
-
-            allocator = allocator.Method.CreateDelegate<Func<int, IUnmanagedMemory<T>>>(removeMemory);
-        }
+        init => syncRoot = value ? new() : null;
     }
 
     /// <summary>
@@ -78,44 +62,53 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     /// </summary>
     public bool AllocateZeroedMemory
     {
-        init
-        {
-            var removeMemory = allocator.Target as Action<IUnmanagedMemory<T>>;
-            Debug.Assert(removeMemory is not null);
-            
-            allocator = value ? removeMemory.Rent<T, ZeroedAllocator<T>> : removeMemory.Rent<T, DraftAllocator<T>>;
-        }
+        init => zeroed = value;
     }
 
-    private void RemoveTracking(IUnmanagedMemory<T> owner)
+    private void AddTracking(PooledMemory owner)
     {
         Debug.Assert(TrackAllocations);
 
         lock (syncRoot)
         {
-            ownerDisposal -= owner.Dispose;
+            if (head is not null)
+            {
+                owner.Append(head);
+            }
+
+            head = owner;
         }
     }
 
-    private void AddTracking(IUnmanagedMemory<T> owner)
+    private void RemoveTracking(PooledMemory owner)
     {
         Debug.Assert(TrackAllocations);
 
         lock (syncRoot)
         {
-            ownerDisposal += owner.Dispose;
+            RemoveTrackingCore(owner);
         }
     }
 
-    private Action? ClearTracker()
+    private void RemoveTrackingCore(PooledMemory owner)
+    {
+        Debug.Assert(syncRoot is not null && syncRoot.IsHeldByCurrentThread);
+
+        if (ReferenceEquals(head, owner))
+            head = owner.Next;
+
+        owner.Detach();
+    }
+
+    private PooledMemory? TryRemoveFirst()
     {
         Debug.Assert(TrackAllocations);
 
-        Action? result;
+        PooledMemory? result;
         lock (syncRoot)
         {
-            result = ownerDisposal;
-            ownerDisposal = null;
+            if ((result = head) is not null)
+                RemoveTrackingCore(result);
         }
 
         return result;
@@ -140,12 +133,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         if (length < 0)
             length = defaultBufferSize;
 
-        var result = allocator(length);
-
-        if (TrackAllocations)
-            AddTracking(result);
-
-        return result;
+        return new PooledMemory(length, zeroed, TrackAllocations ? this : null);
     }
 
     /// <summary>
@@ -154,53 +142,66 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        if (disposing && TrackAllocations)
         {
-            if (TrackAllocations && ClearTracker() is { } callback)
-                callback();
+            // the owners can be disposed concurrently, so remove them one by one
+            while (TryRemoveFirst() is { } owner)
+                ((IDisposable)owner).Dispose();
         }
     }
-}
 
-file static class AllocatorHelpers
-{
-    public static UnmanagedMemoryOwner<T, TAllocator> Rent<T, TAllocator>(this Action<IUnmanagedMemory<T>> removeMemory, int length)
-        where T : unmanaged
-        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
-        => new PoolingUnmanagedMemoryOwner<T, TAllocator>(length, removeMemory);
-}
-
-file sealed class PoolingUnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemoryOwner<T, TAllocator>, IUnmanagedMemory<T>
-    where T : unmanaged
-    where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
-{
-    private Action<IUnmanagedMemory<T>>? onDisposedCallback;
-
-    internal PoolingUnmanagedMemoryOwner(int length, Action<IUnmanagedMemory<T>>? onDisposed)
-        : base(length)
-        => onDisposedCallback = onDisposed;
-
-    /// <summary>
-    /// Releases unmanaged memory that was allocated by this object.
-    /// </summary>
-    /// <param name="disposing"><see langword="true"/> to release all resources; <see langword="false"/> to release unmanaged memory only.</param>
-    protected override void Dispose(bool disposing)
+    private sealed unsafe class PooledMemory : UnmanagedMemoryOwner<T>, IUnmanagedMemory<T>
     {
-        try
+        private UnmanagedMemoryPool<T>? pool;
+        private bool disposed;
+        private PooledMemory? previous;
+
+        // protected by the lock of the pool
+        public PooledMemory? Next;
+
+        public PooledMemory(int length, bool zeroed, UnmanagedMemoryPool<T>? pool)
+            : base(Allocate(length, zeroed), length)
         {
-            if (onDisposedCallback is { } callback)
+            this.pool = pool;
+            pool?.AddTracking(this);
+        }
+
+        public void Append(PooledMemory other)
+        {
+            Next = other;
+            other.previous = this;
+        }
+        
+        public void Detach()
+        {
+            previous?.Next = Next;
+            Next?.previous = previous;
+            Next = previous = null;
+        }
+
+        private static T* Allocate(int length, bool zeroed) => zeroed
+            ? INativeMemoryAllocator<T>.Allocate<ZeroedAllocator<T>>((uint)length)
+            : INativeMemoryAllocator<T>.Allocate<DraftAllocator<T>>((uint)length);
+
+        protected override void Dispose(bool disposing)
+        {
+            // the pool can release the memory concurrently with the owner
+            if (Interlocked.Exchange(ref disposed, true))
+                return;
+
+            try
             {
-                callback(this);
-                onDisposedCallback = null;
+                pool?.RemoveTracking(this);
+            }
+            finally
+            {
+                pool = null;
+                base.Dispose(disposing);
             }
         }
-        finally
-        {
-            base.Dispose(disposing);
-        }
+
+        void IUnmanagedMemory<T>.Reallocate(int length) => throw new NotSupportedException();
+
+        bool IUnmanagedMemory<T>.SupportsReallocation => false;
     }
-
-    void IUnmanagedMemory<T>.Reallocate(int length) => throw new NotSupportedException();
-
-    bool IUnmanagedMemory<T>.SupportsReallocation => false;
 }

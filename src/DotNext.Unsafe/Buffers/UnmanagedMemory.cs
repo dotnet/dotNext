@@ -45,9 +45,9 @@ public static partial class UnmanagedMemory
             return Allocate<T, ZeroedAllocator<T>>(length);
         }
 
-        private static UnmanagedMemoryOwner<T, TAllocator> Allocate<TAllocator>(int length)
+        private static UnmanagedMemoryOwner<T> Allocate<TAllocator>(int length)
             where TAllocator : unmanaged, INativeMemoryAllocator<T>, allows ref struct
-            => new(length);
+            => UnmanagedMemoryOwner<T>.Allocate<TAllocator>(length);
     }
 
     /// <summary>
@@ -133,14 +133,17 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     }
 }
 
-internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmanagedMemory<T>
+internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     where T : unmanaged
-    where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
 {
-    public unsafe UnmanagedMemoryOwner(int length)
-        : base(INativeMemoryAllocator<T>.Allocate<TAllocator>((uint)length), length)
+    private protected unsafe UnmanagedMemoryOwner(T* address, int length)
+        : base(address, length)
     {
     }
+
+    public static unsafe UnmanagedMemoryOwner<T> Allocate<TAllocator>(int length)
+        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
+        => new(INativeMemoryAllocator<T>.Allocate<TAllocator>((uint)length), length);
 
     public unsafe Pointer<T> Pointer => new(address);
 
