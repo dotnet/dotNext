@@ -82,8 +82,6 @@ public sealed class BasicExtensionsTests : Test
         Equal(42L, obj1.UserData.Get(slot));
     }
 
-    private readonly struct TypeTag<T>;
-
     [Fact]
     public static void StorageExtendedWithNewType()
     {
@@ -92,7 +90,7 @@ public sealed class BasicExtensionsTests : Test
         obj.UserData.Set(slot, 42L);
 
         // the type index is allocated after the storage
-        var newTypeSlot = new UserDataSlot<TypeTag<StorageExtendedWithNewTypeTag>>();
+        var newTypeSlot = new UserDataSlot<ValueTuple<StorageExtendedWithNewTypeTag>>();
         False(obj.UserData.TryGet(newTypeSlot, out _));
         False(obj.UserData.Remove(newTypeSlot));
         obj.UserData.Set(newTypeSlot, default);
@@ -103,8 +101,6 @@ public sealed class BasicExtensionsTests : Test
         Equal(42L, copy.UserData.Get(slot));
         True(copy.UserData.TryGet(newTypeSlot, out _));
     }
-
-    private sealed class StorageExtendedWithNewTypeTag;
 
     [Fact]
     public static void ConcurrentWritesDuringStorageExtension()
@@ -126,7 +122,7 @@ public sealed class BasicExtensionsTests : Test
             }
 
             var slot = new UserDataSlot<string>();
-            var newTypeSlot = new UserDataSlot<TypeTag<T>>();
+            var newTypeSlot = new UserDataSlot<ValueTuple<T>>();
             var winners = new int[objects.Length];
             using var barrier = new Barrier(3);
 
@@ -155,7 +151,7 @@ public sealed class BasicExtensionsTests : Test
                 Equal(1, winners[i]);
             }
 
-            Round<TypeTag<T>>(remaining - 1);
+            Round<ValueTuple<T>>(remaining - 1);
 
             void GetOrSet(string value)
             {
@@ -373,3 +369,5 @@ public sealed class BasicExtensionsTests : Test
         True(exceptionThrown);
     }
 }
+
+file sealed class StorageExtendedWithNewTypeTag;
