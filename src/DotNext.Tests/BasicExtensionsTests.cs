@@ -105,14 +105,26 @@ public sealed class BasicExtensionsTests : Test
     [Fact]
     public static void ConcurrentWritesDuringStorageExtension()
     {
-        Round<int>(50);
+        // every round uses the new type, so the type index is allocated after the storages are created.
+        // The types are listed explicitly, because recursive generic instantiation is not compatible with AOT
+        Round<ConcurrentWritesTag<byte>>();
+        Round<ConcurrentWritesTag<sbyte>>();
+        Round<ConcurrentWritesTag<short>>();
+        Round<ConcurrentWritesTag<ushort>>();
+        Round<ConcurrentWritesTag<int>>();
+        Round<ConcurrentWritesTag<uint>>();
+        Round<ConcurrentWritesTag<long>>();
+        Round<ConcurrentWritesTag<ulong>>();
+        Round<ConcurrentWritesTag<nint>>();
+        Round<ConcurrentWritesTag<nuint>>();
+        Round<ConcurrentWritesTag<char>>();
+        Round<ConcurrentWritesTag<bool>>();
+        Round<ConcurrentWritesTag<float>>();
+        Round<ConcurrentWritesTag<double>>();
+        Round<ConcurrentWritesTag<decimal>>();
 
-        // every round uses the new type, so the type index is allocated after the storages are created
-        static void Round<T>(int remaining)
+        static void Round<T>()
         {
-            if (remaining is 0)
-                return;
-
             var existingSlot = new UserDataSlot<string>();
             var objects = new object[2000];
             foreach (ref var obj in objects.AsSpan())
@@ -122,7 +134,7 @@ public sealed class BasicExtensionsTests : Test
             }
 
             var slot = new UserDataSlot<string>();
-            var newTypeSlot = new UserDataSlot<ValueTuple<T>>();
+            var newTypeSlot = new UserDataSlot<T>();
             var winners = new int[objects.Length];
             using var barrier = new Barrier(3);
 
@@ -150,8 +162,6 @@ public sealed class BasicExtensionsTests : Test
                 True(objects[i].UserData.TryGet(newTypeSlot, out _));
                 Equal(1, winners[i]);
             }
-
-            Round<ValueTuple<T>>(remaining - 1);
 
             void GetOrSet(string value)
             {
@@ -371,3 +381,5 @@ public sealed class BasicExtensionsTests : Test
 }
 
 file sealed class StorageExtendedWithNewTypeTag;
+
+file struct ConcurrentWritesTag<T>;
