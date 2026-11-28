@@ -92,7 +92,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
 
     private void RemoveTrackingCore(PooledMemory owner)
     {
-        Debug.Assert(syncRoot is not null && syncRoot.IsHeldByCurrentThread);
+        Debug.Assert(syncRoot is { IsHeldByCurrentThread: true });
 
         if (ReferenceEquals(head, owner))
             head = owner.Next;
@@ -146,7 +146,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         {
             // the owners can be disposed concurrently, so remove them one by one
             while (TryRemoveFirst() is { } owner)
-                ((IDisposable)owner).Dispose();
+                owner.As<IDisposable>().Dispose();
         }
     }
 

@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 namespace DotNext.Runtime.CompilerServices;
 
-using static Runtime.ExceptionServices.ExceptionExtensions;
+using static ExceptionServices.ExceptionExtensions;
 
 /// <summary>
 /// Extends <see cref="RuntimeHelpers"/> class with execution stack inspection routines.
