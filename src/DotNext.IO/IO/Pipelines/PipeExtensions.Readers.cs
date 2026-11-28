@@ -182,7 +182,7 @@ partial class PipeExtensions
                 // the length is untrusted, the pipe buffers the data before the allocation
                 var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(reader, token);
-                result = DecodeBufferedBlock(reader, in context, readResult.Buffer, length, allocator);
+                result = DecodeBufferedBlock(reader, in context, readResult.Buffer, length, allocator.DefaultIfNull);
                 break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
@@ -208,7 +208,7 @@ partial class PipeExtensions
 
         return result;
         
-        static MemoryOwner<char> DecodeBufferedBlock(PipeReader reader, in DecodingContext context, ReadOnlySequence<byte> source, int length, MemoryAllocator<char>? allocator)
+        static MemoryOwner<char> DecodeBufferedBlock(PipeReader reader, in DecodingContext context, ReadOnlySequence<byte> source, int length, MemoryAllocator<char> allocator)
         {
             var consumed = source.Start;
             try
@@ -220,7 +220,7 @@ partial class PipeExtensions
                 }
 
                 var bytes = source.Slice(0, length);
-                var result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+                var result = allocator.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
                 try
                 {
                     var decoder = context.GetDecoder();
@@ -590,7 +590,7 @@ partial class PipeExtensions
                 // the length is untrusted, the pipe buffers the data before the allocation
                 var readResult = await reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(reader, token);
-                result = CopyBufferedBlock(reader, readResult.Buffer, length, allocator);
+                result = CopyBufferedBlock(reader, readResult.Buffer, length, allocator.DefaultIfNull);
                 break;
             case > 0:
                 result = allocator.DefaultIfNull.AllocateExactly(length);
@@ -613,7 +613,7 @@ partial class PipeExtensions
 
         return result;
 
-        static MemoryOwner<byte> CopyBufferedBlock(PipeReader reader, ReadOnlySequence<byte> source, int length, MemoryAllocator<byte>? allocator)
+        static MemoryOwner<byte> CopyBufferedBlock(PipeReader reader, ReadOnlySequence<byte> source, int length, MemoryAllocator<byte> allocator)
         {
             var consumed = source.Start;
             try
@@ -625,7 +625,7 @@ partial class PipeExtensions
                 }
 
                 var bytes = source.Slice(0, length);
-                var result = allocator.DefaultIfNull.AllocateExactly(length);
+                var result = allocator.AllocateExactly(length);
                 bytes.CopyTo(result.Span);
                 consumed = bytes.End;
                 return result;
