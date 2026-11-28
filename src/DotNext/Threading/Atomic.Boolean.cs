@@ -20,7 +20,8 @@ public static partial class Atomic
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
-        public static bool FalseToTrue(ref bool location) => !Interlocked.CompareExchange(ref location, true, false);
+        public static bool FalseToTrue(ref bool location)
+            => !Interlocked.Exchange(ref location, true);
 
         /// <summary>
         /// Atomically sets <see langword="false"/> value if the
@@ -30,7 +31,8 @@ public static partial class Atomic
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [MemoryOrdering(MemoryOrdering.SequentiallyConsistent)]
-        public static bool TrueToFalse(ref bool location) => Interlocked.CompareExchange(ref location, false, true);
+        public static bool TrueToFalse(ref bool location)
+            => Interlocked.Exchange(ref location, false);
 
         /// <summary>
         /// Negates currently stored value atomically.
